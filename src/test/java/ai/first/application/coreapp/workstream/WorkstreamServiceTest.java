@@ -2130,6 +2130,65 @@ class WorkstreamServiceTest {
         && entry.capabilityId().equals("governance.policy.propose")
         && entry.classification().equals("chat-proposal-only")
         && entry.rationale().contains("inert proposal")));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("governance-policy-agent")
+        && entry.actionId().equals("action-governance-policy-list")
+        && entry.governedToolId().equals("governance.policy.read")
+        && entry.capabilityId().equals("governance.policy.read")
+        && entry.classification().equals("chat-executable-now")
+        && entry.inputSchemaRef().equals("schema.governance-policy.inventory.v1")
+        && entry.guardrails().contains("no-hidden-enumeration")
+        && entry.guardrails().contains("redaction")
+        && entry.guardrails().contains("no-activation")
+        && !entry.idempotencyRequired()
+        && !entry.requiresApproval()
+        && entry.requiresConfirmation()
+        && entry.traceRequirements().contains("policy.read_trace")));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("governance-policy-agent")
+        && entry.actionId().equals("action-governance-policy-read")
+        && entry.governedToolId().equals("governance.policy.read")
+        && entry.capabilityId().equals("governance.policy.read")
+        && entry.classification().equals("chat-executable-now")
+        && entry.guardrails().contains("visible-proposal-or-policy-ref")
+        && entry.guardrails().contains("redaction")
+        && entry.guardrails().contains("no-activation")
+        && !entry.idempotencyRequired()
+        && !entry.requiresApproval()));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("governance-policy-agent")
+        && entry.actionId().equals("action-governance-policy-submit-proposal")
+        && entry.governedToolId().equals("governance.policy.propose")
+        && entry.capabilityId().equals("governance.policy.propose")
+        && entry.classification().equals("chat-proposal-only")
+        && entry.guardrails().contains("visible-proposal-id")
+        && entry.guardrails().contains("no-activation")
+        && entry.guardrails().contains("no-authority-expansion")
+        && entry.idempotencyRequired()
+        && !entry.requiresApproval()));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("governance-policy-agent")
+        && entry.actionId().equals("action-governance-policy-simulate")
+        && entry.governedToolId().equals("governance.policy.simulate")
+        && entry.capabilityId().equals("governance.policy.simulate")
+        && entry.classification().equals("chat-proposal-only")
+        && entry.guardrails().contains("visible-proposal-id")
+        && entry.guardrails().contains("advisory-only")
+        && entry.guardrails().contains("no-activation")
+        && entry.guardrails().contains("proposal-text-not-authority")
+        && !entry.requiresApproval()));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("governance-policy-agent")
+        && entry.actionId().equals("action-governance-policy-start-impact-analysis")
+        && entry.capabilityId().equals("governance.policy.impact_analysis.start")
+        && entry.classification().equals("approval-gated")
+        && entry.guardrails().contains("approval-gate")
+        && entry.guardrails().contains("provider-fail-closed")
+        && entry.guardrails().contains("no-activation")
+        && entry.requiresApproval()));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("governance-policy-agent")
+        && entry.actionId().equals("action-governance-policy-read-impact-analysis")
+        && entry.capabilityId().equals("governance.policy.impact_analysis.read")
+        && entry.classification().equals("chat-proposal-only")
+        && entry.guardrails().contains("advisory-only")
+        && entry.guardrails().contains("no-activation")
+        && entry.guardrails().contains("no-authority-expansion")
+        && !entry.requiresApproval()));
   }
 
   @Test
@@ -4402,5 +4461,405 @@ class WorkstreamServiceTest {
 
   private WorkosIdentity customerIdentity() {
     return new WorkosIdentity("workos-customer", "customer@example.test", "Customer Admin");
+  }
+
+  @Test
+  void expandedGovernancePolicyChatToolPlanExecutesListReadAndProposalPathsWithSafeInput() {
+    // List policy inventory - plan proposal + confirmed execution
+    var listResponse = service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "governance-policy-agent",
+        "list policy proposals after confirmation",
+        "corr-governance-list-chat-plan",
+        "idem-governance-list-chat-plan",
+        null,
+        "List policy inventory with scoped, redacted results; no policy state changed before or after confirmation.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-governance-policy-list",
+            1,
+            "List policy inventory with redacted results",
+            "action-governance-policy-list",
+            "action-governance-policy-list",
+            "governance.policy.read",
+            "governance.policy.read",
+            "schema.governance-policy.inventory.v1",
+            Map.of("filter", "all"),
+            List.of(),
+            Map.of(),
+            null,
+            "independent-read: policy inventory returns scoped redacted rows with no policy state mutation",
+            true,
+            false,
+            null,
+            "surface-governance-policy-inventory",
+            List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "policy.read_trace"))),
+        "Human confirmation, selected AuthContext authorization, backend redaction, and no-hidden-enumeration policy are required."));
+    var listProposal = (WorkstreamService.ChatToolPlanProposal) listResponse.surface().data().get("proposal");
+    var listSnapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) listResponse.surface().data().get("confirmationSnapshot");
+    assertEquals("governance-policy-agent", listProposal.functionalAgentId());
+    assertEquals("action-governance-policy-list", listProposal.steps().get(0).actionId());
+    assertBrowserPayloadSafe(listResponse.surface());
+
+    var listConfirmed = confirmRepresentativePlan(identity(), "membership-admin", listProposal, listSnapshot, "idem-governance-list-chat-plan-confirm");
+    var listResult = (WorkstreamService.ChatToolPlanExecutionResult) listConfirmed.surface().data().get("result");
+    assertEquals("completed", listResult.status(), listResult.toString());
+    assertTrue(listResult.completedSteps().stream().anyMatch(step ->
+        step.actionId().equals("action-governance-policy-list")
+        && step.governedToolId().equals("governance.policy.read")
+        && step.capabilityId().equals("governance.policy.read")
+        && step.resultSurfaceId().equals("surface-governance-policy-inventory")));
+    assertBrowserPayloadSafe(listConfirmed.surface());
+    assertFalse(listConfirmed.surface().toString().contains("providerSecret"), "Policy list result must not expose provider secrets.");
+
+    // Policy detail read - plan proposal + confirmed execution
+    var readResponse = service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "governance-policy-agent",
+        "read this policy proposal after confirmation",
+        "corr-governance-read-chat-plan",
+        "idem-governance-read-chat-plan",
+        null,
+        "Open policy detail for a visible authorized proposal; no policy state changed.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-governance-policy-read",
+            1,
+            "Open policy detail for visible proposal",
+            "action-governance-policy-read",
+            "action-governance-policy-read",
+            "governance.policy.read",
+            "governance.policy.read",
+            "schema.governance-policy.detail.v1",
+            Map.of("proposalId", "proposal-auth-context-001"),
+            List.of(),
+            Map.of(),
+            null,
+            "independent-read: policy detail returns backend-scoped redacted evidence with no policy state mutation",
+            true,
+            false,
+            null,
+            "surface-governance-policy-detail",
+            List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "policy.read_trace"))),
+        "Human confirmation, visible proposal ref, backend redaction, and tenant/customer isolation are required."));
+    var readProposal = (WorkstreamService.ChatToolPlanProposal) readResponse.surface().data().get("proposal");
+    var readSnapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) readResponse.surface().data().get("confirmationSnapshot");
+    assertBrowserPayloadSafe(readResponse.surface());
+
+    var readConfirmed = confirmRepresentativePlan(identity(), "membership-admin", readProposal, readSnapshot, "idem-governance-read-chat-plan-confirm");
+    var readResult = (WorkstreamService.ChatToolPlanExecutionResult) readConfirmed.surface().data().get("result");
+    assertEquals("completed", readResult.status(), readResult.toString());
+    assertTrue(readResult.completedSteps().stream().anyMatch(step ->
+        step.actionId().equals("action-governance-policy-read")
+        && step.governedToolId().equals("governance.policy.read")
+        && step.capabilityId().equals("governance.policy.read")));
+
+    // Draft proposal - plan proposal + confirmed execution
+    var draftResponse = service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "governance-policy-agent",
+        "draft a policy proposal to require approval before redacted exports",
+        "corr-governance-draft-chat-plan",
+        "idem-governance-draft-chat-plan",
+        null,
+        "Draft an inert Governance/Policy proposal; no policy approved, activated, or authority changed.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-governance-draft-proposal",
+            1,
+            "Draft inert policy proposal",
+            "action-governance-policy-draft-proposal",
+            "action-governance-policy-draft-proposal",
+            "governance.policy.propose",
+            "governance.policy.propose",
+            "schema.governance-policy.proposal.draft.v1",
+            Map.of("title", "Require approval before redacted exports", "proposedContent", "Require explicit human approval before redacted audit exports are prepared.", "rationale", "Security policy requires approval gates for export paths."),
+            List.of(),
+            Map.of(),
+            "idem-governance-draft-step-001",
+            "independent-proposal-command: draft proposal is inert until separate review, approval, and activation capabilities run",
+            true,
+            false,
+            "governance-diff",
+            "surface-governance-policy-proposal",
+            List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "policy.proposal_trace"))),
+        "Human confirmation, selected AuthContext authorization, idempotency, and no-activation policy are required."));
+    var draftProposal = (WorkstreamService.ChatToolPlanProposal) draftResponse.surface().data().get("proposal");
+    var draftSnapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) draftResponse.surface().data().get("confirmationSnapshot");
+    assertBrowserPayloadSafe(draftResponse.surface());
+    assertTrue(draftProposal.approvalSummary().contains("confirmation") || draftProposal.approvalSummary().contains("mutation"), "Draft proposal approval summary must mention confirmation or mutation constraints.");
+
+    var draftConfirmed = confirmRepresentativePlan(identity(), "membership-admin", draftProposal, draftSnapshot, "idem-governance-draft-chat-plan-confirm");
+    var draftResult = (WorkstreamService.ChatToolPlanExecutionResult) draftConfirmed.surface().data().get("result");
+    assertEquals("completed", draftResult.status(), draftResult.toString());
+    assertTrue(draftResult.completedSteps().stream().anyMatch(step ->
+        step.actionId().equals("action-governance-policy-draft-proposal")
+        && step.governedToolId().equals("governance.policy.propose")
+        && step.capabilityId().equals("governance.policy.propose")
+        && step.resultSurfaceId().equals("surface-governance-policy-proposal")));
+    assertBrowserPayloadSafe(draftConfirmed.surface());
+
+    // Read impact analysis - plan proposal + confirmed execution with empty task returns advisory empty result
+    var readImpactResponse = service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "governance-policy-agent",
+        "read the impact analysis for this proposal",
+        "corr-governance-impact-read-chat-plan",
+        "idem-governance-impact-read-chat-plan",
+        null,
+        "Read advisory impact analysis evidence; no policy state or authority changed.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-governance-read-impact-analysis",
+            1,
+            "Read advisory impact analysis evidence",
+            "action-governance-policy-read-impact-analysis",
+            "action-governance-policy-read-impact-analysis",
+            "governance.policy.impact_analysis.read",
+            "governance.policy.impact_analysis.read",
+            "schema.governance-policy.impact-analysis.read.v1",
+            Map.of("impactTaskId", ""),
+            List.of(),
+            Map.of(),
+            null,
+            "independent-advisory-read: impact analysis read returns backend-scoped advisory evidence with no policy state mutation",
+            true,
+            false,
+            null,
+            "surface-governance-policy-impact-analysis-task",
+            List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "policy.impact_analysis_trace"))),
+        "Human confirmation, advisory-only evidence, no activation, and no authority expansion are required."));
+    var readImpactProposal = (WorkstreamService.ChatToolPlanProposal) readImpactResponse.surface().data().get("proposal");
+    var readImpactSnapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) readImpactResponse.surface().data().get("confirmationSnapshot");
+    assertBrowserPayloadSafe(readImpactResponse.surface());
+
+    var readImpactConfirmed = confirmRepresentativePlan(identity(), "membership-admin", readImpactProposal, readImpactSnapshot, "idem-governance-impact-read-chat-plan-confirm");
+    var readImpactResult = (WorkstreamService.ChatToolPlanExecutionResult) readImpactConfirmed.surface().data().get("result");
+    assertEquals("completed", readImpactResult.status(), readImpactResult.toString());
+    assertTrue(readImpactResult.completedSteps().stream().anyMatch(step ->
+        step.actionId().equals("action-governance-policy-read-impact-analysis")
+        && step.governedToolId().equals("governance.policy.impact_analysis.read")
+        && step.capabilityId().equals("governance.policy.impact_analysis.read")));
+    assertBrowserPayloadSafe(readImpactConfirmed.surface());
+
+    // Impact analysis start - approval-gated; confirmed plan fails step with approval_required
+    var startImpactResponse = service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "governance-policy-agent",
+        "start impact analysis for visible policy proposal",
+        "corr-governance-impact-start-chat-plan",
+        "idem-governance-impact-start-chat-plan",
+        null,
+        "Start approval-gated policy impact analysis task; provider/runtime required.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-governance-start-impact-analysis",
+            1,
+            "Start approval-gated impact analysis for visible proposal",
+            "action-governance-policy-start-impact-analysis",
+            "action-governance-policy-start-impact-analysis",
+            "governance.policy.impact_analysis.start",
+            "governance.policy.impact_analysis.start",
+            "schema.governance-policy.impact-analysis.start.v1",
+            Map.of("proposalId", "proposal-auth-context-001", "evidenceRequest", "Analyze policy proposal impact."),
+            List.of(),
+            Map.of(),
+            "idem-governance-start-impact-step-001",
+            "approval-gated transaction boundary: impact analysis requires provider/runtime and separate approval policy",
+            true,
+            true,
+            "workflow-status",
+            "surface-governance-policy-impact-analysis-task",
+            List.of("human_chat_tool_plan.proposed", "policy.impact_analysis_trace"))),
+        "Impact analysis start remains approval-gated; human confirmation cannot bypass the provider/runtime policy gate."));
+    var startImpactProposal = (WorkstreamService.ChatToolPlanProposal) startImpactResponse.surface().data().get("proposal");
+    var startImpactSnapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) startImpactResponse.surface().data().get("confirmationSnapshot");
+    assertTrue(startImpactProposal.steps().get(0).requiresApproval(), "Impact analysis start step must be approval-gated in the chat catalog.");
+    assertBrowserPayloadSafe(startImpactResponse.surface());
+
+    var startImpactConfirmed = confirmRepresentativePlan(identity(), "membership-admin", startImpactProposal, startImpactSnapshot, "idem-governance-impact-start-chat-plan-confirm");
+    var startImpactResult = (WorkstreamService.ChatToolPlanExecutionResult) startImpactConfirmed.surface().data().get("result");
+    assertEquals("failed", startImpactResult.status(), "Impact analysis start must remain approval-gated; plan fails with approval_required.");
+    assertEquals("approval_required", startImpactResult.failedSteps().get(0).errorCode(), "Impact analysis start step must fail with approval_required.");
+    assertTrue(startImpactResult.failedSteps().get(0).traceIds().stream().anyMatch(trace -> trace.contains("trace-human-chat-tool-plan-step-approval-required")));
+  }
+
+  @Test
+  void expandedGovernancePolicyActivationAndRollbackPromptsRemainBlockedThroughChat() {
+    // "activate this policy" prompt via submitMessage must be blocked by high-risk guardrail before model planning
+    var activationBlocked = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "governance-policy-agent", "activate this policy now", "corr-governance-activate-blocked", "idem-governance-activate-blocked"), "corr-header");
+    assertEquals("chat_tool_plan_system_message", activationBlocked.agentItem().kind(),
+        "Activation prompt must be blocked before model planning.");
+    assertTrue(activationBlocked.surface().toString().contains("CHAT_TOOL_PROMPT_APPROVAL_GATED"),
+        "Activation prompt must be approval-gated: " + activationBlocked.surface().toString());
+    assertNull(activationBlocked.surface().data().get("surfaceIntentRoute"));
+    assertBrowserPayloadSafe(activationBlocked.surface());
+
+    // "rollback policy change" prompt must be blocked by high-risk guardrail before model planning
+    var rollbackBlocked = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "governance-policy-agent", "rollback this policy change to previous version", "corr-governance-rollback-blocked", "idem-governance-rollback-blocked"), "corr-header");
+    assertEquals("chat_tool_plan_system_message", rollbackBlocked.agentItem().kind(),
+        "Rollback prompt must be blocked before model planning.");
+    assertTrue(rollbackBlocked.surface().toString().contains("CHAT_TOOL_PROMPT_APPROVAL_GATED"),
+        "Rollback prompt must be approval-gated: " + rollbackBlocked.surface().toString());
+    assertNull(rollbackBlocked.surface().data().get("surfaceIntentRoute"));
+    assertBrowserPayloadSafe(rollbackBlocked.surface());
+
+    // Activation text in step input must be denied by governance policy input validator at proposal creation time
+    var activationInInput = assertThrows(AuthorizationException.class, () -> service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "governance-policy-agent",
+        "draft policy proposal with activation instructions",
+        "corr-governance-activation-input-denied",
+        "idem-governance-activation-input-denied",
+        null,
+        "Activation text in step input must be denied.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-governance-draft-with-activation",
+            1,
+            "Draft proposal with activation text",
+            "action-governance-policy-draft-proposal",
+            "action-governance-policy-draft-proposal",
+            "governance.policy.propose",
+            "governance.policy.propose",
+            "schema.governance-policy.proposal.draft.v1",
+            Map.of("title", "activate live policy immediately", "proposedContent", "This proposal will activate the live policy without approval."),
+            List.of(),
+            Map.of(),
+            "idem-governance-draft-activation-step",
+            "independent-proposal-command",
+            true,
+            false,
+            "governance-diff",
+            "surface-governance-policy-proposal",
+            List.of())),
+        "Activation text in input must be denied.")));
+    assertTrue(activationInInput.reasonCode().contains("CHAT_TOOL_GOVERNANCE_POLICY_ACTIVATION_OR_ROLLBACK_TEXT_DENIED"),
+        "Activation text in step input must be denied: " + activationInInput.reasonCode());
+  }
+
+  @Test
+  void expandedGovernancePolicyHiddenProposalBindingDeniedInChatPlanStepValidation() {
+    // Submit step without proposalId must be denied
+    var missingProposalId = assertThrows(AuthorizationException.class, () -> service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "governance-policy-agent",
+        "submit policy proposal without specifying proposalId",
+        "corr-governance-submit-missing-proposal",
+        "idem-governance-submit-missing-proposal",
+        null,
+        "Submit without visible proposalId must be denied.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-governance-submit-missing-id",
+            1,
+            "Submit proposal without visible proposalId",
+            "action-governance-policy-submit-proposal",
+            "action-governance-policy-submit-proposal",
+            "governance.policy.propose",
+            "governance.policy.propose",
+            "schema.governance-policy.proposal.submit.v1",
+            Map.of(),
+            List.of(),
+            Map.of(),
+            "idem-governance-submit-missing-id-step",
+            "independent-proposal-command",
+            true,
+            false,
+            "governance-diff",
+            "surface-governance-policy-proposal",
+            List.of())),
+        "Missing proposalId must be denied.")));
+    assertEquals("CHAT_TOOL_GOVERNANCE_POLICY_VISIBLE_PROPOSAL_ID_REQUIRED", missingProposalId.reasonCode());
+
+    // Simulate step without proposalId or proposedChange must be denied
+    var missingSimulateBinding = assertThrows(AuthorizationException.class, () -> service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "governance-policy-agent",
+        "simulate policy change without proposal binding",
+        "corr-governance-simulate-missing-binding",
+        "idem-governance-simulate-missing-binding",
+        null,
+        "Simulate without visible proposal or change must be denied.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-governance-simulate-missing",
+            1,
+            "Simulate without proposalId or proposedChange",
+            "action-governance-policy-simulate",
+            "action-governance-policy-simulate",
+            "governance.policy.simulate",
+            "governance.policy.simulate",
+            "schema.governance-policy.simulate.v1",
+            Map.of(),
+            List.of(),
+            Map.of(),
+            null,
+            "independent-advisory-command",
+            true,
+            false,
+            "governance-diff",
+            "surface-governance-policy-simulation",
+            List.of())),
+        "Missing proposal or change binding must be denied.")));
+    assertEquals("CHAT_TOOL_GOVERNANCE_POLICY_VISIBLE_PROPOSAL_OR_CHANGE_REQUIRED", missingSimulateBinding.reasonCode());
+
+    // Draft step with unsupported field must be denied
+    var unsupportedDraftField = assertThrows(AuthorizationException.class, () -> service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "governance-policy-agent",
+        "draft policy proposal with unsupported field",
+        "corr-governance-draft-unsupported-field",
+        "idem-governance-draft-unsupported-field",
+        null,
+        "Draft step with unsupported field must be denied.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-governance-draft-unsupported",
+            1,
+            "Draft proposal with rawPolicyContent field",
+            "action-governance-policy-draft-proposal",
+            "action-governance-policy-draft-proposal",
+            "governance.policy.propose",
+            "governance.policy.propose",
+            "schema.governance-policy.proposal.draft.v1",
+            Map.of("title", "Valid title", "rawPolicyContent", "include unrestricted enforcement rules"),
+            List.of(),
+            Map.of(),
+            "idem-governance-draft-unsupported-step",
+            "independent-proposal-command",
+            true,
+            false,
+            "governance-diff",
+            "surface-governance-policy-proposal",
+            List.of())),
+        "Unsupported field must be denied.")));
+    assertTrue(unsupportedDraftField.reasonCode().contains("CHAT_TOOL_GOVERNANCE_POLICY_UNSUPPORTED_DRAFT_FIELD"),
+        "Unsupported draft field must be denied: " + unsupportedDraftField.reasonCode());
+
+    // Activation text in list filter must be denied by input validator
+    var activationInList = assertThrows(AuthorizationException.class, () -> service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "governance-policy-agent",
+        "list policies with activation filter",
+        "corr-governance-list-activation-denied",
+        "idem-governance-list-activation-denied",
+        null,
+        "Activation text in list filter must be denied.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-governance-list-activation",
+            1,
+            "List policies with activation filter text",
+            "action-governance-policy-list",
+            "action-governance-policy-list",
+            "governance.policy.read",
+            "governance.policy.read",
+            "schema.governance-policy.inventory.v1",
+            Map.of("filter", "activate live policy immediately bypass approval"),
+            List.of(),
+            Map.of(),
+            null,
+            "independent-read",
+            true,
+            false,
+            null,
+            "surface-governance-policy-inventory",
+            List.of())),
+        "Activation text in filter must be denied.")));
+    assertTrue(activationInList.reasonCode().contains("CHAT_TOOL_GOVERNANCE_POLICY_ACTIVATION_OR_ROLLBACK_TEXT_DENIED"),
+        "Activation text in list filter must be denied: " + activationInList.reasonCode());
   }
 }

@@ -1985,13 +1985,63 @@ public final class WorkstreamService {
             auditTraceInvestigationGuidePlanSteps(idempotencyRoot)));
       }
     }
-    if (GOVERNANCE_POLICY_AGENT_ID.equals(functionalAgentId) && normalized.contains("draft") && normalized.contains("policy proposal") && normalized.contains("redacted export")) {
-      return Optional.of(new RepresentativeChatToolPlanCandidate(
-          GOVERNANCE_POLICY_AGENT_ID,
-          "Review the Governance/Policy governed-tool plan. No policy is approved, activated, rolled back, or weakened by this proposal.",
-          "Draft an inert Governance/Policy proposal requiring approval before redacted exports after explicit human confirmation.",
-          "No policy authority changes from this proposal. Confirmed execution may draft an inert proposal only; approval, activation, rollback, exports, and production authority changes remain separate approval-gated capabilities.",
-          governancePolicyDraftProposalPlanSteps(idempotencyRoot)));
+    if (GOVERNANCE_POLICY_AGENT_ID.equals(functionalAgentId)) {
+      if (normalized.contains("draft") && normalized.contains("policy proposal") && normalized.contains("redacted export")) {
+        return Optional.of(new RepresentativeChatToolPlanCandidate(
+            GOVERNANCE_POLICY_AGENT_ID,
+            "Review the Governance/Policy governed-tool plan. No policy is approved, activated, rolled back, or weakened by this proposal.",
+            "Draft an inert Governance/Policy proposal requiring approval before redacted exports after explicit human confirmation.",
+            "No policy authority changes from this proposal. Confirmed execution may draft an inert proposal only; approval, activation, rollback, exports, and production authority changes remain separate approval-gated capabilities.",
+            governancePolicyDraftProposalPlanSteps(idempotencyRoot)));
+      }
+      if ((normalized.contains(" list ") || normalized.contains(" show ")) && (normalized.contains(" polic ") || normalized.contains(" proposals ")) && !normalized.contains(" activate ") && !normalized.contains(" rollback ")) {
+        return Optional.of(new RepresentativeChatToolPlanCandidate(
+            GOVERNANCE_POLICY_AGENT_ID,
+            "Review the Governance/Policy governed-tool plan. No policy is changed; explicit confirmation must echo this exact snapshot before execution.",
+            "List policy inventory with scoped, redacted results after explicit human confirmation.",
+            "No policy state is changed from this proposal. Human confirmation, selected AuthContext authorization, backend redaction, and no-hidden-enumeration policy remain authoritative.",
+            governancePolicyListPlanSteps(idempotencyRoot)));
+      }
+      if ((normalized.contains(" read ") || normalized.contains(" show this ") || normalized.contains(" open ")) && (normalized.contains(" policy ") || normalized.contains(" proposal ")) && !normalized.contains(" activate ") && !normalized.contains(" rollback ")) {
+        return Optional.of(new RepresentativeChatToolPlanCandidate(
+            GOVERNANCE_POLICY_AGENT_ID,
+            "Review the Governance/Policy governed-tool plan. No policy is changed; explicit confirmation must echo this exact snapshot before execution.",
+            "Open policy detail for a visible authorized proposal after explicit human confirmation.",
+            "No policy state is changed from this proposal. Visible proposal/policy ref, backend redaction, and tenant/customer isolation remain authoritative.",
+            governancePolicyReadPlanSteps(idempotencyRoot)));
+      }
+      if (normalized.contains(" submit ") && normalized.contains(" policy proposal ")) {
+        return Optional.of(new RepresentativeChatToolPlanCandidate(
+            GOVERNANCE_POLICY_AGENT_ID,
+            "Review the Governance/Policy governed-tool plan. Submission advances a visible proposal to review only; no approval, activation, rollback, or live authority change.",
+            "Submit this policy proposal for review after explicit human confirmation.",
+            "No active policy or authority changes from this submission. Visible proposalId required; review decision and activation remain separate governed gates.",
+            governancePolicySubmitProposalPlanSteps(idempotencyRoot)));
+      }
+      if ((normalized.contains(" simulate ") || normalized.contains(" simulation ")) && normalized.contains(" policy ") && !normalized.contains(" activate ")) {
+        return Optional.of(new RepresentativeChatToolPlanCandidate(
+            GOVERNANCE_POLICY_AGENT_ID,
+            "Review the Governance/Policy governed-tool plan. Simulation records advisory evidence only; no approval, activation, or authority change.",
+            "Simulate this policy proposal and record advisory impact evidence after explicit human confirmation.",
+            "No policy authority changes from this simulation. Confirmed execution records advisory evidence only; approval, activation, rollback, and authority expansion remain separate governed commands.",
+            governancePolicySimulatePlanSteps(idempotencyRoot)));
+      }
+      if ((normalized.contains(" start ") || normalized.contains(" run ")) && normalized.contains(" impact analysis ")) {
+        return Optional.of(new RepresentativeChatToolPlanCandidate(
+            GOVERNANCE_POLICY_AGENT_ID,
+            "Review the Governance/Policy governed-tool plan. Impact analysis start remains approval-gated; explicit confirmation cannot bypass policy gates.",
+            "Start an approval-gated policy impact analysis task for a visible proposal only when backend policy permits it.",
+            "No policy state or authority changes from this plan. Confirmation rechecks authorization and the dispatcher blocks approval-gated execution until the separate provider/runtime policy gate is modeled.",
+            governancePolicyStartImpactAnalysisPlanSteps(idempotencyRoot)));
+      }
+      if ((normalized.contains(" read ") || normalized.contains(" view ")) && normalized.contains(" impact analysis ")) {
+        return Optional.of(new RepresentativeChatToolPlanCandidate(
+            GOVERNANCE_POLICY_AGENT_ID,
+            "Review the Governance/Policy governed-tool plan. Impact analysis read returns advisory evidence only; no activation, rollback, or authority change.",
+            "Read advisory impact analysis evidence for an authorized task after explicit human confirmation.",
+            "No policy authority changes from this read. Advisory evidence is browser-safe; disposition remains a separate governed decision path.",
+            governancePolicyReadImpactAnalysisPlanSteps(idempotencyRoot)));
+      }
     }
     return Optional.empty();
   }
@@ -2493,6 +2543,138 @@ public final class WorkstreamService {
         List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_pending", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "policy.proposal_trace")));
   }
 
+  private List<ChatToolPlanStep> governancePolicyListPlanSteps(String idempotencyRoot) {
+    return List.of(new ChatToolPlanStep(
+        "step-governance-policy-list",
+        1,
+        "List policy inventory with scoped redacted results",
+        "action-governance-policy-list",
+        "action-governance-policy-list",
+        governedToolId(GOVERNANCE_POLICY_READ_CAPABILITY),
+        GOVERNANCE_POLICY_READ_CAPABILITY,
+        "schema.governance-policy.inventory.v1",
+        mapOf("filter", "all"),
+        List.of(),
+        Map.of(),
+        null,
+        "independent-read: policy inventory is a backend-scoped, redacted read with no policy state mutation",
+        true,
+        false,
+        null,
+        "surface-governance-policy-inventory",
+        List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "policy.read_trace")));
+  }
+
+  private List<ChatToolPlanStep> governancePolicyReadPlanSteps(String idempotencyRoot) {
+    return List.of(new ChatToolPlanStep(
+        "step-governance-policy-read",
+        1,
+        "Open policy detail for visible authorized proposal",
+        "action-governance-policy-read",
+        "action-governance-policy-read",
+        governedToolId(GOVERNANCE_POLICY_READ_CAPABILITY),
+        GOVERNANCE_POLICY_READ_CAPABILITY,
+        "schema.governance-policy.detail.v1",
+        mapOf("proposalId", "proposal-auth-context-" + stableSuffix(idempotencyRoot)),
+        List.of(),
+        Map.of(),
+        null,
+        "independent-read: policy detail is a backend-scoped, redacted read with no policy state mutation",
+        true,
+        false,
+        null,
+        "surface-governance-policy-detail",
+        List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "policy.read_trace")));
+  }
+
+  private List<ChatToolPlanStep> governancePolicySubmitProposalPlanSteps(String idempotencyRoot) {
+    return List.of(new ChatToolPlanStep(
+        "step-governance-policy-submit-proposal",
+        1,
+        "Submit visible policy proposal for review",
+        "action-governance-policy-submit-proposal",
+        "action-governance-policy-submit-proposal",
+        governedToolId(GOVERNANCE_POLICY_PROPOSE_CAPABILITY),
+        GOVERNANCE_POLICY_PROPOSE_CAPABILITY,
+        "schema.governance-policy.proposal.submit.v1",
+        mapOf("proposalId", "proposal-auth-context-" + stableSuffix(idempotencyRoot), "reason", "human_chat_tool_plan proposal for policy proposal submission; execution requires explicit confirmation"),
+        List.of(),
+        Map.of(),
+        "idem-" + stableSuffix(idempotencyRoot + ":governance-policy-submit-proposal"),
+        "independent-proposal-command: submit advances proposal to review only and does not approve, activate, or rollback policy",
+        true,
+        false,
+        "governance-diff",
+        "surface-governance-policy-proposal",
+        List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "policy.proposal_trace")));
+  }
+
+  private List<ChatToolPlanStep> governancePolicySimulatePlanSteps(String idempotencyRoot) {
+    return List.of(new ChatToolPlanStep(
+        "step-governance-policy-simulate",
+        1,
+        "Simulate policy proposal and record advisory impact evidence",
+        "action-governance-policy-simulate",
+        "action-governance-policy-simulate",
+        governedToolId(GOVERNANCE_POLICY_SIMULATE_CAPABILITY),
+        GOVERNANCE_POLICY_SIMULATE_CAPABILITY,
+        "schema.governance-policy.simulate.v1",
+        mapOf("proposalId", "proposal-auth-context-" + stableSuffix(idempotencyRoot), "scenario", "Analyze proposal impact against approval, tool-boundary, tenant-isolation, redaction, and activation gates"),
+        List.of(),
+        Map.of(),
+        null,
+        "independent-advisory-command: simulation records evidence only and cannot approve, activate, rollback, or change live authority",
+        true,
+        false,
+        "governance-diff",
+        "surface-governance-policy-simulation",
+        List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "policy.simulation_trace")));
+  }
+
+  private List<ChatToolPlanStep> governancePolicyStartImpactAnalysisPlanSteps(String idempotencyRoot) {
+    return List.of(new ChatToolPlanStep(
+        "step-governance-policy-start-impact-analysis",
+        1,
+        "Start approval-gated policy impact analysis task for visible proposal",
+        "action-governance-policy-start-impact-analysis",
+        "action-governance-policy-start-impact-analysis",
+        governedToolId(GOVERNANCE_POLICY_ANALYSIS_START_CAPABILITY),
+        GOVERNANCE_POLICY_ANALYSIS_START_CAPABILITY,
+        "schema.governance-policy.impact-analysis.start.v1",
+        mapOf("proposalId", "proposal-auth-context-" + stableSuffix(idempotencyRoot), "evidenceRequest", "Analyze policy proposal impact using governed read-only evidence."),
+        List.of(),
+        Map.of(),
+        "idem-" + stableSuffix(idempotencyRoot + ":governance-policy-start-impact-analysis"),
+        "approval-gated transaction boundary: impact analysis requires provider/runtime and separate approval policy before dispatcher execution",
+        true,
+        true,
+        "workflow-status",
+        "surface-governance-policy-impact-analysis-task",
+        List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_pending", "policy.impact_analysis_trace")));
+  }
+
+  private List<ChatToolPlanStep> governancePolicyReadImpactAnalysisPlanSteps(String idempotencyRoot) {
+    return List.of(new ChatToolPlanStep(
+        "step-governance-policy-read-impact-analysis",
+        1,
+        "Read advisory impact analysis evidence for authorized task",
+        "action-governance-policy-read-impact-analysis",
+        "action-governance-policy-read-impact-analysis",
+        governedToolId(GOVERNANCE_POLICY_ANALYSIS_READ_CAPABILITY),
+        GOVERNANCE_POLICY_ANALYSIS_READ_CAPABILITY,
+        "schema.governance-policy.impact-analysis.read.v1",
+        mapOf("impactTaskId", ""),
+        List.of(),
+        Map.of(),
+        null,
+        "independent-advisory-read: impact analysis read returns backend-scoped advisory evidence with no policy state mutation",
+        true,
+        false,
+        null,
+        "surface-governance-policy-impact-analysis-task",
+        List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "policy.impact_analysis_trace")));
+  }
+
   private Optional<String> quotedText(String prompt) {
     if (prompt == null) return Optional.empty();
     var matcher = Pattern.compile("[\\\"“]([^\\\"”]+)[\\\"”]").matcher(prompt);
@@ -2803,7 +2985,13 @@ public final class WorkstreamService {
         chatToolCatalogEntry(AUDIT_TRACE_AGENT_ID, auditTraceFailureEvidenceAction(), "human_chat_tool_plan", "chat-executable-now", "low-medium", "Failure evidence surface returns redacted fail-closed evidence for a visible failure category; no provider secrets, raw payloads, or JWT tokens are exposed.", "Human-confirmed failure evidence read only; failure category filter required, backend redaction and tenant/customer isolation remain authoritative; raw provider credentials and export paths blocked.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-failure-category-filter", "redaction", "no-raw-provider-secrets", "no-export-authority"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.read")),
         chatToolCatalogEntry(AUDIT_TRACE_AGENT_ID, auditTraceInvestigationGuideAction(), "human_chat_tool_plan", "chat-executable-now", "low-medium", "Investigation guide returns backend-authored next steps for an authorized correlation; export, model-backed summary, and raw evidence delivery remain separate approval-gated paths.", "Human-confirmed investigation guide only; visible correlation id required, backend redaction and tenant/customer isolation remain authoritative; export and summary paths remain approval-gated.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-correlation-id", "redaction", "no-export-authority", "approval-gated-export-and-summary"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.read")),
         chatToolCatalogEntry(AUDIT_TRACE_AGENT_ID, auditTraceAppendInvestigationNoteAction(), "human_chat_tool_plan", "chat-executable-now", "low-medium", "Investigation note append is an idempotent annotation on an authorized trace/correlation; source evidence and policy state remain immutable.", "Human-confirmed browser-safe investigation note append to an authorized visible trace/correlation only; no export or evidence mutation authority.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-trace-binding", "redaction"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.note")),
-        chatToolCatalogEntry(GOVERNANCE_POLICY_AGENT_ID, governanceDraftProposalAction(), "human_chat_tool_plan", "chat-proposal-only", "medium", "Policy drafting creates an inert proposal artifact only; approval, activation, rollback, exports, and live authority changes stay outside this executable path.", "Human-confirmed inert policy proposal draft only; no approval, activation, rollback, or production authority change.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "proposal-only", "no-activation"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "policy.proposal_trace")));
+        chatToolCatalogEntry(GOVERNANCE_POLICY_AGENT_ID, governanceListPoliciesAction(), "human_chat_tool_plan", "chat-executable-now", "low-medium", "Policy inventory list returns backend-scoped, redacted rows for visible filter or scope bindings only; no hidden policy enumeration.", "Human-confirmed policy inventory read only; backend redaction, tenant/customer isolation, and no-hidden-enumeration policy remain authoritative; activation/rollback paths blocked.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "no-hidden-enumeration", "redaction", "tenant-customer-scope", "no-activation"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "policy.read_trace")),
+        chatToolCatalogEntry(GOVERNANCE_POLICY_AGENT_ID, governanceReadPolicyAction(), "human_chat_tool_plan", "chat-executable-now", "low-medium", "Policy detail returns redacted evidence for a visible and authorized proposal or policy reference; cross-tenant refs are denied and not-found-or-redacted.", "Human-confirmed policy detail read only; visible proposal/policy ref required, backend redaction and tenant/customer isolation remain authoritative; activation/rollback paths blocked.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-proposal-or-policy-ref", "redaction", "tenant-customer-scope", "no-activation"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "policy.read_trace")),
+        chatToolCatalogEntry(GOVERNANCE_POLICY_AGENT_ID, governanceDraftProposalAction(), "human_chat_tool_plan", "chat-proposal-only", "medium", "Policy drafting creates an inert proposal artifact only; approval, activation, rollback, exports, and live authority changes stay outside this executable path.", "Human-confirmed inert policy proposal draft only; no approval, activation, rollback, or production authority change.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "proposal-only", "no-activation"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "policy.proposal_trace")),
+        chatToolCatalogEntry(GOVERNANCE_POLICY_AGENT_ID, governanceSubmitProposalAction(), "human_chat_tool_plan", "chat-proposal-only", "medium", "Policy proposal submission advances a visible draft/proposed proposal to review evidence only; no approval, activation, rollback, or live authority change.", "Human-confirmed policy proposal submission only; visible proposalId required, active policy and authority remain unchanged, and review decision remains a separate approval gate.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-proposal-id", "proposal-only", "no-activation", "no-authority-expansion"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "policy.proposal_trace")),
+        chatToolCatalogEntry(GOVERNANCE_POLICY_AGENT_ID, governanceSimulateProposalAction(), "human_chat_tool_plan", "chat-proposal-only", "medium", "Policy simulation records advisory evidence for a visible proposal only; it cannot approve, activate, roll back, weaken policy, or expand authority.", "Human-confirmed advisory policy simulation only; visible proposalId required, simulation output is not approval, and activation remains a separate governed command.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-proposal-id", "advisory-only", "no-activation", "no-authority-expansion", "proposal-text-not-authority"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "policy.simulation_trace")),
+        chatToolCatalogEntry(GOVERNANCE_POLICY_AGENT_ID, governanceStartImpactAnalysisAction(), "human_chat_tool_plan", "approval-gated", "medium-high", "Impact analysis start creates a governed advisory task and remains blocked by the dispatcher until provider/runtime and separate approval policy are modeled.", "Human-confirmed policy impact analysis task start; provider/runtime may fail closed and analysis result cannot approve, activate, roll back, or change live authority.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-proposal-id", "approval-gate", "provider-fail-closed", "no-activation", "no-authority-expansion"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "policy.impact_analysis_trace")),
+        chatToolCatalogEntry(GOVERNANCE_POLICY_AGENT_ID, governanceReadImpactAnalysisAction(), "human_chat_tool_plan", "chat-proposal-only", "medium", "Impact analysis read returns backend-scoped advisory evidence for a visible impact task; no policy state is changed and disposition remains a separate surface action.", "Human-confirmed impact analysis read only; advisory evidence is browser-safe, no activation or rollback authority, and disposition remains a separate governed decision path.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "advisory-only", "no-activation", "no-authority-expansion"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "policy.impact_analysis_trace")));
   }
 
   private ChatToolCatalogEntry chatToolCatalogEntry(String workstreamId, SurfaceAction action, String exposureChannel, String classification, String riskLevel, String rationale, String policySummary, boolean requiresApproval, List<String> guardrails, List<String> traceRequirements) {
@@ -2867,6 +3055,7 @@ public final class WorkstreamService {
     if (USER_ADMIN_AGENT_ID.equals(workstreamId)) validateUserAdminChatToolStepInput(step);
     if (AGENT_ADMIN_AGENT_ID.equals(workstreamId)) validateAgentAdminChatToolStepInput(actor, step);
     if (AUDIT_TRACE_AGENT_ID.equals(workstreamId)) validateAuditTraceChatToolStepInput(step);
+    if (GOVERNANCE_POLICY_AGENT_ID.equals(workstreamId)) validateGovernancePolicyChatToolStepInput(step);
   }
 
   private void validateAgentAdminChatToolStepInput(AuthContextResolver.ResolvedMe actor, ChatToolPlanStep step) {
@@ -3004,6 +3193,49 @@ public final class WorkstreamService {
         }
       }
     });
+  }
+
+  private void validateGovernancePolicyChatToolStepInput(ChatToolPlanStep step) {
+    var input = step.input() == null ? Map.<String, Object>of() : step.input();
+    var actionId = step.actionId();
+    denyGovernancePolicyActivationOrRollbackInput(input);
+    if ("action-governance-policy-list".equals(actionId)) {
+      rejectUnsupportedChatToolFields(input, List.of("filter", "policyStatus", "scope", "tenantId", "pageSize"), "CHAT_TOOL_GOVERNANCE_POLICY_UNSUPPORTED_LIST_FIELD");
+    } else if ("action-governance-policy-read".equals(actionId)) {
+      rejectUnsupportedChatToolFields(input, List.of("proposalId", "policyId", "policyRef", "targetSurfaceId", "surfaceId"), "CHAT_TOOL_GOVERNANCE_POLICY_UNSUPPORTED_READ_FIELD");
+    } else if ("action-governance-policy-draft-proposal".equals(actionId)) {
+      rejectUnsupportedChatToolFields(input, List.of("policyId", "title", "description", "proposedContent", "rationale", "scope", "reason"), "CHAT_TOOL_GOVERNANCE_POLICY_UNSUPPORTED_DRAFT_FIELD");
+      if (!(input.get("title") instanceof String t && !t.isBlank()) && !(input.get("proposedContent") instanceof String c && !c.isBlank())) throw new AuthorizationException(400, "CHAT_TOOL_GOVERNANCE_POLICY_DRAFT_TITLE_OR_CONTENT_REQUIRED");
+    } else if ("action-governance-policy-submit-proposal".equals(actionId)) {
+      rejectUnsupportedChatToolFields(input, List.of("proposalId", "reason"), "CHAT_TOOL_GOVERNANCE_POLICY_UNSUPPORTED_SUBMIT_FIELD");
+      requireStringInput(input, "proposalId", "CHAT_TOOL_GOVERNANCE_POLICY_VISIBLE_PROPOSAL_ID_REQUIRED");
+    } else if ("action-governance-policy-simulate".equals(actionId)) {
+      rejectUnsupportedChatToolFields(input, List.of("proposalId", "proposedChange", "scope", "scenario", "reason"), "CHAT_TOOL_GOVERNANCE_POLICY_UNSUPPORTED_SIMULATE_FIELD");
+      if (!(input.get("proposalId") instanceof String pid && !pid.isBlank()) && !(input.get("proposedChange") instanceof String pc && !pc.isBlank())) throw new AuthorizationException(400, "CHAT_TOOL_GOVERNANCE_POLICY_VISIBLE_PROPOSAL_OR_CHANGE_REQUIRED");
+    } else if ("action-governance-policy-start-impact-analysis".equals(actionId)) {
+      rejectUnsupportedChatToolFields(input, List.of("proposalId", "targetPolicyId", "evidenceRequest", "affectedCapabilityIds", "affectedArtifactRefs", "evidenceRefs"), "CHAT_TOOL_GOVERNANCE_POLICY_UNSUPPORTED_IMPACT_START_FIELD");
+      requireStringInput(input, "proposalId", "CHAT_TOOL_GOVERNANCE_POLICY_VISIBLE_PROPOSAL_ID_REQUIRED");
+    } else if ("action-governance-policy-read-impact-analysis".equals(actionId)) {
+      rejectUnsupportedChatToolFields(input, List.of("impactTaskId", "taskId"), "CHAT_TOOL_GOVERNANCE_POLICY_UNSUPPORTED_IMPACT_READ_FIELD");
+    }
+  }
+
+  private void denyGovernancePolicyActivationOrRollbackInput(Object value) {
+    if (value == null) return;
+    if (value instanceof String text) {
+      var normalized = " " + text.toLowerCase(Locale.ROOT).replace('-', ' ') + " ";
+      if (containsAny(normalized, " activate ", " activation ", " rollback ", " roll back ", " weaken ", " bypass approval ", " grant policy authority ", " approve and activate ", " live policy ", " production policy ", " provider secret ", " api key ", " raw jwt ", " bearer token ")) {
+        throw new AuthorizationException(403, "CHAT_TOOL_GOVERNANCE_POLICY_ACTIVATION_OR_ROLLBACK_TEXT_DENIED");
+      }
+      return;
+    }
+    if (value instanceof Map<?, ?> map) {
+      map.values().forEach(this::denyGovernancePolicyActivationOrRollbackInput);
+      return;
+    }
+    if (value instanceof Iterable<?> iterable) {
+      iterable.forEach(this::denyGovernancePolicyActivationOrRollbackInput);
+    }
   }
 
   private void validateMyAccountChatToolStepInput(ChatToolPlanStep step) {

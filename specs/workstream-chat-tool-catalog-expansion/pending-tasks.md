@@ -332,7 +332,7 @@
 
 ### TASK-WCTC-08-001: Expand Governance/Policy chat tool catalog
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-catalog-expansion/backlog/01-chat-tool-catalog-expansion-build-backlog.md
 - task brief: specs/workstream-chat-tool-catalog-expansion/tasks/08-governance-policy/01-expand-governance-policy-chat-tool-catalog.md
 - depends on:
@@ -365,6 +365,13 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: Governance/Policy workstream; policy-governance scope; human_chat_tool_plan expansion
+  - expanded runtime catalog for `action-governance-policy-list` (`chat-executable-now`), `action-governance-policy-read` (`chat-executable-now`), `action-governance-policy-submit-proposal` (`chat-proposal-only`), `action-governance-policy-simulate` (`chat-proposal-only`), `action-governance-policy-start-impact-analysis` (`approval-gated`, has `requiresApproval=true` from action consistent with Agent Admin prompt-risk-review pattern), and `action-governance-policy-read-impact-analysis` (`chat-proposal-only`); existing `action-governance-policy-draft-proposal` remains `chat-proposal-only`
+  - `validateGovernancePolicyChatToolStepInput()` added to enforce per-action input allowlists, activation/rollback text denial, visible binding requirements for submit/simulate/start-impact-analysis, and scope/authority-expansion prevention
+  - representative plan candidates added for list/read/submit/simulate/start-impact-analysis/read-impact-analysis prompts in `representativeChatToolPlanCandidate()`
+  - activation and rollback prompts remain blocked by `highRiskPromptReason` before model planning; start-impact-analysis is `approval-gated` (step fails with `approval_required` errorCode) consistent with audit/provider fail-closed policy
+  - required checks passed: `git diff --check`; targeted backend Governance/Policy chat tool tests (`mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest#chatToolCatalogListsBoundedHumanChatPlanEntries+expandedGovernancePolicyChatToolPlanExecutesListReadAndProposalPathsWithSafeInput+expandedGovernancePolicyActivationAndRollbackPromptsRemainBlockedThroughChat+expandedGovernancePolicyHiddenProposalBindingDeniedInChatPlanStepValidation test`); regression (`mvn -Dtest=...#representativeChatToolPlansCoverAllFiveFoundationWorkstreamsWithConfirmationAndTraceSemantics+submitMessageRoutesMatchedSurfaceIntentBeforeModelInvocation+submitMessageBlocksUnsupportedAndHighRiskChatToolPromptsAfterDeterministicRouting+submitMessageRoutesUserAdminMotivatingPromptToModelBackedPlanProposalWithoutMutation+auditTraceActionsReturnScopedSearchDetailTimelineFailureAndGuidanceSurfaces+expandedAuditTraceChatToolPlanExecutesRedactedReadPathsWithVisibleTraceBinding+expandedAuditTraceExportAndRawEvidencePathsRemainBlockedThroughChat+expandedAuditTraceHiddenTraceBindingDeniedInChatPlanStepValidation test`)
+  - frontend contracts were not changed, so frontend checks were not required
+  - commit message: `workstream-chat-catalog: expand governance policy catalog`
 
 ### TASK-WCTC-09-001: Polish expanded chat tool plan UX
 
