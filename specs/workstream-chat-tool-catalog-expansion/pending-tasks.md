@@ -52,7 +52,7 @@
 
 ### TASK-WCTC-01-001: Inventory and classify foundation workstream actions
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-catalog-expansion/backlog/01-chat-tool-catalog-expansion-build-backlog.md
 - task brief: specs/workstream-chat-tool-catalog-expansion/tasks/01-inventory/01-inventory-classify-foundation-actions.md
 - depends on:
@@ -87,6 +87,9 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: docs/spec inventory only; no runtime feature completed
+  - inventory output: `specs/workstream-chat-tool-catalog-expansion/catalog-inventory.md`
+  - required check passed: `git diff --check -- specs/workstream-chat-tool-catalog-expansion`
+  - commit message: `workstream-chat-catalog: inventory foundation actions`
 
 ### TASK-WCTC-02-001: Update expanded chat tool current intent
 
