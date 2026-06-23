@@ -234,7 +234,7 @@
 
 ### TASK-FSFR-06-001: Repair bootstrap audit capability mismatch
 
-- status: pending
+- status: done
 - source: specs/full-suite-failure-remediation/failure-inventory.md after TASK-FSFR-01-001
 - task brief: specs/full-suite-failure-remediation/tasks/06-me-service/01-repair-bootstrap-audit-capability-mismatch.md
 - depends on:
@@ -263,6 +263,9 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: identity/auth `/api/me` capability mapping repair
+  - completed 2026-06-23: updated `/api/me` functional-agent capability selection so Audit/Trace uses the selected context's scoped audit capability (`saas_owner.audit.read`, `tenant.audit.read`, or `customer.audit.read`) before falling back to `audit.trace.read`, while retaining the backend Audit/Trace read capability in visible capability hints.
+  - validation: `mvn -Dtest=MeServiceTest test` passed; `mvn -Dtest=InvitationAndUserAdminServiceTest,AgentRuntimeToolResolverTest#userAdminEvidenceToolSupportsSaasOwnerPlatformScopeWithoutTenantNpe test` passed; `git diff --check` passed.
+  - commit message: `full-suite-remediation: repair bootstrap audit capability`
 
 ### TASK-FSFR-07-001: Repair runtime seam and autonomous fail-closed tests
 

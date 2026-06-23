@@ -174,7 +174,7 @@ public record MeResponse(
 
     public static List<FunctionalAgentSummary> fromCapabilities(List<String> capabilities) {
       var userAdminCapability = firstGrantedCapability(capabilities, "user_admin.view_overview", "saas_owner.admin.manage", "tenant.user.read", "tenant.user.manage", "customer.user.read", "customer.user.manage");
-      var auditCapability = firstGrantedCapability(capabilities, "audit.trace.read", "saas_owner.audit.read", "tenant.audit.read", "customer.audit.read");
+      var auditCapability = firstGrantedCapability(capabilities, "saas_owner.audit.read", "tenant.audit.read", "customer.audit.read", "audit.trace.read");
       var userAdminVisible = userAdminCapability != null
           || capabilities.stream().anyMatch(capability -> capability.endsWith("user.read") || capability.endsWith("user.manage"));
       var profileVisible = capabilities.contains("my_account.view_summary") || capabilities.contains("profile.read") || capabilities.stream().anyMatch(capability -> capability.endsWith("user.read") || capability.endsWith("user.manage"));

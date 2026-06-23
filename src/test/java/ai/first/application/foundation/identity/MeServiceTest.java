@@ -68,6 +68,8 @@ class MeServiceTest {
     assertEquals("Audit/Trace", auditAgent.label());
     assertEquals("dashboard", auditAgent.defaultSurfaceType());
     assertEquals("surface-audit-trace-dashboard", auditAgent.defaultSurfaceId());
+    assertEquals(List.of("tenant.audit.read"), auditAgent.requiredCapabilityIds());
+    assertTrue(response.visibleCapabilityIds().contains("audit.trace.read"));
     assertFalse(response.visibleCapabilityIds().contains("WORKOS_API_KEY"));
     assertEquals("corr-1", response.auditCorrelationId());
   }
@@ -106,6 +108,7 @@ class MeServiceTest {
     assertEquals("visible", ownerAudit.availability());
     assertEquals(List.of("saas_owner.audit.read"), ownerAudit.requiredCapabilityIds());
     assertTrue(owner.visibleCapabilityIds().containsAll(ownerAudit.requiredCapabilityIds()));
+    assertTrue(owner.visibleCapabilityIds().contains("audit.trace.read"));
     assertEquals("workos-owner", repository.findAccountByEmail("owner@example.com").orElseThrow().workosUserId());
     assertTrue(repository.tenant(BootstrapAdminSeeder.DEFAULT_TENANT_ID).isEmpty());
 
