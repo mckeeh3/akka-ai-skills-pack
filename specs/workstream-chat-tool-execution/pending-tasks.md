@@ -89,6 +89,12 @@
 - notes:
   - vertical contract: docs/spec design only; root app runtime planning; no runtime feature completed
   - commit message: `workstream-chat-tools: audit chat tool execution design`
+  - readiness level: described; design/current-intent evidence only, with no runtime-ready claim.
+  - selected-scope evidence: design maps selected workstream, selected AuthContext, tenant/customer scope, actor adapter, capability ids, and governed tool ids for later implementation.
+  - denial evidence: design requires forbidden/out-of-catalog/provider-unavailable paths to fail closed before mutation; no successful denial runtime smoke is claimed by this planning task.
+  - provider evidence: provider/model configuration is design-only here; missing provider must fail closed in later runtime tasks and is not counted as successful planning.
+  - trace evidence: design names work/audit trace fields for requestedBy, confirmedBy, correlation/idempotency, provider blocked, and per-step outcomes.
+  - local validation passed: `git diff --check`; runtime smoke boundary: not claimed for planning-only work.
 
 ### TASK-WCTE-02-001: Update app-description current intent for chat tool plans
 
@@ -126,6 +132,12 @@
 - notes:
   - vertical contract: app-description/current-intent only; no runtime code
   - commit message: `workstream-chat-tools: update chat tool current intent`
+  - readiness level: described for app-description/current-intent contract; surface-ready/runtime-ready is not claimed.
+  - selected-scope evidence: app-description bounds `human_chat_tool_plan` to selected workstream, selected AuthContext, tenant/customer context, human role/capability, and backend authorization.
+  - denial evidence: intent records confirmation-required, forbidden/unauthorized, provider-unavailable, validation, and out-of-catalog denial expectations before mutation.
+  - provider evidence: app-description records provider/model fail-closed expectations; no provider-configured success is claimed by this docs task.
+  - trace evidence: app-description requires audit/work trace fields for requestedBy, confirmedBy, correlation/idempotency, denial, and provider fail-closed events.
+  - local validation passed: `git diff --check` and focused app-description search; runtime smoke boundary: not claimed for current-intent-only work.
 
 ### TASK-WCTE-03-001: Add chat tool plan records and surfaces
 
@@ -162,6 +174,12 @@
 - notes:
   - vertical contract: workstream chat tool-plan substrate; no model-backed execution yet; readiness target backend-ready for proposal records only
   - commit message: `workstream-chat-tools: add plan records and surfaces`
+  - readiness level: backend-ready for chat tool plan record/surface substrate only; no execution or model-backed planning success claimed.
+  - selected-scope evidence: proposal snapshots persist selected workstream, selected AuthContext, requestedBy actor, tenant/customer/organization scope where applicable, governed tool ids, capability ids, idempotency, and trace refs.
+  - denial evidence: initial proposal records cannot execute tools; confirmation/authorization denial paths are represented as typed surfaces and are proven by later dispatcher/API tasks.
+  - provider evidence: provider/model invocation is outside this record task; no fake model success is claimed, and fail-closed provider behavior is implemented in TASK-WCTE-04-001 and api-smoked in TASK-WCTE-99-001.
+  - trace evidence: proposal, confirmation snapshot, result, partial-failure, correlation, and per-step trace references are modeled for later durable audit/work traces.
+  - local validation passed: targeted backend tests and `git diff --check`; api smoke boundary: not claimed for this backend substrate task.
 
 ### TASK-WCTE-04-001: Add governed plan proposal runtime path
 
@@ -204,6 +222,12 @@
   - added governed Akka plan-proposal agent path with typed plan_unavailable fail-closed results; no dispatcher/execution behavior added
   - checks: `mvn -q -Dtest=AgentRuntimeToolResolverTest,AgentRuntimeServiceTest,WorkstreamRuntimeAgentTest test`; `git diff --check`
   - commit message: `workstream-chat-tools: add governed plan proposal runtime`
+  - readiness level: backend-ready for governed agent plan proposal runtime and fail-closed provider boundary; runtime-ready is not claimed.
+  - selected-scope evidence: runtime preparation resolves active AgentDefinition, prompt assembly, selected AuthContext, tenant/customer scope, model provider alias, runtime tools, and tool permission boundary before proposing a plan.
+  - denial evidence: missing provider/runtime/tool-boundary, unauthorized mode, and prompt/skill/reference attempts to grant extra tools are denied/fail-closed with typed `plan_unavailable` system-message results.
+  - provider evidence: provider missing or unconfigured fails closed; deterministic/test provider behavior is confined to tests and is not counted as successful normal planning.
+  - trace evidence: PromptAssemblyTrace, model invocation trace, tool-boundary decision, provider-blocked status, and AgentWorkTrace/correlation references are produced or asserted for the proposal path.
+  - local validation passed: targeted agent runtime tests and `git diff --check`; api smoke boundary: later TASK-WCTE-99-001 smoked fail-closed provider behavior through the protected workstream API.
 
 ### TASK-WCTE-05-001: Add chat tool catalog and dispatcher
 
@@ -242,6 +266,12 @@
   - added backend-owned `human_chat_tool_plan` catalog entries for all five foundation workstreams and a dispatcher that validates selected workstream, human authority, active tool boundary, catalog ids/schema, idempotency, confirmation, approval policy, and per-step dependencies before using existing `runAction` service paths
   - checks: `mvn -q -Dtest=WorkstreamServiceTest#chatToolCatalogListsBoundedHumanChatPlanEntries+chatToolDispatcherRejectsStepsOutsideSelectedWorkstreamCatalogBeforeExecution+chatToolDispatcherExecutesEachStepThroughExistingActionPathWithIdempotencyAndOutputBindings+chatToolDispatcherReportsFailedAndSkippedDependentStepsWithoutRollingBackCompletedSteps test`; `git diff --check`
   - commit message: `workstream-chat-tools: add chat tool catalog dispatcher`
+  - readiness level: backend-ready for governed catalog and dispatcher substrate; no end-to-end runtime-ready claim.
+  - selected-scope evidence: dispatcher validates selected workstream catalog, human actor authority, selected AuthContext, tenant/customer scope, active tool boundary, capability id, schema, idempotency key, approval policy, and per-step dependency before action dispatch.
+  - denial evidence: out-of-workstream/out-of-catalog, missing capability, inactive boundary, approval-required, invalid confirmation, and dependency-skip paths are rejected or reported without unauthorized mutation.
+  - provider evidence: dispatcher does not call the model provider; provider/model success remains bounded by TASK-WCTE-04-001 fail-closed behavior and later API smoke evidence.
+  - trace evidence: per-step started/completed/failed/skipped, confirmation, correlation/idempotency, actor adapter, and tool/capability trace refs are recorded in result surfaces/tests.
+  - local validation passed: targeted backend dispatcher tests and `git diff --check`; api smoke boundary: not claimed for catalog/dispatcher-only substrate.
 
 ### TASK-WCTE-06-001: Implement User Admin chat tool plan proposal
 
@@ -281,6 +311,12 @@
   - added router-first User Admin chat prompt handoff to governed model-backed plan proposal; backend constructs canonical Organization create and Organization Admin invitation steps only after runtime/provider/tool-boundary checks pass, otherwise returns `chat_tool_plan.system_message.v1` with no mutation
   - checks: `mvn -q -Dtest=WorkstreamServiceTest#chatToolPlanProposalRecordsPersistWithoutExecutingToolsAndReplayByIdempotency+submitMessageRoutesUserAdminMotivatingPromptToModelBackedPlanProposalWithoutMutation+submitMessageReturnsPlanUnavailableSystemMessageWhenPlanningRuntimeFailsClosed+submitMessageReturnsPlanUnavailableSystemMessageWhenSelectedAuthContextCannotUseUserAdminPlanCapabilities+submitMessageSupportsSaasOwnerTenantAndCustomerRuntimeScopes test`; `git diff --check`
   - commit message: `workstream-chat-tools: add user admin plan proposal`
+  - readiness level: backend-ready for User Admin plan proposal; runtime-ready is not claimed because successful model-backed planning depends on configured provider/runtime.
+  - selected-scope evidence: proposal binds selected User Admin workstream, selected AuthContext, tenant/customer/runtime scope, requestedBy account, Organization create and Organization Admin invitation step inputs, capability ids, idempotency, and trace refs.
+  - denial evidence: tests cover plan-unavailable results when planning runtime fails closed or selected AuthContext cannot use User Admin plan capabilities; no pre-confirmation mutation occurs.
+  - provider evidence: missing provider/runtime/tool-boundary returns `chat_tool_plan.system_message.v1`/plan-unavailable with no fake successful planning; provider-configured success is not assumed.
+  - trace evidence: proposal and fail-closed system-message paths include work/audit trace refs for requestedBy, provider blocked, selected context, and correlation.
+  - local validation passed: targeted backend proposal tests and `git diff --check`; api smoke boundary: protected API/provider-boundary smoke was later recorded in TASK-WCTE-99-001.
 
 ### TASK-WCTE-07-001: Execute confirmed User Admin chat tool plan
 
@@ -324,6 +360,12 @@
   - confirmed User Admin execution reuses existing Organization create and Organization Admin invitation governed action paths; every step is reauthorized and dependent steps are skipped after failures with recovery guidance
   - checks: `mvn -q -Dtest=WorkstreamServiceTest#chatToolPlanProposalRecordsPersistWithoutExecutingToolsAndReplayByIdempotency+submitMessageRoutesUserAdminMotivatingPromptToModelBackedPlanProposalWithoutMutation+chatToolCatalogListsBoundedHumanChatPlanEntries+confirmedChatToolPlanRequiresExactSnapshotAndExplicitHumanConfirmationBeforeExecution+confirmedUserAdminChatToolPlanExecutesOrganizationAndInvitationIdempotently+confirmedUserAdminChatToolPlanReportsPartialFailureAndRecoveryWithoutRollingBackCompletedStep test`; `git diff --check`
   - commit message: `workstream-chat-tools: execute user admin plan`
+  - readiness level: backend-ready for confirmed User Admin execution; API/browser runtime-ready is not claimed by this task.
+  - selected-scope evidence: confirmation validates exact plan id, snapshot id, selected AuthContext, tenant/customer/organization scope, requestedBy account, confirmedBy actor, step hashes, capability ids, and idempotency before dispatch.
+  - denial evidence: missing/incorrect confirmation text, modified snapshot, out-of-catalog tool, unauthorized capability, and failed dependency paths deny or skip execution before unauthorized mutation.
+  - provider evidence: execution consumes an already proposed snapshot and does not call the model provider; provider-backed proposal success remains fail-closed unless configured and is api-smoked separately.
+  - trace evidence: confirmation trace, per-step started/completed/failed/skipped traces, correlation/idempotency, actor adapter, partial-failure, and recovery refs are asserted.
+  - local validation passed: targeted backend execution tests and `git diff --check`; api smoke boundary: protected HTTP confirmation/denial smoke was later recorded in TASK-WCTE-09-001 and TASK-WCTE-99-001.
 
 ### TASK-WCTE-08-001: Render chat tool plan confirmation and result surfaces
 
@@ -367,6 +409,12 @@
   - added typed browser DTOs, dedicated confirmation API client call, accessible plan-bound confirmation form, inline result/recovery renderer, and static contract coverage for chat tool plan proposal/result surfaces
   - checks: `git diff --check`; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`
   - commit message: `workstream-chat-tools: render plan confirmation`
+  - readiness level: frontend-rendered for browser DTOs and confirmation/result surfaces; no API/browser-smoked end-to-end success claimed.
+  - selected-scope evidence: UI renders selected workstream, selected AuthContext/scope labels from backend payloads, requestedBy/confirmedBy copy, capability ids, step inputs, idempotency, and trace refs without expanding tenant/customer authority.
+  - denial evidence: UI requires exact `CONFIRM <planSnapshotId>`, never auto-submits, renders forbidden/plan-unavailable/validation/partial-failure/recovery states, and exposes no hidden capabilities or secrets.
+  - provider evidence: frontend displays provider fail-closed/system-message surfaces from backend and does not count provider-unavailable responses as successful model-backed planning.
+  - trace evidence: surfaces show browser-safe trace/correlation/result references while avoiding provider secrets and hidden tool payloads.
+  - local validation passed: frontend tests, typecheck, and `git diff --check`; browser smoke boundary: not claimed for this contract/component rendering task.
 
 ### TASK-WCTE-09-001: Add User Admin chat tool execution tests
 
@@ -409,6 +457,12 @@
   - minimal production fix: canonicalized chat plan step-hash input ordering so a browser-returned plan snapshot remains confirmable after API serialization
   - checks: `mvn -q -Dtest=WorkstreamServiceTest#chatToolPlanProposalRecordsPersistWithoutExecutingToolsAndReplayByIdempotency+submitMessageRoutesUserAdminMotivatingPromptToModelBackedPlanProposalWithoutMutation+submitMessageReturnsPlanUnavailableSystemMessageWhenPlanningRuntimeFailsClosed+submitMessageReturnsPlanUnavailableSystemMessageWhenSelectedAuthContextCannotUseUserAdminPlanCapabilities+confirmedChatToolPlanRequiresExactSnapshotAndExplicitHumanConfirmationBeforeExecution+confirmedUserAdminChatToolPlanExecutesOrganizationAndInvitationIdempotently+confirmedUserAdminChatToolPlanReportsPartialFailureAndRecoveryWithoutRollingBackCompletedStep+confirmedUserAdminChatToolPlanRejectsOutOfCatalogSnapshotBeforeAnyStepExecutes,UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiCoversUserAdminChatToolPlanningProviderBoundaryAndUnproposedConfirmationDenial test`; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`; `git diff --check`
   - commit message: `workstream-chat-tools: add user admin execution tests`
+  - readiness level: api-smoked for protected User Admin HTTP workstream boundary where provider/runtime either proposes and confirms or fails closed safely; frontend-rendered for contract coverage.
+  - selected-scope evidence: HTTP smoke covers protected route context, bearer requirement, selected User Admin workstream/AuthContext, no pre-confirmation organization/invitation mutation, unproposed-plan denial, and conditional confirmation when a provider-backed proposal exists.
+  - denial evidence: missing bearer, unproposed confirmation, provider-unavailable plan message, out-of-catalog snapshot, selected-context/capability denial, and exact-confirmation mismatch are tested.
+  - provider evidence: smoke distinguishes provider-configured proposal/confirmation from provider-unavailable fail-closed `noFakeSuccess`; fail-closed is not counted as successful model-backed planning.
+  - trace evidence: backend/API tests assert proposal trace refs, confirmation trace refs, step traces, partial-failure/recovery traces, and provider-boundary/correlation evidence.
+  - local validation passed: targeted backend/API tests, `npm --prefix frontend test -- --run`, `npm --prefix frontend run typecheck`, and `git diff --check`.
 
 ### TASK-WCTE-10-001: Expand representative chat tool plans to all five foundation workstreams
 
@@ -454,6 +508,12 @@
   - Agent Admin prompt-risk review remains approval-gated at dispatcher confirmation; high-impact policy activation/rollback, managed-agent activation/rollback, account disabling, role grants, trace export delivery, and support-access grants remain outside the executable chat catalog
   - checks: `mvn -q -Dtest=WorkstreamServiceTest#representativeChatToolPlansCoverAllFiveFoundationWorkstreamsWithConfirmationAndTraceSemantics+submitMessageRoutesUserAdminMotivatingPromptToModelBackedPlanProposalWithoutMutation+confirmedUserAdminChatToolPlanExecutesOrganizationAndInvitationIdempotently+chatToolCatalogListsBoundedHumanChatPlanEntries test`; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`; `git diff --check`
   - commit message: `workstream-chat-tools: expand all workstream plans`
+  - readiness level: backend-ready for all-workstream representative dispatcher coverage and frontend-rendered for representative surface contracts; not all-workstream runtime-ready.
+  - selected-scope evidence: representative plans remain bound to each selected foundation workstream, selected AuthContext, role/capability, tenant/customer scope, governed tool id, exposure channel, and idempotency.
+  - denial evidence: high-impact Agent Admin/Governance/User Admin actions outside the bounded catalog remain approval-gated or blocked; unauthorized/out-of-catalog and dependency failure paths do not mutate.
+  - provider evidence: representative canonical plans reuse governed proposal/provider fail-closed contract; provider-unavailable results are not counted as successful model-backed planning.
+  - trace evidence: tests cover requestedBy/confirmedBy, human_chat_tool_plan source, per-step result/approval-required/skipped traces, correlation, and recovery semantics across representative paths.
+  - local validation passed: targeted backend all-workstream tests, frontend tests/typecheck, and `git diff --check`; api smoke boundary: only User Admin protected API smoke is claimed in TASK-WCTE-09-001/TASK-WCTE-99-001.
 
 ### TASK-WCTE-11-001: Update agent seeds and traceability for chat tool execution
 
@@ -496,6 +556,12 @@
   - updated seed checksums/import assertions plus source/app-description traceability for representative chat plan actions, governed tool ids, schemas, surfaces, and trace events
   - checks: `mvn -q -Dtest=AgentBehaviorSeedLoaderTest test`; targeted seed unsafe-authority grep; `git diff --check`
   - commit message: `workstream-chat-tools: update seeds traceability`
+  - readiness level: described for seed/traceability material and backend-ready for seed import/checksum validation; no new runtime behavior claimed.
+  - selected-scope evidence: seed text instructs agents to respect selected AuthContext, tenant/customer scope, human role/capability, workstream purpose, and exact-snapshot confirmation boundaries.
+  - denial evidence: seeds preserve denials for unassigned/inactive/cross-tenant skill/reference loads, missing read_skill/read_reference tool-boundary grants, authority-expansion text, raw secrets, and unconfirmed chat execution.
+  - provider evidence: seed material describes provider/runtime fail-closed behavior and does not allow fake/model-less successful planning in normal runtime.
+  - trace evidence: seed/traceability docs require PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace, AdminAuditEvent, provider blocked, confirmation, and per-step trace/correlation refs.
+  - local validation passed: seed import/checksum tests, unsafe-authority grep, and `git diff --check`; runtime smoke boundary: not claimed for seed/docs update.
 
 ### TASK-WCTE-99-001: Verify Workstream Chat Tool Execution completion
 
@@ -590,10 +656,11 @@
   - trace evidence: SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace, and AdminAuditEvent seed trace expectations unchanged.
   - local validation passed: `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`; `mvn -q -Dtest=AgentBehaviorSeedLoaderTest test`; `git diff --check`.
   - commit message: `workstream-chat-tools: repair user admin seed contract`
+  - runtime smoke boundary: no API/browser smoke or runtime-ready claim is made for this seed-copy repair; terminal verification remains responsible for API/UI runtime proof after TASK-WCTE-12-002.
 
 ### TASK-WCTE-12-002: Normalize runtime completion evidence in queue notes
 
-- status: pending
+- status: done
 - source: TASK-WCTE-99-001 terminal verification validator failures
 - task brief: specs/workstream-chat-tool-execution/tasks/12-follow-up/02-normalize-runtime-completion-evidence.md
 - depends on:
@@ -621,6 +688,16 @@
   - provider fail-closed evidence is recorded and not counted as successful model-backed planning
   - validators pass or any remaining failures are represented as bounded follow-up tasks before terminal verification
   - changes and queue update are committed
+- notes:
+  - vertical contract: docs-only/non-runtime queue evidence normalization for the Workstream Chat Tool Execution mini-project; no root app runtime feature, backend code, frontend code, surface graph, or generated-app behavior changes are in scope.
+  - non-attention/non-UI reason: queue evidence repair only; no dashboard, surface action, attention routing, or browser interaction changes.
+  - capability/foundation scope: normalizes evidence for `human_chat_tool_plan`, governed tool/catalog, capability, AuthContext/tenant scope, provider fail-closed, and audit/work trace claims already implemented by prior tasks.
+  - audit/work trace expectation: preserve and label existing trace evidence; no new trace producer, no new trace payload, and no provider secret exposure.
+  - local validation path: `git diff --check`, runtime-completion evidence validator, and pending-task workstream-contract validator.
+  - readiness normalization result: completed feature-bearing task notes now distinguish `described`, `backend-ready`, `frontend-rendered`, and `api-smoked` evidence without claiming `runtime-ready` for provider-dependent model-backed planning.
+  - provider evidence: fail-closed provider/runtime behavior is labeled separately from successful model-backed planning; provider-unavailable API smoke remains evidence of safety, not success.
+  - local validation passed: `git diff --check`; `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/workstream-chat-tool-execution/pending-tasks.md`; `bash skills-pack/tools/validate-pending-task-workstream-contract.sh specs/workstream-chat-tool-execution/pending-tasks.md`.
+  - commit message: `workstream-chat-tools: normalize runtime evidence`
 
 ### TASK-WCTE-99-002: Re-verify Workstream Chat Tool Execution completion
 
@@ -664,3 +741,17 @@
   - audit/work trace evidence is recorded
   - all required checks pass or new bounded follow-up tasks are appended and the mini-project remains open
   - changes and queue update are committed
+- notes:
+  - vertical contract: terminal workstream runtime verification for confirmed Workstream Chat Tool Execution across all five foundation workstreams.
+  - attention category: attention-required human-confirmed `human_chat_tool_plan` verification; deterministic no-mutation surface routing remains first for non-mutation prompts.
+  - role-specific dashboard / surface: Workstream chat dashboard surfaces render plan proposal, plan-unavailable system message, exact confirmation, result, denial, partial-failure, and recovery states.
+  - surface graph node/action edge: chat message node/action routes to `chat_tool_plan_proposal`, `chat_tool_plan_system_message`, and `chat_tool_plan_result` surface nodes; confirmation edge posts the exact snapshot confirmation.
+  - governed-tool id and exposure: verifies representative `human_chat_tool_plan` governed tools for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy with browser/API exposure bounded by catalog entries.
+  - actor adapter/source: human_chat_tool_plan actor adapter through protected API endpoint and frontend surface path; no autonomous AI mutation authority.
+  - confirmation/approval behavior: exact `CONFIRM <planSnapshotId>` confirmation required; approval-gated paths such as Agent Admin risk review must return approval-required rather than unapproved side effects.
+  - idempotency/transaction/result behavior: per-step transaction boundary, idempotency key, completed/failed/skipped/approval-required result surface, partial-failure, and recovery evidence required.
+  - capability id: verifies workstream-specific capability ids on each governed tool and rejects tools/capabilities outside the selected catalog.
+  - AuthContext / roles / tenant scope: verifies selected AuthContext, role/capability, tenant/customer/organization scope, requestedBy, confirmedBy, bearer/API authorization, denial, forbidden, and hidden/not-found behavior where applicable.
+  - Akka substrate/API/frontend path: WorkstreamService, governed agent runtime/provider fail-closed path, catalog/dispatcher, protected HTTP endpoints, frontend surfaces, and tests/smoke are the intended local path.
+  - audit/work trace requirements: audit/work trace, correlation/idempotency, provider blocked, confirmation, per-step outcome, denial, and browser-safe trace copy evidence required.
+  - local validation path: targeted backend/API tests, `npm --prefix frontend test -- --run`, `npm --prefix frontend run typecheck`, runtime-evidence validator, workstream-contract validator, and local API/manual smoke when provider/auth/runtime configuration allows.
