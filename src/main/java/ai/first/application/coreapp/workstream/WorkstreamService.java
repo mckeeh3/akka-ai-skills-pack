@@ -105,6 +105,14 @@ public final class WorkstreamService {
   private static final String AUDIT_TRACE_AGENT_ID = "audit-trace-agent";
   private static final String GOVERNANCE_POLICY_AGENT_ID = "governance-policy-agent";
   private static final String AGENT_ADMIN_AGENT_ID = "agent-admin-agent";
+  private static final String CHAT_TOOL_PLAN_PROPOSAL_SURFACE_TYPE = "chat_tool_plan_proposal";
+  private static final String CHAT_TOOL_PLAN_CONFIRMATION_SURFACE_TYPE = "chat_tool_plan_confirmation";
+  private static final String CHAT_TOOL_PLAN_RESULT_SURFACE_TYPE = "chat_tool_plan_result";
+  private static final String CHAT_TOOL_PLAN_SYSTEM_MESSAGE_SURFACE_TYPE = "chat_tool_plan_system_message";
+  private static final String CHAT_TOOL_PLAN_PROPOSAL_CONTRACT = "chat_tool_plan.proposal.v1";
+  private static final String CHAT_TOOL_PLAN_CONFIRMATION_CONTRACT = "chat_tool_plan.confirmation.v1";
+  private static final String CHAT_TOOL_PLAN_RESULT_CONTRACT = "chat_tool_plan.result.v1";
+  private static final String CHAT_TOOL_PLAN_SYSTEM_MESSAGE_CONTRACT = "chat_tool_plan.system_message.v1";
   private static final String USER_ADMIN_CAPABILITY = "user_admin.view_overview";
   private static final String SAAS_OWNER_TENANT_READ_CAPABILITY = "saas_owner.tenant.read";
   private static final String SAAS_OWNER_TENANT_MANAGE_CAPABILITY = "saas_owner.tenant.manage";
@@ -439,7 +447,7 @@ public final class WorkstreamService {
     var initial = initialItems(actor, correlationId).stream()
         .filter(item -> functionalAgentId == null || functionalAgentId.isBlank() || functionalAgentId.equals(item.functionalAgentId()))
         .toList();
-    var persisted = workstreamLogRepository.items(actor.selectedContext().tenantId(), actor.selectedContext().membershipId(), functionalAgentId);
+    var persisted = workstreamLogRepository.items(workstreamEventTenantId(actor.selectedContext()), actor.selectedContext().membershipId(), functionalAgentId);
     var combined = new ArrayList<WorkstreamItem>();
     combined.addAll(initial);
     combined.addAll(persisted);
@@ -452,7 +460,7 @@ public final class WorkstreamService {
       var directNote = dynamicSurface(actor, surfaceId, correlationId);
       if (directNote != null) return directNote;
     }
-    var persisted = workstreamLogRepository.surface(actor.selectedContext().tenantId(), actor.selectedContext().membershipId(), surfaceId);
+    var persisted = workstreamLogRepository.surface(workstreamEventTenantId(actor.selectedContext()), actor.selectedContext().membershipId(), surfaceId);
     if (persisted.isPresent()) return persisted.orElseThrow();
     var dynamic = dynamicSurface(actor, surfaceId, correlationId);
     if (dynamic != null) return dynamic;
@@ -521,7 +529,7 @@ public final class WorkstreamService {
       return new WorkstreamShellResponse(normalizeShellRequest(resolvedRequest, targetAgentId, targetSurfaceId, correlationId), "denied", "The requested view is unavailable.", correlationId, denied.traceIds(), item, denied);
     }
     var item = shellRequestItem(surface.ownerFunctionalAgentId(), resolvedRequest, correlationId, surface.surfaceId(), "ready");
-    workstreamLogRepository.appendSystemEntry(actor.selectedContext().tenantId(), actor.selectedContext().membershipId(), item, surface);
+    workstreamLogRepository.appendSystemEntry(workstreamEventTenantId(actor.selectedContext()), actor.selectedContext().membershipId(), item, surface);
     return new WorkstreamShellResponse(normalizeShellRequest(resolvedRequest, surface.ownerFunctionalAgentId(), surface.surfaceId(), correlationId), "accepted", "Shell request resolved through backend-authoritative surface capability.", correlationId, surface.traceIds(), item, surface);
   }
 
@@ -1205,7 +1213,7 @@ public final class WorkstreamService {
       var recorded = "recorded".equals(noteStatus) || "no_op_idempotent_replay".equals(noteStatus);
       if (recorded) {
         var item = new WorkstreamItem("item-audit-trace-note-" + AuditTraceService.stableSuffix(request.idempotencyKey() == null || request.idempotencyKey().isBlank() ? request.correlationId() : request.idempotencyKey()), AUDIT_TRACE_AGENT_ID, "system_message", Instant.now().toString(), request.correlationId(), surface.traceIds(), surface.surfaceId(), "Audit/Trace investigation note", "Human-authored investigation note recorded with browser-safe redaction.", "recorded");
-        workstreamLogRepository.appendSystemEntry(actor.selectedContext().tenantId(), actor.selectedContext().membershipId(), item, surface);
+        workstreamLogRepository.appendSystemEntry(workstreamEventTenantId(actor.selectedContext()), actor.selectedContext().membershipId(), item, surface);
       }
       var message = recorded ? "Investigation note appended as an auditable, tenant-scoped workstream annotation; source traces remain immutable." : Objects.toString(surface.data().get("message"), "Investigation note request did not record an annotation.");
       result = new CapabilityActionResult(noteStatus, message, request.correlationId(), surface.traceIds(), surface);
@@ -1446,6 +1454,38 @@ public final class WorkstreamService {
     return new WorkstreamMessageResponse(persisted.correlationId(), persisted.idempotencyKey(), persisted.userItem(), persisted.agentItem(), persisted.surface());
   }
 
+  public WorkstreamMessageResponse createChatToolPlanProposal(WorkosIdentity identity, String selectedContextId, ChatToolPlanProposalRequest request) {
+    var correlationId = firstNonBlank(request.correlationId(), "chat-tool-plan-proposal");
+    if (request.selectedContextId() == null || request.selectedContextId().isBlank() || !Objects.equals(selectedContextId, request.selectedContextId())) throw new AuthorizationException(403, "CONTEXT_FORBIDDEN");
+    if (request.functionalAgentId() == null || request.functionalAgentId().isBlank()) throw new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN");
+    if (request.prompt() == null || request.prompt().isBlank()) throw new AuthorizationException(400, "PROMPT_REQUIRED");
+    if (request.idempotencyKey() == null || request.idempotencyKey().isBlank()) throw new AuthorizationException(400, "CHAT_TOOL_PLAN_IDEMPOTENCY_REQUIRED");
+    var actor = authContextResolver.resolveMe(identity, selectedContextId, correlationId);
+    var functionalAgent = MeResponse.FunctionalAgentSummary.fromCapabilities(actor.selectedContext().capabilities()).stream()
+        .filter(agent -> request.functionalAgentId().equals(agent.functionalAgentId()))
+        .findFirst()
+        .orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
+    if (!"visible".equals(functionalAgent.availability())) throw new AuthorizationException(403, "FUNCTIONAL_AGENT_FORBIDDEN");
+    var workstreamScopeId = workstreamEventTenantId(actor.selectedContext());
+    var duplicate = workstreamLogRepository.findByIdempotencyKey(workstreamScopeId, actor.selectedContext().membershipId(), request.functionalAgentId(), request.idempotencyKey());
+    if (duplicate.isPresent()) {
+      var existing = duplicate.orElseThrow();
+      return new WorkstreamMessageResponse(existing.correlationId(), existing.idempotencyKey(), existing.userItem(), existing.agentItem(), existing.surface());
+    }
+    var responseSeed = firstNonBlank(request.idempotencyKey(), correlationId, request.functionalAgentId());
+    var now = Instant.now();
+    var traceIds = List.of("trace-human-chat-tool-plan-proposed-" + stableSuffix(responseSeed));
+    var proposal = chatToolPlanProposal(actor, request, now, traceIds, responseSeed);
+    var confirmationSnapshot = chatToolPlanConfirmationSnapshot(proposal);
+    var userItemId = "item-chat-tool-plan-user-" + stableSuffix(responseSeed + ":user");
+    var agentItemId = "item-chat-tool-plan-proposal-" + stableSuffix(responseSeed + ":proposal");
+    var userItem = new WorkstreamItem(userItemId, request.functionalAgentId(), "user-request", now.toString(), correlationId, traceIds, null, null, request.prompt(), "ready");
+    var surface = chatToolPlanProposalSurface(proposal, confirmationSnapshot, actor, agentItemId, correlationId, traceIds, now);
+    var agentItem = new WorkstreamItem(agentItemId, request.functionalAgentId(), "chat_tool_plan_proposal", now.toString(), correlationId, traceIds, surface.surfaceId(), functionalAgent.label(), "Review the proposed governed-tool plan. No tools have executed; explicit confirmation is required in a later bounded capability path.", "waiting-for-human");
+    var persisted = workstreamLogRepository.appendMessage(new WorkstreamLogRepository.WorkstreamMessageLogEntry(workstreamScopeId, actor.selectedContext().membershipId(), request.functionalAgentId(), request.idempotencyKey(), correlationId, userItem, agentItem, surface));
+    return new WorkstreamMessageResponse(persisted.correlationId(), persisted.idempotencyKey(), persisted.userItem(), persisted.agentItem(), persisted.surface());
+  }
+
   private WorkstreamMessageResponse routedSurfaceMessageResponse(AuthContextResolver.ResolvedMe actor, MeResponse.FunctionalAgentSummary functionalAgent, String workstreamScopeId, WorkstreamMessageRequest request, String correlationId, SurfaceIntentRouter.Result route) {
     if (!Objects.equals(request.functionalAgentId(), route.functionalAgentId())) throw new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN");
     var surface = dynamicSurface(actor, route.targetSurfaceId(), correlationId);
@@ -1460,6 +1500,215 @@ public final class WorkstreamService {
     var agentItem = new WorkstreamItem(agentItemId, request.functionalAgentId(), "surface_intent_route", now, correlationId, traceIds, surface.surfaceId(), functionalAgent.label(), "Opened " + surface.title() + " from your request. No changes were made; you must review the surface and submit an authorized action when ready.", "ready");
     var persisted = workstreamLogRepository.appendMessage(new WorkstreamLogRepository.WorkstreamMessageLogEntry(workstreamScopeId, actor.selectedContext().membershipId(), request.functionalAgentId(), request.idempotencyKey(), correlationId, userItem, agentItem, surface));
     return new WorkstreamMessageResponse(persisted.correlationId(), persisted.idempotencyKey(), persisted.userItem(), persisted.agentItem(), persisted.surface());
+  }
+
+  private ChatToolPlanProposal chatToolPlanProposal(AuthContextResolver.ResolvedMe actor, ChatToolPlanProposalRequest request, Instant now, List<String> traceIds, String responseSeed) {
+    var steps = request.steps() == null ? List.<ChatToolPlanStep>of() : List.copyOf(request.steps());
+    var requiredCapabilities = steps.stream()
+        .map(ChatToolPlanStep::capabilityId)
+        .filter(capability -> capability != null && !capability.isBlank())
+        .distinct()
+        .toList();
+    var planId = "chat-tool-plan-" + stableSuffix(responseSeed + ":plan");
+    var stepHashSeed = steps.stream()
+        .map(step -> String.join(":", firstNonBlank(step.stepId(), "step"), firstNonBlank(step.actionId(), "action"), firstNonBlank(step.governedToolId(), "tool"), firstNonBlank(step.capabilityId(), "capability"), String.valueOf(step.input())))
+        .collect(Collectors.joining("|"));
+    var planSnapshotId = "chat-tool-plan-snapshot-" + stableSuffix(planId + ":" + stepHashSeed + ":" + actor.selectedContext().membershipId());
+    return new ChatToolPlanProposal(
+        planId,
+        planSnapshotId,
+        "waiting-for-human",
+        actor.selectedContext().membershipId(),
+        request.functionalAgentId(),
+        actor.selectedContext().accountId(),
+        now.toString(),
+        request.prompt(),
+        firstNonBlank(request.summary(), "Proposed governed-tool plan awaiting explicit human confirmation."),
+        steps,
+        requiredCapabilities,
+        firstNonBlank(request.approvalSummary(), "No tools can execute from this proposal record. Confirmation, authorization, catalog validation, and dispatcher support are required before any mutation."),
+        request.idempotencyKey(),
+        traceIds,
+        now.plus(30, ChronoUnit.MINUTES).toString(),
+        true);
+  }
+
+  private ChatToolPlanConfirmationSnapshot chatToolPlanConfirmationSnapshot(ChatToolPlanProposal proposal) {
+    var stepHashes = proposal.steps().stream()
+        .collect(Collectors.toMap(
+            step -> firstNonBlank(step.stepId(), "step-" + step.sequence()),
+            step -> "step-hash-" + stableSuffix(String.join(":", firstNonBlank(step.stepId(), "step"), firstNonBlank(step.actionId(), "action"), firstNonBlank(step.browserToolId(), "browser"), firstNonBlank(step.governedToolId(), "tool"), firstNonBlank(step.capabilityId(), "capability"), String.valueOf(step.input()), firstNonBlank(step.idempotencyKey(), "idempotency"))),
+            (left, right) -> left,
+            LinkedHashMap::new));
+    return new ChatToolPlanConfirmationSnapshot(
+        proposal.planId(),
+        proposal.planSnapshotId(),
+        proposal.selectedContextId(),
+        proposal.functionalAgentId(),
+        proposal.requestedByAccountId(),
+        proposal.requestedAt(),
+        proposal.expiresAt(),
+        proposal.steps(),
+        proposal.requiredCapabilities(),
+        stepHashes,
+        proposal.idempotencyRoot(),
+        proposal.traceIds(),
+        true,
+        "Confirmation must echo planId, planSnapshotId, selected AuthContext, requestedBy, and step hashes; this substrate does not execute tools.");
+  }
+
+  private SurfaceEnvelope chatToolPlanProposalSurface(ChatToolPlanProposal proposal, ChatToolPlanConfirmationSnapshot confirmationSnapshot, AuthContextResolver.ResolvedMe actor, String itemId, String correlationId, List<String> traceIds, Instant now) {
+    return chatToolPlanSurface(
+        "surface-chat-tool-plan-" + proposal.planId(),
+        CHAT_TOOL_PLAN_PROPOSAL_SURFACE_TYPE,
+        "Chat tool plan proposal",
+        proposal.functionalAgentId(),
+        actor,
+        correlationId,
+        traceIds,
+        now,
+        new ChatToolPlanSurfaceData(
+            CHAT_TOOL_PLAN_PROPOSAL_CONTRACT,
+            proposal.status(),
+            proposal,
+            confirmationSnapshot,
+            null,
+            null,
+            true,
+            true,
+            false,
+            "none: proposal record only; no governed tools are executed before a later confirmation/dispatcher path.",
+            itemId,
+            traceIds),
+        List.of(chatToolPlanConfirmActionDisabled(proposal)));
+  }
+
+  @SuppressWarnings("unused")
+  private SurfaceEnvelope chatToolPlanConfirmationSurface(ChatToolPlanProposal proposal, ChatToolPlanConfirmationSnapshot confirmationSnapshot, AuthContextResolver.ResolvedMe actor, String correlationId, List<String> traceIds, Instant now) {
+    return chatToolPlanSurface(
+        "surface-chat-tool-plan-confirmation-" + proposal.planId(),
+        CHAT_TOOL_PLAN_CONFIRMATION_SURFACE_TYPE,
+        "Confirm chat tool plan",
+        proposal.functionalAgentId(),
+        actor,
+        correlationId,
+        traceIds,
+        now,
+        new ChatToolPlanSurfaceData(
+            CHAT_TOOL_PLAN_CONFIRMATION_CONTRACT,
+            "confirmation-required",
+            proposal,
+            confirmationSnapshot,
+            null,
+            null,
+            true,
+            true,
+            false,
+            "none: confirmation snapshot binds the immutable plan; execution is not available in this substrate task.",
+            null,
+            traceIds),
+        List.of(chatToolPlanConfirmActionDisabled(proposal)));
+  }
+
+  @SuppressWarnings("unused")
+  private SurfaceEnvelope chatToolPlanResultSurface(ChatToolPlanExecutionResult result, ChatToolPlanPartialFailure partialFailure, AuthContextResolver.ResolvedMe actor, String functionalAgentId, String correlationId, List<String> traceIds, Instant now) {
+    return chatToolPlanSurface(
+        "surface-chat-tool-plan-result-" + result.planId(),
+        CHAT_TOOL_PLAN_RESULT_SURFACE_TYPE,
+        "Chat tool plan result",
+        functionalAgentId,
+        actor,
+        correlationId,
+        traceIds,
+        now,
+        new ChatToolPlanSurfaceData(
+            CHAT_TOOL_PLAN_RESULT_CONTRACT,
+            result.status(),
+            null,
+            null,
+            result,
+            partialFailure == null ? null : new ChatToolPlanSystemMessage("partial-failure", partialFailure.message(), partialFailure.recoverySteps(), true, traceIds),
+            true,
+            false,
+            false,
+            "result surface only; each committed step must be reported by a later dispatcher task.",
+            null,
+            traceIds),
+        List.of());
+  }
+
+  @SuppressWarnings("unused")
+  private SurfaceEnvelope chatToolPlanSystemMessageSurface(String surfaceId, String functionalAgentId, AuthContextResolver.ResolvedMe actor, String code, String message, String correlationId, List<String> traceIds, Instant now) {
+    return chatToolPlanSurface(
+        firstNonBlank(surfaceId, "surface-chat-tool-plan-blocked-" + stableSuffix(correlationId)),
+        CHAT_TOOL_PLAN_SYSTEM_MESSAGE_SURFACE_TYPE,
+        "Chat tool plan unavailable",
+        functionalAgentId,
+        actor,
+        correlationId,
+        traceIds,
+        now,
+        new ChatToolPlanSurfaceData(
+            CHAT_TOOL_PLAN_SYSTEM_MESSAGE_CONTRACT,
+            code,
+            null,
+            null,
+            null,
+            new ChatToolPlanSystemMessage(code, message, List.of("Review the request or retry after provider/runtime/catalog readiness is restored."), true, traceIds),
+            true,
+            true,
+            false,
+            "none: system-message records safe denial or unavailable state without executing tools.",
+            null,
+            traceIds),
+        List.of());
+  }
+
+  private SurfaceEnvelope chatToolPlanSurface(String surfaceId, String surfaceType, String title, String functionalAgentId, AuthContextResolver.ResolvedMe actor, String correlationId, List<String> traceIds, Instant now, ChatToolPlanSurfaceData surfaceData, List<SurfaceAction> actions) {
+    return new SurfaceEnvelope(surfaceId, surfaceType, "v1", title, functionalAgentId, List.of(AUDIT_TRACE_AGENT_ID), selectedAuthContextData(actor), correlationId, traceIds, now.toString(), null, mapOf("profile", "chat-tool-plan", "classification", "browser-safe", "minimumRedactionLevel", "FULL"), chatToolPlanSurfaceDataMap(surfaceData), actions, List.of(mapOf("label", "Open plan trace", "href", "/ui?traceId=" + (traceIds.isEmpty() ? stableSuffix(correlationId) : traceIds.get(0)), "rel", "trace")));
+  }
+
+  private SurfaceAction chatToolPlanConfirmActionDisabled(ChatToolPlanProposal proposal) {
+    return new SurfaceAction(
+        "action-confirm-chat-tool-plan",
+        "Confirm this plan",
+        "approval",
+        "workstream.chat_tool_plan.confirm",
+        "human_chat_tool_plan.confirm",
+        "human_chat_tool_plan.confirm",
+        "schema.chat-tool-plan.confirmation.v1",
+        true,
+        true,
+        new DisabledReason("dispatcher-not-implemented", "This task only records immutable plan proposals and confirmation snapshots; tool execution is unavailable until the governed dispatcher task."),
+        new Idempotency(true, "plan-snapshot"),
+        new ResultSurface(null, "surface-chat-tool-plan-result-" + proposal.planId(), "inline"),
+        new Audit("HumanChatToolPlanConfirmationRequested", true));
+  }
+
+  private Map<String, Object> chatToolPlanSurfaceDataMap(ChatToolPlanSurfaceData data) {
+    return mapOf(
+        "surfaceContract", data.surfaceContract(),
+        "status", data.status(),
+        "proposal", data.proposal(),
+        "confirmationSnapshot", data.confirmationSnapshot(),
+        "result", data.result(),
+        "systemMessage", data.systemMessage(),
+        "noDirectMutation", data.noDirectMutation(),
+        "noMutation", data.noMutation(),
+        "executionEnabled", data.executionEnabled(),
+        "sideEffect", data.sideEffect(),
+        "workstreamEntryId", data.workstreamEntryId(),
+        "traceRefs", data.traceRefs());
+  }
+
+  private Map<String, Object> selectedAuthContextData(AuthContextResolver.ResolvedMe actor) {
+    return mapOf(
+        "tenantId", actor.selectedContext().tenantId(),
+        "customerId", actor.selectedContext().customerId(),
+        "selectedContextId", actor.selectedContext().membershipId(),
+        "scopeType", actor.selectedContext().scopeType().name(),
+        "requestedByAccountId", actor.selectedContext().accountId(),
+        "visibleCapabilityIds", actor.selectedContext().capabilities());
   }
 
   private void enrichRoutedSurface(SurfaceEnvelope surface, SurfaceIntentRouter.Result route, String itemId, List<String> traceIds, String correlationId) {
@@ -1535,7 +1784,7 @@ public final class WorkstreamService {
     var now = Instant.now().toString();
     var seed = firstNonBlank(idempotencyKey, correlationId, functionalAgentId, reasonCode);
     var item = new WorkstreamItem("item-denial-" + stableSuffix(seed), functionalAgentId, "system_message", now, correlationId, List.of("trace-denial-" + stableSuffix(seed)), null, "Message not submitted", "Backend authorization denied this workstream message: " + reasonCode + ".", "blocked");
-    workstreamLogRepository.appendSystemEntry(actor.selectedContext().tenantId(), actor.selectedContext().membershipId(), item, null);
+    workstreamLogRepository.appendSystemEntry(workstreamEventTenantId(actor.selectedContext()), actor.selectedContext().membershipId(), item, null);
   }
 
   /** Returns the bounded v1 workstream SSE replay/refresh batch for the selected authorized context. */
@@ -6585,6 +6834,23 @@ public final class WorkstreamService {
   public record WorkstreamShellResponse(WorkstreamShellRequest request, String status, String message, String correlationId, List<String> traceIds, WorkstreamItem requestItem, SurfaceEnvelope resultSurface) {}
   public record WorkstreamMessageRequest(String selectedContextId, String functionalAgentId, String prompt, String correlationId, String idempotencyKey) {}
   public record WorkstreamMessageResponse(String correlationId, String idempotencyKey, WorkstreamItem userItem, WorkstreamItem agentItem, SurfaceEnvelope surface) {}
+  public record ChatToolPlanProposalRequest(String selectedContextId, String functionalAgentId, String prompt, String correlationId, String idempotencyKey, String attachedSurfaceId, String summary, List<ChatToolPlanStep> steps, String approvalSummary) {}
+  public record ChatToolPlanProposal(String planId, String planSnapshotId, String status, String selectedContextId, String functionalAgentId, String requestedByAccountId, String requestedAt, String sourcePrompt, String summary, List<ChatToolPlanStep> steps, List<String> requiredCapabilities, String approvalSummary, String idempotencyRoot, List<String> traceIds, String expiresAt, boolean noMutation) {}
+  public record ChatToolPlanStep(String stepId, int sequence, String label, String actionId, String browserToolId, String governedToolId, String capabilityId, String inputSchemaRef, Map<String, Object> input, List<String> dependsOnStepIds, Map<String, String> outputBindings, String idempotencyKey, String transactionBoundary, boolean requiresConfirmation, boolean requiresApproval, String expectedResultSurfaceType, String expectedResultSurfaceId, List<String> traceRequirements) {
+    public ChatToolPlanStep {
+      input = Map.copyOf(input == null ? Map.of() : input);
+      dependsOnStepIds = List.copyOf(dependsOnStepIds == null ? List.of() : dependsOnStepIds);
+      outputBindings = Map.copyOf(outputBindings == null ? Map.of() : outputBindings);
+      traceRequirements = List.copyOf(traceRequirements == null ? List.of() : traceRequirements);
+    }
+  }
+  public record ChatToolPlanConfirmationSnapshot(String planId, String planSnapshotId, String selectedContextId, String functionalAgentId, String requestedByAccountId, String requestedAt, String expiresAt, List<ChatToolPlanStep> steps, List<String> requiredCapabilities, Map<String, String> stepHashes, String idempotencyRoot, List<String> traceIds, boolean acknowledgementRequired, String confirmationInstructions) {}
+  public record ChatToolPlanConfirmationRequest(String selectedContextId, String planId, String planSnapshotId, String confirmationText, String idempotencyKey, String correlationId) {}
+  public record ChatToolPlanExecutionResult(String planId, String planSnapshotId, String status, List<ChatToolPlanStepResult> completedSteps, List<ChatToolPlanStepResult> failedSteps, List<ChatToolPlanStepResult> skippedSteps, List<String> recoverySteps, List<String> resultSurfaceIds, List<String> traceIds, String correlationId) {}
+  public record ChatToolPlanStepResult(String stepId, String status, String message, String actionId, String governedToolId, String capabilityId, String resultSurfaceId, List<String> traceIds, String startedAt, String completedAt, String errorCode) {}
+  public record ChatToolPlanPartialFailure(String planId, String planSnapshotId, List<ChatToolPlanStepResult> completedSteps, List<ChatToolPlanStepResult> failedSteps, List<ChatToolPlanStepResult> skippedSteps, List<String> recoverySteps, String message) {}
+  public record ChatToolPlanSystemMessage(String code, String message, List<String> recoverySteps, boolean noFakeSuccess, List<String> traceIds) {}
+  public record ChatToolPlanSurfaceData(String surfaceContract, String status, ChatToolPlanProposal proposal, ChatToolPlanConfirmationSnapshot confirmationSnapshot, ChatToolPlanExecutionResult result, ChatToolPlanSystemMessage systemMessage, boolean noDirectMutation, boolean noMutation, boolean executionEnabled, String sideEffect, String workstreamEntryId, List<String> traceRefs) {}
   public record WorkstreamEvent(String eventId, String eventType, String tenantId, String customerId, String functionalAgentId, String surfaceId, String surfaceType, String surfaceVersion, String correlationId, List<String> traceIds, String occurredAt, Integer sequence, Map<String, Object> patch) {}
 
   private static final class EmptyWorkstreamEventRepository implements WorkstreamEventRepository {

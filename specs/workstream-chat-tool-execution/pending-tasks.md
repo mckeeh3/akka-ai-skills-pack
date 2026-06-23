@@ -129,7 +129,7 @@
 
 ### TASK-WCTE-03-001: Add chat tool plan records and surfaces
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-execution/backlog/01-workstream-chat-tool-execution-build-backlog.md
 - task brief: specs/workstream-chat-tool-execution/tasks/03-backend-model/01-add-chat-tool-plan-records-and-surfaces.md
 - depends on:
@@ -161,6 +161,7 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: workstream chat tool-plan substrate; no model-backed execution yet; readiness target backend-ready for proposal records only
+  - commit message: `workstream-chat-tools: add plan records and surfaces`
 
 ### TASK-WCTE-04-001: Add governed plan proposal runtime path
 

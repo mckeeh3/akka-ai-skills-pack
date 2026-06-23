@@ -1682,6 +1682,133 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
+  void chatToolPlanProposalRecordsPersistWithoutExecutingToolsAndReplayByIdempotency() {
+    var tenantCountBefore = identityRepository.tenantRows().size();
+    var invitationCountBefore = invitationRepository.invitations().size();
+    var steps = List.of(
+        new WorkstreamService.ChatToolPlanStep(
+            "step-create-organization",
+            1,
+            "Create Organization Org 1",
+            "action-submit-organization-create",
+            "user-admin.submit-organization-create",
+            "manage-organizations",
+            "saas_owner.tenant.manage",
+            "schema.organization-admin.create.submit.v1",
+            Map.of("organizationName", "Org 1", "reason", "human_chat_tool_plan proposal only"),
+            List.of(),
+            Map.of("organizationId", "createdOrganization.organizationId"),
+            "idem-plan-org-create",
+            "independent-command",
+            true,
+            false,
+            "show-inspection",
+            "surface-user-admin-organization-detail",
+            List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_pending")),
+        new WorkstreamService.ChatToolPlanStep(
+            "step-invite-organization-admin",
+            2,
+            "Invite Organization Admin",
+            "action-submit-organization-admin-invitation",
+            "user-admin.invite-organization-admin",
+            "manage-organization-admins",
+            "saas_owner.organization_admin.invite",
+            "schema.organization-admin.invitation-create.v1",
+            Map.of("organizationId", "${step-create-organization.organizationId}", "email", "mckee.hugh@gmail.com", "displayName", "Hugh McKee", "roles", List.of("TENANT_ADMIN"), "reason", "human_chat_tool_plan proposal only"),
+            List.of("step-create-organization"),
+            Map.of(),
+            "idem-plan-org-admin-invite",
+            "independent-command-after-dependency",
+            true,
+            false,
+            "show-inspection",
+            "surface-user-admin-invitation-detail",
+            List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_pending")));
+
+    var response = service.createChatToolPlanProposal(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-owner",
+        "user-admin-agent",
+        "create org \"Org 1\", and invite mckee.hugh@gmail.com as an org admin",
+        "corr-chat-plan-proposal",
+        "idem-chat-plan-proposal",
+        null,
+        "Create an Organization and invite its Organization Admin after confirmation.",
+        steps,
+        "Human confirmation, exact snapshot validation, capability authorization, and dispatcher execution are required later."));
+
+    assertEquals("corr-chat-plan-proposal", response.correlationId());
+    assertEquals("user-request", response.userItem().kind());
+    assertEquals("chat_tool_plan_proposal", response.agentItem().kind());
+    assertEquals("waiting-for-human", response.agentItem().status());
+    assertEquals("chat_tool_plan_proposal", response.surface().surfaceType());
+    assertEquals("chat_tool_plan.proposal.v1", response.surface().data().get("surfaceContract"));
+    assertEquals(true, response.surface().data().get("noDirectMutation"));
+    assertEquals(true, response.surface().data().get("noMutation"));
+    assertEquals(false, response.surface().data().get("executionEnabled"));
+    assertEquals("none: proposal record only; no governed tools are executed before a later confirmation/dispatcher path.", response.surface().data().get("sideEffect"));
+    assertEquals("membership-owner", response.surface().authContext().get("selectedContextId"));
+    assertEquals("owner@example.test", response.surface().authContext().get("requestedByAccountId"));
+    var proposal = (WorkstreamService.ChatToolPlanProposal) response.surface().data().get("proposal");
+    assertEquals("waiting-for-human", proposal.status());
+    assertEquals("membership-owner", proposal.selectedContextId());
+    assertEquals("user-admin-agent", proposal.functionalAgentId());
+    assertEquals("owner@example.test", proposal.requestedByAccountId());
+    assertEquals(List.of("saas_owner.tenant.manage", "saas_owner.organization_admin.invite"), proposal.requiredCapabilities());
+    assertEquals("idem-chat-plan-proposal", proposal.idempotencyRoot());
+    assertTrue(proposal.noMutation());
+    assertEquals(2, proposal.steps().size());
+    assertEquals("manage-organizations", proposal.steps().get(0).governedToolId());
+    assertEquals("saas_owner.tenant.manage", proposal.steps().get(0).capabilityId());
+    assertEquals("Org 1", proposal.steps().get(0).input().get("organizationName"));
+    assertEquals("manage-organization-admins", proposal.steps().get(1).governedToolId());
+    assertEquals("saas_owner.organization_admin.invite", proposal.steps().get(1).capabilityId());
+    assertEquals("mckee.hugh@gmail.com", proposal.steps().get(1).input().get("email"));
+    var snapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) response.surface().data().get("confirmationSnapshot");
+    assertEquals(proposal.planId(), snapshot.planId());
+    assertEquals(proposal.planSnapshotId(), snapshot.planSnapshotId());
+    assertEquals("membership-owner", snapshot.selectedContextId());
+    assertEquals("user-admin-agent", snapshot.functionalAgentId());
+    assertEquals("owner@example.test", snapshot.requestedByAccountId());
+    assertEquals(List.of("saas_owner.tenant.manage", "saas_owner.organization_admin.invite"), snapshot.requiredCapabilities());
+    assertEquals("manage-organizations", snapshot.steps().get(0).governedToolId());
+    assertEquals("Org 1", snapshot.steps().get(0).input().get("organizationName"));
+    assertEquals("idem-plan-org-create", snapshot.steps().get(0).idempotencyKey());
+    assertEquals("manage-organization-admins", snapshot.steps().get(1).governedToolId());
+    assertEquals("mckee.hugh@gmail.com", snapshot.steps().get(1).input().get("email"));
+    assertEquals("idem-plan-org-admin-invite", snapshot.steps().get(1).idempotencyKey());
+    assertFalse(snapshot.traceIds().isEmpty());
+    assertTrue(snapshot.stepHashes().containsKey("step-create-organization"));
+    assertTrue(snapshot.stepHashes().containsKey("step-invite-organization-admin"));
+    assertTrue(response.surface().actions().stream().anyMatch(action -> action.actionId().equals("action-confirm-chat-tool-plan") && action.disabled() != null));
+    assertEquals(tenantCountBefore, identityRepository.tenantRows().size(), "Plan proposal records must not create Organizations before confirmation.");
+    assertEquals(invitationCountBefore, invitationRepository.invitations().size(), "Plan proposal records must not create invitations before confirmation.");
+    assertEquals(0, trackingRuntimeInvoker.invocationCount(), "TASK-WCTE-03-001 only adds the proposal substrate; model-backed planning is later.");
+    assertBrowserPayloadSafe(response.surface());
+
+    var persistedSurface = service.surface(ownerIdentity(), "membership-owner", response.surface().surfaceId(), "corr-chat-plan-read");
+    assertEquals(response.surface().surfaceId(), persistedSurface.surfaceId());
+    var persistedItems = service.items(ownerIdentity(), "membership-owner", "user-admin-agent", "corr-chat-plan-items");
+    assertTrue(persistedItems.stream().anyMatch(item -> item.itemId().equals(response.agentItem().itemId()) && item.kind().equals("chat_tool_plan_proposal")));
+
+    var replay = service.createChatToolPlanProposal(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-owner",
+        "user-admin-agent",
+        "ignored duplicate prompt",
+        "corr-chat-plan-duplicate",
+        "idem-chat-plan-proposal",
+        null,
+        "duplicate ignored",
+        List.of(),
+        "duplicate ignored"));
+    assertEquals(response.surface().surfaceId(), replay.surface().surfaceId());
+    assertEquals(response.agentItem().itemId(), replay.agentItem().itemId());
+    assertEquals("corr-chat-plan-proposal", replay.correlationId());
+    assertEquals(tenantCountBefore, identityRepository.tenantRows().size());
+    assertEquals(invitationCountBefore, invitationRepository.invitations().size());
+  }
+
+  @Test
   void submitMessageReturnsAuthorizedMarkdownResponseEnvelopeAndPersistsIt() {
     var response = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
         "membership-admin", "user-admin-agent", "What can I do next?", "corr-message", "idem-message-1"), "corr-header");
