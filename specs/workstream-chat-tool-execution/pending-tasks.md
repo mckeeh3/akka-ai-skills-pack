@@ -51,7 +51,7 @@
 
 ### TASK-WCTE-01-001: Audit and design confirmed chat tool execution
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-execution/backlog/01-workstream-chat-tool-execution-build-backlog.md
 - task brief: specs/workstream-chat-tool-execution/tasks/01-audit-contract/01-audit-and-design-chat-tool-execution.md
 - depends on:
@@ -88,6 +88,7 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: docs/spec design only; root app runtime planning; no runtime feature completed
+  - commit message: `workstream-chat-tools: audit chat tool execution design`
 
 ### TASK-WCTE-02-001: Update app-description current intent for chat tool plans
 
