@@ -549,7 +549,7 @@
 
 ### TASK-WCTE-12-001: Repair User Admin expertise seed contract drift
 
-- status: pending
+- status: done
 - source: TASK-WCTE-99-001 terminal verification failure
 - task brief: specs/workstream-chat-tool-execution/tasks/12-follow-up/01-repair-user-admin-expertise-seed-contract-drift.md
 - depends on:
@@ -580,6 +580,16 @@
   - frontend test `User Admin expertise contract covers unassigned and tool-boundary denials` passes without weakening denial/authority-expansion expectations
   - seed text still does not grant roles, tenant scope, governed-tool access, approval rights, backend capabilities, or chat execution authority
   - changes and queue update are committed
+- notes:
+  - vertical contract: User Admin functional agent expertise seed only; role-specific dashboard/surface behavior, surface graph action edges, governed-tool exposure, `human_chat_tool_plan`, capability ids, AuthContext/tenant scope, confirmation, idempotency, API/frontend path, and audit/work trace semantics are preserved from completed runtime tasks and are not changed by this repair.
+  - attention category: non-attention seed contract repair for User Admin expertise denial copy.
+  - readiness level: frontend-rendered seed/contract repair only; no runtime behavior changed.
+  - selected-scope evidence: User Admin functional agent expertise bundle for selected AuthContext/tenant-safe guidance; no tenant/customer scope expansion.
+  - denial evidence: preserves unassigned skill/reference denial, missing `read_skill`/`read_reference` tool-boundary denial, and denial of text claiming roles, tenant scope, governed-tool access, approval rights, backend capabilities, or confirmed execution without exact snapshot confirmation.
+  - provider evidence: provider/runtime behavior unchanged; existing fail-closed model/provider evidence remains from TASK-WCTE-99-001.
+  - trace evidence: SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace, and AdminAuditEvent seed trace expectations unchanged.
+  - local validation passed: `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`; `mvn -q -Dtest=AgentBehaviorSeedLoaderTest test`; `git diff --check`.
+  - commit message: `workstream-chat-tools: repair user admin seed contract`
 
 ### TASK-WCTE-12-002: Normalize runtime completion evidence in queue notes
 

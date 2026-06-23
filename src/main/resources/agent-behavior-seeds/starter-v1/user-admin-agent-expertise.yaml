@@ -114,7 +114,7 @@ requiredDenials:
   - unassigned skill or reference id
   - inactive or cross-tenant skill or reference
   - missing read_skill or read_reference tool-boundary grant
-  - text claiming new roles, tenant scope, governed-tool access, approval rights, backend capabilities, or confirmed execution without exact snapshot confirmation
+  - text claiming new roles, tenant scope, governed-tool access, approval rights, or backend capabilities; text also cannot claim confirmed execution without exact snapshot confirmation
   - raw invitation token, provider secret, cross-customer data, or unredacted audit export request
 traces:
   - PromptAssemblyTrace
