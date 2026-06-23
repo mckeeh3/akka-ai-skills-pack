@@ -30,3 +30,16 @@
 - Profile/settings/context surfaces use designed structured-surface controls/panels, not browser-default forms or page-first screens.
 - Settings exposes named theme choices only; it does not expose `system`, `light`, or `dark` as the user-facing model.
 - The notification center preserves the recently revised triage intent and implementation while aligning with shared tokens and responsive rules.
+
+
+## `human_chat_tool_plan` coverage
+
+- Given deterministic surface routing can safely open or prefill a surface, when a high-confidence no-mutation prompt is submitted, then the router returns that surface first and `human_chat_tool_plan` is not used.
+- Given the representative prompt **change my theme to Obsidian Dark** and an authorized selected `AuthContext`, when the chat request is classified as `human_chat_tool_plan`, then the response is a no-mutation plan proposal surface that lists actions `action-update-my-settings`, governed tools `my_account.update_profile_settings`, capabilities `my_account.update_profile_settings`, validated input schema `schema.my-account.settings.update.v1` with `preferredThemeId=obsidian-dark` selected from backend-valid theme options, side effects, approval gates, idempotency, result surfaces `surface-my-settings`, and trace refs.
+- Given a proposed plan has not been explicitly confirmed, when the request completes, then no surface action, governed tool, external provider side effect, state mutation, invitation/email/outbox send, policy/agent lifecycle change, trace note append, or settings update has occurred.
+- Given the human confirms the exact `planId` and `planSnapshotId`, when backend authorization, lifecycle, tool-boundary, validation, approval, tenant/customer ownership, and idempotency checks pass for every step, then each step executes as an independent transaction boundary and returns the declared result or recovery surface.
+- Given a modified, stale, expired, cross-context, cross-tenant/customer, missing-confirmation, out-of-catalog, unsupported-field, hidden-target, provider/runtime/tool-boundary blocked, or unauthorized plan is confirmed, then execution is denied with `chat_tool_plan.system_message.v1`, `noDirectMutation=true`, safe recovery, no hidden-target enumeration, and trace refs.
+- Given the same proposal or confirmed step is replayed with the same idempotency key, then the backend returns the existing proposal/result and does not duplicate side effects, traces, notifications, provider calls, or attention items.
+- Given a later dependent step fails after an earlier step commits, then the plan result reports completed, failed, skipped, and recovery steps without rolling back committed work unless a cataloged compensating action exists.
+- Given provider/model/runtime configuration is missing for model-backed proposal generation, then the workstream returns a typed plan-unavailable/system-message state and trace evidence instead of fake/model-less planning success.
+- Given any agent, prompt, skill, reference, frontend state, route, or visible rail item suggests broader authority than the catalog grants, then the backend rejects the plan or step and records a denial trace.

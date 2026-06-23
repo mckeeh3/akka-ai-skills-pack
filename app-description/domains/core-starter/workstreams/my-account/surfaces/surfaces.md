@@ -600,3 +600,17 @@ Every consequential browser action has a stable action id, maps to a governed ba
 ## Common states
 
 My Account surfaces define loading, empty, ready, submitting, success, validation-error, forbidden, not_found_or_redacted, conflict, stale/reconnect, partial-data, provider-fail-closed, no-op, approval-required where applicable, and failure states. All states preserve selected tenant/customer scoping, browser-safe redaction, trace/correlation links, and recovery guidance.
+
+
+## Shared chat tool-plan surfaces
+
+My Account binds the shared `human_chat_tool_plan` surface contracts from `../../surface-catalog.md` to this workstream's functional agent `my-account-agent` and representative catalog entry.
+
+| Plan surface | Contract | Workstream binding |
+|---|---|---|
+| Plan proposal | `chat_tool_plan.proposal.v1` | Shows the no-mutation proposal for **change my theme to Obsidian Dark** with actions `action-update-my-settings`, governed tools `my_account.update_profile_settings`, capabilities `my_account.update_profile_settings`, validated inputs `schema.my-account.settings.update.v1` with `preferredThemeId=obsidian-dark` selected from backend-valid theme options, side effects, approval requirements, idempotency root, output bindings, and trace refs. |
+| Plan confirmation | `chat_tool_plan.confirmation.v1` | Requires explicit acknowledgement of the exact plan snapshot, selected `AuthContext`, requested/confirmed actor, step hashes, side effects, transaction boundaries, and idempotency before execution is requested. |
+| Plan result | `chat_tool_plan.result.v1` | Reports completed, failed, skipped, no-op/idempotent replay, partial-failure, and recovery states; successful step result surfaces are `surface-my-settings`. |
+| Plan system message | `chat_tool_plan.system_message.v1` | Handles stale/expired/modified plan, missing confirmation, out-of-catalog step, validation error, forbidden/tenant/customer denial, approval-required blocker, provider/runtime/tool-boundary fail-closed state, and confirmation mismatch with no hidden-target enumeration. |
+
+Surface-description sufficiency review: this binding is sufficient for current-intent implementation planning. It names the target prompt, surface contracts, action/tool/capability ids, input schema, confirmation requirements, result surfaces, denied states, trace obligations, and no-mutation/no-autonomous-authority constraints. Runtime/frontend tasks still must implement and verify the actual typed surfaces before claiming runtime readiness.

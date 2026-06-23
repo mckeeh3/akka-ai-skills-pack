@@ -19,3 +19,12 @@ Backend-owned attention includes stable categories `agent_admin.proposal.review_
 ## Readiness posture
 
 This node captures current intent only. Runtime readiness still requires local Akka/API/UI validation and model/provider fail-closed proof where applicable.
+
+
+## Confirmed human chat tool-plan exposure
+
+This workstream exposes a bounded `human_chat_tool_plan` adapter for execution-oriented chat prompts after deterministic no-mutation surface routing declines the prompt. The adapter is current-intent only until runtime tasks implement it. It allows `agent-admin-agent` to propose a plan for the representative prompt **start prompt risk review for the Agent Admin prompt proposal**, but it never permits prompt-only mutation, hidden target enumeration, or AI-autonomous authority.
+
+Execution is allowed only when all of the following hold: the proposal was created with `noMutation=true`; the human explicitly confirms the exact plan snapshot; the backend reauthorizes the selected `AuthContext`, actor, capability, tool boundary, lifecycle state, approval policy, tenant/customer ownership, and idempotency on every step; and each step executes through its declared governed surface/action path as a separate transaction boundary.
+
+Representative catalog binding: actions `action-agent-prompt-risk-review-start`; governed tool ids `agent_admin.start_behavior_review_task`; capabilities `agent_admin.start_behavior_review_task`; input contract `schema.agent-admin.prompt-risk-review.start.v1` with visible `agentDefinitionId`, `proposalId`, redacted `artifactDeltas`, reason, and idempotency key; expected result surfaces `surface-agent-admin-prompt-risk-review`. The allowed effect is to start or read a governed prompt-risk review task for a visible proposal; it cannot accept results, approve behavior, activate/rollback/deactivate an agent, or fabricate model-backed review success.

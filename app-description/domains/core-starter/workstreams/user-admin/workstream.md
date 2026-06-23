@@ -73,3 +73,12 @@ Primary graph branches:
 ## Readiness posture
 
 This node captures current intent only. Runtime readiness still requires local Akka/API/UI validation, scoped authorization tests, idempotency/no-op tests, frontend surface rendering checks, audit/work-trace proof, and provider/model/outbox fail-closed proof where applicable.
+
+
+## Confirmed human chat tool-plan exposure
+
+This workstream exposes a bounded `human_chat_tool_plan` adapter for execution-oriented chat prompts after deterministic no-mutation surface routing declines the prompt. The adapter is current-intent only until runtime tasks implement it. It allows `user-admin-agent` to propose a plan for the representative prompt **create org "Org 1", and invite mckee.hugh@gmail.com as an org admin**, but it never permits prompt-only mutation, hidden target enumeration, or AI-autonomous authority.
+
+Execution is allowed only when all of the following hold: the proposal was created with `noMutation=true`; the human explicitly confirms the exact plan snapshot; the backend reauthorizes the selected `AuthContext`, actor, capability, tool boundary, lifecycle state, approval policy, tenant/customer ownership, and idempotency on every step; and each step executes through its declared governed surface/action path as a separate transaction boundary.
+
+Representative catalog binding: actions `action-submit-organization-create`; `action-submit-organization-admin-invitation`; governed tool ids `manage-organizations`; `manage-organization-admins`; capabilities `saas_owner.tenant.manage`; `saas_owner.organization_admin.invite`; input contract `schema.organization-admin.create.submit.v1` with `organizationName`/`reason`, then `schema.organization-admin.invitation-create.v1` with `organizationId` bound from step 1, `email`, `displayName`, `roles=[TENANT_ADMIN]`, and `reason`; expected result surfaces `surface-user-admin-organization-detail`; `surface-user-admin-invitation-detail`. The allowed effect is to create the Organization/Tenant boundary and then invite a `TENANT_ADMIN` for that created Organization; it cannot grant SaaS Owner roles, expose tenant app data, or send invitation/provider work before confirmation.

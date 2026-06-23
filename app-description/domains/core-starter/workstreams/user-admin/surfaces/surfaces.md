@@ -2332,3 +2332,17 @@ Every consequential browser action and every navigation/read surface-request act
 ## Common states
 
 User Admin surfaces define loading, empty, ready, submitting, success, validation-error, forbidden, not_found_or_redacted, conflict, stale/reconnect, partial-data, provider-fail-closed, model-fail-closed, outbox-fail-closed, no-op, approval-required, and failure states. All states preserve selected tenant/customer scoping, browser-safe redaction, trace/correlation links, and recovery guidance.
+
+
+## Shared chat tool-plan surfaces
+
+User Admin binds the shared `human_chat_tool_plan` surface contracts from `../../surface-catalog.md` to this workstream's functional agent `user-admin-agent` and representative catalog entry.
+
+| Plan surface | Contract | Workstream binding |
+|---|---|---|
+| Plan proposal | `chat_tool_plan.proposal.v1` | Shows the no-mutation proposal for **create org "Org 1", and invite mckee.hugh@gmail.com as an org admin** with actions `action-submit-organization-create`; `action-submit-organization-admin-invitation`, governed tools `manage-organizations`; `manage-organization-admins`, capabilities `saas_owner.tenant.manage`; `saas_owner.organization_admin.invite`, validated inputs `schema.organization-admin.create.submit.v1` with `organizationName`/`reason`, then `schema.organization-admin.invitation-create.v1` with `organizationId` bound from step 1, `email`, `displayName`, `roles=[TENANT_ADMIN]`, and `reason`, side effects, approval requirements, idempotency root, output bindings, and trace refs. |
+| Plan confirmation | `chat_tool_plan.confirmation.v1` | Requires explicit acknowledgement of the exact plan snapshot, selected `AuthContext`, requested/confirmed actor, step hashes, side effects, transaction boundaries, and idempotency before execution is requested. |
+| Plan result | `chat_tool_plan.result.v1` | Reports completed, failed, skipped, no-op/idempotent replay, partial-failure, and recovery states; successful step result surfaces are `surface-user-admin-organization-detail`; `surface-user-admin-invitation-detail`. |
+| Plan system message | `chat_tool_plan.system_message.v1` | Handles stale/expired/modified plan, missing confirmation, out-of-catalog step, validation error, forbidden/tenant/customer denial, approval-required blocker, provider/runtime/tool-boundary fail-closed state, and confirmation mismatch with no hidden-target enumeration. |
+
+Surface-description sufficiency review: this binding is sufficient for current-intent implementation planning. It names the target prompt, surface contracts, action/tool/capability ids, input schema, confirmation requirements, result surfaces, denied states, trace obligations, and no-mutation/no-autonomous-authority constraints. Runtime/frontend tasks still must implement and verify the actual typed surfaces before claiming runtime readiness.

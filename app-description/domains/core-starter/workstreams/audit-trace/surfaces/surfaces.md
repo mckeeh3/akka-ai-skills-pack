@@ -567,3 +567,17 @@ Surfaces define loading, empty, ready, submitting, validation-error, forbidden, 
 ## Sufficiency review
 
 This surface graph is sufficient for implementation cleanup: concrete surface ids, payload expectations, action ids, governed capabilities, redaction/export rules, cross-workstream reuse, backend authorization behavior, and test obligations are explicit enough that generators and developers should not invent alternate Audit/Trace dashboards, export paths, trace detail semantics, or frontend-only authorization.
+
+
+## Shared chat tool-plan surfaces
+
+Audit/Trace binds the shared `human_chat_tool_plan` surface contracts from `../../surface-catalog.md` to this workstream's functional agent `audit-trace-agent` and representative catalog entry.
+
+| Plan surface | Contract | Workstream binding |
+|---|---|---|
+| Plan proposal | `chat_tool_plan.proposal.v1` | Shows the no-mutation proposal for **append investigation note "provider blocked; retry after config" to this trace** with actions `action-audit-trace-append-investigation-note`, governed tools `draft-investigation-note`, capabilities `audit.trace.investigation_note.append`, validated inputs `schema.audit-trace.investigation-note.v1` with visible `traceId`/`correlationId`, `noteText`, selected scope, and idempotency key, side effects, approval requirements, idempotency root, output bindings, and trace refs. |
+| Plan confirmation | `chat_tool_plan.confirmation.v1` | Requires explicit acknowledgement of the exact plan snapshot, selected `AuthContext`, requested/confirmed actor, step hashes, side effects, transaction boundaries, and idempotency before execution is requested. |
+| Plan result | `chat_tool_plan.result.v1` | Reports completed, failed, skipped, no-op/idempotent replay, partial-failure, and recovery states; successful step result surfaces are `surface-audit-trace-investigation-note`. |
+| Plan system message | `chat_tool_plan.system_message.v1` | Handles stale/expired/modified plan, missing confirmation, out-of-catalog step, validation error, forbidden/tenant/customer denial, approval-required blocker, provider/runtime/tool-boundary fail-closed state, and confirmation mismatch with no hidden-target enumeration. |
+
+Surface-description sufficiency review: this binding is sufficient for current-intent implementation planning. It names the target prompt, surface contracts, action/tool/capability ids, input schema, confirmation requirements, result surfaces, denied states, trace obligations, and no-mutation/no-autonomous-authority constraints. Runtime/frontend tasks still must implement and verify the actual typed surfaces before claiming runtime readiness.

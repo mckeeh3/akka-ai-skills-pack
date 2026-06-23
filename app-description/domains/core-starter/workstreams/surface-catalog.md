@@ -31,6 +31,41 @@ Current code-owned routing lives in `DefaultSurfaceIntentRouter` and should stay
 
 Future deterministic routes should be generated only from catalog rows whose prompt examples are high-confidence, whose required capability hint is already enforced by the target surface/action path, and whose prefill fields are scalar/browser-safe. Ambiguous, compound, destructive, approval-gated, provider-dependent, or missing-target prompts must fall back to model-backed chat or open a confirmation/recovery surface without submitting a command.
 
+
+## Shared `human_chat_tool_plan` adapter path
+
+`human_chat_tool_plan` is a separate governed adapter path for execution-oriented chat requests that are not safely handled by deterministic surface routing. It does not replace this catalog's router-first rule: high-confidence open/prefill prompts still route to a no-mutation surface before model-backed planning is considered. Compound, consequential, provider-dependent, or multi-step prompts may become chat tool-plan candidates only when every intended step is represented in the selected workstream's backend-owned chat tool catalog.
+
+The shared adapter contract is:
+
+1. **Plan proposal only:** the workstream agent may propose a catalog-bound plan surface using governed model/runtime context, visible surface/action metadata, and read/evidence tools. Proposal generation is no-mutation and cannot authorize work.
+2. **Explicit human confirmation:** execution is forbidden until the signed-in human confirms the exact `planId`, `planSnapshotId`, selected `AuthContext`, requested/confirmed actor, step hashes, required capabilities, side effects, approval requirements, and idempotency root.
+3. **Backend authorization:** every confirmed step is reauthorized server-side against the selected `AuthContext`, human authority, workstream catalog, governed tool boundary, lifecycle state, approval policy, and tenant/customer ownership. Rail visibility, prompt text, agent text, and frontend state never grant authority.
+4. **Transaction/idempotency:** each step is its own transaction boundary with its own action id, browser tool id where applicable, governed tool id, capability id, input schema ref, idempotency key, correlation id, trace refs, result surface, and dependency/output binding. Successful prior steps remain committed if a later dependent step fails unless a cataloged compensating action exists.
+5. **Safe denial and validation:** stale, expired, modified, cross-context, cross-tenant/customer, out-of-catalog, unauthorized, missing-provider/runtime/tool-boundary, invalid-input, approval-required, or confirmation-mismatch requests return a typed chat tool-plan system-message surface with `noDirectMutation=true`, `noFakeSuccess=true` when provider/model work is blocked, redaction, and trace refs.
+6. **Trace obligations:** proposal, confirmation, denial, step started/completed/failed/skipped, provider-blocked, idempotent replay, partial failure, and recovery outcomes emit durable work/audit trace facts using event types prefixed by `human_chat_tool_plan.*`.
+
+Shared plan surfaces available to every foundation workstream:
+
+| Surface contract | Surface type | Purpose | Required behavior |
+|---|---|---|---|
+| `chat_tool_plan.proposal.v1` | `chat_tool_plan_proposal` / decision card | Show proposed steps, inputs, side effects, capabilities, approval gates, idempotency, no-mutation notice, and trace refs. | `status=waiting-for-human`; no tool execution. |
+| `chat_tool_plan.confirmation.v1` | `chat_tool_plan_confirmation` | Plan-bound confirmation affordance. | Requires exact snapshot acknowledgement; cannot edit-and-submit a changed plan. |
+| `chat_tool_plan.result.v1` | `chat_tool_plan_result` / workflow status | Show completed, failed, skipped, recovery, result surfaces, idempotency replay, and trace refs. | Partial failure must not hide committed steps or duplicate successful idempotent work. |
+| `chat_tool_plan.system_message.v1` | `system-message` | Safe denial, unavailable, stale, expired, out-of-catalog, provider/runtime blocked, or capability-denied result. | No hidden target enumeration, no fake success, no authority expansion. |
+
+First-pass representative `human_chat_tool_plan` catalog entries reuse the same governed tool ids as their corresponding surface actions:
+
+| Workstream | Representative prompt | Shared action ids | Shared governed tool ids | Capability ids | Expected result surfaces |
+|---|---|---|---|---|---|
+| My Account | `change my theme to Obsidian Dark` | `action-update-my-settings` | `my_account.update_profile_settings` | `my_account.update_profile_settings` | `surface-my-settings` |
+| User Admin | `create org "Org 1", and invite mckee.hugh@gmail.com as an org admin` | `action-submit-organization-create`; `action-submit-organization-admin-invitation` | `manage-organizations`; `manage-organization-admins` | `saas_owner.tenant.manage`; `saas_owner.organization_admin.invite` | `surface-user-admin-organization-detail`; `surface-user-admin-invitation-detail` |
+| Agent Admin | `start prompt risk review for the Agent Admin prompt proposal` | `action-agent-prompt-risk-review-start` | `agent_admin.start_behavior_review_task` | `agent_admin.start_behavior_review_task` | `surface-agent-admin-prompt-risk-review` |
+| Audit/Trace | `append investigation note "provider blocked; retry after config" to this trace` | `action-audit-trace-append-investigation-note` | `draft-investigation-note` | `audit.trace.investigation_note.append` | `surface-audit-trace-investigation-note` |
+| Governance/Policy | `draft a policy proposal to require approval before redacted exports` | `action-governance-policy-draft-proposal` | `governance.policy.propose` | `governance.policy.propose` | `surface-governance-policy-proposal` |
+
+High-impact actions such as policy activation/rollback, managed-agent activation/rollback, account disabling, role grants, trace export delivery, and support-access grants remain blocked, approval-gated, or surface-only until their exact confirmation, prerequisite, authorization, and recovery semantics are modeled in a later bounded task.
+
 ## Catalog: My Account
 
 catalog-workstream: `my-account-agent`

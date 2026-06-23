@@ -927,3 +927,17 @@ This pass makes the Governance/Policy surface set sufficiently unambiguous for s
 - Frontend contract tests prove the shell renders Governance/Policy dashboard, inventory, diff, decision, workflow-status, outcome, and system-message states.
 - Backend tests prove scoped reads, proposal lifecycle idempotency, simulation advisory behavior, activation/rollback prerequisites, outcome panel return, impact-task fail-closed lifecycle, and structured denial surfaces.
 - Required trace evidence: policy-decision-trace, admin-audit-event, workstream-log-trace, agent-work-trace, impact-analysis worker/task events, and denial/failure traces.
+
+
+## Shared chat tool-plan surfaces
+
+Governance/Policy binds the shared `human_chat_tool_plan` surface contracts from `../../surface-catalog.md` to this workstream's functional agent `governance-policy-agent` and representative catalog entry.
+
+| Plan surface | Contract | Workstream binding |
+|---|---|---|
+| Plan proposal | `chat_tool_plan.proposal.v1` | Shows the no-mutation proposal for **draft a policy proposal to require approval before redacted exports** with actions `action-governance-policy-draft-proposal`, governed tools `governance.policy.propose`, capabilities `governance.policy.propose`, validated inputs `schema.governance-policy.proposal.draft.v1` with title, rationale, browser-safe proposed change summary, affected capabilities, and idempotency key, side effects, approval requirements, idempotency root, output bindings, and trace refs. |
+| Plan confirmation | `chat_tool_plan.confirmation.v1` | Requires explicit acknowledgement of the exact plan snapshot, selected `AuthContext`, requested/confirmed actor, step hashes, side effects, transaction boundaries, and idempotency before execution is requested. |
+| Plan result | `chat_tool_plan.result.v1` | Reports completed, failed, skipped, no-op/idempotent replay, partial-failure, and recovery states; successful step result surfaces are `surface-governance-policy-proposal`. |
+| Plan system message | `chat_tool_plan.system_message.v1` | Handles stale/expired/modified plan, missing confirmation, out-of-catalog step, validation error, forbidden/tenant/customer denial, approval-required blocker, provider/runtime/tool-boundary fail-closed state, and confirmation mismatch with no hidden-target enumeration. |
+
+Surface-description sufficiency review: this binding is sufficient for current-intent implementation planning. It names the target prompt, surface contracts, action/tool/capability ids, input schema, confirmation requirements, result surfaces, denied states, trace obligations, and no-mutation/no-autonomous-authority constraints. Runtime/frontend tasks still must implement and verify the actual typed surfaces before claiming runtime readiness.

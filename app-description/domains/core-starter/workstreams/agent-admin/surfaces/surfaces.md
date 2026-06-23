@@ -507,3 +507,17 @@ Every consequential browser action has a stable `actionId`, maps to `managed-age
 ## States
 
 Surfaces define loading, empty, ready, submitting, validation-error, forbidden, conflict, stale/reconnect, partial-data, provider-fail-closed, not-found-or-redacted, no-op, approval-required, and failure states where applicable.
+
+
+## Shared chat tool-plan surfaces
+
+Agent Admin binds the shared `human_chat_tool_plan` surface contracts from `../../surface-catalog.md` to this workstream's functional agent `agent-admin-agent` and representative catalog entry.
+
+| Plan surface | Contract | Workstream binding |
+|---|---|---|
+| Plan proposal | `chat_tool_plan.proposal.v1` | Shows the no-mutation proposal for **start prompt risk review for the Agent Admin prompt proposal** with actions `action-agent-prompt-risk-review-start`, governed tools `agent_admin.start_behavior_review_task`, capabilities `agent_admin.start_behavior_review_task`, validated inputs `schema.agent-admin.prompt-risk-review.start.v1` with visible `agentDefinitionId`, `proposalId`, redacted `artifactDeltas`, reason, and idempotency key, side effects, approval requirements, idempotency root, output bindings, and trace refs. |
+| Plan confirmation | `chat_tool_plan.confirmation.v1` | Requires explicit acknowledgement of the exact plan snapshot, selected `AuthContext`, requested/confirmed actor, step hashes, side effects, transaction boundaries, and idempotency before execution is requested. |
+| Plan result | `chat_tool_plan.result.v1` | Reports completed, failed, skipped, no-op/idempotent replay, partial-failure, and recovery states; successful step result surfaces are `surface-agent-admin-prompt-risk-review`. |
+| Plan system message | `chat_tool_plan.system_message.v1` | Handles stale/expired/modified plan, missing confirmation, out-of-catalog step, validation error, forbidden/tenant/customer denial, approval-required blocker, provider/runtime/tool-boundary fail-closed state, and confirmation mismatch with no hidden-target enumeration. |
+
+Surface-description sufficiency review: this binding is sufficient for current-intent implementation planning. It names the target prompt, surface contracts, action/tool/capability ids, input schema, confirmation requirements, result surfaces, denied states, trace obligations, and no-mutation/no-autonomous-authority constraints. Runtime/frontend tasks still must implement and verify the actual typed surfaces before claiming runtime readiness.

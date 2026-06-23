@@ -92,7 +92,7 @@
 
 ### TASK-WCTE-02-001: Update app-description current intent for chat tool plans
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-execution/backlog/01-workstream-chat-tool-execution-build-backlog.md
 - task brief: specs/workstream-chat-tool-execution/tasks/02-app-description/01-update-chat-tool-plan-current-intent.md
 - depends on:
@@ -125,6 +125,7 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: app-description/current-intent only; no runtime code
+  - commit message: `workstream-chat-tools: update chat tool current intent`
 
 ### TASK-WCTE-03-001: Add chat tool plan records and surfaces
 

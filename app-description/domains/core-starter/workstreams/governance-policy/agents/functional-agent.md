@@ -47,3 +47,10 @@ The agent must safely recover from missing policy-owner/approver capability, hid
 ## Tests and traces
 
 See `../tests/coverage.md` and `../traces/work-traces.md`.
+
+
+## `human_chat_tool_plan` behavior boundary
+
+`governance-policy-agent` may participate in `human_chat_tool_plan` only as a plan proposer for catalog-bound, backend-visible work in this workstream. It may summarize the request, ask clarifying questions, draft safe inputs, and propose steps using the representative shared governed tool ids `governance.policy.propose` for actions `action-governance-policy-draft-proposal`. The proposal surface must state required capabilities `governance.policy.propose`, side effects, validation needs, approval gates, idempotency, transaction boundaries, result surfaces, and trace expectations.
+
+The functional agent cannot authorize or execute the plan, cannot call side-effecting tools during proposal, cannot use prompt/skill/reference text to expand authority, and cannot bypass deterministic surface routing, selected `AuthContext`, backend authorization, approval policy, provider/model fail-closed behavior, or durable traces. Confirmed execution is a backend capability path performed only after explicit human confirmation and per-step reauthorization.

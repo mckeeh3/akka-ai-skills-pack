@@ -35,3 +35,12 @@ Trace records include:
 ## Redaction and investigation
 
 Trace links in User Admin surfaces are browser-safe references, not proof of read authority. Opening trace detail reauthorizes through Audit/Trace capability. Hidden SaaS Owner Admin users, hidden Organization Admin users, hidden Customer Admin users, hidden users, hidden tenants/customers, sibling-customer facts, raw invitation tokens, WorkOS/provider internals, Resend/provider secrets, model secrets, full email bodies, tenant application data, and unredacted audit evidence must not appear in User Admin browser payloads.
+
+
+## `human_chat_tool_plan` trace evidence
+
+User Admin must emit durable work/audit trace facts for the `human_chat_tool_plan` adapter in addition to existing surface-action traces. Required event types are `human_chat_tool_plan.proposed`, `human_chat_tool_plan.confirmed`, `human_chat_tool_plan.step_started`, `human_chat_tool_plan.step_completed`, `human_chat_tool_plan.step_failed`, `human_chat_tool_plan.step_skipped`, `human_chat_tool_plan.denied`, and `human_chat_tool_plan.provider_blocked`.
+
+Minimum fields: trace/work trace id, correlation id, causation/parent event id, selected `AuthContext`, tenant/customer scope where applicable, functional agent `user-admin-agent`, requestedBy, confirmedBy for execution, action ids `action-submit-organization-create`; `action-submit-organization-admin-invitation`, governed tool ids `manage-organizations`; `manage-organization-admins`, capability ids `saas_owner.tenant.manage`; `saas_owner.organization_admin.invite`, input schema ref, plan id, plan snapshot id, step id/sequence/dependencies, idempotency key or redacted hash, authorization decision and basis summary, policy/approval refs, prompt/skill/reference/model/tool-boundary refs for proposal generation, result surface ids `surface-user-admin-organization-detail`; `surface-user-admin-invitation-detail`, status, safe error code, redaction classification, and browser-safe input/output summaries.
+
+Trace summaries must distinguish direct surface actions from `human_chat_tool_plan`, preserve no-mutation proposal evidence, record confirmation and per-step transaction outcomes, and omit raw provider secrets, JWTs, invitation tokens, raw email bodies, raw prompts/model payloads, hidden tenant/customer ids, raw tool payloads, and unredacted evidence from browser-visible views.

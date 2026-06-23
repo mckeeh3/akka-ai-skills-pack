@@ -19,3 +19,12 @@ Backend-owned attention includes personal action items, notification acknowledge
 ## Readiness posture
 
 This node captures current intent only. Runtime readiness still requires local Akka/API/UI validation and model/provider fail-closed proof where applicable.
+
+
+## Confirmed human chat tool-plan exposure
+
+This workstream exposes a bounded `human_chat_tool_plan` adapter for execution-oriented chat prompts after deterministic no-mutation surface routing declines the prompt. The adapter is current-intent only until runtime tasks implement it. It allows `my-account-agent` to propose a plan for the representative prompt **change my theme to Obsidian Dark**, but it never permits prompt-only mutation, hidden target enumeration, or AI-autonomous authority.
+
+Execution is allowed only when all of the following hold: the proposal was created with `noMutation=true`; the human explicitly confirms the exact plan snapshot; the backend reauthorizes the selected `AuthContext`, actor, capability, tool boundary, lifecycle state, approval policy, tenant/customer ownership, and idempotency on every step; and each step executes through its declared governed surface/action path as a separate transaction boundary.
+
+Representative catalog binding: actions `action-update-my-settings`; governed tool ids `my_account.update_profile_settings`; capabilities `my_account.update_profile_settings`; input contract `schema.my-account.settings.update.v1` with `preferredThemeId=obsidian-dark` selected from backend-valid theme options; expected result surfaces `surface-my-settings`. The allowed effect is to update only the signed-in user's own profile/settings preferences; it cannot change tenant branding, roles, memberships, external delivery, or provider/model configuration.

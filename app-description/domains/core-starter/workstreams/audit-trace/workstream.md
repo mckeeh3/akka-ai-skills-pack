@@ -19,3 +19,12 @@ Backend-owned attention includes stable categories `audit_trace.protected_action
 ## Readiness posture
 
 This node captures current intent only. Runtime readiness still requires local Akka/API/UI validation and model/provider fail-closed proof where applicable.
+
+
+## Confirmed human chat tool-plan exposure
+
+This workstream exposes a bounded `human_chat_tool_plan` adapter for execution-oriented chat prompts after deterministic no-mutation surface routing declines the prompt. The adapter is current-intent only until runtime tasks implement it. It allows `audit-trace-agent` to propose a plan for the representative prompt **append investigation note "provider blocked; retry after config" to this trace**, but it never permits prompt-only mutation, hidden target enumeration, or AI-autonomous authority.
+
+Execution is allowed only when all of the following hold: the proposal was created with `noMutation=true`; the human explicitly confirms the exact plan snapshot; the backend reauthorizes the selected `AuthContext`, actor, capability, tool boundary, lifecycle state, approval policy, tenant/customer ownership, and idempotency on every step; and each step executes through its declared governed surface/action path as a separate transaction boundary.
+
+Representative catalog binding: actions `action-audit-trace-append-investigation-note`; governed tool ids `draft-investigation-note`; capabilities `audit.trace.investigation_note.append`; input contract `schema.audit-trace.investigation-note.v1` with visible `traceId`/`correlationId`, `noteText`, selected scope, and idempotency key; expected result surfaces `surface-audit-trace-investigation-note`. The allowed effect is to append a browser-safe human investigation note annotation to an authorized visible trace/correlation; it cannot edit retained evidence, weaken redaction, export traces, or mutate source authorization/policy state.
