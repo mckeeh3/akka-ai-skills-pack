@@ -372,7 +372,7 @@
 
 ### TASK-FSFR-99-001: Verify Full Suite Failure Remediation completion
 
-- status: pending
+- status: blocked
 - source: specs/full-suite-failure-remediation/README.md done state
 - task brief: specs/full-suite-failure-remediation/tasks/99-verification/01-verify-full-suite-remediation.md
 - depends on:
@@ -407,3 +407,85 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: terminal verification for full-suite remediation; expected final state is clean full-suite or precise queued blockers
+  - completed 2026-06-23 as a blocked/extension verification: wrote `specs/full-suite-failure-remediation/verification-notes.md` comparing completed work against every README done-state bullet and every failure-inventory item.
+  - validation: `git diff --check` passed before and after verification notes/queue edits; `npm --prefix frontend test -- --run` passed with 177/177 tests; `npm --prefix frontend run typecheck` passed; `mvn test` failed with 431 tests, 2 failures, 0 errors, 2 skipped (`WorkstreamServiceTest.myAccountRejectsUnsupportedSelfServiceFieldsBeforeMutation` and `WorkstreamServiceTest.myAccountSettingsRejectInvalidTimezoneBeforeMutation`).
+  - blocker: README done state is not achieved because `mvn test` is not clean. Residual failures are moved to bounded follow-up `TASK-FSFR-10-001`; replacement terminal verification is `TASK-FSFR-99-002`.
+  - commit message: `full-suite-remediation: verify full-suite remediation`
+
+### TASK-FSFR-10-001: Reconcile My Account direct-action validation contract failures
+
+- status: pending
+- source: `TASK-FSFR-99-001` terminal verification residual `mvn test` failures
+- task brief: specs/full-suite-failure-remediation/tasks/10-my-account/01-reconcile-my-account-direct-action-validation-contract.md
+- depends on:
+  - TASK-FSFR-09-001
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/full-suite-failure-remediation/README.md
+  - specs/full-suite-failure-remediation/conversation-capture.md
+  - specs/full-suite-failure-remediation/pending-tasks.md
+  - specs/full-suite-failure-remediation/failure-inventory.md
+  - specs/full-suite-failure-remediation/verification-notes.md
+  - specs/full-suite-failure-remediation/tasks/10-my-account/01-reconcile-my-account-direct-action-validation-contract.md
+  - src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - My Account source/test files directly named by the failure details if further inspection proves they are involved
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-pending-task-queue-maintenance
+- expected outputs:
+  - focused implementation, test, and/or current-intent repair for the residual My Account direct-action validation failures
+  - queue update
+- required checks:
+  - `git diff --check`
+  - `mvn -Dtest=WorkstreamServiceTest#myAccountRejectsUnsupportedSelfServiceFieldsBeforeMutation+myAccountSettingsRejectInvalidTimezoneBeforeMutation test`
+  - related My Account browser smoke tests if the protected workstream action surface behavior changes
+  - `mvn test` if the focused repair is small enough to re-run before terminal verification; otherwise record the exact rationale and leave the full run to `TASK-FSFR-99-002`
+- done criteria:
+  - both residual `WorkstreamServiceTest` methods pass
+  - unsupported direct-action fields and invalid My Account settings remain fail-closed without mutating forbidden fields
+  - browser-safe validation result surfaces remain compatible with the protected workstream runtime path, or current-intent/test evidence is updated to accepted behavior
+  - changes and queue update are committed
+- notes:
+  - vertical contract: My Account direct-action validation/security semantics only; do not reopen unrelated remediation clusters.
+
+### TASK-FSFR-99-002: Verify Full Suite Failure Remediation completion after My Account follow-up
+
+- status: pending
+- source: replacement terminal verification appended by `TASK-FSFR-99-001`
+- task brief: specs/full-suite-failure-remediation/tasks/99-verification/02-verify-full-suite-remediation.md
+- depends on:
+  - TASK-FSFR-10-001
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/full-suite-failure-remediation/README.md
+  - specs/full-suite-failure-remediation/conversation-capture.md
+  - specs/full-suite-failure-remediation/pending-tasks.md
+  - specs/full-suite-failure-remediation/failure-inventory.md
+  - specs/full-suite-failure-remediation/verification-notes.md
+  - specs/full-suite-failure-remediation/tasks/99-verification/02-verify-full-suite-remediation.md
+  - completed task notes and changed files since `TASK-FSFR-99-001`
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-pending-task-queue-maintenance
+- expected outputs:
+  - updated `specs/full-suite-failure-remediation/verification-notes.md` with final command evidence
+  - queue update marking verification done only when README done state is achieved
+  - additional bounded follow-up tasks plus another terminal verification task if material failures remain
+  - commit for verification notes and queue updates
+- required checks:
+  - `git diff --check`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - `mvn test`
+- done criteria:
+  - verification notes compare completed work against every README done-state bullet and every `failure-inventory.md` item, including residual My Account failures recorded by `TASK-FSFR-99-001`
+  - full frontend tests and typecheck pass
+  - `mvn test` passes, or remaining failures are explicitly queued as bounded blockers with a new terminal verification task
+  - changes and queue update are committed
+- notes:
+  - vertical contract: replacement terminal verification after `TASK-FSFR-10-001`; expected final state is clean full-suite or precise queued blockers.
