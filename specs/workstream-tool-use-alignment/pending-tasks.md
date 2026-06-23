@@ -266,7 +266,7 @@
 
 ### TASK-WTUA-06-001: Align planning, templates, examples, and validation assets
 
-- status: pending
+- status: done
 - source: specs/workstream-tool-use-alignment/backlog/01-workstream-tool-use-alignment-build-backlog.md
 - task brief: specs/workstream-tool-use-alignment/tasks/06-planning-validation-assets/01-align-planning-templates-and-validation.md
 - depends on:
@@ -306,6 +306,8 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: skills-pack docs/templates/tools alignment; no root app runtime feature
+  - commit message: `workstream-tool-use: align planning validation assets`
+  - checks passed: `git diff --check`; `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --dry-run`; `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --prune`; `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --check`; targeted validator/test commands `python3 -m py_compile skills-pack/tools/validate-workstream-manifest.py`, `bash skills-pack/tools/validate-surface-contracts.sh --mode template skills-pack/templates/ai-first-saas-core-app/app-description`, `bash skills-pack/tools/validate-workstream-contracts.sh skills-pack/templates/ai-first-saas-core-app/app-description`, and `bash skills-pack/tools/validate-pending-task-workstream-contract.sh specs/workstream-tool-use-alignment/pending-tasks.md`.
 
 ### TASK-WTUA-07-001: Run tool-use consistency repair pass
 

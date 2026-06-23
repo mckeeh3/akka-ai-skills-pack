@@ -15,7 +15,7 @@ Produce a compact implementation contract that:
 
 - interprets product intent through the secure AI-first SaaS operating model when generated-app scope is in play;
 - derives governed backend capabilities before selecting Akka components or exposure channels;
-- maps capabilities to the smallest component set that preserves durability, authority, orchestration, query, timing, integration, AI, and edge semantics;
+- maps capabilities and governed workstream tools to the smallest component set that preserves durability, authority, orchestration, query, timing, integration, AI, actor-adapter exposure, and edge semantics;
 - labels readiness scope before planning implementation;
 - routes to the smallest relevant skill set for code and tests;
 - gives vertical implementation order, not just a component list.
@@ -69,7 +69,7 @@ Before coding, produce a component plan with these sections. Keep each concise; 
 8. Workforce decomposition: human, functional-agent, internal/autonomous/evaluator agent, and system workers
 9. Attention/dashboard model
 10. Human surface graph and surface actions
-11. Surface/action-to-capability and governed-tool mapping
+11. Surface/action-to-capability and governed-tool mapping, including actor adapters/exposure channels (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/workflow/timer/consumer/MCP/internal), confirmation/approval behavior, idempotency/transaction boundary, result/partial-failure surface, and trace source
 12. Internal agent/autonomous-task candidates
 13. Workstream expertise plan
 14. Capability and governed-tool inventory
@@ -124,8 +124,8 @@ For each operation/query/action/event/tool, capture:
 
 - stable capability id/name and governed-tool id when executable;
 - class: read/evidence, command, proposal, approval, workflow, policy/governance, trace/audit, scheduled, reactive, task lifecycle, projection read, integration;
-- actors/callers, AuthContext, tenant/customer scope, roles/capabilities, denial shape;
-- input/output schemas, validation, redaction, idempotency, correlation;
+- actors/callers, actor adapter/exposure channel (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/workflow/timer/consumer/MCP/internal), AuthContext, tenant/customer scope, roles/capabilities, denial shape;
+- input/output schemas, validation, redaction, confirmation binding, approval policy, idempotency, transaction boundary, correlation;
 - data reads/writes, side effects, external calls, topics, timers, emails, notifications;
 - policy/approval/escalation, audit/work-trace obligations, exposure channels;
 - browser UI, agent/tool, workflow/timer/consumer/MCP implications;
@@ -197,9 +197,9 @@ Before handoff, verify:
 - scope label is explicit;
 - fixed package `ai.first` is recorded;
 - secure SaaS foundation obligations are included or explicitly out of scope;
-- workstreams/surfaces/capabilities precede component choices;
+- workstreams/surfaces/capabilities/governed-tool catalogs and actor adapters precede component choices;
 - every chosen component has a reason and focused skill route;
-- authority, idempotency, side effects, traces, and tests are explicit;
+- authority, confirmation/approval, idempotency, transaction boundary, side effects, partial-failure/result surfaces, traces, and tests are explicit;
 - open questions are minimal and tied to blocked work;
 - implementation order is vertical and runnable through the intended local Akka/API/UI path.
 

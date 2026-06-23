@@ -23,7 +23,7 @@ The skill should:
 - detect tasks that are runnable only because unresolved pending questions were ignored
 - preserve AI-first operating-model context such as delegated authority, policies, decisions, traces, UI surfaces, evaluations, and outcomes across queue repairs
 - preserve workstream-expertise and reference-governance context for LLM-backed functional agents: model binding, prompt/skill/reference governance, compact manifests, `readSkill`/`readReferenceDoc`, loader authorization, tool boundaries, load traces, expertise surfaces, default-content policy, and tests
-- repair or block stale generated-SaaS tasks that have regressed into component-only, CRUD-only, page-only, or dashboard-only work without workstream, role-specific dashboard attention, human surface graph nodes/edges, governed-tool exposure, capability id, API/exposure, Akka substrate, internal workstream agent graph context when relevant, auth, traces, and tests
+- repair or block stale generated-SaaS tasks that have regressed into component-only, CRUD-only, page-only, or dashboard-only work without workstream, role-specific dashboard attention, human surface graph nodes/edges, workstream tool catalog, governed-tool exposure, actor adapter/exposure channel, confirmation/approval behavior, transaction/idempotency semantics, capability id, API/exposure, Akka substrate, internal workstream agent graph context when relevant, auth, result/partial-failure surfaces, traces, and tests
 - detect `done` feature-bearing tasks that lack runtime evidence or conflate `surface-ready`/`backend-ready`/`frontend-rendered` with `runtime-ready`
 - mark obsolete tasks as `superseded` when justified
 - append maintenance follow-up tasks only when needed
@@ -109,7 +109,7 @@ Before finishing, verify:
 - non-done tasks have usable required reads, skills, and current-intent provenance or a valid exemption
 - stale/duplicate tasks are blocked or superseded
 - AI-first task entries preserve authority, policy, decision, trace, UI-surface, evaluation, and outcome context when present in source artifacts
-- generated-SaaS task entries preserve or inherit workstream, attention category, role-specific dashboard, human surface graph node/action edge, governed-tool id/exposure, capability id, API/exposure, selected Akka substrate, internal workstream agent graph result handling, autonomous task notification/result mapping, auth, traces, and tests
+- generated-SaaS task entries preserve or inherit workstream, attention category, role-specific dashboard, human surface graph node/action edge, governed-tool id/exposure, actor adapter/source (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/workflow/timer/consumer/MCP/internal), confirmation/approval behavior, transaction/idempotency semantics, capability id, API/exposure, selected Akka substrate, internal workstream agent graph result handling, autonomous task notification/result mapping, auth, result/partial-failure surfaces, traces, and tests
 - LLM-backed functional-agent task entries preserve or inherit workstream expertise, model binding, skill/reference governance, `readReferenceDoc`, manifest assignment, loader authorization, tool boundaries, load traces, expertise surfaces, default-content governance policy, and tests
 - unresolved AI-first blockers are not left runnable
 - completed task history is preserved

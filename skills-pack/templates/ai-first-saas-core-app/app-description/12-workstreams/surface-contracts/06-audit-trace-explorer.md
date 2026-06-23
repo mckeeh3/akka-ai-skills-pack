@@ -65,6 +65,10 @@ type AuditTraceExplorerData = {
 | `audit.export-scoped-traces` | `audit-trace.export` | `audit.traces.export` | `governance-decisions-audit` | browser-tool | deferred `trace-export-status`, `decision-card`, or `system_message` | export request id | true |
 | `audit.escalate-anomaly` | `audit-trace.anomaly.escalate` | `audit.anomalies.escalate` | `governance-decisions-audit` | browser-tool | `decision-card` or `system_message` | anomaly id + request id | true |
 
+
+
+Action mappings must preserve the shared tool-use contract: `governedToolId`, actor adapter/source (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/workflow/timer/consumer/MCP/internal), `confirmationRequired`, `approvalPolicy`, idempotency key, transaction boundary, result/partial-failure behavior, `traceSource`, and `traceRequired`. If this surface exposes only the browser-tool adapter, state `surface_action` and keep any chat/agent adapter in the workstream tool catalog instead of duplicating business semantics.
+
 ## UI states
 
 - `loading`: preserve submitted filters and show timeline skeletons.

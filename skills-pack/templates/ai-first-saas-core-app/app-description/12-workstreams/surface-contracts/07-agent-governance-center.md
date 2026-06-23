@@ -60,6 +60,10 @@ type AgentGovernanceCenterData = {
 | `agent-governance.open-document-version` | `agent-governance.document-version.open` | `agents.documents.read` | `managed-agent-foundation` | browser-tool | deferred `agent-version-card` | document id + version id | true |
 | `agent-governance.open-tool-boundary-trace` | `agent-governance.tool-boundary-trace.open` | `audit.traces.view` | `governance-decisions-audit` | browser-tool | `audit-trace-explorer` | trace id | true |
 
+
+
+Action mappings must preserve the shared tool-use contract: `governedToolId`, actor adapter/source (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/workflow/timer/consumer/MCP/internal), `confirmationRequired`, `approvalPolicy`, idempotency key, transaction boundary, result/partial-failure behavior, `traceSource`, and `traceRequired`. If this surface exposes only the browser-tool adapter, state `surface_action` and keep any chat/agent adapter in the workstream tool catalog instead of duplicating business semantics.
+
 ## UI states
 
 - `loading`: governance workspace skeleton without showing stale secrets.

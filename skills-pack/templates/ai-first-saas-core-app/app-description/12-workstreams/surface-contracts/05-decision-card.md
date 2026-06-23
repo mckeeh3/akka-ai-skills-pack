@@ -66,6 +66,10 @@ type DecisionCardData = {
 | `decision.request-evidence` | `decision-card.evidence.request` | `decisions.evidence.request` | `governance-decisions-audit` | browser-tool, internal-tool | deferred `task-progress-surface` or `system_message` | decision id + evidence request id | true |
 | `decision.open-trace` | `decision-card.trace.open` | `audit.traces.view` | `governance-decisions-audit` | browser-tool | `audit-trace-explorer` | trace id | true |
 
+
+
+Action mappings must preserve the shared tool-use contract: `governedToolId`, actor adapter/source (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/workflow/timer/consumer/MCP/internal), `confirmationRequired`, `approvalPolicy`, idempotency key, transaction boundary, result/partial-failure behavior, `traceSource`, and `traceRequired`. If this surface exposes only the browser-tool adapter, state `surface_action` and keep any chat/agent adapter in the workstream tool catalog instead of duplicating business semantics.
+
 ## UI states
 
 - `loading`: show decision skeleton without unsafe recommendation text.

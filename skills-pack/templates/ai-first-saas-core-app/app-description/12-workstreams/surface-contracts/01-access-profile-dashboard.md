@@ -63,6 +63,10 @@ Allowed actions are display hints only; backend authorization remains authoritat
 | `my-account.open-workstream` | `my-account.workstream.open` | `workstream.open` | `frontend-shell-integration-patterns` | browser-tool, surface-request | target dashboard or `system_message` | target workstream id | true |
 | `my-account.open-trace` | `my-account.trace.open` | `audit.traces.view` | `governance-decisions-audit` | browser-tool, agent-tool | `audit-trace-explorer` | trace id | true |
 
+
+
+Action mappings must preserve the shared tool-use contract: `governedToolId`, actor adapter/source (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/workflow/timer/consumer/MCP/internal), `confirmationRequired`, `approvalPolicy`, idempotency key, transaction boundary, result/partial-failure behavior, `traceSource`, and `traceRequired`. If this surface exposes only the browser-tool adapter, state `surface_action` and keep any chat/agent adapter in the workstream tool catalog instead of duplicating business semantics.
+
 ## UI states
 
 - `loading`: show account/context skeletons and do not flash hidden workstreams.

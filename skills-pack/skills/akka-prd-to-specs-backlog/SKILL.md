@@ -15,7 +15,7 @@ Create or update a repo-ready planning package that lets later harness sessions 
 
 - cite current-intent graph provenance in solution plans, specs, backlogs, task briefs, pending questions, and pending tasks;
 - interpret product intent through the secure AI-first SaaS operating model when generated-app scope is in play;
-- derive workstreams, attention/dashboard contracts, surface graph, deterministic surface intent routing, governed tools, and backend capabilities before Akka substrates;
+- derive workstreams, attention/dashboard contracts, surface graph, deterministic surface intent routing, governed workstream tool catalogs, actor adapters/exposure channels, and backend capabilities before Akka substrates;
 - produce a master solution plan with fixed Java base package `ai.first`;
 - split broad work into module/sprint specs or smaller vertical slice specs;
 - create matching build backlogs and, when needed, leaf task briefs;
@@ -139,10 +139,10 @@ Before finishing, verify:
 - current-intent graph provenance is recorded for generated specs, backlogs, questions, and tasks;
 - existing app-description/specs/source constraints were preserved;
 - foundation obligations are included or explicitly out of scope;
-- workstreams, surfaces, deterministic surface intent routes, capabilities, governed tools, and Akka components are linked;
+- workstreams, surfaces, deterministic surface intent routes, capabilities, governed tool ids, actor adapters/exposure channels, confirmation/approval behavior, transaction/idempotency semantics, traces, and Akka components are linked;
 - specs/backlogs/tasks are small enough for focused runs;
 - pending questions block only affected work;
-- pending tasks have required reads, focused skills, acceptance checks, and validation path;
+- pending tasks have required reads, focused skills, acceptance checks, validation path, and a tool-use contract when consequential work is in scope: workstream tool catalog context, governed-tool id, actor adapter (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/workflow/timer/consumer/MCP/internal), confirmation/approval behavior, idempotency/transaction boundary, result/partial-failure surface, and trace evidence;
 - no fixture/demo/model-less runtime path is counted as implementation completion.
 
 ## Response style

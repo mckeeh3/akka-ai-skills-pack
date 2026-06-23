@@ -101,7 +101,7 @@ Good task boundaries:
 
 Split or block tasks that are too broad, such as "fix all skills", "make SaaS Foundation App production ready", "migrate all UI", or "implement the whole feature".
 
-Generated-app/reference-runtime tasks must preserve the target project runtime completion doctrine: do not mark feature work complete unless the real local runtime/API/UI path works at the stated scope, or the task is explicitly non-runtime/docs-only.
+Generated-app/reference-runtime tasks must preserve the target project runtime completion doctrine: do not mark feature work complete unless the real local runtime/API/UI path works at the stated scope, or the task is explicitly non-runtime/docs-only. When a mini-project affects consequential workstream tool use, task briefs and queue entries must carry the tool-use contract instead of guessing it later: workstream tool catalog context, governed-tool id, capability id, actor adapter/exposure channel (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/workflow/timer/consumer/MCP/internal), confirmation/approval behavior, idempotency/transaction boundary, result/partial-failure surface, trace source/evidence, and validation path.
 
 ## Status and commit rules
 
@@ -126,7 +126,7 @@ Do not mark a task `done` without a commit unless the queue explicitly says the 
 5. Write backlog files with suggested harness task breakdowns.
 6. Write task briefs for non-trivial queue items, including the terminal verification task brief.
 7. Create `pending-tasks.md` with the scaffold task, implementation/review tasks, and a final verification task.
-8. Validate that the first non-done task is runnable without guessing.
+8. Validate that the first non-done task is runnable without guessing, including blocking generated-app tool-use work when governed-tool catalog, actor adapter, confirmation/approval, transaction/idempotency, trace, or validation semantics are missing.
 9. Validate that the final verification task can determine whether task-group and mini-project goals are complete, and can append follow-up tasks plus a new terminal verification task when needed.
 10. Run `git diff --check`.
 11. If committing the scaffold now, commit only the mini-project files and queue-status update.
