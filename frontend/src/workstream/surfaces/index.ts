@@ -1,4 +1,5 @@
 export * from './AuditTimelineSurface';
+export * from './ChatToolPlanSurface';
 export * from './DashboardSurface';
 export * from './DecisionSurface';
 export * from './DetailEditSurface';

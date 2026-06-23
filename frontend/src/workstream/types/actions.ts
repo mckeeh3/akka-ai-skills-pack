@@ -91,3 +91,15 @@ export type WorkstreamShellResponse = {
   requestItem: import('./workstream').WorkstreamItem;
   resultSurface: SurfaceEnvelope<unknown>;
 };
+
+export type ChatToolPlanConfirmationRequest = {
+  selectedContextId: string;
+  planId: string;
+  planSnapshotId: string;
+  confirmationText: string;
+  stepHashes: Record<string, string>;
+  idempotencyKey: string;
+  correlationId: string;
+};
+
+export type SurfaceActionInput = Record<string, string> | ChatToolPlanConfirmationRequest;

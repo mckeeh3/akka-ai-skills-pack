@@ -24,7 +24,9 @@ import {
   type FunctionalAgentRailAttentionStore,
   type MeResponse,
   type RealtimeConnectionState,
+  type ChatToolPlanConfirmationRequest,
   type SurfaceAction,
+  type SurfaceActionInput,
   type SurfaceEnvelope,
   type WorkstreamEvent,
   type WorkstreamItem,
@@ -364,8 +366,12 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     if (previewThemeId) setThemeId(previewThemeId);
   }
 
-  async function handleSurfaceAction(action: SurfaceAction, surfaceId: string, input: unknown = {}) {
+  async function handleSurfaceAction(action: SurfaceAction, surfaceId: string, input: SurfaceActionInput | Record<string, unknown> = {}) {
     if (!ready || !me) return;
+    if (action.actionId === 'action-confirm-chat-tool-plan') {
+      await handleChatToolPlanConfirmation(action, surfaceId, input);
+      return;
+    }
     const actionCorrelationId = `corr-${action.actionId}-${Date.now().toString(36)}`;
     const targetSelectedContextId = action.actionId === 'action-select-my-context' && input && typeof input === 'object' && 'selectedContextId' in input && typeof (input as { selectedContextId?: unknown }).selectedContextId === 'string'
       ? (input as { selectedContextId: string }).selectedContextId
@@ -448,6 +454,51 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
         await refreshBackendSurface(targetSurface?.surfaceId ?? surfaceId);
       }
     }
+  }
+
+  async function handleChatToolPlanConfirmation(action: SurfaceAction, surfaceId: string, input: unknown) {
+    if (!ready || !me || !isChatToolPlanConfirmationRequest(input)) return;
+    const result = await workstreamClient.confirmChatToolPlan(input);
+    if (!result.ok) {
+      const safeError = safeComposerErrorCopy(result.error);
+      const errorItem: WorkstreamItem = {
+        itemId: `chat-tool-plan-confirm-error-${Date.now()}`,
+        functionalAgentId: selectedFunctionalAgentId ?? 'user-admin-agent',
+        kind: 'system-notification',
+        createdAt: new Date().toISOString(),
+        correlationId: input.correlationId,
+        traceIds: [],
+        title: 'Chat tool plan confirmation not accepted',
+        body: `${safeError.body} Correlation ${result.error.correlationId}.`,
+        status: safeError.status
+      };
+      setRequestScrollTargetForCurrentSession(errorItem.itemId, errorItem.functionalAgentId);
+      setBootstrap((current) => current.status === 'ready'
+        ? { ...current, items: pruneWorkstreamItems([...current.items, errorItem]) }
+        : current);
+      return;
+    }
+    const { userItem, agentItem, surface } = result.value;
+    const traceableAgentItem: WorkstreamItem = {
+      ...agentItem,
+      traceLinks: agentItem.traceLinks ?? agentItem.traceIds.map((traceId) => ({ traceId, label: traceId, href: `/ui?traceId=${encodeURIComponent(traceId)}` }))
+    };
+    const responseFunctionalAgentId = surface.ownerFunctionalAgentId ?? agentItem.functionalAgentId ?? selectedFunctionalAgentId ?? 'user-admin-agent';
+    setRequestScrollTargetForCurrentSession(userItem.itemId, responseFunctionalAgentId);
+    rememberVisualSession(sessionForAgent(responseFunctionalAgentId), { activeTurnGroupId: result.value.correlationId, anchorSurfaceId: userItem.itemId, selectedSurfaceId: surface.surfaceId, userHasManualScroll: false });
+    setBootstrap((current) => {
+      if (current.status !== 'ready') return current;
+      const nextSurfaces = current.surfaces.some((candidate) => candidate.surfaceId === surface.surfaceId)
+        ? current.surfaces.map((candidate) => candidate.surfaceId === surface.surfaceId ? surface : candidate)
+        : [...current.surfaces, surface];
+      return { ...current, surfaces: nextSurfaces, items: pruneWorkstreamItems([...current.items, userItem, traceableAgentItem]) };
+    });
+    if (isCurrentlySelectedFunctionalAgent(responseFunctionalAgentId)) {
+      updateSelection({ selectedFunctionalAgentId: responseFunctionalAgentId, selectedSurfaceId: surface.surfaceId, surfacePlacement: 'inline' });
+    } else {
+      markUnseenResponse(responseFunctionalAgentId, traceableAgentItem.itemId, agentItem.status === 'failed' || agentItem.status === 'blocked' ? 'warning' : 'info');
+    }
+    if (isProducerAffectingAction(action)) await refreshBackendAttentionSummaries('producer-affecting-action-completion');
   }
 
   async function runShellSurfaceRequest(shellRequest: WorkstreamShellRequest, fallbackFunctionalAgentId: string, itemPrefix: string) {
@@ -693,6 +744,20 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
     </WorkstreamShell>
     </>
   );
+}
+
+function isChatToolPlanConfirmationRequest(value: unknown): value is ChatToolPlanConfirmationRequest {
+  if (!value || typeof value !== 'object') return false;
+  const candidate = value as Partial<ChatToolPlanConfirmationRequest>;
+  return typeof candidate.selectedContextId === 'string'
+    && typeof candidate.planId === 'string'
+    && typeof candidate.planSnapshotId === 'string'
+    && typeof candidate.confirmationText === 'string'
+    && typeof candidate.idempotencyKey === 'string'
+    && typeof candidate.correlationId === 'string'
+    && Boolean(candidate.stepHashes)
+    && typeof candidate.stepHashes === 'object'
+    && !Array.isArray(candidate.stepHashes);
 }
 
 function readDeepLinkSelection(): Partial<WorkstreamSelection> {

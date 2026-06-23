@@ -3,6 +3,7 @@ import type { ApiError, ApiResult } from './types';
 import type {
   CapabilityActionRequest,
   CapabilityActionResult,
+  ChatToolPlanConfirmationRequest,
   FunctionalAgentSummary,
   MeResponse,
   SurfaceEnvelope,
@@ -55,6 +56,11 @@ export class HttpWorkstreamApiClient implements WorkstreamClient {
   async submitWorkstreamMessage(request: WorkstreamMessageRequest): Promise<ApiResult<WorkstreamMessageResponse>> {
     if (request.selectedContextId) this.selectedContextId = request.selectedContextId;
     return this.post('/api/workstream/messages', request);
+  }
+
+  async confirmChatToolPlan(request: ChatToolPlanConfirmationRequest): Promise<ApiResult<WorkstreamMessageResponse>> {
+    if (request.selectedContextId) this.selectedContextId = request.selectedContextId;
+    return this.post('/api/workstream/chat-tool-plans/confirm', request);
   }
 
   private get<T>(path: string): Promise<ApiResult<T>> {

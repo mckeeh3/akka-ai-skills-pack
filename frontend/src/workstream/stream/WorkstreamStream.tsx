@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import type { SurfaceAction, SurfaceEnvelope, WorkstreamItem as WorkstreamItemContract } from '../types';
+import type { SurfaceAction, SurfaceActionInput, SurfaceEnvelope, WorkstreamItem as WorkstreamItemContract, WorkstreamItemKind } from '../types';
 import { SurfaceRenderer } from '../surfaces';
 import { WorkstreamItemCard } from './WorkstreamItem';
 import { DEFAULT_WORKSTREAM_SURFACE_STREAM_LIMIT, pruneWorkstreamSurfaceStream } from './streamState';
@@ -11,7 +11,7 @@ type WorkstreamStreamProps = {
   autoAnchorPaused?: boolean;
   surfaces?: SurfaceEnvelope<unknown>[];
   onOpenSurface?: (surfaceId: string) => void;
-  onSurfaceAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
+  onSurfaceAction?: (action: SurfaceAction, surfaceId: string, input?: SurfaceActionInput) => void | Promise<void>;
   onSurfaceFieldValueChange?: (fieldId: string, value: string, surfaceId: string) => void;
   onSignOut?: () => void;
   onAutoAnchorPaused?: (requestScrollTargetId: string) => void;
@@ -62,7 +62,7 @@ export function WorkstreamStream({ items: rawItems, selectedItemId, requestScrol
       }}
     >
       {items.map((item) => {
-        const renderedSurfaceItem = item.surfaceId && (item.kind === 'surface' || item.kind === 'markdown_response');
+        const renderedSurfaceItem = item.surfaceId && (item.kind === 'surface' || item.kind === 'markdown_response' || isChatToolPlanSurfaceItemKind(item.kind));
         return (
           <div key={item.itemId} className="workstream-flow-entry">
             {!renderedSurfaceItem && <WorkstreamItemCard item={item} onOpenSurface={onOpenSurface} />}
@@ -74,6 +74,10 @@ export function WorkstreamStream({ items: rawItems, selectedItemId, requestScrol
       })}
     </section>
   );
+}
+
+function isChatToolPlanSurfaceItemKind(kind: WorkstreamItemKind): boolean {
+  return kind === 'chat_tool_plan_proposal' || kind === 'chat_tool_plan_confirmation' || kind === 'chat_tool_plan_result' || kind === 'chat_tool_plan_system_message';
 }
 
 function isManualScrollKey(key: string): boolean {

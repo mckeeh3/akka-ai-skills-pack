@@ -2,7 +2,7 @@ import type { SurfaceAction } from './actions';
 
 export type SurfaceRedactionProfile = 'self' | 'tenant-admin' | 'support' | 'auditor' | 'agent';
 export type SurfaceUiStatus = 'loading' | 'empty' | 'ready' | 'submitting' | 'success' | 'pending' | 'approval-needed' | 'error' | 'forbidden' | 'conflict' | 'stale' | 'reconnecting' | 'partial-data' | 'no-op' | 'blocked_provider_or_runtime' | 'not_found_or_redacted' | 'validation-error';
-export type CanonicalSurfaceType = 'markdown_response' | 'system_message' | 'system-message' | 'dashboard' | 'list-search' | 'show-inspection' | 'create-form' | 'edit-form' | 'destructive-lifecycle-confirmation' | 'lifecycle-confirmation' | 'detail-edit' | 'decision' | 'decision-card' | 'audit-timeline' | 'workflow-status' | 'governance-diff' | 'outcome' | 'outcome-panel' | 'notification-center';
+export type CanonicalSurfaceType = 'markdown_response' | 'system_message' | 'system-message' | 'chat_tool_plan_proposal' | 'chat_tool_plan_confirmation' | 'chat_tool_plan_result' | 'chat_tool_plan_system_message' | 'dashboard' | 'list-search' | 'show-inspection' | 'create-form' | 'edit-form' | 'destructive-lifecycle-confirmation' | 'lifecycle-confirmation' | 'detail-edit' | 'decision' | 'decision-card' | 'audit-timeline' | 'workflow-status' | 'governance-diff' | 'outcome' | 'outcome-panel' | 'notification-center';
 
 export type SurfaceLink = {
   label: string;
@@ -606,6 +606,113 @@ export type NotificationCenterSurfaceData = {
   traceRefs?: string[];
   correlationId?: string;
   capabilityIds?: string[];
+};
+
+export type ChatToolPlanStep = {
+  stepId: string;
+  sequence: number;
+  label: string;
+  actionId: string;
+  browserToolId: string;
+  governedToolId: string;
+  capabilityId: string;
+  inputSchemaRef: string;
+  input: Record<string, unknown>;
+  dependsOnStepIds: string[];
+  outputBindings: Record<string, string>;
+  idempotencyKey: string;
+  transactionBoundary: string;
+  requiresConfirmation: boolean;
+  requiresApproval: boolean;
+  expectedResultSurfaceType?: string;
+  expectedResultSurfaceId?: string;
+  traceRequirements: string[];
+};
+
+export type ChatToolPlanProposal = {
+  planId: string;
+  planSnapshotId: string;
+  status: 'waiting-for-human' | 'proposed' | 'plan_unavailable' | string;
+  selectedContextId: string;
+  functionalAgentId: string;
+  requestedByAccountId: string;
+  requestedAt: string;
+  sourcePrompt: string;
+  summary: string;
+  steps: ChatToolPlanStep[];
+  requiredCapabilities: string[];
+  approvalSummary: string;
+  idempotencyRoot: string;
+  traceIds: string[];
+  expiresAt: string;
+  noMutation: boolean;
+};
+
+export type ChatToolPlanConfirmationSnapshot = {
+  planId: string;
+  planSnapshotId: string;
+  selectedContextId: string;
+  functionalAgentId: string;
+  requestedByAccountId: string;
+  requestedAt: string;
+  expiresAt: string;
+  steps: ChatToolPlanStep[];
+  requiredCapabilities: string[];
+  stepHashes: Record<string, string>;
+  idempotencyRoot: string;
+  traceIds: string[];
+  acknowledgementRequired: boolean;
+  confirmationInstructions: string;
+};
+
+export type ChatToolPlanStepResult = {
+  stepId: string;
+  status: 'completed' | 'failed' | 'skipped' | 'recovery_available' | string;
+  message: string;
+  actionId: string;
+  governedToolId: string;
+  capabilityId: string;
+  resultSurfaceId?: string;
+  traceIds: string[];
+  startedAt?: string;
+  completedAt?: string;
+  errorCode?: string;
+};
+
+export type ChatToolPlanExecutionResult = {
+  planId: string;
+  planSnapshotId: string;
+  status: 'completed' | 'failed' | 'partial_failure' | 'blocked' | string;
+  completedSteps: ChatToolPlanStepResult[];
+  failedSteps: ChatToolPlanStepResult[];
+  skippedSteps: ChatToolPlanStepResult[];
+  recoverySteps: string[];
+  resultSurfaceIds: string[];
+  traceIds: string[];
+  correlationId: string;
+};
+
+export type ChatToolPlanSystemMessage = {
+  code: string;
+  message: string;
+  recoverySteps: string[];
+  noFakeSuccess: boolean;
+  traceIds: string[];
+};
+
+export type ChatToolPlanSurfaceData = {
+  surfaceContract: 'chat_tool_plan.proposal.v1' | 'chat_tool_plan.confirmation.v1' | 'chat_tool_plan.result.v1' | 'chat_tool_plan.system_message.v1' | string;
+  status: string;
+  proposal?: ChatToolPlanProposal | null;
+  confirmationSnapshot?: ChatToolPlanConfirmationSnapshot | null;
+  result?: ChatToolPlanExecutionResult | null;
+  systemMessage?: ChatToolPlanSystemMessage | null;
+  noDirectMutation: boolean;
+  noMutation: boolean;
+  executionEnabled: boolean;
+  sideEffect: string;
+  workstreamEntryId?: string;
+  traceRefs: string[];
 };
 
 export type OutcomeSurfaceData = {

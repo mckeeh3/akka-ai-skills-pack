@@ -1,6 +1,7 @@
 import type {
   CapabilityActionRequest,
   CapabilityActionResult,
+  ChatToolPlanConfirmationRequest,
   ComposerRequest,
   FunctionalAgentSummary,
   MeResponse as WorkstreamMeResponse,
@@ -39,4 +40,5 @@ export type WorkstreamClient = {
   runCapabilityAction(request: CapabilityActionRequest): Promise<ApiResult<CapabilityActionResult>>;
   runShellRequest(request: WorkstreamShellRequest): Promise<ApiResult<WorkstreamShellResponse>>;
   submitWorkstreamMessage(request: WorkstreamMessageRequest): Promise<ApiResult<WorkstreamMessageResponse>>;
+  confirmChatToolPlan(request: ChatToolPlanConfirmationRequest): Promise<ApiResult<WorkstreamMessageResponse>>;
 };

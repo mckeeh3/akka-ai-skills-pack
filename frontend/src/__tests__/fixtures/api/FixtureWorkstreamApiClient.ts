@@ -1,6 +1,6 @@
 import type { WorkstreamClient, WorkstreamBootstrapResponse, WorkstreamMessageRequest, WorkstreamMessageResponse } from '../../../api/WorkstreamApiClient';
 import type { ApiError, ApiResult } from '../../../api/types';
-import type { CapabilityActionRequest, CapabilityActionResult, MarkdownResponseData, SurfaceEnvelope, WorkstreamItem, WorkstreamShellRequest, WorkstreamShellResponse } from '../../../workstream/types';
+import type { CapabilityActionRequest, CapabilityActionResult, ChatToolPlanConfirmationRequest, ChatToolPlanExecutionResult, ChatToolPlanSurfaceData, MarkdownResponseData, SurfaceEnvelope, WorkstreamItem, WorkstreamShellRequest, WorkstreamShellResponse } from '../../../workstream/types';
 import {
   actionResultsByStatus,
   allSurfaceActions,
@@ -142,6 +142,55 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
     this.items = [...this.items, userItem, agentItem];
     this.surfaces = [...this.surfaces.filter((candidate) => candidate.surfaceId !== surface.surfaceId), surface];
     return delayedOk({ correlationId, idempotencyKey: request.idempotencyKey, userItem, agentItem, surface });
+  }
+
+  confirmChatToolPlan(request: ChatToolPlanConfirmationRequest): Promise<ApiResult<WorkstreamMessageResponse>> {
+    if (request.selectedContextId !== meTenantAdmin.selectedAuthContext.selectedContextId) {
+      return delayedError('forbidden', 'The selected context does not match the active fixture session.');
+    }
+    if (request.confirmationText !== `CONFIRM ${request.planSnapshotId}`) {
+      return delayedError('validation', 'The confirmation phrase must match the immutable plan snapshot.');
+    }
+    const now = new Date().toISOString();
+    const traceIds = [`trace-chat-tool-plan-confirm-${Math.abs(hashText(request.idempotencyKey)).toString(36)}`];
+    const result: ChatToolPlanExecutionResult = {
+      planId: request.planId,
+      planSnapshotId: request.planSnapshotId,
+      status: 'completed',
+      completedSteps: [{ stepId: 'step-1', status: 'completed', message: 'Fixture confirmation completed through the backend-equivalent plan confirmation contract.', actionId: 'action-submit-organization-create', governedToolId: 'manage-organizations', capabilityId: 'saas_owner.tenant.manage', resultSurfaceId: 'surface-user-admin-organization-detail', traceIds }],
+      failedSteps: [],
+      skippedSteps: [],
+      recoverySteps: [],
+      resultSurfaceIds: ['surface-user-admin-organization-detail'],
+      traceIds,
+      correlationId: request.correlationId
+    };
+    const surface: SurfaceEnvelope<ChatToolPlanSurfaceData> = {
+      surfaceId: `surface-chat-tool-plan-result-${request.planId}`,
+      surfaceType: 'chat_tool_plan_result',
+      surfaceVersion: 'v1',
+      title: 'Chat tool plan result',
+      ownerFunctionalAgentId: 'user-admin-agent',
+      reusableByFunctionalAgentIds: ['audit-trace-agent'],
+      authContext: {
+        tenantId: meTenantAdmin.selectedAuthContext.tenantId,
+        customerId: meTenantAdmin.selectedAuthContext.customerId,
+        selectedContextId: request.selectedContextId,
+        visibleCapabilityIds: meTenantAdmin.visibleCapabilityIds
+      },
+      correlationId: request.correlationId,
+      traceIds,
+      generatedAt: now,
+      redaction: { profile: 'tenant-admin' },
+      data: { surfaceContract: 'chat_tool_plan.result.v1', status: 'completed', proposal: null, confirmationSnapshot: null, result, systemMessage: null, noDirectMutation: true, noMutation: false, executionEnabled: false, sideEffect: 'fixture result only', traceRefs: traceIds },
+      actions: [],
+      links: [{ label: 'Trace', href: `/ui?traceId=${encodeURIComponent(traceIds[0])}`, rel: 'trace' }]
+    };
+    const userItem: WorkstreamItem = { itemId: `fixture-chat-tool-plan-confirm-${Date.now()}`, functionalAgentId: 'user-admin-agent', kind: 'user-confirmation', createdAt: now, correlationId: request.correlationId, traceIds, surfaceId: `surface-chat-tool-plan-${request.planId}`, title: 'Confirmed chat tool plan', body: 'Fixture plan confirmation matched the exact snapshot.', status: 'ready' };
+    const agentItem: WorkstreamItem = { itemId: `fixture-chat-tool-plan-result-${Date.now()}`, functionalAgentId: 'user-admin-agent', kind: 'chat_tool_plan_result', createdAt: now, correlationId: request.correlationId, traceIds, surfaceId: surface.surfaceId, title: 'Chat tool plan result', body: 'Fixture plan execution completed.', status: 'completed' };
+    this.items = [...this.items, userItem, agentItem];
+    this.surfaces = [...this.surfaces.filter((candidate) => candidate.surfaceId !== surface.surfaceId), surface];
+    return delayedOk({ correlationId: request.correlationId, idempotencyKey: request.idempotencyKey, userItem, agentItem, surface });
   }
 
   runShellRequest(request: WorkstreamShellRequest): Promise<ApiResult<WorkstreamShellResponse>> {

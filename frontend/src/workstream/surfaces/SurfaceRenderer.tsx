@@ -1,6 +1,7 @@
-import type { SurfaceAction, SurfaceEnvelope } from '../types';
+import type { SurfaceAction, SurfaceActionInput, SurfaceEnvelope } from '../types';
 import { AgentAdminTaskSurface, isAgentAdminTaskSurface } from './AgentAdminTaskSurface';
 import { AuditTimelineSurface } from './AuditTimelineSurface';
+import { ChatToolPlanSurface } from './ChatToolPlanSurface';
 import { DashboardSurface } from './DashboardSurface';
 import { DecisionSurface } from './DecisionSurface';
 import { DetailEditSurface } from './DetailEditSurface';
@@ -23,7 +24,7 @@ type StructuredSurfaceRendererProps = {
   envelope?: SurfaceEnvelope<unknown>;
   envelopes?: SurfaceEnvelope<unknown>[];
   selectedSurfaceId?: string;
-  onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void;
+  onAction?: (action: SurfaceAction, surfaceId: string, input?: SurfaceActionInput) => void | Promise<void>;
   onFieldValueChange?: (fieldId: string, value: string, surfaceId: string) => void;
   onSignOut?: () => void;
 };
@@ -66,6 +67,11 @@ export function StructuredSurfaceRenderer({ envelope, envelopes = [], selectedSu
       return <SystemMessageSurface envelope={selectedEnvelope as never} onAction={onAction} />;
     case 'system-message':
       return <SystemMessageSurface envelope={selectedEnvelope as never} onAction={onAction} />;
+    case 'chat_tool_plan_proposal':
+    case 'chat_tool_plan_confirmation':
+    case 'chat_tool_plan_result':
+    case 'chat_tool_plan_system_message':
+      return <ChatToolPlanSurface envelope={selectedEnvelope as never} onAction={onAction} />;
     case 'dashboard':
       return <DashboardSurface envelope={selectedEnvelope as never} onAction={onAction} onSignOut={onSignOut} />;
     case 'list-search':

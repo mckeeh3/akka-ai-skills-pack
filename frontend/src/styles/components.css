@@ -2949,3 +2949,110 @@ button.user-admin-work-card:focus-visible {
   .organization-admin-grid { grid-template-columns: 1fr; display: grid; }
   .organization-admin-scope { max-width: none; }
 }
+
+.chat-tool-plan-surface {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.chat-tool-plan-boundary,
+.chat-tool-plan-summary,
+.chat-tool-plan-governance,
+.chat-tool-plan-step,
+.chat-tool-plan-result-summary,
+.chat-tool-plan-recovery,
+.chat-tool-plan-system-message {
+  border: 1px solid color-mix(in srgb, var(--color-primary) 14%, var(--color-border));
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--color-surface-raised) 92%, var(--color-primary-soft));
+  padding: var(--space-4);
+}
+
+.chat-tool-plan-boundary {
+  border-color: color-mix(in srgb, var(--color-warning) 28%, var(--color-border));
+}
+
+.chat-tool-plan-boundary p,
+.chat-tool-plan-result-summary p,
+.chat-tool-plan-system-message p {
+  margin: 0 0 var(--space-2);
+}
+
+.chat-tool-plan-steps > ol,
+.chat-tool-plan-step-results > ol,
+.chat-tool-plan-recovery > ol {
+  display: grid;
+  gap: var(--space-4);
+  padding-left: var(--space-5);
+}
+
+.chat-tool-plan-step-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-3);
+}
+
+.chat-tool-plan-step-grid,
+.chat-tool-plan-key-values dl,
+.chat-tool-plan-step-results dl,
+.chat-tool-plan-governance dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
+  gap: var(--space-3);
+}
+
+.chat-tool-plan-step-grid div,
+.chat-tool-plan-key-values dl,
+.chat-tool-plan-step-results li {
+  min-width: 0;
+}
+
+.chat-tool-plan-step-grid dt,
+.chat-tool-plan-key-values dt,
+.chat-tool-plan-step-results dt,
+.chat-tool-plan-governance dt {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.chat-tool-plan-step-grid dd,
+.chat-tool-plan-key-values dd,
+.chat-tool-plan-step-results dd,
+.chat-tool-plan-governance dd {
+  margin: var(--space-1) 0 0;
+  overflow-wrap: anywhere;
+}
+
+.chat-tool-plan-confirmation-form {
+  display: grid;
+  gap: var(--space-3);
+  border: 1px solid color-mix(in srgb, var(--color-danger) 20%, var(--color-border));
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  background: var(--color-surface);
+}
+
+.chat-tool-plan-confirmation-form .ds-button {
+  justify-self: start;
+  min-height: var(--control-height);
+}
+
+.chat-tool-plan-traces {
+  margin-top: var(--space-3);
+}
+
+@media (max-width: 720px) {
+  .chat-tool-plan-step-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .chat-tool-plan-confirmation-form .ds-button {
+    width: 100%;
+  }
+}

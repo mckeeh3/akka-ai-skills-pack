@@ -327,7 +327,7 @@
 
 ### TASK-WCTE-08-001: Render chat tool plan confirmation and result surfaces
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-execution/backlog/01-workstream-chat-tool-execution-build-backlog.md
 - task brief: specs/workstream-chat-tool-execution/tasks/08-frontend-confirmation/01-render-chat-tool-plan-confirmation.md
 - depends on:
@@ -364,6 +364,9 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: frontend-rendered confirmation/result surfaces for chat tool plans
+  - added typed browser DTOs, dedicated confirmation API client call, accessible plan-bound confirmation form, inline result/recovery renderer, and static contract coverage for chat tool plan proposal/result surfaces
+  - checks: `git diff --check`; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`
+  - commit message: `workstream-chat-tools: render plan confirmation`
 
 ### TASK-WCTE-09-001: Add User Admin chat tool execution tests
 
