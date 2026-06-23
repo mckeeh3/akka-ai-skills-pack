@@ -15,3 +15,5 @@ Deferred or out of scope:
 - identity-provider administration, role/membership/support-access changes, policy commits, prompt/tool-boundary edits, provider configuration changes, and trace-redaction changes.
 
 Security boundary: My Account can explain and guide from scoped evidence, but cannot edit roles, memberships, support access, tenant/customer boundaries, policies, agent behavior, provider settings, or audit/trace redaction.
+
+Confirmed chat tool plan reference: My Account now has a representative confirmed chat path for `action-update-my-settings` / `my_account.update_profile_settings` / `schema.my-account.settings.update.v1`. Deterministic routing still opens settings/profile surfaces first when safe; the chat plan proposal is no-mutation until exact snapshot confirmation and backend reauthorization.

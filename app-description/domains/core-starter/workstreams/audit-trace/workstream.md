@@ -23,7 +23,7 @@ This node captures current intent only. Runtime readiness still requires local A
 
 ## Confirmed human chat tool-plan exposure
 
-This workstream exposes a bounded `human_chat_tool_plan` adapter for execution-oriented chat prompts after deterministic no-mutation surface routing declines the prompt. The adapter is current-intent only until runtime tasks implement it. It allows `audit-trace-agent` to propose a plan for the representative prompt **append investigation note "provider blocked; retry after config" to this trace**, but it never permits prompt-only mutation, hidden target enumeration, or AI-autonomous authority.
+This workstream exposes a bounded `human_chat_tool_plan` adapter for execution-oriented chat prompts after deterministic no-mutation surface routing declines the prompt. The first-pass runtime path is implemented through backend-owned plan proposal, exact snapshot confirmation, catalog validation, dispatcher reauthorization, idempotency, and trace surfaces. It allows `audit-trace-agent` to propose a plan for the representative prompt **append investigation note "provider blocked; retry after config" to this trace**, but it never permits prompt-only mutation, hidden target enumeration, or AI-autonomous authority.
 
 Execution is allowed only when all of the following hold: the proposal was created with `noMutation=true`; the human explicitly confirms the exact plan snapshot; the backend reauthorizes the selected `AuthContext`, actor, capability, tool boundary, lifecycle state, approval policy, tenant/customer ownership, and idempotency on every step; and each step executes through its declared governed surface/action path as a separate transaction boundary.
 

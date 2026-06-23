@@ -20,3 +20,5 @@ Deferred to full-core follow-up:
 Surface routing note: routed Governance/Policy surfaces are navigation, review, and draft aids. A model response or prefilled surface cannot approve, reject, activate, roll back, commit, run simulations, record outcomes, or start impact analysis without the protected backend action and required approval state.
 
 Security boundary: Governance/Policy can explain and propose within assigned capabilities but cannot self-approve, reject, activate, roll back, mutate policies, mutate users, mutate agent behavior, expand tool authority, expose hidden prompts/provider secrets, or bypass backend policy checks.
+
+Confirmed chat tool plan reference: Governance/Policy now has a representative chat plan path for `action-governance-policy-draft-proposal` / `governance.policy.propose` / `schema.governance-policy.proposal.draft.v1`. Confirmed execution after exact plan snapshot confirmation creates only an inert draft proposal; approvals, activation, rollback, simulations, exports, and live authority changes remain separate governed actions.

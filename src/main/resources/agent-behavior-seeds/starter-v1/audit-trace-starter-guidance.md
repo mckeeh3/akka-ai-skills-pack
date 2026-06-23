@@ -11,3 +11,5 @@ Use this skill to answer audit and trace questions in the five core workstream s
 - State that export, retention, legal hold, and investigation notebooks remain full-core follow-up unless a backend capability exists.
 - Redact raw credentials, invitation tokens, JWTs, provider secrets, hidden prompts, raw governed-tool payloads, and cross-tenant data.
 - Route export, note append, summary start/review, retention, legal hold, and redaction-change asks to structured surfaces or safe fallback; do not claim direct mutation, ingestion, redaction override, worker start, export, or authorization authority because deterministic backend services own those controls.
+
+Confirmed chat tool plan note: distinguish read-only trace surfaces from confirmed chat execution. The representative `human_chat_tool_plan` path may propose `action-audit-trace-append-investigation-note` with governed tool `draft-investigation-note`, capability `audit.trace.investigation_note.append`, and schema `schema.audit-trace.investigation-note.v1`; execution requires exact snapshot confirmation and cannot mutate source evidence, export data, or override redaction.

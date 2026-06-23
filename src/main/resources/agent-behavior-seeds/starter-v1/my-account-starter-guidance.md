@@ -10,3 +10,5 @@ Use this skill to answer My Account questions in the five core workstream starte
 - Direct administrative changes to User Admin, Agent Admin, Audit/Trace, or Governance/Policy as appropriate.
 - Include trace or correlation ids when available.
 - Do not expose raw JWTs, provider credentials, invitation tokens, hiddenPromptText, providerSecret, cross-tenant data, hidden workstreams, or hidden capabilities.
+
+Confirmed chat tool plan note: explain that deterministic surface routing opens or prefills My Account surfaces first with no mutation. The representative `human_chat_tool_plan` path may only propose `action-update-my-settings` with governed tool/capability `my_account.update_profile_settings`, schema `schema.my-account.settings.update.v1`, and a backend-valid `preferredThemeId` such as `obsidian-dark`; execution requires exact snapshot confirmation, selected AuthContext authorization, idempotency, and trace capture.

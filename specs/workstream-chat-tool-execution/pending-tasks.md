@@ -457,7 +457,7 @@
 
 ### TASK-WCTE-11-001: Update agent seeds and traceability for chat tool execution
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-execution/backlog/01-workstream-chat-tool-execution-build-backlog.md
 - task brief: specs/workstream-chat-tool-execution/tasks/11-seeds-docs/01-update-agent-seeds-and-traceability.md
 - depends on:
@@ -492,6 +492,10 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: managed-agent seed/traceability update; no new runtime behavior beyond prior tasks
+  - updated governed starter prompts, skills, references, and User Admin expertise manifest so all five workstream agents distinguish deterministic no-mutation surface routing from exact-snapshot confirmed `human_chat_tool_plan` execution
+  - updated seed checksums/import assertions plus source/app-description traceability for representative chat plan actions, governed tool ids, schemas, surfaces, and trace events
+  - checks: `mvn -q -Dtest=AgentBehaviorSeedLoaderTest test`; targeted seed unsafe-authority grep; `git diff --check`
+  - commit message: `workstream-chat-tools: update seeds traceability`
 
 ### TASK-WCTE-99-001: Verify Workstream Chat Tool Execution completion
 

@@ -16,7 +16,8 @@ workstreamGraph:
   surfaceIntentRouting: High-confidence prompts may open or prefill structured surfaces such as Organization Create or Invite User, but routed prefill is draft-only and requires human review plus protected surface submit before any mutation.
   internalWorkstreamAgentGraph: Internal worker delegation is bounded to authorized evidence reads and proposal drafting unless a governed runtime worker is explicitly implemented and traced.
   workstreamExpertise: Skills and references explain dashboard purpose, surface graph behavior, governed-tools, denials, safe next surfaces, and safe user-help semantics.
-  governedTools: Capability-backed operations are exposed only through qualified browser-tool, agent-tool, or internal-tool paths with audit/work trace obligations.
+  governedTools: Capability-backed operations are exposed only through qualified browser-tool, agent-tool, internal-tool, or bounded human_chat_tool_plan paths with audit/work trace obligations.
+  chatToolExecution: Deterministic surface routing remains first and can only open or prefill review surfaces with no mutation. human_chat_tool_plan is used only for catalog-bound, no-mutation proposals that require exact plan snapshot confirmation and backend reauthorization before each step executes.
 compactManifest:
   includeFullBodies: false
   skillSection: Available internal skills
@@ -88,11 +89,32 @@ toolBoundary:
       category: DATA_LOOKUP
       capabilityId: tenant.user.read
       trace: AgentWorkTrace
+chatToolPlanCatalog:
+  exposureChannel: human_chat_tool_plan
+  proposalOnlyUntilConfirmation: true
+  representativePath:
+    prompt: create org "Org 1", and invite mckee.hugh@gmail.com as an org admin
+    confirmation: exact plan snapshot confirmation required before execution
+    steps:
+      - actionId: action-submit-organization-create
+        browserToolId: user-admin.submit-organization-create
+        governedToolId: manage-organizations
+        capabilityId: saas_owner.tenant.manage
+        inputSchemaRef: schema.organization-admin.create.submit.v1
+        resultSurfaceId: surface-user-admin-organization-detail
+      - actionId: action-submit-organization-admin-invitation
+        browserToolId: user-admin.invite-organization-admin
+        governedToolId: manage-organization-admins
+        capabilityId: saas_owner.organization_admin.invite
+        inputSchemaRef: schema.organization-admin.invitation-create.v1
+        resultSurfaceId: surface-user-admin-invitation-detail
+        dependsOn: step-create-organization organizationId binding
+  authority: no Organization or invitation is created by prompt, skill, reference, or proposal text; backend confirmation, authorization, idempotency, and trace checks remain authoritative.
 requiredDenials:
   - unassigned skill or reference id
   - inactive or cross-tenant skill or reference
   - missing read_skill or read_reference tool-boundary grant
-  - text claiming new roles, tenant scope, governed-tool access, approval rights, or backend capabilities
+  - text claiming new roles, tenant scope, governed-tool access, approval rights, backend capabilities, or confirmed execution without exact snapshot confirmation
   - raw invitation token, provider secret, cross-customer data, or unredacted audit export request
 traces:
   - PromptAssemblyTrace
@@ -100,8 +122,17 @@ traces:
   - ReferenceLoadTrace
   - AgentWorkTrace
   - AdminAuditEvent
+  - human_chat_tool_plan.proposed
+  - human_chat_tool_plan.confirmed
+  - human_chat_tool_plan.step_started
+  - human_chat_tool_plan.step_completed
+  - human_chat_tool_plan.step_failed
+  - human_chat_tool_plan.step_skipped
+  - human_chat_tool_plan.denied
+  - human_chat_tool_plan.provider_blocked
 tests:
   - compact manifest omits full bodies
   - assigned skill and reference loads are authorized and traced
   - unassigned loads and missing boundary grants are denied and traced
   - expertise text cannot expand capability, role, tenant, governed-tool, or approval authority
+  - deterministic surface routing and confirmed chat tool execution remain distinct and no-mutation before confirmation

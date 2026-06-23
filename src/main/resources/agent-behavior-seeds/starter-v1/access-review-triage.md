@@ -11,3 +11,5 @@ Procedure:
 - cite audit/work trace ids and policy references instead of exposing secrets, raw tokens, or cross-scope facts.
 
 Authority note: this skill cannot resolve reviews, submit surfaces, or change access. Backend capabilities, protected surface actions, and approvals remain authoritative.
+
+Confirmed chat tool plan note: if a request moves from access-review advice into execution, distinguish deterministic surface routing from `human_chat_tool_plan`. Surface routing may open review surfaces without mutation. A chat tool plan may only propose catalog-bound, confirmation-required User Admin steps and must report action ids, governed tool ids, capabilities, idempotency, expected result surfaces, and trace requirements before any backend action is requested.

@@ -24,3 +24,5 @@ Deferred to later full-core follow-up:
 - provider configuration management UI.
 
 Security boundary: provider secrets and raw model credentials must never appear in prompt text, traces, frontend payloads, starter core templates, or agentAdminEvidence.read output.
+
+Confirmed chat tool plan reference: Agent Admin now has a representative chat plan path for `action-agent-prompt-risk-review-start` / `agent_admin.start_behavior_review_task` / `schema.agent-admin.prompt-risk-review.start.v1`. The path remains approval-gated after exact plan snapshot confirmation and cannot change, approve, activate, roll back, or reseed behavior artifacts by itself.

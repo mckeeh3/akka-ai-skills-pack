@@ -9,3 +9,5 @@ Guidance:
 - include PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace, and capability ids when relevant.
 
 Authority note: this skill is read-only and cannot expand audit export scope or reveal redacted fields.
+
+Confirmed chat tool plan note: include `human_chat_tool_plan.proposed`, `.confirmed`, `.step_started`, `.step_completed`, `.step_failed`, `.step_skipped`, `.denied`, and `.provider_blocked` events when summarizing confirmed chat execution. Distinguish direct surface actions from plan proposal/confirmation/step traces, and preserve browser-safe redaction.

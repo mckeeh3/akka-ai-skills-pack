@@ -74,6 +74,20 @@ These are initial design targets for the shared catalog. They are intentionally 
 
 High-impact actions such as policy activation/rollback, managed-agent activation/rollback, account disabling, role grants, trace export delivery, and support-access grants should remain blocked or approval-gated until later tasks model their exact confirmation and prerequisite checks.
 
+## Seed and traceability update
+
+`TASK-WCTE-11-001` aligns governed starter behavior seeds with the implemented first-pass runtime path without adding new runtime behavior:
+
+| Workstream agent | Seed prompt/skill/reference expectation | Runtime traceability ids |
+|---|---|---|
+| My Account | Explain deterministic no-mutation settings/profile surface routing before confirmed chat execution; describe only the bounded theme-setting path. | `action-update-my-settings`, `my_account.update_profile_settings`, `schema.my-account.settings.update.v1`, `surface-my-settings`, `human_chat_tool_plan.*` trace events. |
+| User Admin | Explain router-first Organization/invitation surfaces versus a confirmed two-step chat plan with Organization id binding. | `action-submit-organization-create`, `manage-organizations`, `saas_owner.tenant.manage`, `surface-user-admin-organization-detail`; `action-submit-organization-admin-invitation`, `manage-organization-admins`, `saas_owner.organization_admin.invite`, `surface-user-admin-invitation-detail`. |
+| Agent Admin | Explain that prompt-risk review start is proposal/confirmation only and remains approval-gated. | `action-agent-prompt-risk-review-start`, `agent_admin.start_behavior_review_task`, `schema.agent-admin.prompt-risk-review.start.v1`, `surface-agent-admin-prompt-risk-review`, approval-required step trace. |
+| Audit/Trace | Explain note append as a browser-safe confirmed plan and distinguish it from evidence search/export/redaction. | `action-audit-trace-append-investigation-note`, `draft-investigation-note`, `audit.trace.investigation_note.append`, `schema.audit-trace.investigation-note.v1`, `surface-audit-trace-investigation-note`. |
+| Governance/Policy | Explain inert policy proposal drafts only; approvals, activation, rollback, exports, and live authority changes remain separate gates. | `action-governance-policy-draft-proposal`, `governance.policy.propose`, `schema.governance-policy.proposal.draft.v1`, `surface-governance-policy-proposal`, policy proposal trace. |
+
+Across all five agents, seed text must state that deterministic surface routing only opens or prefills surfaces, `human_chat_tool_plan` proposals are no-mutation, execution requires exact plan snapshot confirmation, and backend authorization/idempotency/trace checks remain authoritative.
+
 ## Initial backend contract to add
 
 ### Plan proposal request/response records

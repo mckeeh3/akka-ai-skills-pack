@@ -102,29 +102,62 @@ class AgentBehaviorSeedLoaderTest {
 
     assertSurfaceFamiliarity(
         AgentBehaviorSeedLoader.MY_ACCOUNT_AGENT_ID,
-        List.of("dashboard", "profile", "settings", "context/authority", "digest"),
-        List.of("Notification Center", "digest progress/result", "no direct mutation authority"),
-        List.of("blocked/open-denied recovery surfaces", "backend-authorized"));
+        List.of("dashboard", "profile", "settings", "context/authority", "digest", "human_chat_tool_plan", "exact plan snapshot"),
+        List.of("Notification Center", "digest progress/result", "no direct mutation authority", "action-update-my-settings", "my_account.update_profile_settings"),
+        List.of("blocked/open-denied recovery surfaces", "backend-authorized", "schema.my-account.settings.update.v1"));
     assertSurfaceFamiliarity(
         AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID,
-        List.of("user and Organization directories", "invitation create", "Organization create"),
-        List.of("access-review tasks", "structured invitation surfaces", "role-change preview"),
-        List.of("Structured surface note", "invitation create surface"));
+        List.of("user and Organization directories", "invitation create", "Organization create", "human_chat_tool_plan", "action-submit-organization-create", "manage-organization-admins"),
+        List.of("access-review tasks", "structured invitation surfaces", "role-change preview", "human_chat_tool_plan", "exact snapshot confirmation"),
+        List.of("Structured surface note", "invitation create surface", "human_chat_tool_plan", "saas_owner.organization_admin.invite"));
     assertSurfaceFamiliarity(
         AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID,
-        List.of("managed-agent catalog", "tool-boundary diff", "lifecycle confirmations"),
-        List.of("prompt governance", "behavior proposal", "direct mutation authority"),
-        List.of("Surface routing note", "test console"));
+        List.of("managed-agent catalog", "tool-boundary diff", "lifecycle confirmations", "human_chat_tool_plan"),
+        List.of("prompt governance", "behavior proposal", "direct mutation authority", "action-agent-prompt-risk-review-start", "agent_admin.start_behavior_review_task"),
+        List.of("Surface routing note", "test console", "schema.agent-admin.prompt-risk-review.start.v1"));
     assertSurfaceFamiliarity(
         AgentBehaviorSeedLoader.AUDIT_TRACE_AGENT_ID,
-        List.of("dashboard", "search", "timeline", "export request"),
-        List.of("summary progress/review", "safe fallback"),
-        List.of("routed Audit/Trace surfaces", "summary progress/review"));
+        List.of("dashboard", "search", "timeline", "export request", "human_chat_tool_plan"),
+        List.of("summary progress/review", "safe fallback", "action-audit-trace-append-investigation-note", "draft-investigation-note"),
+        List.of("routed Audit/Trace surfaces", "summary progress/review", "audit.trace.investigation_note.append"));
     assertSurfaceFamiliarity(
         AgentBehaviorSeedLoader.GOVERNANCE_POLICY_AGENT_ID,
-        List.of("policy inventory", "decision", "impact-analysis"),
-        List.of("activation/rollback blocked recovery", "safe fallback"),
-        List.of("routed Governance/Policy surfaces", "protected backend action"));
+        List.of("policy inventory", "decision", "impact-analysis", "human_chat_tool_plan"),
+        List.of("activation/rollback blocked recovery", "safe fallback", "action-governance-policy-draft-proposal", "governance.policy.propose"),
+        List.of("routed Governance/Policy surfaces", "protected backend action", "schema.governance-policy.proposal.draft.v1"));
+  }
+
+  @Test
+  void seedMaterialDescribesConfirmedChatToolPlansWithoutUnsafeMutationClaims() {
+    loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-1");
+
+    for (var agentId : AgentBehaviorSeedLoader.CORE_V0_AGENT_IDS) {
+      var combined = combinedSeedMaterial(agentId);
+      assertTrue(combined.contains("deterministic surface routing"), agentId);
+      assertTrue(combined.contains("human_chat_tool_plan"), agentId);
+      assertTrue(combined.contains("exact plan snapshot") || combined.contains("exact snapshot confirmation"), agentId);
+      assertTrue(combined.contains("No ") || combined.contains("no-mutation"), agentId);
+      var lower = combined.toLowerCase();
+      assertFalse(lower.contains("you may execute"), agentId);
+      assertFalse(lower.contains("you can execute"), agentId);
+      assertFalse(lower.contains("execute immediately"), agentId);
+      assertFalse(lower.contains("no confirmation required"), agentId);
+      assertFalse(lower.contains("confirmation is optional"), agentId);
+      assertFalse(lower.contains("autonomous mutation"), agentId);
+      assertFalse(lower.contains("unrestricted mutation authority"), agentId);
+    }
+  }
+
+  private String combinedSeedMaterial(String agentId) {
+    var agent = repository.agentDefinition("tenant-1", agentId).orElseThrow();
+    var prompt = repository.promptDocument("tenant-1", agent.promptDocumentId()).orElseThrow().contentBody();
+    var skills = repository.skillManifest("tenant-1", agent.skillManifestId()).orElseThrow().entries().stream()
+        .map(entry -> repository.skillDocument("tenant-1", entry.skillDocumentId()).orElseThrow().contentBody())
+        .reduce("", (left, right) -> left + "\n" + right);
+    var references = repository.referenceManifest("tenant-1", agent.referenceManifestId()).orElseThrow().entries().stream()
+        .map(entry -> repository.referenceDocument("tenant-1", entry.referenceDocumentId()).orElseThrow().contentBody())
+        .reduce("", (left, right) -> left + "\n" + right);
+    return prompt + "\n" + skills + "\n" + references;
   }
 
   private void assertSurfaceFamiliarity(String agentId, List<String> promptMarkers, List<String> skillMarkers, List<String> referenceMarkers) {
