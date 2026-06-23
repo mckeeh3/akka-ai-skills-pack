@@ -146,7 +146,13 @@ function ChatToolPlanSteps({ steps, stepHashes }: { steps: ChatToolPlanStep[]; s
       <ol>
         {steps.map((step) => (
           <li key={step.stepId} className="chat-tool-plan-step">
-            <div className="chat-tool-plan-step-header"><strong>{step.sequence}. {step.label}</strong><span className="status-pill neutral">{step.transactionBoundary}</span></div>
+            <div className="chat-tool-plan-step-header">
+              <strong>{step.sequence}. {step.label}</strong>
+              <div className="chat-tool-plan-step-badges">
+                {stepClassificationPill(step)}
+                <span className="status-pill neutral">{step.transactionBoundary}</span>
+              </div>
+            </div>
             <dl className="chat-tool-plan-step-grid">
               <div><dt>Action</dt><dd>{step.actionId}</dd></div>
               <div><dt>Browser tool</dt><dd>{step.browserToolId}</dd></div>
@@ -154,8 +160,8 @@ function ChatToolPlanSteps({ steps, stepHashes }: { steps: ChatToolPlanStep[]; s
               <div><dt>Capability</dt><dd>{step.capabilityId}</dd></div>
               <div><dt>Input schema</dt><dd>{step.inputSchemaRef}</dd></div>
               <div><dt>Idempotency</dt><dd>{step.idempotencyKey}</dd></div>
-              <div><dt>Confirmation</dt><dd>{step.requiresConfirmation ? 'Required' : 'Not reported'}</dd></div>
-              <div><dt>Approval</dt><dd>{step.requiresApproval ? 'Separate approval required' : 'No separate approval reported'}</dd></div>
+              <div><dt>Confirmation</dt><dd>{step.requiresConfirmation ? 'Required before execution' : 'Not required'}</dd></div>
+              <div><dt>Approval</dt><dd>{step.requiresApproval ? 'Separate approval required — step will not execute until approval is granted' : 'No separate approval required'}</dd></div>
               <div><dt>Step hash</dt><dd>{stepHashes?.[step.stepId] ?? 'Not supplied'}</dd></div>
             </dl>
             <StepInputSummary input={step.input} />
@@ -175,7 +181,7 @@ function ChatToolPlanResult({ data }: { data: ChatToolPlanSurfaceData }) {
   return (
     <>
       <section className="chat-tool-plan-result-summary" aria-label="Execution result summary">
-        <p role="status">Plan {result.planId} completed with status <strong>{formatStatus(result.status)}</strong>.</p>
+        <p role="status">Plan {result.planId} completed with status {resultStatusPill(result.status)}.</p>
         {data.systemMessage && <p className="surface-state-inline forbidden">{data.systemMessage.message}</p>}
         <dl className="authority-summary-grid">
           <div><dt>Plan snapshot</dt><dd>{result.planSnapshotId}</dd></div>
@@ -199,7 +205,26 @@ function StepResultSection({ title, steps, empty }: { title: string; steps: Chat
   return (
     <section className="chat-tool-plan-step-results" aria-label={title}>
       <h4>{title}</h4>
-      {steps.length === 0 ? <p>{empty}</p> : <ol>{steps.map((step) => <li key={`${title}-${step.stepId}`} className={step.status}><strong>{step.stepId}</strong>: {step.message}<dl><dt>Status</dt><dd>{formatStatus(step.status)}</dd><dt>Action</dt><dd>{step.actionId}</dd><dt>Governed tool</dt><dd>{step.governedToolId}</dd><dt>Capability</dt><dd>{step.capabilityId}</dd>{step.resultSurfaceId && <><dt>Result surface</dt><dd>{step.resultSurfaceId}</dd></>}{step.errorCode && <><dt>Error code</dt><dd>{step.errorCode}</dd></>}</dl><TraceReferences traceIds={step.traceIds} label={`${step.stepId} trace references`} /></li>)}</ol>}
+      {steps.length === 0 ? (
+        <p>{empty}</p>
+      ) : (
+        <ol>
+          {steps.map((step) => (
+            <li key={`${title}-${step.stepId}`} className={step.status}>
+              <strong>{step.stepId}</strong>: {step.message}
+              <dl>
+                <dt>Status</dt><dd>{resultStatusPill(step.status)}</dd>
+                <dt>Action</dt><dd>{step.actionId}</dd>
+                <dt>Governed tool</dt><dd>{step.governedToolId}</dd>
+                <dt>Capability</dt><dd>{step.capabilityId}</dd>
+                {step.resultSurfaceId && <><dt>Result surface</dt><dd>{step.resultSurfaceId}</dd></>}
+                {step.errorCode && <><dt>Error detail</dt><dd>{formatErrorCode(step.errorCode)}</dd></>}
+              </dl>
+              <TraceReferences traceIds={step.traceIds} label={`${step.stepId} trace references`} />
+            </li>
+          ))}
+        </ol>
+      )}
     </section>
   );
 }
@@ -230,10 +255,15 @@ function ChatToolPlanSystemMessage({ data }: { data: ChatToolPlanSurfaceData }) 
 }
 
 function BoundaryNotice({ data }: { data: ChatToolPlanSurfaceData }) {
+  const steps = data.proposal?.steps ?? [];
+  const approvalGatedCount = steps.filter((s) => s.requiresApproval).length;
   return (
     <div className="chat-tool-plan-boundary" role="note" aria-label="Chat tool plan authority boundary">
       <p>{data.noMutation ? 'Proposal only: no state changed before confirmation.' : 'Result: state may have changed only after explicit backend confirmation.'}</p>
       {data.noDirectMutation && <p>Browser UI cannot execute tools directly, edit plan steps, expand capabilities, reveal hidden scope, or expose provider secrets/payloads.</p>}
+      {approvalGatedCount > 0 && (
+        <p><span className="status-pill warning">Approval required</span>{' '}{approvalGatedCount} step{approvalGatedCount !== 1 ? 's' : ''} in this plan require separate approval and will not execute until that approval is granted.</p>
+      )}
     </div>
   );
 }
@@ -263,6 +293,43 @@ function TraceReferences({ traceIds, label }: { traceIds: string[]; label: strin
       <ul>{traceIds.map((traceId, index) => <li key={`${traceId}-${index}`}><a href={`/ui?traceId=${encodeURIComponent(traceId)}`}>Trace reference {index + 1}</a></li>)}</ul>
     </details>
   );
+}
+
+function stepClassificationPill(step: ChatToolPlanStep) {
+  if (step.requiresApproval) {
+    return <span className="status-pill warning">Approval required</span>;
+  }
+  if (step.requiresConfirmation) {
+    return <span className="status-pill info">Confirmation required</span>;
+  }
+  return <span className="status-pill success">Executable</span>;
+}
+
+function resultStatusPill(status: string) {
+  const pillVariant: Record<string, string> = {
+    completed: 'success',
+    failed: 'danger',
+    partial_failure: 'warning',
+    blocked: 'danger',
+    approval_required: 'warning',
+    recovery_available: 'warning',
+    'waiting-for-human': 'warning',
+    proposed: 'info',
+    plan_unavailable: 'danger',
+    skipped: 'neutral',
+  };
+  const variant = pillVariant[status] ?? 'neutral';
+  return <span className={`status-pill ${variant}`}>{formatStatus(status)}</span>;
+}
+
+function formatErrorCode(code: string): string {
+  const known: Record<string, string> = {
+    approval_required: 'Approval required — step is pending separate approval before it can proceed.',
+    blocked: 'Step was blocked and did not execute.',
+    skipped: 'Step was skipped because a prior dependency did not complete.',
+    unsupported: 'Step is not supported in this catalog.',
+  };
+  return known[code] ?? `Error code: ${code.replace(/[-_]/g, ' ')}`;
 }
 
 function safeDisplayValue(key: string, value: unknown): unknown {

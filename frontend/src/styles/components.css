@@ -2995,6 +2995,13 @@ button.user-admin-work-card:focus-visible {
   margin-bottom: var(--space-3);
 }
 
+.chat-tool-plan-step-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  align-items: center;
+}
+
 .chat-tool-plan-step-grid,
 .chat-tool-plan-key-values dl,
 .chat-tool-plan-step-results dl,

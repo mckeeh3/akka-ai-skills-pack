@@ -375,7 +375,7 @@
 
 ### TASK-WCTC-09-001: Polish expanded chat tool plan UX
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-catalog-expansion/backlog/01-chat-tool-catalog-expansion-build-backlog.md
 - task brief: specs/workstream-chat-tool-catalog-expansion/tasks/09-frontend-ux/01-polish-expanded-chat-tool-plan-ux.md
 - depends on:
@@ -408,6 +408,16 @@
   - changes and queue update are committed without unrelated generated static assets unless explicitly required
 - notes:
   - vertical contract: frontend-rendered expanded plan UX; no backend scope expansion unless needed for DTO compatibility
+  - added `stepClassificationPill` (Executable/Confirmation required/Approval required status-pill badge per step), `resultStatusPill` (color-coded plan/step result status), and `formatErrorCode` (human-readable error detail copy including `approval_required`) to `ChatToolPlanSurface.tsx`
+  - `BoundaryNotice` now counts approval-gated steps from `data.proposal?.steps` and shows a warning-pill count notice before confirmation
+  - step header now renders `chat-tool-plan-step-badges` flex container with classification badge + transaction-boundary pill side by side
+  - `StepResultSection` uses `resultStatusPill` for status and `formatErrorCode` for error detail; expanded `dl` key from 'Error code' to 'Error detail'
+  - `ChatToolPlanResult` uses `resultStatusPill` for plan-level status
+  - Approval and Confirmation copy in step DL made more descriptive
+  - `.chat-tool-plan-step-badges` CSS rule added to `components.css`
+  - two new contract tests added: classification badge rendering and approval-gated no-auto-submit guard
+  - required checks passed: `git diff --check` (clean); `npm --prefix frontend test -- --run` (176 pass, 1 pre-existing failure in unrelated `workstream-surface-intent-routing` test unchanged from prior tasks); `npm --prefix frontend run typecheck` (clean)
+  - commit message: `workstream-chat-catalog: polish expanded plan ux`
 
 ### TASK-WCTC-10-001: Update expanded catalog seeds and traceability
 

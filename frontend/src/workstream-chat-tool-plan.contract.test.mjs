@@ -68,3 +68,36 @@ test('chat tool plan UI summarizes governance, results, recovery, traces, and br
   assert.match(styles, /\.chat-tool-plan-confirmation-form/);
   assert.match(styles, /\.chat-tool-plan-step-grid/);
 });
+
+test('chat tool plan surface visually distinguishes executable, approval-gated, and partial-failure result states', () => {
+  // Step classification badges are rendered in each step header before the user confirms
+  assert.match(chatSurface, /stepClassificationPill/);
+  assert.match(chatSurface, /status-pill warning.*Approval required|Approval required.*status-pill warning/);
+  assert.match(chatSurface, /status-pill info.*Confirmation required|Confirmation required.*status-pill info/);
+  assert.match(chatSurface, /status-pill success.*Executable|Executable.*status-pill success/);
+  // Step badge container is rendered in the step header
+  assert.match(chatSurface, /chat-tool-plan-step-badges/);
+  assert.match(styles, /\.chat-tool-plan-step-badges/);
+  // Boundary notice shows approval-gated count when proposal steps require approval
+  assert.match(chatSurface, /approvalGatedCount/);
+  assert.match(chatSurface, /require separate approval/);
+  // Result status uses pills for visual distinction across all states
+  assert.match(chatSurface, /resultStatusPill/);
+  assert.match(chatSurface, /partial_failure.*warning|warning.*partial_failure/);
+  assert.match(chatSurface, /approval_required.*warning|warning.*approval_required/);
+  // Error codes are mapped to human-readable copy, not raw codes
+  assert.match(chatSurface, /formatErrorCode/);
+  assert.match(chatSurface, /approval_required.*pending separate approval/);
+  assert.match(chatSurface, /Error detail/);
+});
+
+test('chat tool plan approval-gated steps do not bypass confirmation and cannot auto-submit', () => {
+  // Classification badge shows requiresApproval state clearly
+  assert.match(chatSurface, /step\.requiresApproval/);
+  assert.match(chatSurface, /Separate approval required — step will not execute until approval is granted/);
+  // canSubmit still requires confirmationMatches; approval-gated steps do not bypass this guard
+  assert.match(chatSurface, /canSubmit = Boolean\(confirmAction && confirmationMatches/);
+  // No auto-submit or background confirmation bypass
+  assert.doesNotMatch(chatSurface, /autoSubmit|auto.submit/i);
+  assert.doesNotMatch(chatSurface, /globalThis\.confirm|window\.confirm/);
+});
