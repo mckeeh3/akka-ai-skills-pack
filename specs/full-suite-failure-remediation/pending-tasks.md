@@ -1,0 +1,382 @@
+# Pending Tasks: Full Suite Failure Remediation
+
+## Queue rules
+
+- Execute one task per fresh harness context.
+- Select the first `pending` task whose dependencies are satisfied.
+- Preserve task IDs; supersede obsolete tasks rather than deleting them.
+- Do not combine adjacent tasks unless this file is first updated to merge them.
+- Read this mini-project's README, conversation capture, selected sprint, selected backlog, selected task entry, and task brief before editing.
+- Update this file before finishing the harness response.
+- Each task must make one focused git commit before being marked `done`; the commit should include only that task's intended changes and the queue-status update.
+- If the queue status update is included in the same commit, record the commit message in task notes instead of attempting to amend the commit hash.
+- Commit message format: `full-suite-remediation: <short task title>`.
+- Do not commit unrelated changes while executing this root app-realization queue.
+- Preserve tenant/customer scoping, backend authorization, audit/work traces, provider fail-closed behavior, frontend secret boundaries, deterministic surface routing, and confirmed chat-tool semantics.
+- Do not weaken tests to hide failures; stale tests require current-intent evidence and clear notes.
+- The terminal verification task must append bounded follow-up tasks plus a new terminal verification task if the README done state is not fully achieved.
+
+## Tasks
+
+### TASK-FSFR-00-001: Create Full Suite Failure Remediation planning scaffold
+
+- status: done
+- source: user requested a mini-project for pre-existing full-suite failures after chat tool catalog expansion completion
+- task brief: specs/full-suite-failure-remediation/tasks/00-planning/00-create-full-suite-failure-remediation-queue.md
+- depends on: []
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - current conversation context
+  - specs/workstream-chat-tool-catalog-expansion/verification-notes.md
+- skills:
+  - project-discussed-idea-to-pending-project
+- expected outputs:
+  - specs/full-suite-failure-remediation/README.md
+  - specs/full-suite-failure-remediation/conversation-capture.md
+  - specs/full-suite-failure-remediation/pending-tasks.md
+  - specs/full-suite-failure-remediation/sprints/*.md
+  - specs/full-suite-failure-remediation/backlog/*.md
+  - specs/full-suite-failure-remediation/tasks/**/*.md
+- required checks:
+  - `git diff --check -- specs/full-suite-failure-remediation`
+- done criteria:
+  - scope, done state, non-goals, implementation order, and verification loop are explicit
+  - first non-done task is runnable without guessing
+  - changes and queue update are committed
+- notes:
+  - commit message: `full-suite-remediation: add planning queue`
+
+### TASK-FSFR-01-001: Reproduce and classify current full-suite failures
+
+- status: pending
+- source: specs/full-suite-failure-remediation/backlog/01-full-suite-failure-remediation-build-backlog.md
+- task brief: specs/full-suite-failure-remediation/tasks/01-baseline/01-reproduce-and-classify-full-suite-failures.md
+- depends on:
+  - TASK-FSFR-00-001
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/full-suite-failure-remediation/README.md
+  - specs/full-suite-failure-remediation/conversation-capture.md
+  - specs/full-suite-failure-remediation/sprints/01-baseline-reproduction.md
+  - specs/full-suite-failure-remediation/backlog/01-full-suite-failure-remediation-build-backlog.md
+  - specs/full-suite-failure-remediation/tasks/01-baseline/01-reproduce-and-classify-full-suite-failures.md
+  - specs/workstream-chat-tool-catalog-expansion/verification-notes.md
+- skills:
+  - akka-runtime-feature-verification
+  - akka-manual-failure-reconciliation
+  - akka-pending-task-queue-maintenance
+- expected outputs:
+  - specs/full-suite-failure-remediation/failure-inventory.md
+  - queue update
+- required checks:
+  - `git diff --check`
+  - `npm --prefix frontend test -- --run` or recorded failure output
+  - `npm --prefix frontend run typecheck` or recorded failure output
+  - `mvn test` or targeted class/suite commands if a full run is too expensive, with exact rationale
+- done criteria:
+  - inventory lists exact current failures/errors, commands run, affected files/tests, suspected root cause, and task mapping
+  - differences from prior verification notes are explained
+  - changes and queue update are committed
+- notes:
+  - vertical contract: docs/spec baseline only; no runtime feature repaired yet
+
+### TASK-FSFR-02-001: Repair frontend surface intent routing contract failure
+
+- status: pending
+- source: specs/full-suite-failure-remediation/failure-inventory.md after TASK-FSFR-01-001
+- task brief: specs/full-suite-failure-remediation/tasks/02-frontend/01-repair-frontend-surface-routing-contract.md
+- depends on:
+  - TASK-FSFR-01-001
+- required reads:
+  - AGENTS.md
+  - specs/full-suite-failure-remediation/README.md
+  - specs/full-suite-failure-remediation/failure-inventory.md
+  - specs/full-suite-failure-remediation/tasks/02-frontend/01-repair-frontend-surface-routing-contract.md
+  - frontend test/source files named by inventory
+  - specs/workstream-surface-intent-routing/verification-notes.md
+- skills:
+  - akka-web-ui-testing
+  - akka-web-ui-state-rendering
+- expected outputs:
+  - frontend code/test/current-intent repair as appropriate
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted frontend contract test
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+- done criteria:
+  - destructive/approval-gated prompts do not auto-execute or route unsafely
+  - frontend test suite no longer has this failure
+  - changes and queue update are committed
+- notes:
+  - vertical contract: frontend contract repair; workstream surface intent routing; no backend expansion unless inventory proves needed
+
+### TASK-FSFR-03-001: Repair Governance/Policy lifecycle cluster
+
+- status: pending
+- source: specs/full-suite-failure-remediation/failure-inventory.md after TASK-FSFR-01-001
+- task brief: specs/full-suite-failure-remediation/tasks/03-governance-policy/01-repair-governance-policy-lifecycle-cluster.md
+- depends on:
+  - TASK-FSFR-02-001
+- required reads:
+  - AGENTS.md
+  - specs/full-suite-failure-remediation/README.md
+  - specs/full-suite-failure-remediation/failure-inventory.md
+  - specs/full-suite-failure-remediation/tasks/03-governance-policy/01-repair-governance-policy-lifecycle-cluster.md
+  - Governance/Policy tests and source files named by inventory
+  - app-description/domains/core-starter/workstreams/governance-policy/**
+- skills:
+  - ai-first-saas-policy-governance
+  - ai-first-saas-decision-cards
+  - capability-first-backend
+  - akka-workflow-testing
+  - akka-runtime-feature-verification
+- expected outputs:
+  - implementation/test/current-intent repairs for Governance/Policy lifecycle state transitions and attention behavior
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted GovernancePolicyService tests
+  - targeted WorkstreamService Governance/Policy test
+  - targeted GovernancePolicyBrowserWorkstreamSmokeTest if feasible
+  - targeted AttentionProducerServiceTest if included in this cluster
+- done criteria:
+  - accepted governance lifecycle states are consistent across service, workstream surfaces, browser smoke, and attention
+  - policy activation/approval semantics are not weakened
+  - changes and queue update are committed
+- notes:
+  - vertical contract: Governance/Policy workstream; policy proposal/simulation/approval/attention lifecycle repair
+
+### TASK-FSFR-04-001: Repair Agent Admin artifact read/redaction mismatch
+
+- status: pending
+- source: specs/full-suite-failure-remediation/failure-inventory.md after TASK-FSFR-01-001
+- task brief: specs/full-suite-failure-remediation/tasks/04-agent-admin/01-repair-agent-admin-artifact-read-redaction.md
+- depends on:
+  - TASK-FSFR-03-001
+- required reads:
+  - AGENTS.md
+  - specs/full-suite-failure-remediation/README.md
+  - specs/full-suite-failure-remediation/failure-inventory.md
+  - specs/full-suite-failure-remediation/tasks/04-agent-admin/01-repair-agent-admin-artifact-read-redaction.md
+  - Agent Admin source/test files named by inventory
+  - app-description/domains/core-starter/workstreams/agent-admin/**
+- skills:
+  - akka-agent-behavior-profiles
+  - akka-agent-prompt-governance
+  - akka-agent-skill-governance
+  - akka-agent-reference-governance
+  - akka-agent-work-trace
+- expected outputs:
+  - implementation/test/current-intent repair for backend-authoritative Agent Admin artifact reads
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted Agent Admin artifact read test
+  - related seed/import tests if seed or manifest behavior changes
+- done criteria:
+  - artifact reads remain backend-authoritative and redacted
+  - surface ids/result surfaces match accepted current behavior
+  - changes and queue update are committed
+- notes:
+  - vertical contract: Agent Admin workstream; governed artifact read/redaction repair
+
+### TASK-FSFR-05-001: Repair User Admin status and browser-smoke cluster
+
+- status: pending
+- source: specs/full-suite-failure-remediation/failure-inventory.md after TASK-FSFR-01-001
+- task brief: specs/full-suite-failure-remediation/tasks/05-user-admin/01-repair-user-admin-status-and-smoke-cluster.md
+- depends on:
+  - TASK-FSFR-04-001
+- required reads:
+  - AGENTS.md
+  - specs/full-suite-failure-remediation/README.md
+  - specs/full-suite-failure-remediation/failure-inventory.md
+  - specs/full-suite-failure-remediation/tasks/05-user-admin/01-repair-user-admin-status-and-smoke-cluster.md
+  - User Admin source/test files named by inventory
+  - app-description/domains/core-starter/workstreams/user-admin/**
+- skills:
+  - akka-basic-user-admin
+  - akka-saas-invitation-onboarding
+  - capability-first-backend
+  - akka-http-endpoint-testing
+- expected outputs:
+  - implementation/test/current-intent repair for member status no-op vs accepted behavior and browser-smoke support-access/system-message coverage
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted User Admin status test
+  - targeted UserAdminBrowserWorkstreamSmokeTest methods named by inventory
+- done criteria:
+  - status lifecycle behavior is accepted, idempotent, and traceable
+  - self-action and last-admin safeguards remain enforced
+  - changes and queue update are committed
+- notes:
+  - vertical contract: User Admin workstream; membership status/support-access/browser-smoke repair
+
+### TASK-FSFR-06-001: Repair bootstrap audit capability mismatch
+
+- status: pending
+- source: specs/full-suite-failure-remediation/failure-inventory.md after TASK-FSFR-01-001
+- task brief: specs/full-suite-failure-remediation/tasks/06-me-service/01-repair-bootstrap-audit-capability-mismatch.md
+- depends on:
+  - TASK-FSFR-05-001
+- required reads:
+  - AGENTS.md
+  - specs/full-suite-failure-remediation/README.md
+  - specs/full-suite-failure-remediation/failure-inventory.md
+  - specs/full-suite-failure-remediation/tasks/06-me-service/01-repair-bootstrap-audit-capability-mismatch.md
+  - MeService source/test files named by inventory
+  - identity/authorization app-description files if named by inventory
+- skills:
+  - akka-workos-user-auth
+  - akka-basic-user-admin
+  - capability-first-backend
+- expected outputs:
+  - implementation/test/current-intent repair for audit capability semantics
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted MeService test
+  - related auth/user-admin tests if capability mapping changes
+- done criteria:
+  - `/api/me` remains frontend-safe and role/capability accurate
+  - Audit/Trace authorization is not weakened
+  - changes and queue update are committed
+- notes:
+  - vertical contract: identity/auth `/api/me` capability mapping repair
+
+### TASK-FSFR-07-001: Repair runtime seam and autonomous fail-closed tests
+
+- status: pending
+- source: specs/full-suite-failure-remediation/failure-inventory.md after TASK-FSFR-01-001
+- task brief: specs/full-suite-failure-remediation/tasks/07-runtime-seams/01-repair-runtime-seam-and-autonomous-fail-closed-tests.md
+- depends on:
+  - TASK-FSFR-06-001
+- required reads:
+  - AGENTS.md
+  - specs/full-suite-failure-remediation/README.md
+  - specs/full-suite-failure-remediation/failure-inventory.md
+  - specs/full-suite-failure-remediation/tasks/07-runtime-seams/01-repair-runtime-seam-and-autonomous-fail-closed-tests.md
+  - Workstream runtime, Audit/Trace autonomous runtime, and My Account smoke source/test files named by inventory
+- skills:
+  - akka-agent-component
+  - akka-autonomous-agents
+  - akka-autonomous-agent-testing
+  - akka-runtime-feature-verification
+- expected outputs:
+  - implementation/test/current-intent repair or split follow-up tasks for runtime seam/autonomous/browser runtime issues
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted runtime seam/autonomous/browser smoke tests named by inventory
+- done criteria:
+  - runtime tests either pass through real/test Akka runtime boundaries or are split into precise blockers
+  - no model-less or fake runtime path is counted as normal success
+  - changes and queue update are committed
+- notes:
+  - vertical contract: runtime seam/autonomous fail-closed/browser runtime harness repair; no fake readiness allowed
+
+### TASK-FSFR-08-001: Repair remaining browser smoke failures
+
+- status: pending
+- source: specs/full-suite-failure-remediation/failure-inventory.md after TASK-FSFR-01-001
+- task brief: specs/full-suite-failure-remediation/tasks/08-browser-smoke/01-repair-remaining-browser-smoke-failures.md
+- depends on:
+  - TASK-FSFR-07-001
+- required reads:
+  - AGENTS.md
+  - specs/full-suite-failure-remediation/README.md
+  - specs/full-suite-failure-remediation/failure-inventory.md
+  - specs/full-suite-failure-remediation/tasks/08-browser-smoke/01-repair-remaining-browser-smoke-failures.md
+  - browser smoke test files named by inventory
+  - related API/frontend/workstream source files named by inventory
+- skills:
+  - akka-http-endpoint-testing
+  - akka-web-ui-testing
+  - akka-runtime-feature-verification
+- expected outputs:
+  - focused repairs for remaining browser smoke failures
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted browser smoke tests named by inventory
+  - frontend tests/typecheck if frontend paths change
+- done criteria:
+  - browser smoke tests reflect the intended protected API/UI runtime path
+  - failures are fixed or split into precise runtime blockers
+  - changes and queue update are committed
+- notes:
+  - vertical contract: browser smoke/API/UI runtime path repair
+
+### TASK-FSFR-09-001: Repair attention producer failure
+
+- status: pending
+- source: specs/full-suite-failure-remediation/failure-inventory.md after TASK-FSFR-01-001
+- task brief: specs/full-suite-failure-remediation/tasks/09-attention/01-repair-attention-producer-failure.md
+- depends on:
+  - TASK-FSFR-08-001
+- required reads:
+  - AGENTS.md
+  - specs/full-suite-failure-remediation/README.md
+  - specs/full-suite-failure-remediation/failure-inventory.md
+  - specs/full-suite-failure-remediation/tasks/09-attention/01-repair-attention-producer-failure.md
+  - AttentionProducerService source/test files named by inventory
+  - Governance/Policy files if named by inventory
+- skills:
+  - ai-first-saas-ui-surfaces
+  - ai-first-saas-decision-cards
+  - capability-first-backend
+- expected outputs:
+  - attention producer implementation/test/current-intent repair
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted AttentionProducerService test
+  - governance attention tests if needed
+- done criteria:
+  - Governance submit attention is produced/resolved without leaking unauthorized or cross-tenant data
+  - changes and queue update are committed
+- notes:
+  - vertical contract: attention producer/governance decision surface repair
+
+### TASK-FSFR-99-001: Verify Full Suite Failure Remediation completion
+
+- status: pending
+- source: specs/full-suite-failure-remediation/README.md done state
+- task brief: specs/full-suite-failure-remediation/tasks/99-verification/01-verify-full-suite-remediation.md
+- depends on:
+  - TASK-FSFR-09-001
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/full-suite-failure-remediation/README.md
+  - specs/full-suite-failure-remediation/conversation-capture.md
+  - specs/full-suite-failure-remediation/pending-tasks.md
+  - specs/full-suite-failure-remediation/failure-inventory.md
+  - specs/full-suite-failure-remediation/tasks/99-verification/01-verify-full-suite-remediation.md
+  - completed task notes and changed files
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-pending-task-queue-maintenance
+- expected outputs:
+  - specs/full-suite-failure-remediation/verification-notes.md
+  - queue update marking verification done only when README done state is achieved
+  - new bounded follow-up tasks plus a new terminal verification task if material failures remain
+  - commit for verification notes and queue updates
+- required checks:
+  - `git diff --check`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - `mvn test`
+- done criteria:
+  - verification notes compare completed work against every README done-state bullet and `failure-inventory.md` item
+  - full frontend tests and typecheck pass
+  - `mvn test` passes, or remaining failures are explicitly queued as bounded blockers with a new terminal verification task
+  - changes and queue update are committed
+- notes:
+  - vertical contract: terminal verification for full-suite remediation; expected final state is clean full-suite or precise queued blockers
