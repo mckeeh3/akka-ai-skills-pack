@@ -559,7 +559,7 @@
 
 ### TASK-WCTC-12-001: Add My Account direct-action settings field and timezone validation
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-catalog-expansion/verification-notes.md Material Gap 1
 - task brief: inline (see notes)
 - depends on:
@@ -587,6 +587,11 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: My Account settings/profile direct-action input validation; defense-in-depth for field allowlist and timezone validation
+  - root cause: `AuthorizationException` thrown by `updateOwnProfileSettings` was caught by the `catch (AuthorizationException denied)` block in `runAction` (line ~1270) and converted to a `myAccountSystemMessageResult` because `isMyAccountAction("action-update-my-settings")` = true; the fix adds `validateMyAccountDirectActionInput` which runs BEFORE the try block so exceptions propagate to callers
+  - added `validateMyAccountDirectActionInput(CapabilityActionRequest)` private method to `WorkstreamService`; called from `runAction` before the try block for `action-update-my-settings` and `action-update-my-profile`
+  - field allowlist: `["displayName", "preferredThemeId", "locale", "timeZone"]`; unsupported keys throw `AuthorizationException(403, "MY_ACCOUNT_UNSUPPORTED_SELF_SERVICE_FIELD:...")`
+  - timezone validation (settings only): calls `UserSettings.normalizeTimeZone()`; invalid timezone throws `AuthorizationException(400, "MY_ACCOUNT_INVALID_PREFERENCE:...")`
+  - required checks passed: `git diff --check` (clean); 4-test targeted check (4/4 pass); full `WorkstreamServiceTest` reduced from 7 to 5 failures (the 2 material gaps fixed; 5 remaining are pre-existing and confirmed by git stash)
   - commit message: `workstream-chat-catalog: add my account direct action validation`
 
 ### TASK-WCTC-99-002: Re-verify Workstream Chat Tool Catalog Expansion completion

@@ -552,6 +552,9 @@ public final class WorkstreamService {
     var actionIdempotencyKey = action.idempotency().required() && !durableActionOwnsIdempotency(request.actionId()) ? actor.selectedContext().tenantId() + ":" + actor.account().accountId() + ":" + request.actionId() + ":" + request.idempotencyKey() : null;
     if (actionIdempotencyKey != null && idempotentActionResults.containsKey(actionIdempotencyKey)) return idempotentActionResults.get(actionIdempotencyKey);
     if (action.disabled() != null) return new CapabilityActionResult("denied", action.disabled().message(), request.correlationId(), List.of("trace-denied-" + action.actionId()), surfaceForAction(actor, request.actionId(), request.correlationId()));
+    if ("action-update-my-settings".equals(request.actionId()) || "action-update-my-profile".equals(request.actionId())) {
+      validateMyAccountDirectActionInput(request);
+    }
 
     CapabilityActionResult result = null;
     try {
@@ -7970,6 +7973,23 @@ public final class WorkstreamService {
   private SurfaceAction openUserAdminAction() { return new SurfaceAction("action-open-user-admin", "Open User Admin", "surface-request", browserToolId("action-open-user-admin"), governedToolId(MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY), MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY, "schema.my-account.open-workstream.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-user-admin-users", "deep-link"), new Audit("MyAccountOpenUserAdminRequested", true)); }
   private SurfaceAction openAgentAdminAction() { return new SurfaceAction("action-open-agent-admin", "Open Agent Admin", "surface-request", browserToolId("action-open-agent-admin"), governedToolId(MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY), MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY, "schema.my-account.open-workstream.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-dashboard", "deep-link"), new Audit("MyAccountOpenAgentAdminRequested", true)); }
   private SurfaceAction openGovernancePolicyAction() { return new SurfaceAction("action-open-governance-policy", "Open Governance/Policy", "surface-request", browserToolId("action-open-governance-policy"), governedToolId(MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY), MY_ACCOUNT_OPEN_WORKSTREAM_CAPABILITY, "schema.my-account.open-workstream.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-governance-policy-dashboard", "deep-link"), new Audit("MyAccountOpenGovernancePolicyRequested", true)); }
+
+  private void validateMyAccountDirectActionInput(CapabilityActionRequest request) {
+    if (!(request.input() instanceof Map<?, ?> input)) return;
+    var unsupported = input.keySet().stream()
+        .map(String::valueOf)
+        .filter(key -> !List.of("displayName", "preferredThemeId", "locale", "timeZone").contains(key))
+        .sorted()
+        .toList();
+    if (!unsupported.isEmpty()) throw new AuthorizationException(403, "MY_ACCOUNT_UNSUPPORTED_SELF_SERVICE_FIELD:" + String.join(",", unsupported));
+    if ("action-update-my-settings".equals(request.actionId()) && input.get("timeZone") instanceof String timeZone && !timeZone.isBlank()) {
+      try {
+        UserSettings.normalizeTimeZone(timeZone);
+      } catch (IllegalArgumentException invalid) {
+        throw new AuthorizationException(400, "MY_ACCOUNT_INVALID_PREFERENCE:" + invalid.getMessage());
+      }
+    }
+  }
 
   private AuthContextResolver.ProfileSettingsUpdateResult updateOwnProfileSettings(AuthContextResolver.ResolvedMe actor, CapabilityActionRequest request) {
     if (!(request.input() instanceof Map<?, ?> input)) throw new AuthorizationException(400, "MY_ACCOUNT_UPDATE_INPUT_REQUIRED");
