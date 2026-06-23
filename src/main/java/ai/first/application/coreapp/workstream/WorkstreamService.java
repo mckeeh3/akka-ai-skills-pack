@@ -28,6 +28,7 @@ import ai.first.application.foundation.agent.AgentBehaviorRepository;
 import ai.first.application.foundation.agent.AgentBehaviorSeedLoader;
 import ai.first.application.foundation.agent.AgentRuntimeService;
 import ai.first.application.foundation.agent.WorkstreamAgentRuntimeInvoker;
+import ai.first.application.foundation.agent.WorkstreamRuntimeAgent;
 import ai.first.domain.foundation.agent.AgentDefinition;
 import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import ai.first.domain.foundation.agent.AgentRuntimeTrace;
@@ -76,6 +77,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import ai.first.application.foundation.attention.AttentionProducerService;
@@ -1435,6 +1437,11 @@ public final class WorkstreamService {
       return routedSurfaceMessageResponse(actor, functionalAgent, workstreamScopeId, request, requestCorrelationId, routed.orElseThrow());
     }
 
+    var userAdminChatToolPlanCandidate = userAdminChatToolPlanCandidate(request.prompt());
+    if (userAdminChatToolPlanCandidate.isPresent() && USER_ADMIN_AGENT_ID.equals(request.functionalAgentId())) {
+      return userAdminChatToolPlanMessageResponse(actor, functionalAgent, workstreamScopeId, request, requestCorrelationId, userAdminChatToolPlanCandidate.orElseThrow());
+    }
+
     var runtime = workstreamAgentRuntimeInvoker.invokeWorkstreamAgent(new AgentRuntimeService.RuntimeInvocationRequest(
         runtimeGovernanceScopeId, runtimeAgentDefinitionId(request.functionalAgentId()), actor.selectedContext(), requestCorrelationId, request.prompt()));
     var responseSeed = firstNonBlank(request.idempotencyKey(), requestCorrelationId, request.functionalAgentId());
@@ -1579,6 +1586,166 @@ public final class WorkstreamService {
         ? List.<String>of()
         : List.of("Review failed and skipped step trace refs before retrying.", "Retry only uncompleted idempotent steps with the same selected AuthContext or repair the plan through a new proposal.");
     return new ChatToolPlanExecutionResult(request.planId(), request.planSnapshotId(), status, List.copyOf(completed), List.copyOf(failed), List.copyOf(skipped), recoverySteps, List.copyOf(resultSurfaceIds), List.copyOf(traceIds), correlationId);
+  }
+
+  private WorkstreamMessageResponse userAdminChatToolPlanMessageResponse(AuthContextResolver.ResolvedMe actor, MeResponse.FunctionalAgentSummary functionalAgent, String workstreamScopeId, WorkstreamMessageRequest request, String correlationId, UserAdminChatToolPlanCandidate candidate) {
+    var responseSeed = firstNonBlank(request.idempotencyKey(), correlationId, request.functionalAgentId());
+    var now = Instant.now();
+    var userItemId = "item-chat-tool-plan-user-" + stableSuffix(responseSeed + ":user");
+    var userItem = new WorkstreamItem(userItemId, request.functionalAgentId(), "user-request", now.toString(), correlationId, List.of("trace-human-chat-tool-plan-request-" + stableSuffix(responseSeed)), null, null, request.prompt(), "ready");
+    var idempotencyRoot = firstNonBlank(request.idempotencyKey(), "idem-chat-tool-plan-" + stableSuffix(responseSeed));
+    var canonicalSteps = userAdminOrganizationAndAdminInvitePlanSteps(candidate, idempotencyRoot);
+    try {
+      var boundary = activeChatToolBoundary(actor, request.functionalAgentId(), correlationId);
+      canonicalSteps.forEach(step -> validateChatToolStepAgainstCatalog(actor, boundary, request.functionalAgentId(), step));
+    } catch (AuthorizationException denied) {
+      return persistChatToolPlanSystemMessage(actor, functionalAgent, workstreamScopeId, request, correlationId, responseSeed, userItem, "CHAT_TOOL_PLAN_UNAVAILABLE", "Chat tool plan proposal is unavailable because backend authorization or tool-boundary checks failed closed for this selected AuthContext.", List.of("trace-human-chat-tool-plan-denied-" + stableSuffix(correlationId + ":" + denied.reasonCode())));
+    }
+
+    var runtime = workstreamAgentRuntimeInvoker.proposeChatToolPlan(new AgentRuntimeService.PlanProposalInvocationRequest(
+        agentGovernanceScopeId(actor),
+        runtimeAgentDefinitionId(request.functionalAgentId()),
+        actor.selectedContext(),
+        correlationId,
+        request.prompt(),
+        actor.selectedContext().membershipId(),
+        idempotencyRoot,
+        null,
+        chatToolCatalogSummary(request.functionalAgentId(), canonicalSteps)));
+    var runtimeResponse = runtime.response();
+    var unavailable = chatToolPlanUnavailableMessage(runtime, runtimeResponse, canonicalSteps);
+    if (unavailable != null) {
+      return persistChatToolPlanSystemMessage(actor, functionalAgent, workstreamScopeId, request, correlationId, responseSeed, userItem, unavailable.code(), unavailable.message(), unavailable.traceIds());
+    }
+
+    var traceIds = runtime.traceIds().isEmpty()
+        ? List.of("trace-human-chat-tool-plan-proposed-" + stableSuffix(responseSeed))
+        : runtime.traceIds();
+    var proposalRequest = new ChatToolPlanProposalRequest(
+        actor.selectedContext().membershipId(),
+        request.functionalAgentId(),
+        request.prompt(),
+        correlationId,
+        idempotencyRoot,
+        null,
+        firstNonBlank(runtimeResponse.summary(), "Create an Organization and invite its Organization Admin after explicit human confirmation."),
+        canonicalSteps,
+        firstNonBlank(runtimeResponse.approvalSummary(), "No Organization or invitation is created from this proposal. Human confirmation, selected AuthContext authorization, exact plan snapshot validation, per-step idempotency, and trace capture are required before execution."));
+    var proposal = chatToolPlanProposal(actor, proposalRequest, now, traceIds, responseSeed);
+    var confirmationSnapshot = chatToolPlanConfirmationSnapshot(proposal);
+    var agentItemId = "item-chat-tool-plan-proposal-" + stableSuffix(responseSeed + ":proposal");
+    var surface = chatToolPlanProposalSurface(proposal, confirmationSnapshot, actor, agentItemId, correlationId, traceIds, now);
+    var agentItem = new WorkstreamItem(agentItemId, request.functionalAgentId(), "chat_tool_plan_proposal", now.toString(), correlationId, traceIds, surface.surfaceId(), functionalAgent.label(), "Review the User Admin governed-tool plan. No Organization or invitation has been created; explicit confirmation is required in a later bounded capability path.", "waiting-for-human");
+    var persisted = workstreamLogRepository.appendMessage(new WorkstreamLogRepository.WorkstreamMessageLogEntry(workstreamScopeId, actor.selectedContext().membershipId(), request.functionalAgentId(), request.idempotencyKey(), correlationId, userItem, agentItem, surface));
+    return new WorkstreamMessageResponse(persisted.correlationId(), persisted.idempotencyKey(), persisted.userItem(), persisted.agentItem(), persisted.surface());
+  }
+
+  private WorkstreamMessageResponse persistChatToolPlanSystemMessage(AuthContextResolver.ResolvedMe actor, MeResponse.FunctionalAgentSummary functionalAgent, String workstreamScopeId, WorkstreamMessageRequest request, String correlationId, String responseSeed, WorkstreamItem userItem, String code, String message, List<String> traceIds) {
+    var now = Instant.now();
+    var safeTraceIds = traceIds == null || traceIds.isEmpty() ? List.of("trace-human-chat-tool-plan-provider-blocked-" + stableSuffix(responseSeed)) : List.copyOf(traceIds);
+    var agentItemId = "item-chat-tool-plan-blocked-" + stableSuffix(responseSeed + ":blocked");
+    var surface = chatToolPlanSystemMessageSurface("surface-chat-tool-plan-blocked-" + stableSuffix(responseSeed), request.functionalAgentId(), actor, code, message, correlationId, safeTraceIds, now);
+    var agentItem = new WorkstreamItem(agentItemId, request.functionalAgentId(), "chat_tool_plan_system_message", now.toString(), correlationId, safeTraceIds, surface.surfaceId(), functionalAgent.label(), "Governed User Admin chat tool planning failed closed. No tools executed and no records were changed.", "blocked");
+    var persisted = workstreamLogRepository.appendMessage(new WorkstreamLogRepository.WorkstreamMessageLogEntry(workstreamScopeId, actor.selectedContext().membershipId(), request.functionalAgentId(), request.idempotencyKey(), correlationId, userItem, agentItem, surface));
+    return new WorkstreamMessageResponse(persisted.correlationId(), persisted.idempotencyKey(), persisted.userItem(), persisted.agentItem(), persisted.surface());
+  }
+
+  private ChatToolPlanSystemMessage chatToolPlanUnavailableMessage(AgentRuntimeService.PlanProposalInvocationResult runtime, WorkstreamRuntimeAgent.ChatToolPlanProposalResponse response, List<ChatToolPlanStep> canonicalSteps) {
+    if (runtime.decision() != AgentRuntimeTrace.Decision.ALLOWED || response == null) {
+      return new ChatToolPlanSystemMessage(firstNonBlank(runtime.safeErrorCode(), "CHAT_TOOL_PLAN_UNAVAILABLE"), firstNonBlank(runtime.safeErrorSummary(), "Governed chat tool plan runtime failed closed before producing a proposal."), List.of("Verify provider/runtime/tool-boundary readiness, then retry the request."), true, runtime.traceIds());
+    }
+    if (!"proposed".equals(response.status()) || !response.noMutation() || response.executionEnabled()) {
+      var system = response.systemMessage();
+      return new ChatToolPlanSystemMessage(system == null ? "CHAT_TOOL_PLAN_UNAVAILABLE" : firstNonBlank(system.code(), "CHAT_TOOL_PLAN_UNAVAILABLE"), system == null ? "Governed chat tool plan runtime did not produce a confirmation-ready proposal." : system.message(), system == null ? List.of("Review the request or retry after provider/runtime/catalog readiness is restored.") : system.recoverySteps(), true, runtime.traceIds());
+    }
+    var proposedKeys = response.steps().stream()
+        .map(step -> String.join(":", firstNonBlank(step.actionId(), ""), firstNonBlank(step.browserToolId(), ""), firstNonBlank(step.governedToolId(), ""), firstNonBlank(step.capabilityId(), ""), firstNonBlank(step.inputSchemaRef(), "")))
+        .collect(Collectors.toCollection(LinkedHashSet::new));
+    var requiredKeys = canonicalSteps.stream()
+        .map(step -> String.join(":", step.actionId(), step.browserToolId(), step.governedToolId(), step.capabilityId(), step.inputSchemaRef()))
+        .collect(Collectors.toCollection(LinkedHashSet::new));
+    if (!proposedKeys.containsAll(requiredKeys)) {
+      return new ChatToolPlanSystemMessage("CHAT_TOOL_PLAN_OUT_OF_CATALOG", "Governed chat tool plan runtime proposed steps that did not match the User Admin backend-owned catalog for Organization creation plus Organization Admin invitation.", List.of("Retry with a catalog-bound request or open the structured User Admin surfaces directly."), true, runtime.traceIds());
+    }
+    return null;
+  }
+
+  private String chatToolCatalogSummary(String functionalAgentId, List<ChatToolPlanStep> steps) {
+    var stepKeys = steps.stream().map(ChatToolPlanStep::actionId).collect(Collectors.toSet());
+    return chatToolCatalog(functionalAgentId).stream()
+        .filter(entry -> stepKeys.contains(entry.actionId()))
+        .map(entry -> "actionId=" + entry.actionId() + "; browserToolId=" + entry.browserToolId() + "; governedToolId=" + entry.governedToolId() + "; capabilityId=" + entry.capabilityId() + "; inputSchemaRef=" + entry.inputSchemaRef() + "; idempotencyRequired=" + entry.idempotencyRequired() + "; requiresConfirmation=" + entry.requiresConfirmation() + "; requiresApproval=" + entry.requiresApproval() + "; resultSurfaceId=" + entry.expectedResultSurfaceId() + "; traceRequirements=" + entry.traceRequirements())
+        .collect(Collectors.joining("\n"));
+  }
+
+  private List<ChatToolPlanStep> userAdminOrganizationAndAdminInvitePlanSteps(UserAdminChatToolPlanCandidate candidate, String idempotencyRoot) {
+    return List.of(
+        new ChatToolPlanStep(
+            "step-create-organization",
+            1,
+            "Create Organization " + candidate.organizationName(),
+            "action-submit-organization-create",
+            "user-admin.submit-organization-create",
+            "manage-organizations",
+            SAAS_OWNER_TENANT_MANAGE_CAPABILITY,
+            "schema.organization-admin.create.submit.v1",
+            mapOf("organizationName", candidate.organizationName(), "reason", "human_chat_tool_plan proposal for Organization creation; execution requires explicit confirmation"),
+            List.of(),
+            Map.of("organizationId", "organizationId"),
+            "idem-" + stableSuffix(idempotencyRoot + ":create-organization"),
+            "independent-command: Organization creation is one backend transaction boundary",
+            true,
+            false,
+            "show-inspection",
+            "surface-user-admin-organization-detail",
+            List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_pending", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed")),
+        new ChatToolPlanStep(
+            "step-invite-organization-admin",
+            2,
+            "Invite Organization Admin " + candidate.email(),
+            "action-submit-organization-admin-invitation",
+            "user-admin.invite-organization-admin",
+            "manage-organization-admins",
+            SAAS_OWNER_ORGANIZATION_ADMIN_INVITE_CAPABILITY,
+            "schema.organization-admin.invitation-create.v1",
+            mapOf("organizationId", "${step-create-organization.organizationId}", "email", candidate.email(), "displayName", candidate.displayName(), "roles", List.of("TENANT_ADMIN"), "reason", "human_chat_tool_plan proposal for Organization Admin invitation; execution requires explicit confirmation"),
+            List.of("step-create-organization"),
+            Map.of(),
+            "idem-" + stableSuffix(idempotencyRoot + ":invite-organization-admin"),
+            "independent-command-after-dependency: invitation is one backend transaction boundary after Organization id binding",
+            true,
+            false,
+            "show-inspection",
+            "surface-user-admin-invitation-detail",
+            List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_pending", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "invitation.outbox")));
+  }
+
+  private Optional<UserAdminChatToolPlanCandidate> userAdminChatToolPlanCandidate(String prompt) {
+    if (prompt == null || prompt.isBlank()) return Optional.empty();
+    var normalized = prompt.toLowerCase(Locale.ROOT);
+    if (!(normalized.contains("create org") || normalized.contains("create organization"))) return Optional.empty();
+    if (!normalized.contains("invite") || !(normalized.contains("org admin") || normalized.contains("organization admin"))) return Optional.empty();
+    var emailMatcher = Pattern.compile("[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}", Pattern.CASE_INSENSITIVE).matcher(prompt);
+    if (!emailMatcher.find()) return Optional.empty();
+    var orgName = quotedOrganizationName(prompt);
+    if (orgName == null || orgName.isBlank()) return Optional.empty();
+    var email = emailMatcher.group().toLowerCase(Locale.ROOT);
+    return Optional.of(new UserAdminChatToolPlanCandidate(orgName, email, displayNameFromEmail(email)));
+  }
+
+  private String quotedOrganizationName(String prompt) {
+    var matcher = Pattern.compile("(?:create\\s+(?:org|organization))\\s+[\\\"“]([^\\\"”]+)[\\\"”]", Pattern.CASE_INSENSITIVE).matcher(prompt);
+    if (matcher.find()) return matcher.group(1).trim();
+    return null;
+  }
+
+  private String displayNameFromEmail(String email) {
+    var local = email == null ? "" : email.split("@", 2)[0];
+    var parts = Stream.of(local.split("[._+-]+"))
+        .filter(part -> !part.isBlank())
+        .map(part -> part.substring(0, 1).toUpperCase(Locale.ROOT) + part.substring(1).toLowerCase(Locale.ROOT))
+        .toList();
+    return parts.isEmpty() ? "Organization Admin" : String.join(" ", parts);
   }
 
   private WorkstreamMessageResponse routedSurfaceMessageResponse(AuthContextResolver.ResolvedMe actor, MeResponse.FunctionalAgentSummary functionalAgent, String workstreamScopeId, WorkstreamMessageRequest request, String correlationId, SurfaceIntentRouter.Result route) {
@@ -7072,6 +7239,7 @@ public final class WorkstreamService {
   public record ChatToolPlanPartialFailure(String planId, String planSnapshotId, List<ChatToolPlanStepResult> completedSteps, List<ChatToolPlanStepResult> failedSteps, List<ChatToolPlanStepResult> skippedSteps, List<String> recoverySteps, String message) {}
   public record ChatToolPlanSystemMessage(String code, String message, List<String> recoverySteps, boolean noFakeSuccess, List<String> traceIds) {}
   public record ChatToolPlanSurfaceData(String surfaceContract, String status, ChatToolPlanProposal proposal, ChatToolPlanConfirmationSnapshot confirmationSnapshot, ChatToolPlanExecutionResult result, ChatToolPlanSystemMessage systemMessage, boolean noDirectMutation, boolean noMutation, boolean executionEnabled, String sideEffect, String workstreamEntryId, List<String> traceRefs) {}
+  private record UserAdminChatToolPlanCandidate(String organizationName, String email, String displayName) {}
   public record WorkstreamEvent(String eventId, String eventType, String tenantId, String customerId, String functionalAgentId, String surfaceId, String surfaceType, String surfaceVersion, String correlationId, List<String> traceIds, String occurredAt, Integer sequence, Map<String, Object> patch) {}
 
   private static final class EmptyWorkstreamEventRepository implements WorkstreamEventRepository {

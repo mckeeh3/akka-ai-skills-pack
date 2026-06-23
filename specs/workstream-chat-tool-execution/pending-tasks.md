@@ -245,7 +245,7 @@
 
 ### TASK-WCTE-06-001: Implement User Admin chat tool plan proposal
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-execution/backlog/01-workstream-chat-tool-execution-build-backlog.md
 - task brief: specs/workstream-chat-tool-execution/tasks/06-user-admin-proposal/01-implement-user-admin-chat-tool-plan-proposal.md
 - depends on:
@@ -278,6 +278,9 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: User Admin workstream; `human_chat_tool_plan`; no mutation until confirmation; readiness target backend-ready proposal path
+  - added router-first User Admin chat prompt handoff to governed model-backed plan proposal; backend constructs canonical Organization create and Organization Admin invitation steps only after runtime/provider/tool-boundary checks pass, otherwise returns `chat_tool_plan.system_message.v1` with no mutation
+  - checks: `mvn -q -Dtest=WorkstreamServiceTest#chatToolPlanProposalRecordsPersistWithoutExecutingToolsAndReplayByIdempotency+submitMessageRoutesUserAdminMotivatingPromptToModelBackedPlanProposalWithoutMutation+submitMessageReturnsPlanUnavailableSystemMessageWhenPlanningRuntimeFailsClosed+submitMessageReturnsPlanUnavailableSystemMessageWhenSelectedAuthContextCannotUseUserAdminPlanCapabilities+submitMessageSupportsSaasOwnerTenantAndCustomerRuntimeScopes test`; `git diff --check`
+  - commit message: `workstream-chat-tools: add user admin plan proposal`
 
 ### TASK-WCTE-07-001: Execute confirmed User Admin chat tool plan
 

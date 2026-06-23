@@ -25,6 +25,7 @@ import ai.first.application.foundation.agent.InMemoryTestAgentRuntimeTraceSink;
 import ai.first.application.foundation.agent.ModelProviderClient;
 import ai.first.application.foundation.agent.WorkstreamAgentRuntimeInvoker;
 import ai.first.domain.foundation.agent.AgentLifecycleStatus;
+import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AccountStatus;
 import ai.first.domain.foundation.identity.Customer;
@@ -1809,6 +1810,144 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
+  void submitMessageRoutesUserAdminMotivatingPromptToModelBackedPlanProposalWithoutMutation() {
+    trackingRuntimeInvoker.nextPlanResponse(new WorkstreamRuntimeAgent.ChatToolPlanProposalResponse(
+        "proposed",
+        "user-admin-agent",
+        "corr-user-admin-chat-plan",
+        "membership-owner",
+        "Create Organization Org 1 and invite mckee.hugh@gmail.com as Organization Admin after confirmation.",
+        List.of(
+            new WorkstreamRuntimeAgent.ChatToolPlanStepProposal(
+                "step-create-organization",
+                1,
+                "Create Organization Org 1",
+                "action-submit-organization-create",
+                "user-admin.submit-organization-create",
+                "manage-organizations",
+                "saas_owner.tenant.manage",
+                "schema.organization-admin.create.submit.v1",
+                "organizationName=Org 1; reason is browser-safe",
+                List.of(),
+                Map.of("organizationId", "organizationId"),
+                "create-organization",
+                "one backend action transaction boundary",
+                true,
+                false,
+                "show-inspection",
+                List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed")),
+            new WorkstreamRuntimeAgent.ChatToolPlanStepProposal(
+                "step-invite-organization-admin",
+                2,
+                "Invite Organization Admin",
+                "action-submit-organization-admin-invitation",
+                "user-admin.invite-organization-admin",
+                "manage-organization-admins",
+                "saas_owner.organization_admin.invite",
+                "schema.organization-admin.invitation-create.v1",
+                "email=mckee.hugh@gmail.com; roles=[TENANT_ADMIN]; organizationId from step-create-organization",
+                List.of("step-create-organization"),
+                Map.of(),
+                "invite-organization-admin",
+                "one backend action transaction boundary after dependency binding",
+                true,
+                false,
+                "show-inspection",
+                List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "invitation.outbox"))),
+        List.of("saas_owner.tenant.manage", "saas_owner.organization_admin.invite"),
+        "No mutation occurs until exact plan snapshot confirmation; every step reuses selected AuthContext, idempotency, backend authorization, and traces.",
+        "Catalog-bound, no-mutation proposal only.",
+        "trace-human-chat-tool-plan-model-proposed",
+        null,
+        true,
+        false));
+    var tenantCountBefore = identityRepository.tenantRows().size();
+    var invitationCountBefore = invitationRepository.invitations().size();
+
+    var response = service.submitMessage(ownerIdentity(), "membership-owner", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-owner", "user-admin-agent", "create org \"Org 1\", and invite mckee.hugh@gmail.com as an org admin", "corr-user-admin-chat-plan", "idem-user-admin-chat-plan"), "corr-header-plan");
+
+    assertEquals("chat_tool_plan_proposal", response.agentItem().kind());
+    assertEquals("waiting-for-human", response.agentItem().status());
+    assertEquals("chat_tool_plan_proposal", response.surface().surfaceType());
+    assertEquals("chat_tool_plan.proposal.v1", response.surface().data().get("surfaceContract"));
+    assertEquals(true, response.surface().data().get("noDirectMutation"));
+    assertEquals(true, response.surface().data().get("noMutation"));
+    assertEquals(false, response.surface().data().get("executionEnabled"));
+    var proposal = (WorkstreamService.ChatToolPlanProposal) response.surface().data().get("proposal");
+    assertEquals("membership-owner", proposal.selectedContextId());
+    assertEquals("user-admin-agent", proposal.functionalAgentId());
+    assertEquals("owner@example.test", proposal.requestedByAccountId());
+    assertEquals("idem-user-admin-chat-plan", proposal.idempotencyRoot());
+    assertEquals(List.of("saas_owner.tenant.manage", "saas_owner.organization_admin.invite"), proposal.requiredCapabilities());
+    assertEquals(2, proposal.steps().size());
+    assertEquals("action-submit-organization-create", proposal.steps().get(0).actionId());
+    assertEquals("manage-organizations", proposal.steps().get(0).governedToolId());
+    assertEquals("Org 1", proposal.steps().get(0).input().get("organizationName"));
+    assertEquals("action-submit-organization-admin-invitation", proposal.steps().get(1).actionId());
+    assertEquals("manage-organization-admins", proposal.steps().get(1).governedToolId());
+    assertEquals("${step-create-organization.organizationId}", proposal.steps().get(1).input().get("organizationId"));
+    assertEquals("mckee.hugh@gmail.com", proposal.steps().get(1).input().get("email"));
+    assertEquals(List.of("TENANT_ADMIN"), proposal.steps().get(1).input().get("roles"));
+    var snapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) response.surface().data().get("confirmationSnapshot");
+    assertEquals(proposal.planId(), snapshot.planId());
+    assertEquals(proposal.planSnapshotId(), snapshot.planSnapshotId());
+    assertEquals("membership-owner", snapshot.selectedContextId());
+    assertTrue(snapshot.stepHashes().containsKey("step-create-organization"));
+    assertTrue(snapshot.stepHashes().containsKey("step-invite-organization-admin"));
+    assertTrue(response.surface().actions().stream().anyMatch(action -> action.actionId().equals("action-confirm-chat-tool-plan") && action.disabled() != null));
+    assertEquals(tenantCountBefore, identityRepository.tenantRows().size(), "Chat proposal must not create the Organization before confirmation.");
+    assertEquals(invitationCountBefore, invitationRepository.invitations().size(), "Chat proposal must not create the invitation before confirmation.");
+    assertEquals(1, trackingRuntimeInvoker.planInvocationCount());
+    assertEquals(0, trackingRuntimeInvoker.invocationCount(), "Plan prompts must not fall through to markdown runtime when planning succeeds.");
+    assertTrue(trackingRuntimeInvoker.lastPlanRequest().backendCatalogSummary().contains("action-submit-organization-create"));
+    assertBrowserPayloadSafe(response.surface());
+  }
+
+  @Test
+  void submitMessageReturnsPlanUnavailableSystemMessageWhenPlanningRuntimeFailsClosed() {
+    var tenantCountBefore = identityRepository.tenantRows().size();
+    var invitationCountBefore = invitationRepository.invitations().size();
+
+    var response = service.submitMessage(ownerIdentity(), "membership-owner", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-owner", "user-admin-agent", "create org \"Org 1\", and invite mckee.hugh@gmail.com as an org admin", "corr-user-admin-chat-plan-unavailable", "idem-user-admin-chat-plan-unavailable"), "corr-header-plan-unavailable");
+
+    assertEquals("chat_tool_plan_system_message", response.agentItem().kind());
+    assertEquals("blocked", response.agentItem().status());
+    assertEquals("chat_tool_plan_system_message", response.surface().surfaceType());
+    assertEquals("chat_tool_plan.system_message.v1", response.surface().data().get("surfaceContract"));
+    assertEquals(true, response.surface().data().get("noDirectMutation"));
+    assertEquals(true, response.surface().data().get("noMutation"));
+    assertEquals(false, response.surface().data().get("executionEnabled"));
+    assertTrue(response.surface().toString().contains("CHAT_TOOL_PLAN_RUNTIME_NOT_IMPLEMENTED"));
+    assertEquals(tenantCountBefore, identityRepository.tenantRows().size());
+    assertEquals(invitationCountBefore, invitationRepository.invitations().size());
+    assertEquals(1, trackingRuntimeInvoker.planInvocationCount());
+    assertEquals(0, trackingRuntimeInvoker.invocationCount());
+    assertBrowserPayloadSafe(response.surface());
+  }
+
+  @Test
+  void submitMessageReturnsPlanUnavailableSystemMessageWhenSelectedAuthContextCannotUseUserAdminPlanCapabilities() {
+    trackingRuntimeInvoker.nextPlanResponse(new WorkstreamRuntimeAgent.ChatToolPlanProposalResponse(
+        "proposed", "user-admin-agent", "corr-denied", "membership-admin", "should not be used", List.of(), List.of(), "", "", "", null, true, false));
+    var tenantCountBefore = identityRepository.tenantRows().size();
+    var invitationCountBefore = invitationRepository.invitations().size();
+
+    var response = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "user-admin-agent", "create org \"Org 1\", and invite mckee.hugh@gmail.com as an org admin", "corr-user-admin-chat-plan-auth-denied", "idem-user-admin-chat-plan-auth-denied"), "corr-header-plan-auth-denied");
+
+    assertEquals("chat_tool_plan_system_message", response.agentItem().kind());
+    assertEquals("chat_tool_plan_system_message", response.surface().surfaceType());
+    assertTrue(response.surface().toString().contains("backend authorization or tool-boundary checks failed closed"));
+    assertEquals(tenantCountBefore, identityRepository.tenantRows().size());
+    assertEquals(invitationCountBefore, invitationRepository.invitations().size());
+    assertEquals(0, trackingRuntimeInvoker.planInvocationCount(), "Authorization/catalog denial must happen before model planning.");
+    assertBrowserPayloadSafe(response.surface());
+  }
+
+  @Test
   void chatToolCatalogListsBoundedHumanChatPlanEntries() {
     var entries = service.chatToolCatalog(null);
 
@@ -2248,7 +2387,7 @@ class WorkstreamServiceTest {
   @Test
   void submitMessageSupportsSaasOwnerTenantAndCustomerRuntimeScopes() {
     var ownerResponse = service.submitMessage(ownerIdentity(), "membership-owner", new WorkstreamService.WorkstreamMessageRequest(
-        "membership-owner", "user-admin-agent", "create organization \"Org 1\" and invite user mckee.hugh@gmail.com as an org admin", "corr-owner-message", "idem-owner-message"), "corr-owner-header");
+        "membership-owner", "user-admin-agent", "Summarize SaaS Owner User Admin options", "corr-owner-message", "idem-owner-message"), "corr-owner-header");
     assertEquals("markdown_response", ownerResponse.surface().surfaceType());
     assertEquals("membership-owner", ownerResponse.surface().authContext().get("selectedContextId"));
     assertEquals(ai.first.application.foundation.workstream.WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, trackingRuntimeInvoker.lastRequest().tenantId(), "SaaS Owner workstream prompts must use the platform governance scope instead of requiring a tenant.");
@@ -3008,7 +3147,10 @@ class WorkstreamServiceTest {
   private static final class TrackingWorkstreamAgentRuntimeTestAdapter implements WorkstreamAgentRuntimeInvoker {
     private final AgentRuntimeService delegate;
     private final AtomicInteger invocationCount = new AtomicInteger();
+    private final AtomicInteger planInvocationCount = new AtomicInteger();
     private AgentRuntimeService.RuntimeInvocationRequest lastRequest;
+    private AgentRuntimeService.PlanProposalInvocationRequest lastPlanRequest;
+    private WorkstreamRuntimeAgent.ChatToolPlanProposalResponse nextPlanResponse;
 
     private TrackingWorkstreamAgentRuntimeTestAdapter(AgentRuntimeService delegate) {
       this.delegate = delegate;
@@ -3021,12 +3163,45 @@ class WorkstreamServiceTest {
       return delegate.invokeWorkstreamAgent(request);
     }
 
+    @Override
+    public AgentRuntimeService.PlanProposalInvocationResult proposeChatToolPlan(AgentRuntimeService.PlanProposalInvocationRequest request) {
+      planInvocationCount.incrementAndGet();
+      lastPlanRequest = request;
+      if (nextPlanResponse == null) {
+        return AgentRuntimeService.planProposalUnavailable(
+            request,
+            "CHAT_TOOL_PLAN_RUNTIME_NOT_IMPLEMENTED",
+            "Workstream chat tool plan proposal requires the governed Akka Agent runtime path.",
+            List.of("trace-chat-tool-plan-runtime-not-implemented"));
+      }
+      var response = nextPlanResponse;
+      nextPlanResponse = null;
+      return new AgentRuntimeService.PlanProposalInvocationResult(
+          AgentRuntimeTrace.Decision.ALLOWED,
+          response,
+          List.of("trace-human-chat-tool-plan-test-provider"),
+          null,
+          null);
+    }
+
+    private void nextPlanResponse(WorkstreamRuntimeAgent.ChatToolPlanProposalResponse response) {
+      this.nextPlanResponse = response;
+    }
+
     private int invocationCount() {
       return invocationCount.get();
     }
 
+    private int planInvocationCount() {
+      return planInvocationCount.get();
+    }
+
     private AgentRuntimeService.RuntimeInvocationRequest lastRequest() {
       return lastRequest;
+    }
+
+    private AgentRuntimeService.PlanProposalInvocationRequest lastPlanRequest() {
+      return lastPlanRequest;
     }
   }
 
