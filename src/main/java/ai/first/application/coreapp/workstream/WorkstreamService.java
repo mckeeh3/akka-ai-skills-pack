@@ -555,6 +555,9 @@ public final class WorkstreamService {
     if ("action-update-my-settings".equals(request.actionId()) || "action-update-my-profile".equals(request.actionId())) {
       validateMyAccountDirectActionInput(request);
     }
+    if ("action-open-user-admin-support-access-grant".equals(request.actionId())) {
+      userForTaskSurface(actor, request.input());
+    }
 
     CapabilityActionResult result = null;
     try {
@@ -684,7 +687,11 @@ public final class WorkstreamService {
     } else if ("action-revise-user-admin-role-change".equals(request.actionId()) || "action-open-user-admin-user-detail".equals(request.actionId())) {
       result = new CapabilityActionResult("accepted", "Returned to user detail through backend-authorized role-change branch navigation.", request.correlationId(), List.of("trace-useradmin-role-change-revise-" + stableSuffix(request.correlationId())), detailSurface(actor, request.input(), request.correlationId()));
     } else if ("action-useradmin-disable-member".equals(request.actionId()) || "action-useradmin-reactivate-member".equals(request.actionId()) || "action-confirm-user-admin-membership-status-change".equals(request.actionId())) {
-      var requestedStatus = stringInput(request.input(), "status", membershipActionDefaultStatus(request.actionId()));
+      var requestedStatus = switch (request.actionId()) {
+        case "action-useradmin-disable-member" -> "removed";
+        case "action-useradmin-reactivate-member" -> "active";
+        default -> stringInput(request.input(), "status", membershipActionDefaultStatus(request.actionId()));
+      };
       var targetStatus = membershipStatusInput(requestedStatus);
       var changed = userAdminService.updateMemberStatus(actor, stringInput(request.input(), "membershipId", actor.selectedContext().membershipId()), targetStatus, stringInput(request.input(), "reason", "workstream member status change"), request.idempotencyKey(), request.correlationId());
       result = new CapabilityActionResult(changed.status(), changed.message(), request.correlationId(), List.of(changed.traceId()), detailSurface(actor, request.input(), request.correlationId()));
@@ -5622,13 +5629,20 @@ public final class WorkstreamService {
   }
 
   private UserDirectoryView.UserDirectoryRow userForTaskSurface(AuthContextResolver.ResolvedMe actor, Object input) {
+    var accountIdProvided = hasStringInput(input, "accountId");
+    var membershipIdProvided = hasStringInput(input, "membershipId");
     var accountId = stringInput(input, "accountId", actor.account().accountId());
     var membershipId = stringInput(input, "membershipId", actor.selectedContext().membershipId());
     var customerId = stringInput(input, "customerId", "");
     var targetScope = actor.selectedContext().scopeType() == ScopeType.TENANT && !customerId.isBlank() ? ScopeType.CUSTOMER : actor.selectedContext().scopeType();
     var targetCustomerId = targetScope == ScopeType.CUSTOMER ? customerId : actor.selectedContext().customerId();
     return userDirectoryView.list(actor, targetScope, actor.selectedContext().tenantId(), targetCustomerId).stream()
-        .filter(user -> Objects.equals(user.accountId(), accountId) || Objects.equals(user.membershipId(), membershipId))
+        .filter(user -> {
+          if (accountIdProvided && membershipIdProvided) return Objects.equals(user.accountId(), accountId) && Objects.equals(user.membershipId(), membershipId);
+          if (accountIdProvided) return Objects.equals(user.accountId(), accountId);
+          if (membershipIdProvided) return Objects.equals(user.membershipId(), membershipId);
+          return Objects.equals(user.accountId(), accountId) && Objects.equals(user.membershipId(), membershipId);
+        })
         .findFirst()
         .orElseThrow(() -> new AuthorizationException(404, "user-not-found-or-forbidden"));
   }
@@ -8383,6 +8397,7 @@ public final class WorkstreamService {
   }
 
   private static String stringInput(Object input, String key, String fallback) { if (input instanceof Map<?, ?> map && map.get(key) instanceof String value && !value.isBlank()) return value; return fallback; }
+  private static boolean hasStringInput(Object input, String key) { return input instanceof Map<?, ?> map && map.get(key) instanceof String value && !value.isBlank(); }
   private static Instant instantInput(Object input, String key) {
     return instantInput(input, key, null);
   }

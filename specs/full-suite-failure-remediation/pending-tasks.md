@@ -198,7 +198,7 @@
 
 ### TASK-FSFR-05-001: Repair User Admin status and browser-smoke cluster
 
-- status: pending
+- status: done
 - source: specs/full-suite-failure-remediation/failure-inventory.md after TASK-FSFR-01-001
 - task brief: specs/full-suite-failure-remediation/tasks/05-user-admin/01-repair-user-admin-status-and-smoke-cluster.md
 - depends on:
@@ -228,6 +228,9 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: User Admin workstream; membership status/support-access/browser-smoke repair
+  - completed 2026-06-23: repaired canonical disable/reactivate action semantics so explicit disable ignores stale/default `status=active` browser payloads and transitions to removed while confirmation actions still honor backend-authored target status; tightened User Admin task target resolution so mismatched/hidden account and membership pairs are denied before support-access grant payloads are returned.
+  - validation: `mvn -Dtest=WorkstreamServiceTest#userAdminStatusActionsDisableReactivateNoOpAndDenyManualSelfDisable test` passed; `mvn -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminSystemMessageRuntimeCoverage+protectedWorkstreamApiExercisesUserAdminSupportAccessGrantRuntimePath test` passed; `git diff --check` passed.
+  - commit message: `full-suite-remediation: repair user admin status smoke`
 
 ### TASK-FSFR-06-001: Repair bootstrap audit capability mismatch
 
