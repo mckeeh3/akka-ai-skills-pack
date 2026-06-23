@@ -456,7 +456,7 @@
 
 ### TASK-FSFR-99-002: Verify Full Suite Failure Remediation completion after My Account follow-up
 
-- status: pending
+- status: blocked
 - source: replacement terminal verification appended by `TASK-FSFR-99-001`
 - task brief: specs/full-suite-failure-remediation/tasks/99-verification/02-verify-full-suite-remediation.md
 - depends on:
@@ -492,3 +492,85 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: replacement terminal verification after `TASK-FSFR-10-001`; expected final state is clean full-suite or precise queued blockers.
+  - completed 2026-06-23 as a blocked/extension verification: updated `specs/full-suite-failure-remediation/verification-notes.md` with final command evidence and compared the My Account follow-up against prior residual failures and README done state.
+  - validation: `git diff --check` passed before and after verification-note/queue/task-brief edits; `npm --prefix frontend test -- --run` failed with 177 tests, 176 pass, 1 fail (`workstream-my-account-vertical.contract.test.mjs` still expects `MY_ACCOUNT_UNSUPPORTED_SELF_SERVICE_FIELD` backend evidence after `TASK-FSFR-10-001` changed the accepted service-level contract to browser-safe `validation-error` result surfaces); `npm --prefix frontend run typecheck` passed; `mvn test` passed with 431 tests, 0 failures, 0 errors, 2 skipped.
+  - blocker: README done state is not achieved because the frontend test suite is not clean. The residual frontend contract drift is moved to bounded follow-up `TASK-FSFR-11-001`; replacement terminal verification is `TASK-FSFR-99-003`.
+  - commit message: `full-suite-remediation: verify final full suite`
+
+### TASK-FSFR-11-001: Reconcile My Account frontend contract with validation-result backend evidence
+
+- status: pending
+- source: `TASK-FSFR-99-002` terminal verification residual frontend contract failure after `TASK-FSFR-10-001`
+- task brief: specs/full-suite-failure-remediation/tasks/11-my-account/01-reconcile-my-account-frontend-contract-validation-result.md
+- depends on:
+  - TASK-FSFR-10-001
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/full-suite-failure-remediation/README.md
+  - specs/full-suite-failure-remediation/conversation-capture.md
+  - specs/full-suite-failure-remediation/pending-tasks.md
+  - specs/full-suite-failure-remediation/failure-inventory.md
+  - specs/full-suite-failure-remediation/verification-notes.md
+  - specs/full-suite-failure-remediation/tasks/11-my-account/01-reconcile-my-account-frontend-contract-validation-result.md
+  - frontend/src/workstream-my-account-vertical.contract.test.mjs
+  - src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-pending-task-queue-maintenance
+- expected outputs:
+  - focused frontend contract/current-intent repair for My Account validation-result backend evidence
+  - queue update
+- required checks:
+  - `git diff --check`
+  - `cd frontend && node --test src/workstream-my-account-vertical.contract.test.mjs`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - targeted My Account backend check if backend evidence changes
+- done criteria:
+  - My Account frontend contract aligns with the accepted protected-workstream validation-result contract from `TASK-FSFR-10-001`
+  - unsupported self-service fields and invalid settings remain fail-closed without requiring browser-visible thrown authorization exceptions
+  - frontend suite is clean and no provider secret or unsafe backend evidence is exposed
+  - changes and queue update are committed
+- notes:
+  - vertical contract: frontend contract evidence only for My Account protected-workstream validation-result semantics; do not reopen unrelated remediation clusters.
+
+### TASK-FSFR-99-003: Verify Full Suite Failure Remediation completion after My Account frontend contract follow-up
+
+- status: pending
+- source: replacement terminal verification appended by `TASK-FSFR-99-002`
+- task brief: specs/full-suite-failure-remediation/tasks/99-verification/03-verify-full-suite-remediation.md
+- depends on:
+  - TASK-FSFR-11-001
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/full-suite-failure-remediation/README.md
+  - specs/full-suite-failure-remediation/conversation-capture.md
+  - specs/full-suite-failure-remediation/pending-tasks.md
+  - specs/full-suite-failure-remediation/failure-inventory.md
+  - specs/full-suite-failure-remediation/verification-notes.md
+  - specs/full-suite-failure-remediation/tasks/99-verification/03-verify-full-suite-remediation.md
+  - completed task notes and changed files since `TASK-FSFR-99-002`
+- skills:
+  - akka-runtime-feature-verification
+  - akka-web-ui-testing
+  - akka-pending-task-queue-maintenance
+- expected outputs:
+  - updated `specs/full-suite-failure-remediation/verification-notes.md` with final command evidence
+  - queue update marking verification done only when README done state is achieved
+  - additional bounded follow-up tasks plus another terminal verification task if material failures remain
+  - commit for verification notes and queue updates
+- required checks:
+  - `git diff --check`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - `mvn test`
+- done criteria:
+  - verification notes compare completed work against every README done-state bullet and every `failure-inventory.md` item, including residual My Account failures recorded by `TASK-FSFR-99-001` and `TASK-FSFR-99-002`
+  - full frontend tests and typecheck pass
+  - `mvn test` passes, or remaining failures are explicitly queued as bounded blockers with a new terminal verification task
+  - changes and queue update are committed
+- notes:
+  - vertical contract: replacement terminal verification after `TASK-FSFR-11-001`; expected final state is clean full-suite or precise queued blockers.
