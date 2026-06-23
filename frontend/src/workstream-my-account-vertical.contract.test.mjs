@@ -21,6 +21,12 @@ const componentsCss = read('./styles/components.css');
 const shell = read('./workstream/shell/WorkstreamShell.tsx');
 const rail = read('./workstream/rail/FunctionalAgentRail.tsx');
 
+const backendWorkstreamTestBody = (testName) => {
+  const match = backendWorkstreamTest.match(new RegExp(`void ${testName}\\(\\) \\{[\\s\\S]*?\\n  \\}`));
+  assert.ok(match, `Expected backend WorkstreamServiceTest method ${testName}`);
+  return match[0];
+};
+
 const expectedMyAccountMarkers = [
   'surface-my-account-dashboard',
   'surface-my-profile',
@@ -79,19 +85,30 @@ test('My Account full-core backend exposes dashboard, profile, settings, context
   assert.match(backendWorkstreamEndpoint, /X-Selected-Context-Id/);
 });
 
-test('My Account backend tests cover rich reads, update, idempotent duplicate, no-op, unsupported fields, and hidden workstream denial', () => {
+test('My Account backend tests cover rich reads, update, idempotent duplicate, validation-result denials, no-op, and hidden workstream denial', () => {
   for (const testName of [
     'myAccountSurfacesAreBackendRetrievedWithAuthorityTraceAndContextData',
     'myAccountProfileSettingsUpdatePersistsAllowedSelfServiceFieldsAndIsIdempotent',
     'myAccountRejectsUnsupportedSelfServiceFieldsBeforeMutation',
+    'myAccountSettingsRejectInvalidTimezoneBeforeMutation',
     'myAccountProfileSettingsNoOpIsTracedAndReturnsCurrentSurface',
     'myAccountOpenWorkstreamActionReturnsBackendResolvedSurface',
     'myAccountOpenUserAdminAcceptsSaasOwnerUserAdminCapability',
     'myAccountOpenWorkstreamDeniesHiddenTargetsWithSystemMessage'
   ]) assert.match(backendWorkstreamTest, new RegExp(testName));
+  const unsupportedFieldValidation = backendWorkstreamTestBody('myAccountRejectsUnsupportedSelfServiceFieldsBeforeMutation');
+  const invalidPreferenceValidation = backendWorkstreamTestBody('myAccountSettingsRejectInvalidTimezoneBeforeMutation');
   assert.match(backendWorkstreamTest, /surface-my-context/);
   assert.match(backendWorkstreamTest, /idem-my-account-update/);
-  assert.match(backendWorkstreamTest, /MY_ACCOUNT_UNSUPPORTED_SELF_SERVICE_FIELD/);
+  for (const validationBody of [unsupportedFieldValidation, invalidPreferenceValidation]) {
+    assert.match(validationBody, /assertEquals\("validation-error", result\.status\(\)\)/);
+    assert.match(validationBody, /assertEquals\(true, result\.resultSurface\(\)\.data\(\)\.get\("noDirectMutation"\)\)/);
+    assert.match(validationBody, /No profile, setting, authority, source work, or provider state was mutated/);
+    assert.doesNotMatch(validationBody, /assertThrows\(AuthorizationException/);
+    assert.doesNotMatch(validationBody, /MY_ACCOUNT_UNSUPPORTED_SELF_SERVICE_FIELD/);
+  }
+  assert.match(unsupportedFieldValidation, /my_account_unsupported_self_service_field/);
+  assert.match(invalidPreferenceValidation, /my_account_invalid_preference/);
   assert.match(backendWorkstreamTest, /no-op/);
   assert.match(backendWorkstreamTest, /not_found_or_redacted/);
   assert.match(backendPersonalAttentionDigestTest, /lifecyclePublishesV3EventsAndDigestTaskAttentionWithoutMutatingSourceAttention/);

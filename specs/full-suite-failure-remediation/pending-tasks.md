@@ -499,7 +499,7 @@
 
 ### TASK-FSFR-11-001: Reconcile My Account frontend contract with validation-result backend evidence
 
-- status: pending
+- status: done
 - source: `TASK-FSFR-99-002` terminal verification residual frontend contract failure after `TASK-FSFR-10-001`
 - task brief: specs/full-suite-failure-remediation/tasks/11-my-account/01-reconcile-my-account-frontend-contract-validation-result.md
 - depends on:
@@ -535,6 +535,9 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: frontend contract evidence only for My Account protected-workstream validation-result semantics; do not reopen unrelated remediation clusters.
+  - completed 2026-06-23: updated the My Account frontend contract to assert the accepted protected-workstream `validation-error` result-surface evidence from `TASK-FSFR-10-001`, including safe lower-case reason codes, `noDirectMutation`, unchanged mutation-safety copy, and no browser-visible thrown authorization exception requirement for unsupported self-service fields or invalid settings.
+  - validation: `git diff --check` passed; `cd frontend && node --test src/workstream-my-account-vertical.contract.test.mjs` passed with 5/5 tests; `npm --prefix frontend test -- --run` passed with 177/177 tests; `npm --prefix frontend run typecheck` passed. No backend evidence changed, so the targeted My Account backend check was not required.
+  - commit message: `full-suite-remediation: reconcile my account frontend contract`
 
 ### TASK-FSFR-99-003: Verify Full Suite Failure Remediation completion after My Account frontend contract follow-up
 
