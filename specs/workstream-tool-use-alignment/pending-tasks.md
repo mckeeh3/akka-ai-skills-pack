@@ -48,7 +48,7 @@
 
 ### TASK-WTUA-01-001: Audit current tool-use guidance
 
-- status: pending
+- status: done
 - source: specs/workstream-tool-use-alignment/backlog/01-workstream-tool-use-alignment-build-backlog.md
 - task brief: specs/workstream-tool-use-alignment/tasks/01-audit/01-audit-tool-use-guidance.md
 - depends on:
@@ -84,6 +84,8 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: docs-only skills-pack maintenance; scope is cross-cutting architecture alignment; no generated-app runtime feature; governed tool/capability/source-map validation only
+  - commit message: `workstream-tool-use: audit tool-use guidance`
+  - generated `specs/workstream-tool-use-alignment/tool-use-source-map.md` with aligned/needs-refinement/potentially-conflicting/out-of-scope findings and prioritized WTUA-02 through WTUA-07 edit targets
 
 ### TASK-WTUA-02-001: Update canonical workstream tool-use doctrine
 
