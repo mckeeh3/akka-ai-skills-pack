@@ -414,7 +414,7 @@
 
 ### TASK-FSFR-10-001: Reconcile My Account direct-action validation contract failures
 
-- status: pending
+- status: done
 - source: `TASK-FSFR-99-001` terminal verification residual `mvn test` failures
 - task brief: specs/full-suite-failure-remediation/tasks/10-my-account/01-reconcile-my-account-direct-action-validation-contract.md
 - depends on:
@@ -450,6 +450,9 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: My Account direct-action validation/security semantics only; do not reopen unrelated remediation clusters.
+  - completed 2026-06-23: reconciled the two residual service-level My Account direct-action tests with the accepted protected-workstream validation-result contract. Unsupported fields and invalid timezone submissions now assert `validation-error` result surfaces, `noDirectMutation`, safe reason codes, browser-safe trace/message basics, and unchanged profile/settings/authority state instead of expecting thrown `AuthorizationException`s from the protected action path.
+  - validation: `mvn -Dtest=WorkstreamServiceTest#myAccountRejectsUnsupportedSelfServiceFieldsBeforeMutation+myAccountSettingsRejectInvalidTimezoneBeforeMutation test` passed; related `mvn -Dtest=MyAccountBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesMyProfileRuntimePathAndDenials+protectedWorkstreamApiExercisesMySettingsRuntimePath test` passed; `mvn test` passed with 431 tests, 0 failures, 0 errors, 2 skipped; `git diff --check` passed.
+  - commit message: `full-suite-remediation: reconcile my account validation`
 
 ### TASK-FSFR-99-002: Verify Full Suite Failure Remediation completion after My Account follow-up
 

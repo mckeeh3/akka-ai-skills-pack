@@ -3258,11 +3258,20 @@ class WorkstreamServiceTest {
 
   @Test
   void myAccountRejectsUnsupportedSelfServiceFieldsBeforeMutation() {
-    var denied = assertThrows(AuthorizationException.class, () -> service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-update-my-settings", "action-update-my-settings", "my_account.update_profile_settings", "my_account.update_profile_settings", Map.of("roleIds", List.of("tenant-admin")), "idem-my-account-denied", "membership-admin", "surface-my-settings", "corr-my-account-denied")));
+    var result = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-update-my-settings", "action-update-my-settings", "my_account.update_profile_settings", "my_account.update_profile_settings", Map.of("roleIds", List.of("tenant-admin")), "idem-my-account-denied", "membership-admin", "surface-my-settings", "corr-my-account-denied"));
 
-    assertTrue(denied.reasonCode().contains("MY_ACCOUNT_UNSUPPORTED_SELF_SERVICE_FIELD"));
-    assertEquals("Tenant Admin", service.bootstrap(identity(), "membership-admin", "corr-my-account-denied-read").me().profile().displayName());
+    assertEquals("validation-error", result.status());
+    assertEquals("surface-my-settings", result.resultSurface().surfaceId());
+    assertEquals(true, result.resultSurface().data().get("noDirectMutation"));
+    assertTrue(result.resultSurface().data().get("safeReasonCode").toString().contains("my_account_unsupported_self_service_field"));
+    assertTrue(result.message().contains("No profile, setting, authority, source work, or provider state was mutated"));
+    assertFalse(result.resultSurface().toString().contains("Bearer "));
+    assertFalse(result.resultSurface().toString().contains("RESEND_API_KEY"));
+    assertFalse(result.resultSurface().toString().contains("sk-secret"));
+    var me = service.bootstrap(identity(), "membership-admin", "corr-my-account-denied-read").me();
+    assertEquals("Tenant Admin", me.profile().displayName());
+    assertEquals(List.of(FoundationRole.TENANT_ADMIN, FoundationRole.AUDITOR), identityRepository.findMembership("membership-admin").orElseThrow().roles());
   }
 
   @Test
@@ -3293,11 +3302,17 @@ class WorkstreamServiceTest {
 
   @Test
   void myAccountSettingsRejectInvalidTimezoneBeforeMutation() {
-    var denied = assertThrows(AuthorizationException.class, () -> service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-update-my-settings", "action-update-my-settings", "my_account.update_profile_settings", "my_account.update_profile_settings", Map.of("timeZone", "Hidden/Provider"), "idem-my-account-settings-invalid", "membership-admin", "surface-my-settings", "corr-my-account-settings-invalid")));
+    var result = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-update-my-settings", "action-update-my-settings", "my_account.update_profile_settings", "my_account.update_profile_settings", Map.of("timeZone", "Hidden/Provider"), "idem-my-account-settings-invalid", "membership-admin", "surface-my-settings", "corr-my-account-settings-invalid"));
 
-    assertEquals(400, denied.httpStatus());
-    assertTrue(denied.reasonCode().contains("MY_ACCOUNT_INVALID_PREFERENCE"));
+    assertEquals("validation-error", result.status());
+    assertEquals("surface-my-settings", result.resultSurface().surfaceId());
+    assertEquals(true, result.resultSurface().data().get("noDirectMutation"));
+    assertTrue(result.resultSurface().data().get("safeReasonCode").toString().contains("my_account_invalid_preference"));
+    assertTrue(result.message().contains("No profile, setting, authority, source work, or provider state was mutated"));
+    assertFalse(result.resultSurface().toString().contains("Bearer "));
+    assertFalse(result.resultSurface().toString().contains("RESEND_API_KEY"));
+    assertFalse(result.resultSurface().toString().contains("sk-secret"));
     assertEquals("America/New_York", service.bootstrap(identity(), "membership-admin", "corr-my-account-settings-invalid-read").me().settings().timeZone());
   }
 
