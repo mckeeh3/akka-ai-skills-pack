@@ -1486,6 +1486,101 @@ public final class WorkstreamService {
     return new WorkstreamMessageResponse(persisted.correlationId(), persisted.idempotencyKey(), persisted.userItem(), persisted.agentItem(), persisted.surface());
   }
 
+  public List<ChatToolCatalogEntry> chatToolCatalog(String functionalAgentId) {
+    return chatToolCatalogEntries().stream()
+        .filter(entry -> functionalAgentId == null || functionalAgentId.isBlank() || functionalAgentId.equals(entry.workstreamId()))
+        .toList();
+  }
+
+  public ChatToolPlanExecutionResult dispatchChatToolPlanSteps(WorkosIdentity identity, String selectedContextId, ChatToolPlanDispatchRequest request) {
+    var correlationId = firstNonBlank(request.correlationId(), "chat-tool-plan-dispatch");
+    if (request.selectedContextId() == null || request.selectedContextId().isBlank() || !Objects.equals(selectedContextId, request.selectedContextId())) throw new AuthorizationException(403, "CONTEXT_FORBIDDEN");
+    if (request.functionalAgentId() == null || request.functionalAgentId().isBlank()) throw new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN");
+    if (request.planId() == null || request.planId().isBlank() || request.planSnapshotId() == null || request.planSnapshotId().isBlank()) throw new AuthorizationException(400, "CHAT_TOOL_PLAN_SNAPSHOT_REQUIRED");
+    var steps = request.steps() == null ? List.<ChatToolPlanStep>of() : request.steps().stream().sorted((left, right) -> Integer.compare(left.sequence(), right.sequence())).toList();
+    if (steps.isEmpty()) throw new AuthorizationException(400, "CHAT_TOOL_PLAN_STEPS_REQUIRED");
+    var actor = authContextResolver.resolveMe(identity, selectedContextId, correlationId);
+    var functionalAgent = MeResponse.FunctionalAgentSummary.fromCapabilities(actor.selectedContext().capabilities()).stream()
+        .filter(agent -> request.functionalAgentId().equals(agent.functionalAgentId()))
+        .findFirst()
+        .orElseThrow(() -> new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN"));
+    if (!"visible".equals(functionalAgent.availability())) throw new AuthorizationException(403, "FUNCTIONAL_AGENT_FORBIDDEN");
+    var boundary = activeChatToolBoundary(actor, request.functionalAgentId(), correlationId);
+    steps.forEach(step -> validateChatToolStepAgainstCatalog(actor, boundary, request.functionalAgentId(), step));
+
+    var completed = new ArrayList<ChatToolPlanStepResult>();
+    var failed = new ArrayList<ChatToolPlanStepResult>();
+    var skipped = new ArrayList<ChatToolPlanStepResult>();
+    var completedStepIds = new LinkedHashSet<String>();
+    var failedOrSkippedStepIds = new LinkedHashSet<String>();
+    var stepOutputs = new LinkedHashMap<String, Map<String, Object>>();
+    var resultSurfaceIds = new ArrayList<String>();
+    var traceIds = new ArrayList<String>();
+    for (var step : steps) {
+      var stepId = firstNonBlank(step.stepId(), "step-" + step.sequence());
+      var startedAt = Instant.now();
+      var dependencyBlocked = step.dependsOnStepIds().stream().anyMatch(failedOrSkippedStepIds::contains) || step.dependsOnStepIds().stream().anyMatch(dependency -> !completedStepIds.contains(dependency));
+      if (dependencyBlocked) {
+        var stepTraceIds = List.of("trace-human-chat-tool-plan-step-skipped-" + stableSuffix(correlationId + ":" + stepId));
+        traceIds.addAll(stepTraceIds);
+        var skippedResult = new ChatToolPlanStepResult(stepId, "skipped", "Skipped because a dependency failed, was skipped, or did not complete.", step.actionId(), step.governedToolId(), step.capabilityId(), null, stepTraceIds, startedAt.toString(), Instant.now().toString(), "dependency_not_completed");
+        skipped.add(skippedResult);
+        failedOrSkippedStepIds.add(stepId);
+        continue;
+      }
+      var entry = chatToolCatalogEntry(request.functionalAgentId(), step).orElseThrow();
+      if (entry.requiresApproval()) {
+        var stepTraceIds = List.of("trace-human-chat-tool-plan-step-approval-required-" + stableSuffix(correlationId + ":" + stepId));
+        traceIds.addAll(stepTraceIds);
+        var failedResult = new ChatToolPlanStepResult(stepId, "failed", "Step requires a separate approval policy before dispatcher execution.", step.actionId(), step.governedToolId(), step.capabilityId(), null, stepTraceIds, startedAt.toString(), Instant.now().toString(), "approval_required");
+        failed.add(failedResult);
+        failedOrSkippedStepIds.add(stepId);
+        continue;
+      }
+      var stepCorrelationId = correlationId + ":" + stepId;
+      try {
+        var resolvedInput = resolveChatToolStepInput(step.input(), stepOutputs);
+        var actionResult = runAction(identity, selectedContextId, new CapabilityActionRequest(
+            step.actionId(),
+            step.browserToolId(),
+            step.governedToolId(),
+            step.capabilityId(),
+            resolvedInput,
+            step.idempotencyKey(),
+            selectedContextId,
+            firstNonBlank(step.expectedResultSurfaceId(), "surface-chat-tool-plan-" + request.planId()),
+            stepCorrelationId));
+        var stepTraceIds = new ArrayList<String>();
+        stepTraceIds.add("trace-human-chat-tool-plan-step-started-" + stableSuffix(stepCorrelationId));
+        stepTraceIds.addAll(actionResult.traceIds());
+        traceIds.addAll(stepTraceIds);
+        var resultSurfaceId = actionResult.resultSurface() == null ? null : actionResult.resultSurface().surfaceId();
+        if (resultSurfaceId != null) resultSurfaceIds.add(resultSurfaceId);
+        var completedStatus = List.of("accepted", "no-op").contains(actionResult.status());
+        var stepResult = new ChatToolPlanStepResult(stepId, completedStatus ? "completed" : "failed", actionResult.message(), step.actionId(), step.governedToolId(), step.capabilityId(), resultSurfaceId, List.copyOf(stepTraceIds), startedAt.toString(), Instant.now().toString(), completedStatus ? null : firstNonBlank(actionResult.status(), "action_failed"));
+        if (completedStatus) {
+          completed.add(stepResult);
+          completedStepIds.add(stepId);
+          stepOutputs.put(stepId, chatToolStepOutput(step, actionResult));
+        } else {
+          failed.add(stepResult);
+          failedOrSkippedStepIds.add(stepId);
+        }
+      } catch (AuthorizationException denied) {
+        var stepTraceIds = List.of("trace-human-chat-tool-plan-step-denied-" + stableSuffix(stepCorrelationId));
+        traceIds.addAll(stepTraceIds);
+        var failedResult = new ChatToolPlanStepResult(stepId, "failed", "Step failed closed through the existing governed action path.", step.actionId(), step.governedToolId(), step.capabilityId(), null, stepTraceIds, startedAt.toString(), Instant.now().toString(), firstNonBlank(denied.getMessage(), "authorization_denied"));
+        failed.add(failedResult);
+        failedOrSkippedStepIds.add(stepId);
+      }
+    }
+    var status = failed.isEmpty() && skipped.isEmpty() ? "completed" : completed.isEmpty() ? "failed" : "partial-failure";
+    var recoverySteps = failed.isEmpty() && skipped.isEmpty()
+        ? List.<String>of()
+        : List.of("Review failed and skipped step trace refs before retrying.", "Retry only uncompleted idempotent steps with the same selected AuthContext or repair the plan through a new proposal.");
+    return new ChatToolPlanExecutionResult(request.planId(), request.planSnapshotId(), status, List.copyOf(completed), List.copyOf(failed), List.copyOf(skipped), recoverySteps, List.copyOf(resultSurfaceIds), List.copyOf(traceIds), correlationId);
+  }
+
   private WorkstreamMessageResponse routedSurfaceMessageResponse(AuthContextResolver.ResolvedMe actor, MeResponse.FunctionalAgentSummary functionalAgent, String workstreamScopeId, WorkstreamMessageRequest request, String correlationId, SurfaceIntentRouter.Result route) {
     if (!Objects.equals(request.functionalAgentId(), route.functionalAgentId())) throw new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN");
     var surface = dynamicSurface(actor, route.targetSurfaceId(), correlationId);
@@ -1554,7 +1649,7 @@ public final class WorkstreamService {
         proposal.idempotencyRoot(),
         proposal.traceIds(),
         true,
-        "Confirmation must echo planId, planSnapshotId, selected AuthContext, requestedBy, and step hashes; this substrate does not execute tools.");
+        "Confirmation must echo planId, planSnapshotId, selected AuthContext, requestedBy, and step hashes before the governed dispatcher can execute any step.");
   }
 
   private SurfaceEnvelope chatToolPlanProposalSurface(ChatToolPlanProposal proposal, ChatToolPlanConfirmationSnapshot confirmationSnapshot, AuthContextResolver.ResolvedMe actor, String itemId, String correlationId, List<String> traceIds, Instant now) {
@@ -1679,7 +1774,7 @@ public final class WorkstreamService {
         "schema.chat-tool-plan.confirmation.v1",
         true,
         true,
-        new DisabledReason("dispatcher-not-implemented", "This task only records immutable plan proposals and confirmation snapshots; tool execution is unavailable until the governed dispatcher task."),
+        new DisabledReason("confirmation-api-not-bound", "The governed dispatcher substrate exists, but this surface is not yet bound to a plan-confirmation API; a later workstream task will validate exact snapshots before execution."),
         new Idempotency(true, "plan-snapshot"),
         new ResultSurface(null, "surface-chat-tool-plan-result-" + proposal.planId(), "inline"),
         new Audit("HumanChatToolPlanConfirmationRequested", true));
@@ -1699,6 +1794,122 @@ public final class WorkstreamService {
         "sideEffect", data.sideEffect(),
         "workstreamEntryId", data.workstreamEntryId(),
         "traceRefs", data.traceRefs());
+  }
+
+  private List<ChatToolCatalogEntry> chatToolCatalogEntries() {
+    return List.of(
+        chatToolCatalogEntry(MY_ACCOUNT_AGENT_ID, updateSettingsAction(), "human_chat_tool_plan", "Human-confirmed personal settings update only; no role, context, provider, or notification authority expansion.", false, List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "human_chat_tool_plan.step_failed")),
+        chatToolCatalogEntry(USER_ADMIN_AGENT_ID, submitOrganizationCreateAction(), "human_chat_tool_plan", "Human-confirmed SaaS Owner Organization create; backend selected AuthContext, capability, idempotency, and duplicate/no-enumeration policies remain authoritative.", false, List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "human_chat_tool_plan.step_failed")),
+        chatToolCatalogEntry(USER_ADMIN_AGENT_ID, organizationAdminInviteAction(), "human_chat_tool_plan", "Human-confirmed Organization Admin invitation only after a visible Organization is bound; invitation provider/outbox failures fail closed without exposing tokens.", false, List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "human_chat_tool_plan.step_failed", "invitation.outbox")),
+        chatToolCatalogEntry(AGENT_ADMIN_AGENT_ID, startPromptRiskReviewAction(), "human_chat_tool_plan", "Human-confirmed prompt-risk review task start; model/provider runtime may fail closed and approval policy cannot be bypassed.", true, List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_failed", "agent.work_trace")),
+        chatToolCatalogEntry(AUDIT_TRACE_AGENT_ID, auditTraceAppendInvestigationNoteAction(), "human_chat_tool_plan", "Human-confirmed browser-safe investigation note append to an authorized visible trace/correlation only; no export or evidence mutation authority.", false, List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.note")),
+        chatToolCatalogEntry(GOVERNANCE_POLICY_AGENT_ID, governanceDraftProposalAction(), "human_chat_tool_plan", "Human-confirmed inert policy proposal draft only; no approval, activation, rollback, or production authority change.", false, List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "policy.proposal_trace")));
+  }
+
+  private ChatToolCatalogEntry chatToolCatalogEntry(String workstreamId, SurfaceAction action, String exposureChannel, String policySummary, boolean requiresApproval, List<String> traceRequirements) {
+    return new ChatToolCatalogEntry(
+        workstreamId,
+        action.actionId(),
+        action.browserToolId(),
+        action.governedToolId(),
+        action.capabilityId(),
+        exposureChannel,
+        action.inputSchemaRef(),
+        action.idempotency() != null && action.idempotency().required(),
+        action.idempotency() == null ? null : action.idempotency().keySource(),
+        policySummary,
+        true,
+        requiresApproval || action.requiresApproval(),
+        false,
+        action.resultSurface() == null ? null : action.resultSurface().appendSurfaceType(),
+        action.resultSurface() == null ? null : action.resultSurface().updateSurfaceId(),
+        traceRequirements);
+  }
+
+  private Optional<ChatToolCatalogEntry> chatToolCatalogEntry(String workstreamId, ChatToolPlanStep step) {
+    return chatToolCatalogEntries().stream()
+        .filter(entry -> entry.workstreamId().equals(workstreamId))
+        .filter(entry -> entry.actionId().equals(step.actionId()))
+        .filter(entry -> entry.browserToolId().equals(step.browserToolId()))
+        .filter(entry -> entry.governedToolId().equals(step.governedToolId()))
+        .filter(entry -> entry.capabilityId().equals(step.capabilityId()))
+        .filter(entry -> Objects.equals(entry.inputSchemaRef(), step.inputSchemaRef()))
+        .findFirst();
+  }
+
+  private ToolPermissionBoundary activeChatToolBoundary(AuthContextResolver.ResolvedMe actor, String functionalAgentId, String correlationId) {
+    var tenantId = agentGovernanceScopeId(actor);
+    var agentDefinitionId = runtimeAgentDefinitionId(functionalAgentId);
+    var agent = agentBehaviorRepository.agentDefinition(tenantId, agentDefinitionId)
+        .orElseThrow(() -> new AuthorizationException(403, "CHAT_TOOL_AGENT_BOUNDARY_NOT_READY"));
+    if (agent.status() != AgentLifecycleStatus.ACTIVE) throw new AuthorizationException(403, "CHAT_TOOL_AGENT_NOT_ACTIVE");
+    var boundary = agentBehaviorRepository.toolBoundary(tenantId, agent.toolBoundaryId())
+        .orElseThrow(() -> new AuthorizationException(403, "CHAT_TOOL_BOUNDARY_NOT_READY"));
+    if (boundary.status() != AgentLifecycleStatus.ACTIVE) throw new AuthorizationException(403, "CHAT_TOOL_BOUNDARY_NOT_ACTIVE");
+    if (!agentDefinitionId.equals(boundary.agentDefinitionId())) throw new AuthorizationException(403, "CHAT_TOOL_BOUNDARY_AGENT_MISMATCH");
+    return boundary;
+  }
+
+  private void validateChatToolStepAgainstCatalog(AuthContextResolver.ResolvedMe actor, ToolPermissionBoundary boundary, String workstreamId, ChatToolPlanStep step) {
+    var entry = chatToolCatalogEntry(workstreamId, step)
+        .orElseThrow(() -> new AuthorizationException(403, "CHAT_TOOL_OUT_OF_WORKSTREAM_CATALOG"));
+    if (!"human_chat_tool_plan".equals(entry.exposureChannel())) throw new AuthorizationException(403, "CHAT_TOOL_EXPOSURE_FORBIDDEN");
+    if (!isActionCapabilityVisible(actor, entry.capabilityId())) throw new AuthorizationException(403, "CHAT_TOOL_CAPABILITY_FORBIDDEN");
+    if (entry.idempotencyRequired() && (step.idempotencyKey() == null || step.idempotencyKey().isBlank())) throw new AuthorizationException(400, "CHAT_TOOL_STEP_IDEMPOTENCY_REQUIRED");
+    if (step.requiresApproval() != entry.requiresApproval()) throw new AuthorizationException(403, "CHAT_TOOL_APPROVAL_POLICY_MISMATCH");
+    if (!step.requiresConfirmation() || !entry.requiresConfirmation()) throw new AuthorizationException(403, "CHAT_TOOL_CONFIRMATION_REQUIRED");
+    if (boundary.allowedToolGrants().isEmpty()) throw new AuthorizationException(403, "CHAT_TOOL_BOUNDARY_EMPTY");
+  }
+
+  private Map<String, Object> resolveChatToolStepInput(Map<String, Object> input, Map<String, Map<String, Object>> stepOutputs) {
+    var resolved = new LinkedHashMap<String, Object>();
+    if (input == null) return resolved;
+    input.forEach((key, value) -> resolved.put(key, resolveChatToolValue(value, stepOutputs)));
+    return resolved;
+  }
+
+  @SuppressWarnings("unchecked")
+  private Object resolveChatToolValue(Object value, Map<String, Map<String, Object>> stepOutputs) {
+    if (value instanceof String text && text.startsWith("${") && text.endsWith("}")) {
+      var token = text.substring(2, text.length() - 1);
+      var dot = token.indexOf('.');
+      if (dot > 0) {
+        var stepId = token.substring(0, dot);
+        var field = token.substring(dot + 1);
+        var output = stepOutputs.get(stepId);
+        if (output != null && output.containsKey(field)) return output.get(field);
+      }
+    }
+    if (value instanceof List<?> list) return list.stream().map(item -> resolveChatToolValue(item, stepOutputs)).toList();
+    if (value instanceof Map<?, ?> map) {
+      var nested = new LinkedHashMap<String, Object>();
+      map.forEach((key, nestedValue) -> nested.put(String.valueOf(key), resolveChatToolValue(nestedValue, stepOutputs)));
+      return nested;
+    }
+    return value;
+  }
+
+  private Map<String, Object> chatToolStepOutput(ChatToolPlanStep step, CapabilityActionResult result) {
+    var output = new LinkedHashMap<String, Object>();
+    output.put("status", result.status());
+    output.put("message", result.message());
+    if (result.resultSurface() != null) {
+      output.put("resultSurfaceId", result.resultSurface().surfaceId());
+      output.putAll(result.resultSurface().data());
+      var organizationId = result.resultSurface().data().get("organizationId");
+      var tenantId = result.resultSurface().data().get("tenantId");
+      var recordId = result.resultSurface().data().get("recordId");
+      if (organizationId == null && tenantId != null) organizationId = tenantId;
+      if (organizationId == null && result.resultSurface().data().get("targetScope") instanceof Map<?, ?> targetScope) organizationId = targetScope.get("organizationId");
+      if (organizationId == null && "organization".equals(result.resultSurface().data().get("recordKind"))) organizationId = recordId;
+      if (organizationId == null && "action-submit-organization-create".equals(step.actionId())) organizationId = "org-" + stableSuffix(step.idempotencyKey());
+      if (organizationId != null) {
+        output.put("organizationId", organizationId);
+        output.put("tenantId", organizationId);
+      }
+      if (recordId != null) output.put("recordId", recordId);
+    }
+    return output;
   }
 
   private Map<String, Object> selectedAuthContextData(AuthContextResolver.ResolvedMe actor) {
@@ -6846,6 +7057,16 @@ public final class WorkstreamService {
   }
   public record ChatToolPlanConfirmationSnapshot(String planId, String planSnapshotId, String selectedContextId, String functionalAgentId, String requestedByAccountId, String requestedAt, String expiresAt, List<ChatToolPlanStep> steps, List<String> requiredCapabilities, Map<String, String> stepHashes, String idempotencyRoot, List<String> traceIds, boolean acknowledgementRequired, String confirmationInstructions) {}
   public record ChatToolPlanConfirmationRequest(String selectedContextId, String planId, String planSnapshotId, String confirmationText, String idempotencyKey, String correlationId) {}
+  public record ChatToolPlanDispatchRequest(String selectedContextId, String functionalAgentId, String planId, String planSnapshotId, List<ChatToolPlanStep> steps, String idempotencyKey, String correlationId) {
+    public ChatToolPlanDispatchRequest {
+      steps = List.copyOf(steps == null ? List.of() : steps);
+    }
+  }
+  public record ChatToolCatalogEntry(String workstreamId, String actionId, String browserToolId, String governedToolId, String capabilityId, String exposureChannel, String inputSchemaRef, boolean idempotencyRequired, String idempotencyScope, String policySummary, boolean requiresConfirmation, boolean requiresApproval, boolean destructive, String expectedResultSurfaceType, String expectedResultSurfaceId, List<String> traceRequirements) {
+    public ChatToolCatalogEntry {
+      traceRequirements = List.copyOf(traceRequirements == null ? List.of() : traceRequirements);
+    }
+  }
   public record ChatToolPlanExecutionResult(String planId, String planSnapshotId, String status, List<ChatToolPlanStepResult> completedSteps, List<ChatToolPlanStepResult> failedSteps, List<ChatToolPlanStepResult> skippedSteps, List<String> recoverySteps, List<String> resultSurfaceIds, List<String> traceIds, String correlationId) {}
   public record ChatToolPlanStepResult(String stepId, String status, String message, String actionId, String governedToolId, String capabilityId, String resultSurfaceId, List<String> traceIds, String startedAt, String completedAt, String errorCode) {}
   public record ChatToolPlanPartialFailure(String planId, String planSnapshotId, List<ChatToolPlanStepResult> completedSteps, List<ChatToolPlanStepResult> failedSteps, List<ChatToolPlanStepResult> skippedSteps, List<String> recoverySteps, String message) {}

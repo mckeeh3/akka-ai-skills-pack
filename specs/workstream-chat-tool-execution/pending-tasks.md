@@ -207,7 +207,7 @@
 
 ### TASK-WCTE-05-001: Add chat tool catalog and dispatcher
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-execution/backlog/01-workstream-chat-tool-execution-build-backlog.md
 - task brief: specs/workstream-chat-tool-execution/tasks/05-tool-catalog-dispatch/01-add-chat-tool-catalog-and-dispatcher.md
 - depends on:
@@ -239,6 +239,9 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: governed tool catalog/dispatcher; execution substrate only until specific workstream tasks bind plans
+  - added backend-owned `human_chat_tool_plan` catalog entries for all five foundation workstreams and a dispatcher that validates selected workstream, human authority, active tool boundary, catalog ids/schema, idempotency, confirmation, approval policy, and per-step dependencies before using existing `runAction` service paths
+  - checks: `mvn -q -Dtest=WorkstreamServiceTest#chatToolCatalogListsBoundedHumanChatPlanEntries+chatToolDispatcherRejectsStepsOutsideSelectedWorkstreamCatalogBeforeExecution+chatToolDispatcherExecutesEachStepThroughExistingActionPathWithIdempotencyAndOutputBindings+chatToolDispatcherReportsFailedAndSkippedDependentStepsWithoutRollingBackCompletedSteps test`; `git diff --check`
+  - commit message: `workstream-chat-tools: add chat tool catalog dispatcher`
 
 ### TASK-WCTE-06-001: Implement User Admin chat tool plan proposal
 

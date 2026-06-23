@@ -1809,6 +1809,228 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void chatToolCatalogListsBoundedHumanChatPlanEntries() {
+    var entries = service.chatToolCatalog(null);
+
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("my-account-agent")
+        && entry.actionId().equals("action-update-my-settings")
+        && entry.governedToolId().equals("my_account.update_profile_settings")
+        && entry.capabilityId().equals("my_account.update_profile_settings")
+        && entry.exposureChannel().equals("human_chat_tool_plan")
+        && entry.inputSchemaRef().equals("schema.my-account.settings.update.v1")
+        && entry.idempotencyRequired()
+        && entry.requiresConfirmation()
+        && !entry.requiresApproval()
+        && entry.traceRequirements().contains("human_chat_tool_plan.step_completed")));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("user-admin-agent")
+        && entry.actionId().equals("action-submit-organization-create")
+        && entry.governedToolId().equals("manage-organizations")
+        && entry.capabilityId().equals("saas_owner.tenant.manage")
+        && entry.exposureChannel().equals("human_chat_tool_plan")
+        && entry.inputSchemaRef().equals("schema.organization-admin.create.submit.v1")
+        && entry.policySummary().contains("selected AuthContext")));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("user-admin-agent")
+        && entry.actionId().equals("action-submit-organization-admin-invitation")
+        && entry.governedToolId().equals("manage-organization-admins")
+        && entry.capabilityId().equals("saas_owner.organization_admin.invite")
+        && entry.traceRequirements().contains("invitation.outbox")));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("agent-admin-agent")
+        && entry.actionId().equals("action-agent-prompt-risk-review-start")
+        && entry.requiresApproval()));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("audit-trace-agent")
+        && entry.governedToolId().equals("draft-investigation-note")
+        && entry.capabilityId().equals("audit.trace.investigation_note.append")));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("governance-policy-agent")
+        && entry.governedToolId().equals("governance.policy.propose")
+        && entry.capabilityId().equals("governance.policy.propose")));
+  }
+
+  @Test
+  void chatToolDispatcherRejectsStepsOutsideSelectedWorkstreamCatalogBeforeExecution() {
+    var beforeTheme = identityRepository.settings("admin@example.test").themeId();
+    var myAccountStep = new WorkstreamService.ChatToolPlanStep(
+        "step-change-theme",
+        1,
+        "Change own theme",
+        "action-update-my-settings",
+        "action-update-my-settings",
+        "my_account.update_profile_settings",
+        "my_account.update_profile_settings",
+        "schema.my-account.settings.update.v1",
+        Map.of("preferredThemeId", "obsidian-dark"),
+        List.of(),
+        Map.of(),
+        "idem-chat-dispatch-theme-wrong-workstream",
+        "independent-command",
+        true,
+        false,
+        null,
+        "surface-my-settings",
+        List.of("human_chat_tool_plan.step_started"));
+
+    var denied = assertThrows(AuthorizationException.class, () -> service.dispatchChatToolPlanSteps(identity(), "membership-admin", new WorkstreamService.ChatToolPlanDispatchRequest(
+        "membership-admin",
+        "user-admin-agent",
+        "plan-wrong-workstream",
+        "snapshot-wrong-workstream",
+        List.of(myAccountStep),
+        "idem-chat-dispatch-wrong-workstream",
+        "corr-chat-dispatch-wrong-workstream")));
+
+    assertTrue(denied.getMessage().contains("CHAT_TOOL_OUT_OF_WORKSTREAM_CATALOG"));
+    assertEquals(beforeTheme, identityRepository.settings("admin@example.test").themeId());
+  }
+
+  @Test
+  void chatToolDispatcherExecutesEachStepThroughExistingActionPathWithIdempotencyAndOutputBindings() {
+    var tenantCountBefore = identityRepository.tenantRows().size();
+    var invitationCountBefore = invitationRepository.invitations().size();
+    var steps = List.of(
+        new WorkstreamService.ChatToolPlanStep(
+            "step-create-organization",
+            1,
+            "Create Organization Org Dispatch",
+            "action-submit-organization-create",
+            "user-admin.submit-organization-create",
+            "manage-organizations",
+            "saas_owner.tenant.manage",
+            "schema.organization-admin.create.submit.v1",
+            Map.of("organizationName", "Org Dispatch", "reason", "human_chat_tool_plan dispatcher test"),
+            List.of(),
+            Map.of("organizationId", "organizationId"),
+            "idem-chat-dispatch-org-create",
+            "independent-command",
+            true,
+            false,
+            "show-inspection",
+            "surface-user-admin-organization-detail",
+            List.of("human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed")),
+        new WorkstreamService.ChatToolPlanStep(
+            "step-invite-organization-admin",
+            2,
+            "Invite Organization Admin",
+            "action-submit-organization-admin-invitation",
+            "user-admin.invite-organization-admin",
+            "manage-organization-admins",
+            "saas_owner.organization_admin.invite",
+            "schema.organization-admin.invitation-create.v1",
+            Map.of("organizationId", "${step-create-organization.organizationId}", "email", "mckee.hugh+dispatch@gmail.com", "displayName", "Hugh Dispatch", "roles", List.of("TENANT_ADMIN"), "reason", "human_chat_tool_plan dispatcher test"),
+            List.of("step-create-organization"),
+            Map.of(),
+            "idem-chat-dispatch-org-admin-invite",
+            "independent-command-after-dependency",
+            true,
+            false,
+            "show-inspection",
+            "surface-user-admin-invitation-detail",
+            List.of("human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "invitation.outbox")));
+
+    var result = service.dispatchChatToolPlanSteps(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanDispatchRequest(
+        "membership-owner",
+        "user-admin-agent",
+        "plan-dispatch-user-admin",
+        "snapshot-dispatch-user-admin",
+        steps,
+        "idem-chat-dispatch-user-admin",
+        "corr-chat-dispatch-user-admin"));
+
+    assertEquals("completed", result.status(), result.toString());
+    assertEquals(2, result.completedSteps().size());
+    assertEquals(0, result.failedSteps().size());
+    assertEquals(0, result.skippedSteps().size());
+    assertTrue(result.completedSteps().stream().allMatch(step -> step.status().equals("completed")));
+    assertTrue(result.completedSteps().stream().anyMatch(step -> step.actionId().equals("action-submit-organization-create") && step.resultSurfaceId().equals("surface-user-admin-organization-detail")));
+    assertTrue(result.completedSteps().stream().anyMatch(step -> step.actionId().equals("action-submit-organization-admin-invitation") && step.resultSurfaceId().equals("surface-user-admin-invitation-detail")));
+    assertTrue(result.traceIds().stream().anyMatch(trace -> trace.contains("trace-human-chat-tool-plan-step-started")));
+    assertEquals(tenantCountBefore + 1, identityRepository.tenantRows().size());
+    assertEquals(invitationCountBefore + 1, invitationRepository.invitations().size());
+  }
+
+  @Test
+  void chatToolDispatcherReportsFailedAndSkippedDependentStepsWithoutRollingBackCompletedSteps() {
+    var tenantCountBefore = identityRepository.tenantRows().size();
+    var invitationCountBefore = invitationRepository.invitations().size();
+    var steps = List.of(
+        new WorkstreamService.ChatToolPlanStep(
+            "step-create-organization",
+            1,
+            "Create Organization Org Partial",
+            "action-submit-organization-create",
+            "user-admin.submit-organization-create",
+            "manage-organizations",
+            "saas_owner.tenant.manage",
+            "schema.organization-admin.create.submit.v1",
+            Map.of("organizationName", "Org Partial", "reason", "human_chat_tool_plan partial failure test"),
+            List.of(),
+            Map.of(),
+            "idem-chat-dispatch-partial-org-create",
+            "independent-command",
+            true,
+            false,
+            "show-inspection",
+            "surface-user-admin-organization-detail",
+            List.of("human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed")),
+        new WorkstreamService.ChatToolPlanStep(
+            "step-invite-organization-admin",
+            2,
+            "Invite Organization Admin with invalid role",
+            "action-submit-organization-admin-invitation",
+            "user-admin.invite-organization-admin",
+            "manage-organization-admins",
+            "saas_owner.organization_admin.invite",
+            "schema.organization-admin.invitation-create.v1",
+            Map.of("organizationId", "${step-create-organization.organizationId}", "email", "mckee.hugh+partial@gmail.com", "displayName", "Hugh Partial", "roles", List.of("TENANT_EMPLOYEE"), "reason", "human_chat_tool_plan partial failure test"),
+            List.of("step-create-organization"),
+            Map.of(),
+            "idem-chat-dispatch-partial-org-admin-invite",
+            "independent-command-after-dependency",
+            true,
+            false,
+            "show-inspection",
+            "surface-user-admin-invitation-detail",
+            List.of("human_chat_tool_plan.step_started", "human_chat_tool_plan.step_failed")),
+        new WorkstreamService.ChatToolPlanStep(
+            "step-dependent-after-failure",
+            3,
+            "Dependent retry placeholder",
+            "action-submit-organization-admin-invitation",
+            "user-admin.invite-organization-admin",
+            "manage-organization-admins",
+            "saas_owner.organization_admin.invite",
+            "schema.organization-admin.invitation-create.v1",
+            Map.of("organizationId", "${step-create-organization.organizationId}", "email", "second+partial@example.test", "displayName", "Second Partial", "roles", List.of("TENANT_ADMIN"), "reason", "must skip after failed dependency"),
+            List.of("step-invite-organization-admin"),
+            Map.of(),
+            "idem-chat-dispatch-partial-skipped",
+            "independent-command-after-dependency",
+            true,
+            false,
+            "show-inspection",
+            "surface-user-admin-invitation-detail",
+            List.of("human_chat_tool_plan.step_skipped")));
+
+    var result = service.dispatchChatToolPlanSteps(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanDispatchRequest(
+        "membership-owner",
+        "user-admin-agent",
+        "plan-dispatch-partial",
+        "snapshot-dispatch-partial",
+        steps,
+        "idem-chat-dispatch-partial",
+        "corr-chat-dispatch-partial"));
+
+    assertEquals("partial-failure", result.status());
+    assertEquals(1, result.completedSteps().size());
+    assertEquals(1, result.failedSteps().size());
+    assertEquals(1, result.skippedSteps().size());
+    assertEquals("failed", result.failedSteps().get(0).status());
+    assertEquals("validation-error", result.failedSteps().get(0).errorCode(), result.toString());
+    assertEquals("skipped", result.skippedSteps().get(0).status());
+    assertFalse(result.recoverySteps().isEmpty());
+    assertEquals(tenantCountBefore + 1, identityRepository.tenantRows().size(), "Committed prior step remains valid after later step failure.");
+    assertEquals(invitationCountBefore, invitationRepository.invitations().size(), "Invalid invitation step must not send an invitation.");
+  }
+
+  @Test
   void submitMessageReturnsAuthorizedMarkdownResponseEnvelopeAndPersistsIt() {
     var response = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
         "membership-admin", "user-admin-agent", "What can I do next?", "corr-message", "idem-message-1"), "corr-header");
