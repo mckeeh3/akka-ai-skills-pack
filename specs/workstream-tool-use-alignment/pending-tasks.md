@@ -1,0 +1,377 @@
+# Pending Tasks: Workstream Tool Use Alignment
+
+## Queue rules
+
+- Execute one task per fresh harness context.
+- Select the first `pending` task whose dependencies are satisfied.
+- Preserve task IDs; supersede obsolete tasks rather than deleting them.
+- Do not combine adjacent tasks unless this file is first updated to merge them.
+- Read this mini-project's README, conversation capture, selected sprint, selected backlog, selected task entry, and task brief before editing.
+- Update this file before finishing the harness response.
+- Each task must make one focused git commit before being marked `done`; the commit should include only that task's intended changes and the queue-status update.
+- If the queue status update is included in the same commit, record the commit message in task notes instead of attempting to amend the commit hash.
+- Commit message format: `workstream-tool-use: <short task title>`.
+- Do not commit unrelated changes while executing this skills-pack maintenance queue.
+- Target `skills-pack/**` source assets only unless a task explicitly names a root planning artifact under this mini-project.
+- The terminal verification task must append bounded follow-up tasks plus a new terminal verification task if the README done state is not fully achieved.
+
+## Tasks
+
+### TASK-WTUA-00-001: Create Workstream Tool Use Alignment planning scaffold
+
+- status: done
+- source: user requested a skills-pack mini-project to fully integrate governed workstream tool use for human and AI workers
+- task brief: specs/workstream-tool-use-alignment/tasks/00-planning/00-create-workstream-tool-use-alignment-queue.md
+- depends on: []
+- required reads:
+  - AGENTS.md
+  - skills-pack/AGENTS.md
+  - .agents/skills/project-discussed-idea-to-pending-project/SKILL.md
+  - current conversation context
+- skills:
+  - project-discussed-idea-to-pending-project
+- expected outputs:
+  - specs/workstream-tool-use-alignment/README.md
+  - specs/workstream-tool-use-alignment/conversation-capture.md
+  - specs/workstream-tool-use-alignment/pending-tasks.md
+  - specs/workstream-tool-use-alignment/sprints/*.md
+  - specs/workstream-tool-use-alignment/backlog/*.md
+  - specs/workstream-tool-use-alignment/tasks/**/*.md
+- required checks:
+  - `git diff --check`
+- done criteria:
+  - mini-project captures rationale, accepted decisions, done state, non-goals, sprint sequence, backlog, task briefs, and pending queue
+  - first non-done task is runnable without guessing
+  - task changes and queue update are committed
+- notes:
+  - commit message: `workstream-tool-use: add alignment queue`
+
+### TASK-WTUA-01-001: Audit current tool-use guidance
+
+- status: pending
+- source: specs/workstream-tool-use-alignment/backlog/01-workstream-tool-use-alignment-build-backlog.md
+- task brief: specs/workstream-tool-use-alignment/tasks/01-audit/01-audit-tool-use-guidance.md
+- depends on:
+  - TASK-WTUA-00-001
+- required reads:
+  - AGENTS.md
+  - skills-pack/AGENTS.md
+  - specs/workstream-tool-use-alignment/README.md
+  - specs/workstream-tool-use-alignment/conversation-capture.md
+  - specs/workstream-tool-use-alignment/sprints/01-audit-and-canonical-doctrine.md
+  - specs/workstream-tool-use-alignment/backlog/01-workstream-tool-use-alignment-build-backlog.md
+  - specs/workstream-tool-use-alignment/tasks/01-audit/01-audit-tool-use-guidance.md
+  - skills-pack/docs/ai-first-saas-application-architecture.md
+  - skills-pack/docs/agent-workstream-application-architecture.md
+  - skills-pack/docs/workstream-contract.md
+  - skills-pack/docs/structured-surface-contracts.md
+  - skills-pack/docs/capability-first-backend-architecture.md
+  - skills-pack/docs/workstream-surface-intent-routing.md
+  - skills-pack/skills/README.md
+- skills:
+  - capability-first-backend
+  - agent-workstream-apps
+  - akka-agent-tool-boundaries
+- expected outputs:
+  - specs/workstream-tool-use-alignment/tool-use-source-map.md
+  - queue update
+- required checks:
+  - `git diff --check`
+- done criteria:
+  - source map identifies canonical docs, focused skills, templates/examples/tools likely needing edits
+  - findings are classified as aligned, needs refinement, potentially conflicting, or out of scope
+  - later tasks have prioritized file lists to edit
+  - changes and queue update are committed
+- notes:
+  - vertical contract: docs-only skills-pack maintenance; scope is cross-cutting architecture alignment; no generated-app runtime feature; governed tool/capability/source-map validation only
+
+### TASK-WTUA-02-001: Update canonical workstream tool-use doctrine
+
+- status: pending
+- source: specs/workstream-tool-use-alignment/backlog/01-workstream-tool-use-alignment-build-backlog.md
+- task brief: specs/workstream-tool-use-alignment/tasks/02-canonical-doctrine/01-update-canonical-tool-use-doctrine.md
+- depends on:
+  - TASK-WTUA-01-001
+- required reads:
+  - AGENTS.md
+  - skills-pack/AGENTS.md
+  - specs/workstream-tool-use-alignment/README.md
+  - specs/workstream-tool-use-alignment/conversation-capture.md
+  - specs/workstream-tool-use-alignment/tool-use-source-map.md
+  - specs/workstream-tool-use-alignment/sprints/01-audit-and-canonical-doctrine.md
+  - specs/workstream-tool-use-alignment/tasks/02-canonical-doctrine/01-update-canonical-tool-use-doctrine.md
+  - skills-pack/docs/ai-first-saas-application-architecture.md
+  - skills-pack/docs/agent-workstream-application-architecture.md
+  - skills-pack/docs/workstream-contract.md
+  - skills-pack/docs/structured-surface-contracts.md
+  - skills-pack/docs/capability-first-backend-architecture.md
+  - skills-pack/docs/workstream-surface-intent-routing.md
+  - skills-pack/docs/intent-compiler.md
+  - skills-pack/docs/current-intent-model.md
+  - skills-pack/docs/intent-to-realization-flow.md
+- skills:
+  - ai-first-saas
+  - agent-workstream-apps
+  - capability-first-backend
+  - akka-agent-tool-boundaries
+- expected outputs:
+  - canonical docs updated with shared governed tool architecture and confirmed human-chat tool-plan path
+  - surface routing/no-direct-mutation guidance reconciled with confirmed chat tool execution
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted search proving canonical docs contain confirmed human-chat tool-plan guidance and no unreconciled global prohibition
+- done criteria:
+  - governed tool, surface/browser adapter, human-chat plan adapter, AI agent-tool adapter, and internal/API/MCP exposure channels are clearly distinguished
+  - AI model is not described as the security boundary
+  - changes and queue update are committed
+- notes:
+  - vertical contract: docs-only skills-pack maintenance; no runtime code; expected readiness level is described/canonical-doctrine aligned
+
+### TASK-WTUA-03-001: Align app-description and intent skills with workstream tool catalogs
+
+- status: pending
+- source: specs/workstream-tool-use-alignment/backlog/01-workstream-tool-use-alignment-build-backlog.md
+- task brief: specs/workstream-tool-use-alignment/tasks/03-app-description-skills/01-align-app-description-tool-modeling-skills.md
+- depends on:
+  - TASK-WTUA-02-001
+- required reads:
+  - AGENTS.md
+  - skills-pack/AGENTS.md
+  - specs/workstream-tool-use-alignment/README.md
+  - specs/workstream-tool-use-alignment/conversation-capture.md
+  - specs/workstream-tool-use-alignment/tool-use-source-map.md
+  - specs/workstream-tool-use-alignment/sprints/02-skill-family-alignment.md
+  - specs/workstream-tool-use-alignment/tasks/03-app-description-skills/01-align-app-description-tool-modeling-skills.md
+  - canonical docs updated by TASK-WTUA-02-001
+  - focused skills-pack/skills/app-description-*/SKILL.md files named by the source map
+  - skills-pack/skills/app-descriptions/SKILL.md
+  - skills-pack/skills/app-generate-app/SKILL.md
+- skills:
+  - app-descriptions
+  - app-description-functional-agent-modeling
+  - app-description-surface-modeling
+  - app-description-capability-modeling
+  - app-description-auth-security
+  - app-description-test-specification
+- expected outputs:
+  - app-description and intent skills aligned with workstream tool catalogs, actor adapters, confirmation, transaction/idempotency, traces, and tests
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted search over edited app-description skills for governed tool / surface / human chat / confirmation / agent-tool / trace concepts
+- done criteria:
+  - skills avoid duplicating semantics between surface actions and agent/chat tools
+  - skills preserve global definition plus workstream binding separation
+  - changes and queue update are committed
+- notes:
+  - vertical contract: skills-pack documentation-only alignment; no generated-app runtime feature
+
+### TASK-WTUA-04-001: Align agent, tool-boundary, and trace skills
+
+- status: pending
+- source: specs/workstream-tool-use-alignment/backlog/01-workstream-tool-use-alignment-build-backlog.md
+- task brief: specs/workstream-tool-use-alignment/tasks/04-agent-tool-skills/01-align-agent-tool-and-trace-skills.md
+- depends on:
+  - TASK-WTUA-02-001
+- required reads:
+  - AGENTS.md
+  - skills-pack/AGENTS.md
+  - specs/workstream-tool-use-alignment/README.md
+  - specs/workstream-tool-use-alignment/conversation-capture.md
+  - specs/workstream-tool-use-alignment/tool-use-source-map.md
+  - specs/workstream-tool-use-alignment/sprints/02-skill-family-alignment.md
+  - specs/workstream-tool-use-alignment/tasks/04-agent-tool-skills/01-align-agent-tool-and-trace-skills.md
+  - canonical docs updated by TASK-WTUA-02-001
+  - skills-pack/skills/akka-agents/SKILL.md
+  - skills-pack/skills/akka-agent-tools/SKILL.md
+  - skills-pack/skills/akka-agent-component-tools/SKILL.md
+  - skills-pack/skills/akka-agent-mcp-tools/SKILL.md
+  - skills-pack/skills/akka-agent-tool-boundaries/SKILL.md
+  - skills-pack/skills/akka-agent-work-trace/SKILL.md
+  - additional agent governance/testing skills named by the source map
+- skills:
+  - akka-agents
+  - akka-agent-tools
+  - akka-agent-tool-boundaries
+  - akka-agent-work-trace
+  - akka-agent-testing
+- expected outputs:
+  - agent/tool skills aligned with governed tool vs Akka tool exposure, human-requested confirmed tool plans, tool boundaries, runtime assembly, denials, traces, and partial-failure reporting
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted search over edited agent skills for human chat-mediated and AI-backed tool calls
+- done criteria:
+  - skills do not imply prompt/skill text grants tool authority
+  - managed runtime assembly and provider fail-closed behavior remain intact
+  - changes and queue update are committed
+- notes:
+  - vertical contract: skills-pack documentation-only alignment; no runtime code
+
+### TASK-WTUA-05-001: Align workstream, SaaS, and UI skills
+
+- status: pending
+- source: specs/workstream-tool-use-alignment/backlog/01-workstream-tool-use-alignment-build-backlog.md
+- task brief: specs/workstream-tool-use-alignment/tasks/05-workstream-ui-skills/01-align-workstream-ui-and-saas-skills.md
+- depends on:
+  - TASK-WTUA-02-001
+- required reads:
+  - AGENTS.md
+  - skills-pack/AGENTS.md
+  - specs/workstream-tool-use-alignment/README.md
+  - specs/workstream-tool-use-alignment/conversation-capture.md
+  - specs/workstream-tool-use-alignment/tool-use-source-map.md
+  - specs/workstream-tool-use-alignment/sprints/02-skill-family-alignment.md
+  - specs/workstream-tool-use-alignment/tasks/05-workstream-ui-skills/01-align-workstream-ui-and-saas-skills.md
+  - canonical docs updated by TASK-WTUA-02-001
+  - skills-pack/skills/ai-first-saas/SKILL.md
+  - skills-pack/skills/agent-workstream-apps/SKILL.md
+  - skills-pack/skills/ai-first-saas-worker-decomposition/SKILL.md
+  - skills-pack/skills/ai-first-saas-ui-surfaces/SKILL.md
+  - skills-pack/skills/ai-first-saas-audit-trace/SKILL.md
+  - skills-pack/skills/core-saas-foundation/SKILL.md
+  - skills-pack/skills/capability-first-backend/SKILL.md
+  - relevant akka-web-ui-* skills named by the source map
+- skills:
+  - ai-first-saas
+  - agent-workstream-apps
+  - ai-first-saas-worker-decomposition
+  - ai-first-saas-ui-surfaces
+  - akka-web-ui-apps
+- expected outputs:
+  - workstream/SaaS/UI skills aligned with surfaces as human tool adapters and chat as a confirmed tool-plan adapter
+  - UX guidance for confirmation, review, result surfaces, partial failures, accessibility, denials, and traces
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted search proving edited skills distinguish surface routing/no-mutation from confirmed chat tool execution
+- done criteria:
+  - deterministic surface routing remains recommended but not the only allowed safe path
+  - skills no longer categorically forbid direct chat tool execution when a complete governed boundary exists
+  - changes and queue update are committed
+- notes:
+  - vertical contract: skills-pack documentation-only alignment; no runtime code
+
+### TASK-WTUA-06-001: Align planning, templates, examples, and validation assets
+
+- status: pending
+- source: specs/workstream-tool-use-alignment/backlog/01-workstream-tool-use-alignment-build-backlog.md
+- task brief: specs/workstream-tool-use-alignment/tasks/06-planning-validation-assets/01-align-planning-templates-and-validation.md
+- depends on:
+  - TASK-WTUA-03-001
+  - TASK-WTUA-04-001
+  - TASK-WTUA-05-001
+- required reads:
+  - AGENTS.md
+  - skills-pack/AGENTS.md
+  - specs/workstream-tool-use-alignment/README.md
+  - specs/workstream-tool-use-alignment/conversation-capture.md
+  - specs/workstream-tool-use-alignment/tool-use-source-map.md
+  - specs/workstream-tool-use-alignment/sprints/03-planning-validation-and-consistency.md
+  - specs/workstream-tool-use-alignment/tasks/06-planning-validation-assets/01-align-planning-templates-and-validation.md
+  - canonical docs and skills updated by prior tasks
+  - skills-pack/docs/pending-task-queue.md
+  - skills-pack/docs/pending-question-queue.md
+  - planning skills named by the source map
+  - relevant skills-pack/templates/**, skills-pack/examples/**, and skills-pack/tools/** named by the source map
+- skills:
+  - akka-prd-to-specs-backlog
+  - akka-backlog-to-pending-tasks
+  - akka-backlog-item-to-task-brief
+  - project-discussed-idea-to-pending-project
+- expected outputs:
+  - planning/queue skills, docs, templates, examples, and validators aligned with governed tool ids, actor adapters, confirmation/approval, transaction/idempotency, trace, and validation fields
+  - queue update
+- required checks:
+  - `git diff --check`
+  - `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --dry-run`
+  - `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --prune`
+  - `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --check`
+  - targeted validator/test command if a tool script changes
+- done criteria:
+  - planning assets block rather than guess when tool catalog/adapter/confirmation semantics are missing
+  - installed skills validation passes
+  - changes and queue update are committed
+- notes:
+  - vertical contract: skills-pack docs/templates/tools alignment; no root app runtime feature
+
+### TASK-WTUA-07-001: Run tool-use consistency repair pass
+
+- status: pending
+- source: specs/workstream-tool-use-alignment/backlog/01-workstream-tool-use-alignment-build-backlog.md
+- task brief: specs/workstream-tool-use-alignment/tasks/07-consistency-repair/01-run-tool-use-consistency-repair.md
+- depends on:
+  - TASK-WTUA-06-001
+- required reads:
+  - AGENTS.md
+  - skills-pack/AGENTS.md
+  - specs/workstream-tool-use-alignment/README.md
+  - specs/workstream-tool-use-alignment/conversation-capture.md
+  - specs/workstream-tool-use-alignment/tool-use-source-map.md
+  - specs/workstream-tool-use-alignment/sprints/03-planning-validation-and-consistency.md
+  - specs/workstream-tool-use-alignment/tasks/07-consistency-repair/01-run-tool-use-consistency-repair.md
+  - completed task notes from specs/workstream-tool-use-alignment/pending-tasks.md
+- skills:
+  - akka-pending-task-queue-maintenance
+  - app-description-change-impact
+  - capability-first-backend
+- expected outputs:
+  - focused residual repairs to docs/skills/templates/examples as needed
+  - specs/workstream-tool-use-alignment/consistency-repair-notes.md
+  - queue update
+- required checks:
+  - `git diff --check`
+  - `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --dry-run` if skill references change
+  - `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --check` if skill references change
+- done criteria:
+  - no known high-confidence contradictions remain in skills-pack/docs/** or touched skill families
+  - residual lower-confidence or out-of-scope findings are recorded for verification
+  - changes and queue update are committed
+- notes:
+  - vertical contract: skills-pack consistency repair; no generated-app runtime feature
+
+### TASK-WTUA-99-001: Verify Workstream Tool Use Alignment completion
+
+- status: pending
+- source: specs/workstream-tool-use-alignment/README.md done state
+- task brief: specs/workstream-tool-use-alignment/tasks/99-verification/01-verify-workstream-tool-use-alignment.md
+- depends on:
+  - TASK-WTUA-07-001
+- required reads:
+  - AGENTS.md
+  - skills-pack/AGENTS.md
+  - specs/workstream-tool-use-alignment/README.md
+  - specs/workstream-tool-use-alignment/conversation-capture.md
+  - specs/workstream-tool-use-alignment/pending-tasks.md
+  - specs/workstream-tool-use-alignment/sprints/*.md
+  - specs/workstream-tool-use-alignment/backlog/01-workstream-tool-use-alignment-build-backlog.md
+  - specs/workstream-tool-use-alignment/tasks/99-verification/01-verify-workstream-tool-use-alignment.md
+  - specs/workstream-tool-use-alignment/tool-use-source-map.md
+  - specs/workstream-tool-use-alignment/consistency-repair-notes.md if present
+  - completed task notes and changed files from prior tasks
+- skills:
+  - akka-runtime-feature-verification
+  - akka-pending-task-queue-maintenance
+  - capability-first-backend
+  - akka-agent-tool-boundaries
+- expected outputs:
+  - specs/workstream-tool-use-alignment/verification-notes.md
+  - queue update marking verification done only when README done state is achieved
+  - new bounded follow-up tasks plus a new terminal verification task if material gaps remain
+  - commit for verification notes and queue updates
+- required checks:
+  - `git diff --check`
+  - `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --dry-run`
+  - `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --prune`
+  - `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --check`
+  - `bash pack/maintainer/tools/verify-opinionated-ai-first-saas-pack.sh`
+  - targeted searches for shared governed tools, surfaces as human tool adapters, human chat confirmation, agent tools as adapters, and reconciled direct-chat guidance
+- done criteria:
+  - verification notes compare completed work against every README done-state bullet
+  - relevant pack checks pass or failures are documented with precise follow-up/blocker
+  - if material alignment gaps remain, bounded tasks and a new terminal verification task are appended instead of closing the mini-project
+  - if no material gaps remain, the mini-project is recorded complete
+  - changes and queue update are committed
+- notes:
+  - vertical contract: terminal skills-pack verification; no generated-app runtime feature; must run multi-pass loop if gaps remain
