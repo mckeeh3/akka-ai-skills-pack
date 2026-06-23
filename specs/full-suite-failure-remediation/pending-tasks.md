@@ -87,7 +87,7 @@
 
 ### TASK-FSFR-02-001: Repair frontend surface intent routing contract failure
 
-- status: pending
+- status: done
 - source: specs/full-suite-failure-remediation/failure-inventory.md after TASK-FSFR-01-001
 - task brief: specs/full-suite-failure-remediation/tasks/02-frontend/01-repair-frontend-surface-routing-contract.md
 - depends on:
@@ -116,6 +116,9 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: frontend contract repair; workstream surface intent routing; no backend expansion unless inventory proves needed
+  - completed 2026-06-23: updated the frontend surface intent routing contract to assert the current backend high-risk/approval-gated chat-tool fail-closed regression evidence instead of the stale backend test method name.
+  - validation: `cd frontend && node --test src/workstream-surface-intent-routing.contract.test.mjs` passed; `git diff --check` passed; `npm --prefix frontend test -- --run` passed with 177/177 tests; `npm --prefix frontend run typecheck` passed.
+  - commit message: `full-suite-remediation: repair frontend surface routing`
 
 ### TASK-FSFR-03-001: Repair Governance/Policy lifecycle cluster
 

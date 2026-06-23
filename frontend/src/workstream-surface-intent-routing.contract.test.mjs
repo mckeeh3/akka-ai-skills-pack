@@ -40,9 +40,12 @@ test('surface intent router keeps destructive and approval-gated asks on safe fa
   for (const highRiskMarker of ['activate ', 'approve ', 'rollback ', 'export ', 'grant ', 'revoke ', 'suspend ']) {
     assert.match(router, new RegExp(highRiskMarker));
   }
-  assert.match(backendTest, /submitMessageFallsBackSafelyForUnauthorizedAmbiguousOrHighRiskSurfacePrompts/);
+  assert.match(backendTest, /submitMessageBlocksUnsupportedAndHighRiskChatToolPromptsAfterDeterministicRouting/);
   assert.match(backendTest, /activate agent/);
   assert.match(backendTest, /approve proposal/);
-  assert.match(backendTest, /High-risk or approval-gated prompts must fall back safely without deterministic command execution/);
+  assert.match(backendTest, /CHAT_TOOL_PROMPT_APPROVAL_GATED/);
+  assert.match(backendTest, /assertNull\(highRiskAgentLifecycle\.surface\(\)\.data\(\)\.get\("surfaceIntentRoute"\)\)/);
+  assert.match(backendTest, /assertNull\(approvalGatedGovernance\.surface\(\)\.data\(\)\.get\("surfaceIntentRoute"\)\)/);
+  assert.match(backendTest, /Unsupported\/high-risk execution prompts must fail closed before model fallback or planning\./);
   assert.match(composerContract, /composer accepts backend routed surface responses without client-side mutation or model branching/);
 });
