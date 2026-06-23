@@ -168,7 +168,7 @@
 
 ### TASK-WCTC-04-001: Expand My Account chat tool catalog
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-catalog-expansion/backlog/01-chat-tool-catalog-expansion-build-backlog.md
 - task brief: specs/workstream-chat-tool-catalog-expansion/tasks/04-my-account/01-expand-my-account-chat-tool-catalog.md
 - depends on:
@@ -202,6 +202,10 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: My Account workstream; selected AuthContext/self-service scope; human_chat_tool_plan expansion
+  - expanded runtime catalog for `action-update-my-profile`, `action-update-my-settings`, `action-notification-mark-read`, `action-notification-dismiss`, `action-notification-archive`, `action-notification-snooze`, and `action-notification-update-preferences`
+  - required checks passed: `git diff --check`; targeted backend My Account chat tool tests (`mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest#chatToolCatalogListsBoundedHumanChatPlanEntries+expandedMyAccountChatToolPlansRequireExactConfirmationAndStaySelfScoped+expandedMyAccountNotificationChatToolPlanExecutesVisibleNotificationOnlyAndPreservesSourceState+expandedMyAccountNotificationPreferenceChatPlanValidatesInAppCategoryAndRejectsExternalControls test`); targeted representative guardrail regression (`mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest#representativeChatToolPlansCoverAllFiveFoundationWorkstreamsWithConfirmationAndTraceSemantics+submitMessageRoutesMatchedSurfaceIntentBeforeModelInvocation+submitMessageBlocksUnsupportedAndHighRiskChatToolPromptsAfterDeterministicRouting test`)
+  - frontend contracts were not changed, so frontend checks were not required
+  - commit message: `workstream-chat-catalog: expand my account catalog`
 
 ### TASK-WCTC-05-001: Expand User Admin chat tool catalog
 

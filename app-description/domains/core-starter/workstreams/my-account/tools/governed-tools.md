@@ -23,7 +23,7 @@ Forbidden tool exposure: role/capability grants, tenant/customer administration,
 
 ## `human_chat_tool_plan` expanded current-intent catalog
 
-This catalog records current intent for later runtime expansion. It reuses the same governed tool ids as browser surface actions and does not by itself change runtime behavior. Exposure channel `human_chat_tool_plan` remains proposal-and-confirmation only: deterministic no-mutation surface routing runs first, the initial execution-oriented chat request may only return a no-mutation plan proposal, and no state changes until exact human plan-snapshot confirmation and backend authorization succeed.
+This catalog records the My Account runtime expansion implemented for the bounded `human_chat_tool_plan` path. It reuses the same governed tool ids as browser surface actions. Exposure channel `human_chat_tool_plan` remains proposal-and-confirmation only: deterministic no-mutation surface routing runs first, the initial execution-oriented chat request may only return a no-mutation plan proposal, and no state changes until exact human plan-snapshot confirmation and backend authorization succeed.
 
 Allowed expanded entries:
 

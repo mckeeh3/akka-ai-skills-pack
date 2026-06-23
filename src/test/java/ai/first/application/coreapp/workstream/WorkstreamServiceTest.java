@@ -1953,6 +1953,19 @@ class WorkstreamServiceTest {
     var entries = service.chatToolCatalog(null);
 
     assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("my-account-agent")
+        && entry.actionId().equals("action-update-my-profile")
+        && entry.governedToolId().equals("my_account.update_profile_settings")
+        && entry.capabilityId().equals("my_account.update_profile_settings")
+        && entry.exposureChannel().equals("human_chat_tool_plan")
+        && entry.inputSchemaRef().equals("schema.my-account.profile.update.v1")
+        && entry.classification().equals("chat-executable-now")
+        && entry.riskLevel().equals("low")
+        && entry.guardrails().contains("self-account-only")
+        && entry.idempotencyRequired()
+        && entry.requiresConfirmation()
+        && !entry.requiresApproval()
+        && entry.traceRequirements().contains("human_chat_tool_plan.step_completed")));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("my-account-agent")
         && entry.actionId().equals("action-update-my-settings")
         && entry.governedToolId().equals("my_account.update_profile_settings")
         && entry.capabilityId().equals("my_account.update_profile_settings")
@@ -1966,6 +1979,21 @@ class WorkstreamServiceTest {
         && entry.requiresConfirmation()
         && !entry.requiresApproval()
         && entry.traceRequirements().contains("human_chat_tool_plan.step_completed")));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("my-account-agent")
+        && entry.actionId().equals("action-notification-mark-read")
+        && entry.governedToolId().equals("notification.mark_read")
+        && entry.capabilityId().equals("notification.mark_read")
+        && entry.inputSchemaRef().equals("schema.notification.mark-read.v1")
+        && entry.guardrails().contains("visible-notification-id")
+        && entry.guardrails().contains("source-state-unchanged")
+        && entry.traceRequirements().contains("notification.lifecycle_trace")));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("my-account-agent")
+        && entry.actionId().equals("action-notification-update-preferences")
+        && entry.governedToolId().equals("notification.update_preferences")
+        && entry.capabilityId().equals("notification.update_preferences")
+        && entry.inputSchemaRef().equals("schema.notification.preferences.update.v1")
+        && entry.guardrails().contains("external-channel-blocked")
+        && entry.traceRequirements().contains("notification.preference_trace")));
     assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("user-admin-agent")
         && entry.actionId().equals("action-submit-organization-create")
         && entry.governedToolId().equals("manage-organizations")
@@ -1991,6 +2019,161 @@ class WorkstreamServiceTest {
         && entry.capabilityId().equals("governance.policy.propose")
         && entry.classification().equals("chat-proposal-only")
         && entry.rationale().contains("inert proposal")));
+  }
+
+  @Test
+  void expandedMyAccountChatToolPlansRequireExactConfirmationAndStaySelfScoped() {
+    assertEquals("Tenant Admin", identityRepository.profile("admin@example.test").displayName());
+    var response = submitRepresentativePlan(identity(), "membership-admin", "my-account-agent", "change my display name to Chat Catalog Admin", "idem-my-account-profile-chat", List.of(runtimeStep(
+        "step-update-my-profile", 1, "action-update-my-profile", "action-update-my-profile", "my_account.update_profile_settings", "my_account.update_profile_settings", "schema.my-account.profile.update.v1", false)));
+    var proposal = (WorkstreamService.ChatToolPlanProposal) response.surface().data().get("proposal");
+    var snapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) response.surface().data().get("confirmationSnapshot");
+
+    assertEquals("Chat Catalog Admin", proposal.steps().get(0).input().get("displayName"));
+    assertEquals("Tenant Admin", identityRepository.profile("admin@example.test").displayName(), "Profile proposal must not mutate before exact confirmation.");
+    var denied = assertThrows(AuthorizationException.class, () -> service.confirmChatToolPlan(identity(), "membership-admin", new WorkstreamService.ChatToolPlanConfirmationRequest(
+        "membership-admin", proposal.planId(), proposal.planSnapshotId(), "confirm " + proposal.planSnapshotId(), snapshot.stepHashes(), "idem-my-account-profile-chat-denied", "corr-my-account-profile-chat-denied")));
+    assertTrue(denied.reasonCode().contains("CHAT_TOOL_PLAN_CONFIRMATION_TEXT_REQUIRED"));
+    assertEquals("Tenant Admin", identityRepository.profile("admin@example.test").displayName());
+
+    var confirmed = confirmRepresentativePlan(identity(), "membership-admin", proposal, snapshot, "idem-my-account-profile-chat-confirm");
+    var result = (WorkstreamService.ChatToolPlanExecutionResult) confirmed.surface().data().get("result");
+    assertEquals("completed", result.status(), result.toString());
+    assertTrue(result.completedSteps().stream().anyMatch(step -> step.actionId().equals("action-update-my-profile") && step.resultSurfaceId().equals("surface-my-profile")));
+    assertEquals("Chat Catalog Admin", identityRepository.profile("admin@example.test").displayName());
+    assertEquals("Member User", identityRepository.profile("member@example.test").displayName(), "My Account chat profile update must stay scoped to the signed-in account.");
+    assertFalse(confirmed.surface().toString().contains("providerSecret"));
+
+    var unsupported = assertThrows(AuthorizationException.class, () -> service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "my-account-agent",
+        "change another account display name",
+        "corr-my-account-profile-unsupported",
+        "idem-my-account-profile-unsupported",
+        null,
+        "Unsafe My Account profile proposal must fail closed before proposal persistence.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-update-my-profile-unsupported",
+            1,
+            "Attempt cross-account profile update",
+            "action-update-my-profile",
+            "action-update-my-profile",
+            "my_account.update_profile_settings",
+            "my_account.update_profile_settings",
+            "schema.my-account.profile.update.v1",
+            Map.of("displayName", "Unsafe", "accountId", "member@example.test"),
+            List.of(),
+            Map.of(),
+            "idem-my-account-profile-unsupported-step",
+            "independent-command",
+            true,
+            false,
+            "detail-edit",
+            "surface-my-profile",
+            List.of("human_chat_tool_plan.step_started"))),
+        "Unsupported self-service fields must be denied.")));
+    assertTrue(unsupported.reasonCode().contains("CHAT_TOOL_MY_ACCOUNT_UNSUPPORTED_FIELD"), unsupported.reasonCode());
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void expandedMyAccountNotificationChatToolPlanExecutesVisibleNotificationOnlyAndPreservesSourceState() {
+    var center = service.surface(identity(), "membership-admin", "surface-my-account-notification-center", "corr-my-account-notification-seed");
+    var items = (List<Map<String, Object>>) center.data().get("items");
+    assertFalse(items.isEmpty(), "Starter attention should project at least one visible in-app notification for My Account chat-tool coverage.");
+    var notificationId = String.valueOf(items.get(0).get("notificationId"));
+
+    var response = submitRepresentativePlan(identity(), "membership-admin", "my-account-agent", "mark notification " + notificationId + " read", "idem-my-account-notification-chat", List.of(runtimeStep(
+        "step-mark-notification-read", 1, "action-notification-mark-read", "action-notification-mark-read", "notification.mark_read", "notification.mark_read", "schema.notification.mark-read.v1", false)));
+    var proposal = (WorkstreamService.ChatToolPlanProposal) response.surface().data().get("proposal");
+    var snapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) response.surface().data().get("confirmationSnapshot");
+    assertEquals(notificationId, proposal.steps().get(0).input().get("notificationId"));
+    assertTrue(service.surface(identity(), "membership-admin", "surface-my-account-notification-center", "corr-my-account-notification-before-confirm").toString().contains(notificationId), "Notification proposal must not mutate before confirmation.");
+
+    var confirmed = confirmRepresentativePlan(identity(), "membership-admin", proposal, snapshot, "idem-my-account-notification-chat-confirm");
+    var result = (WorkstreamService.ChatToolPlanExecutionResult) confirmed.surface().data().get("result");
+    assertEquals("completed", result.status(), result.toString());
+    assertTrue(result.completedSteps().stream().anyMatch(step -> step.actionId().equals("action-notification-mark-read") && step.governedToolId().equals("notification.mark_read") && step.resultSurfaceId().equals("surface-my-account-notification-center")));
+    assertTrue(result.traceIds().stream().anyMatch(trace -> trace.contains("trace-human-chat-tool-plan-step-started")));
+    assertFalse(service.surface(identity(), "membership-admin", "surface-my-account-notification-center", "corr-my-account-notification-after-confirm").toString().contains(notificationId), "Read notifications are hidden unless preferences include read items; source work is not resolved by the chat tool.");
+    assertBrowserPayloadSafe(confirmed.surface());
+
+    var hidden = assertThrows(AuthorizationException.class, () -> service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "my-account-agent",
+        "archive a notification without a visible id",
+        "corr-my-account-notification-missing-id",
+        "idem-my-account-notification-missing-id",
+        null,
+        "Unsafe notification proposal must fail closed before proposal persistence.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-archive-notification-missing-id",
+            1,
+            "Archive notification without visible id",
+            "action-notification-archive",
+            "action-notification-archive",
+            "notification.archive",
+            "notification.archive",
+            "schema.notification.archive.v1",
+            Map.of(),
+            List.of(),
+            Map.of(),
+            "idem-my-account-notification-missing-id-step",
+            "independent-command",
+            true,
+            false,
+            "notification-center",
+            "surface-my-account-notification-center",
+            List.of("human_chat_tool_plan.step_started"))),
+        "Visible notification id is required.")));
+    assertTrue(hidden.reasonCode().contains("CHAT_TOOL_NOTIFICATION_VISIBLE_ID_REQUIRED"), hidden.reasonCode());
+  }
+
+  @Test
+  void expandedMyAccountNotificationPreferenceChatPlanValidatesInAppCategoryAndRejectsExternalControls() {
+    var response = submitRepresentativePlan(identity(), "membership-admin", "my-account-agent", "disable my notification preferences for security alerts", "idem-my-account-notification-pref-chat", List.of(runtimeStep(
+        "step-update-notification-preferences", 1, "action-notification-update-preferences", "action-notification-update-preferences", "notification.update_preferences", "notification.update_preferences", "schema.notification.preferences.update.v1", false)));
+    var proposal = (WorkstreamService.ChatToolPlanProposal) response.surface().data().get("proposal");
+    var snapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) response.surface().data().get("confirmationSnapshot");
+    assertEquals("audit_or_security", proposal.steps().get(0).input().get("category"));
+    assertEquals(false, proposal.steps().get(0).input().get("enabled"));
+
+    var confirmed = confirmRepresentativePlan(identity(), "membership-admin", proposal, snapshot, "idem-my-account-notification-pref-chat-confirm");
+    var result = (WorkstreamService.ChatToolPlanExecutionResult) confirmed.surface().data().get("result");
+    assertEquals("completed", result.status(), result.toString());
+    assertTrue(result.completedSteps().stream().anyMatch(step -> step.actionId().equals("action-notification-update-preferences") && step.resultSurfaceId().equals("surface-my-account-notification-center")));
+    assertFalse(result.traceIds().isEmpty());
+    assertBrowserPayloadSafe(confirmed.surface());
+
+    var external = assertThrows(AuthorizationException.class, () -> service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "my-account-agent",
+        "change email notification preferences",
+        "corr-my-account-notification-pref-external",
+        "idem-my-account-notification-pref-external",
+        null,
+        "Unsafe external preference proposal must fail closed before proposal persistence.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-update-external-notification-preferences",
+            1,
+            "Attempt external notification preference update",
+            "action-notification-update-preferences",
+            "action-notification-update-preferences",
+            "notification.update_preferences",
+            "notification.update_preferences",
+            "schema.notification.preferences.update.v1",
+            Map.of("channel", "email", "category", "audit_or_security", "enabled", false),
+            List.of(),
+            Map.of(),
+            "idem-my-account-notification-pref-external-step",
+            "independent-command",
+            true,
+            false,
+            "notification-center",
+            "surface-my-account-notification-center",
+            List.of("human_chat_tool_plan.step_started"))),
+        "External notification controls are outside My Account chat-tool catalog.")));
+    assertTrue(external.reasonCode().contains("CHAT_TOOL_NOTIFICATION_PREFERENCE_UNSUPPORTED_FIELD"), external.reasonCode());
   }
 
   @Test

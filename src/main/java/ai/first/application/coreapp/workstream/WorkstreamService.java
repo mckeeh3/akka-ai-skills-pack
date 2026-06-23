@@ -1160,10 +1160,10 @@ public final class WorkstreamService {
       var item = notificationService.archive(actor, notificationIdInput(actor, request.input(), request.correlationId()), request.correlationId());
       result = new CapabilityActionResult(item.redactionLevel().name().toLowerCase(Locale.ROOT), "Notification archive processed by backend-owned in-app lifecycle; source state unchanged.", request.correlationId(), item.traceRefs(), myAccountNotificationCenterSurface(actor, request.correlationId()));
     } else if ("action-notification-snooze".equals(request.actionId())) {
-      var item = notificationService.snooze(actor, notificationIdInput(actor, request.input(), request.correlationId()), Instant.now().plus(1, ChronoUnit.HOURS), request.correlationId());
+      var item = notificationService.snooze(actor, notificationIdInput(actor, request.input(), request.correlationId()), instantInput(request.input(), "snoozedUntil", Instant.now().plus(1, ChronoUnit.HOURS)), request.correlationId());
       result = new CapabilityActionResult(item.redactionLevel().name().toLowerCase(Locale.ROOT), "Notification snooze processed by backend-owned in-app lifecycle; source state unchanged.", request.correlationId(), item.traceRefs(), myAccountNotificationCenterSurface(actor, request.correlationId()));
     } else if ("action-notification-update-preferences".equals(request.actionId())) {
-      var pref = notificationService.updatePreference(actor, NotificationCategory.ALL, booleanInput(request.input(), "enabled", true), NotificationPriority.INFO, null, booleanInput(request.input(), "includeReadInCenter", false), request.correlationId());
+      var pref = notificationService.updatePreference(actor, notificationCategoryInput(request.input(), "category", NotificationCategory.ALL), booleanInput(request.input(), "enabled", true), notificationPriorityInput(request.input(), "minimumPriority", NotificationPriority.INFO), instantInput(request.input(), "muteUntil", null), booleanInput(request.input(), "includeReadInCenter", false), request.correlationId());
       result = new CapabilityActionResult("accepted", "In-app notification preferences updated by backend authority; email delivery remains a separate governed channel.", request.correlationId(), List.of(pref.correlationId()), myAccountNotificationCenterSurface(actor, request.correlationId()));
     } else if ("action-open-user-admin".equals(request.actionId()) || "action-open-agent-admin".equals(request.actionId()) || "action-open-audit-trace".equals(request.actionId()) || "action-open-governance-policy".equals(request.actionId())) {
       var open = myAccountService.openAuthorizedWorkstream(actor, request.actionId(), request.correlationId());
@@ -1483,6 +1483,11 @@ public final class WorkstreamService {
       var existing = duplicate.orElseThrow();
       return new WorkstreamMessageResponse(existing.correlationId(), existing.idempotencyKey(), existing.userItem(), existing.agentItem(), existing.surface());
     }
+    if (MY_ACCOUNT_AGENT_ID.equals(request.functionalAgentId())) {
+      var boundary = activeChatToolBoundary(actor, request.functionalAgentId(), correlationId);
+      var requestedSteps = request.steps() == null ? List.<ChatToolPlanStep>of() : request.steps();
+      requestedSteps.forEach(step -> validateChatToolStepAgainstCatalog(actor, boundary, request.functionalAgentId(), step));
+    }
     var responseSeed = firstNonBlank(request.idempotencyKey(), correlationId, request.functionalAgentId());
     var now = Instant.now();
     var traceIds = List.of("trace-human-chat-tool-plan-proposed-" + stableSuffix(responseSeed));
@@ -1634,7 +1639,7 @@ public final class WorkstreamService {
         traceIds.addAll(stepTraceIds);
         var resultSurfaceId = actionResult.resultSurface() == null ? null : actionResult.resultSurface().surfaceId();
         if (resultSurfaceId != null) resultSurfaceIds.add(resultSurfaceId);
-        var completedStatus = List.of("accepted", "no-op", "recorded").contains(actionResult.status());
+        var completedStatus = List.of("accepted", "no-op", "recorded", "full", "summary_only").contains(actionResult.status());
         var stepResult = new ChatToolPlanStepResult(stepId, completedStatus ? "completed" : "failed", actionResult.message(), step.actionId(), step.governedToolId(), step.capabilityId(), resultSurfaceId, List.copyOf(stepTraceIds), startedAt.toString(), Instant.now().toString(), completedStatus ? null : firstNonBlank(actionResult.status(), "action_failed"));
         if (completedStatus) {
           completed.add(stepResult);
@@ -1881,13 +1886,33 @@ public final class WorkstreamService {
           userAdminOrganizationAndAdminInvitePlanSteps(candidate, idempotencyRoot)));
     }
     var normalized = prompt.toLowerCase(Locale.ROOT);
-    if (MY_ACCOUNT_AGENT_ID.equals(functionalAgentId) && normalized.contains("theme") && (normalized.contains("obsidian dark") || normalized.contains("obsidian-dark")) && (normalized.contains("change") || normalized.contains("set") || normalized.contains("update"))) {
-      return Optional.of(new RepresentativeChatToolPlanCandidate(
-          MY_ACCOUNT_AGENT_ID,
-          "Review the My Account governed-tool plan. No settings have changed; explicit confirmation must echo this exact snapshot before execution.",
-          "Update the signed-in user's preferred theme to Obsidian Dark after explicit human confirmation.",
-          "No personal setting changes from this proposal. Human confirmation, selected AuthContext authorization, exact plan snapshot validation, per-step idempotency, and trace capture are required before execution.",
-          myAccountThemePlanSteps(idempotencyRoot)));
+    if (MY_ACCOUNT_AGENT_ID.equals(functionalAgentId)) {
+      var displayName = myAccountDisplayNamePromptValue(prompt);
+      if (displayName.isPresent()) {
+        return Optional.of(new RepresentativeChatToolPlanCandidate(
+            MY_ACCOUNT_AGENT_ID,
+            "Review the My Account governed-tool plan. No profile has changed; explicit confirmation must echo this exact snapshot before execution.",
+            "Update the signed-in user's display name after explicit human confirmation.",
+            "No personal profile changes from this proposal. Human confirmation, selected AuthContext authorization, exact plan snapshot validation, per-step idempotency, and trace capture are required before execution.",
+            myAccountProfilePlanSteps(displayName.orElseThrow(), idempotencyRoot)));
+      }
+      var notificationSteps = myAccountNotificationPlanSteps(prompt, idempotencyRoot);
+      if (!notificationSteps.isEmpty()) {
+        return Optional.of(new RepresentativeChatToolPlanCandidate(
+            MY_ACCOUNT_AGENT_ID,
+            "Review the My Account governed-tool plan. No notification state or preference has changed; explicit confirmation must echo this exact snapshot before execution.",
+            "Update the signed-in user's in-app notification state or preferences after explicit human confirmation.",
+            "No notification lifecycle or preference changes from this proposal. Human confirmation, selected AuthContext authorization, exact plan snapshot validation, visible notification/category validation, and trace capture are required before execution; source work is unchanged.",
+            notificationSteps));
+      }
+      if (normalized.contains("theme") && (normalized.contains("obsidian dark") || normalized.contains("obsidian-dark")) && (normalized.contains("change") || normalized.contains("set") || normalized.contains("update"))) {
+        return Optional.of(new RepresentativeChatToolPlanCandidate(
+            MY_ACCOUNT_AGENT_ID,
+            "Review the My Account governed-tool plan. No settings have changed; explicit confirmation must echo this exact snapshot before execution.",
+            "Update the signed-in user's preferred theme to Obsidian Dark after explicit human confirmation.",
+            "No personal setting changes from this proposal. Human confirmation, selected AuthContext authorization, exact plan snapshot validation, per-step idempotency, and trace capture are required before execution.",
+            myAccountThemePlanSteps(idempotencyRoot)));
+      }
     }
     if (AGENT_ADMIN_AGENT_ID.equals(functionalAgentId) && normalized.contains("prompt risk review") && (normalized.contains("start") || normalized.contains("run"))) {
       return Optional.of(new RepresentativeChatToolPlanCandidate(
@@ -1938,10 +1963,10 @@ public final class WorkstreamService {
   }
 
   private String highRiskPromptReason(String functionalAgentId, String normalizedPrompt) {
-    if (containsAny(normalizedPrompt, " activate ", " deactivate ", " rollback ", " approve ", " reject ", " suspend ", " reactivate ", " disable ", " permanently remove ", " delete ", " support access ", " identity relink ", " grant ", " revoke ", " export ", " unredacted ", " raw evidence ", " change role ", " role change ", " replace role ")) {
+    if (containsAny(normalizedPrompt, " activate ", " deactivate ", " rollback ", " approve ", " reject ", " suspend ", " reactivate ", " permanently remove ", " delete ", " support access ", " identity relink ", " grant ", " revoke ", " export ", " unredacted ", " raw evidence ", " change role ", " role change ", " replace role ")) {
       return "Prompt references high-impact lifecycle, authority, export, support-access, role, or raw-evidence actions that require separate approval/design guardrails.";
     }
-    if (USER_ADMIN_AGENT_ID.equals(functionalAgentId) && containsAny(normalizedPrompt, " archive ", " remove account ", " remove user ")) {
+    if (USER_ADMIN_AGENT_ID.equals(functionalAgentId) && containsAny(normalizedPrompt, " archive ", " disable ", " remove account ", " remove user ")) {
       return "Prompt references destructive User Admin lifecycle changes that require separate approval/design guardrails.";
     }
     if (AGENT_ADMIN_AGENT_ID.equals(functionalAgentId) && containsAny(normalizedPrompt, " model ref ", " model reference ", " tool boundary ", " behavior proposal ") && containsAny(normalizedPrompt, " commit ", " switch ", " publish ", " deploy ")) {
@@ -2036,6 +2061,111 @@ public final class WorkstreamService {
         "detail-edit",
         "surface-my-settings",
         List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_pending", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed")));
+  }
+
+  private List<ChatToolPlanStep> myAccountProfilePlanSteps(String displayName, String idempotencyRoot) {
+    return List.of(new ChatToolPlanStep(
+        "step-update-my-profile",
+        1,
+        "Update display name to " + displayName,
+        "action-update-my-profile",
+        "action-update-my-profile",
+        MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY,
+        MY_ACCOUNT_UPDATE_SETTINGS_CAPABILITY,
+        "schema.my-account.profile.update.v1",
+        mapOf("displayName", displayName),
+        List.of(),
+        Map.of(),
+        "idem-" + stableSuffix(idempotencyRoot + ":update-my-profile"),
+        "independent-command: personal profile update is one backend transaction boundary scoped to the signed-in account",
+        true,
+        false,
+        "detail-edit",
+        "surface-my-profile",
+        List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_pending", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed")));
+  }
+
+  private List<ChatToolPlanStep> myAccountNotificationPlanSteps(String prompt, String idempotencyRoot) {
+    if (prompt == null || prompt.isBlank()) return List.of();
+    var normalized = " " + prompt.toLowerCase(Locale.ROOT).replace('-', ' ') + " ";
+    if (normalized.contains(" notification preferences ") || normalized.contains(" notification preference ")) {
+      var enabled = !(normalized.contains(" disable ") || normalized.contains(" turn off ") || normalized.contains(" mute "));
+      var input = new LinkedHashMap<String, Object>();
+      input.put("category", notificationPreferenceCategoryPromptValue(normalized));
+      input.put("enabled", enabled);
+      input.put("minimumPriority", "info");
+      input.put("includeReadInCenter", normalized.contains(" include read ") || normalized.contains(" show read "));
+      return List.of(myAccountNotificationStep(
+          "step-update-notification-preferences",
+          "Update in-app notification preferences",
+          "action-notification-update-preferences",
+          NOTIFICATION_UPDATE_PREFERENCES_CAPABILITY,
+          "schema.notification.preferences.update.v1",
+          input,
+          "idem-" + stableSuffix(idempotencyRoot + ":notification-preferences"),
+          "surface-my-account-notification-center",
+          List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_pending", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "notification.preference_trace")));
+    }
+    var notificationId = notificationIdPromptValue(prompt).orElse(null);
+    if (notificationId == null) return List.of();
+    if (normalized.contains(" mark ") && (normalized.contains(" read ") || normalized.contains(" as read "))) {
+      return List.of(myAccountNotificationStep("step-mark-notification-read", "Mark notification read", "action-notification-mark-read", NOTIFICATION_MARK_READ_CAPABILITY, "schema.notification.mark-read.v1", mapOf("notificationId", notificationId), "idem-" + stableSuffix(idempotencyRoot + ":notification-mark-read"), "surface-my-account-notification-center", List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_pending", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "notification.lifecycle_trace")));
+    }
+    if (normalized.contains(" dismiss ")) {
+      return List.of(myAccountNotificationStep("step-dismiss-notification", "Dismiss notification", "action-notification-dismiss", NOTIFICATION_DISMISS_CAPABILITY, "schema.notification.dismiss.v1", mapOf("notificationId", notificationId), "idem-" + stableSuffix(idempotencyRoot + ":notification-dismiss"), "surface-my-account-notification-center", List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_pending", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "notification.lifecycle_trace")));
+    }
+    if (normalized.contains(" archive ")) {
+      return List.of(myAccountNotificationStep("step-archive-notification", "Archive notification", "action-notification-archive", NOTIFICATION_ARCHIVE_CAPABILITY, "schema.notification.archive.v1", mapOf("notificationId", notificationId), "idem-" + stableSuffix(idempotencyRoot + ":notification-archive"), "surface-my-account-notification-center", List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_pending", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "notification.lifecycle_trace")));
+    }
+    if (normalized.contains(" snooze ")) {
+      return List.of(myAccountNotificationStep("step-snooze-notification", "Snooze notification", "action-notification-snooze", NOTIFICATION_SNOOZE_CAPABILITY, "schema.notification.snooze.v1", mapOf("notificationId", notificationId, "snoozedUntil", Instant.now().plus(1, ChronoUnit.HOURS).toString()), "idem-" + stableSuffix(idempotencyRoot + ":notification-snooze"), "surface-my-account-notification-center", List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_pending", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "notification.lifecycle_trace")));
+    }
+    return List.of();
+  }
+
+  private ChatToolPlanStep myAccountNotificationStep(String stepId, String label, String actionId, String capabilityId, String schemaRef, Map<String, Object> input, String idempotencyKey, String surfaceId, List<String> traceRequirements) {
+    return new ChatToolPlanStep(
+        stepId,
+        1,
+        label,
+        actionId,
+        actionId,
+        capabilityId,
+        capabilityId,
+        schemaRef,
+        input,
+        List.of(),
+        Map.of(),
+        idempotencyKey,
+        "independent-command: personal in-app notification update is one backend transaction boundary scoped to the signed-in account; source work is unchanged",
+        true,
+        false,
+        "notification-center",
+        surfaceId,
+        traceRequirements);
+  }
+
+  private Optional<String> myAccountDisplayNamePromptValue(String prompt) {
+    var matcher = Pattern.compile("(?:change|set|update)\\s+my\\s+display\\s+name\\s+to\\s+[\\\"“]?([^\\\"”]+)[\\\"”]?", Pattern.CASE_INSENSITIVE).matcher(prompt);
+    if (!matcher.find()) return Optional.empty();
+    var value = matcher.group(1).trim();
+    if (value.length() > 120) value = value.substring(0, 120).trim();
+    return value.isBlank() ? Optional.empty() : Optional.of(value);
+  }
+
+  private Optional<String> notificationIdPromptValue(String prompt) {
+    var matcher = Pattern.compile("\\b(?:notification|notif)\\s+([A-Za-z0-9._-]+)\\b", Pattern.CASE_INSENSITIVE).matcher(prompt);
+    if (!matcher.find()) return Optional.empty();
+    var id = matcher.group(1).trim();
+    return id.isBlank() ? Optional.empty() : Optional.of(id.startsWith("notification-") || id.startsWith("notif-") ? id : "notification-" + id);
+  }
+
+  private String notificationPreferenceCategoryPromptValue(String normalizedPrompt) {
+    if (normalizedPrompt.contains(" security ") || normalizedPrompt.contains(" audit ")) return "audit_or_security";
+    if (normalizedPrompt.contains(" governance ") || normalizedPrompt.contains(" policy ")) return "policy_or_governance";
+    if (normalizedPrompt.contains(" provider ") || normalizedPrompt.contains(" readiness ")) return "provider_readiness";
+    if (normalizedPrompt.contains(" digest ")) return "digest_ready";
+    return "all";
   }
 
   private List<ChatToolPlanStep> agentAdminPromptRiskReviewPlanSteps(String idempotencyRoot) {
@@ -2379,7 +2509,13 @@ public final class WorkstreamService {
 
   private List<ChatToolCatalogEntry> chatToolCatalogEntries() {
     return List.of(
-        chatToolCatalogEntry(MY_ACCOUNT_AGENT_ID, updateSettingsAction(), "human_chat_tool_plan", "chat-executable-now", "low", "Self-scoped settings update uses the existing backend-authorized settings action with exact confirmation and idempotency.", "Human-confirmed personal settings update only; no role, context, provider, or notification authority expansion.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "unsupported-fields-denied"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "human_chat_tool_plan.step_failed")),
+        chatToolCatalogEntry(MY_ACCOUNT_AGENT_ID, updateProfileAction(), "human_chat_tool_plan", "chat-executable-now", "low", "Self-scoped profile update uses the existing backend-authorized profile/settings action with exact confirmation and idempotency.", "Human-confirmed personal profile update only; no role, context, account-status, provider, or notification authority expansion.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "self-account-only", "unsupported-fields-denied", "secrets-redacted"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "human_chat_tool_plan.step_failed")),
+        chatToolCatalogEntry(MY_ACCOUNT_AGENT_ID, updateSettingsAction(), "human_chat_tool_plan", "chat-executable-now", "low", "Self-scoped settings update uses the existing backend-authorized settings action with exact confirmation and idempotency.", "Human-confirmed personal settings update only; no role, context, provider, external-channel, or notification authority expansion.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "self-account-only", "unsupported-fields-denied", "secrets-redacted"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "human_chat_tool_plan.step_failed")),
+        chatToolCatalogEntry(MY_ACCOUNT_AGENT_ID, markNotificationReadAction(), "human_chat_tool_plan", "chat-executable-now", "low-medium", "Visible in-app notification mark-read mutates only the signed-in user's notification lifecycle state and never resolves source work.", "Human-confirmed in-app notification lifecycle update only; notification id must be visible in the selected AuthContext and source attention/task/event state remains unchanged.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-notification-id", "source-state-unchanged", "external-channel-blocked"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "notification.lifecycle_trace")),
+        chatToolCatalogEntry(MY_ACCOUNT_AGENT_ID, dismissNotificationAction(), "human_chat_tool_plan", "chat-executable-now", "low-medium", "Visible in-app notification dismissal mutates only personal notification state and never resolves source work.", "Human-confirmed in-app notification lifecycle update only; notification id must be visible in the selected AuthContext and source attention/task/event state remains unchanged.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-notification-id", "source-state-unchanged", "external-channel-blocked"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "notification.lifecycle_trace")),
+        chatToolCatalogEntry(MY_ACCOUNT_AGENT_ID, archiveNotificationAction(), "human_chat_tool_plan", "chat-executable-now", "low-medium", "Visible in-app notification archive mutates only personal notification state and never resolves source work.", "Human-confirmed in-app notification lifecycle update only; notification id must be visible in the selected AuthContext and source attention/task/event state remains unchanged.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-notification-id", "source-state-unchanged", "external-channel-blocked"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "notification.lifecycle_trace")),
+        chatToolCatalogEntry(MY_ACCOUNT_AGENT_ID, snoozeNotificationAction(), "human_chat_tool_plan", "chat-executable-now", "low-medium", "Visible in-app notification snooze mutates only bounded personal notification state and never resolves source work.", "Human-confirmed in-app notification lifecycle update only; notification id must be visible, snooze windows are bounded, and source attention/task/event state remains unchanged.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-notification-id", "bounded-snooze-window", "source-state-unchanged", "external-channel-blocked"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "notification.lifecycle_trace")),
+        chatToolCatalogEntry(MY_ACCOUNT_AGENT_ID, updateNotificationPreferencesAction(), "human_chat_tool_plan", "chat-executable-now", "low-medium", "In-app notification preference update mutates only visible personal category preferences and never external delivery/provider controls.", "Human-confirmed in-app preference update only; selected AuthContext, category allowlist, and frontend secret boundaries remain authoritative.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-category", "external-channel-blocked", "secrets-redacted"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "notification.preference_trace")),
         chatToolCatalogEntry(USER_ADMIN_AGENT_ID, submitOrganizationCreateAction(), "human_chat_tool_plan", "chat-executable-now", "medium", "SaaS Owner Organization creation has a bounded backend action, selected AuthContext authorization, idempotency, and duplicate/no-enumeration handling.", "Human-confirmed SaaS Owner Organization create; backend selected AuthContext, capability, idempotency, and duplicate/no-enumeration policies remain authoritative.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "tenant-scope", "idempotency"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "human_chat_tool_plan.step_failed")),
         chatToolCatalogEntry(USER_ADMIN_AGENT_ID, organizationAdminInviteAction(), "human_chat_tool_plan", "chat-executable-now", "medium-high", "Organization Admin invitations are bounded to a visible Organization and pinned TENANT_ADMIN role through the existing invitation/outbox boundary.", "Human-confirmed Organization Admin invitation only after a visible Organization is bound; invitation provider/outbox failures fail closed without exposing tokens.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-target-binding", "provider-fail-closed"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "human_chat_tool_plan.step_failed", "invitation.outbox")),
         chatToolCatalogEntry(AGENT_ADMIN_AGENT_ID, startPromptRiskReviewAction(), "human_chat_tool_plan", "approval-gated", "medium", "Prompt-risk review start creates only a governed advisory task and remains blocked by the dispatcher until separate approval policy is modeled.", "Human-confirmed prompt-risk review task start; model/provider runtime may fail closed and approval policy cannot be bypassed.", true, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "tool-boundary", "provider-fail-closed", "approval-gate"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_failed", "agent.work_trace")),
@@ -2444,6 +2580,44 @@ public final class WorkstreamService {
     if (step.requiresApproval() != entry.requiresApproval()) throw new AuthorizationException(403, "CHAT_TOOL_APPROVAL_POLICY_MISMATCH");
     if (!step.requiresConfirmation() || !entry.requiresConfirmation()) throw new AuthorizationException(403, "CHAT_TOOL_CONFIRMATION_REQUIRED");
     if (boundary.allowedToolGrants().isEmpty()) throw new AuthorizationException(403, "CHAT_TOOL_BOUNDARY_EMPTY");
+    if (MY_ACCOUNT_AGENT_ID.equals(workstreamId)) validateMyAccountChatToolStepInput(step);
+  }
+
+  private void validateMyAccountChatToolStepInput(ChatToolPlanStep step) {
+    var input = step.input() == null ? Map.<String, Object>of() : step.input();
+    if ("action-update-my-profile".equals(step.actionId()) || "action-update-my-settings".equals(step.actionId())) {
+      var unsupported = input.keySet().stream()
+          .filter(key -> !List.of("displayName", "preferredThemeId", "locale", "timeZone").contains(key))
+          .sorted()
+          .toList();
+      if (!unsupported.isEmpty()) throw new AuthorizationException(403, "CHAT_TOOL_MY_ACCOUNT_UNSUPPORTED_FIELD:" + String.join(",", unsupported));
+      if (input.isEmpty()) throw new AuthorizationException(400, "CHAT_TOOL_MY_ACCOUNT_EMPTY_UPDATE");
+      if (input.get("preferredThemeId") instanceof String themeId && !themeId.isBlank()) {
+        try {
+          UserSettings.ThemeId.fromId(themeId);
+        } catch (IllegalArgumentException invalid) {
+          throw new AuthorizationException(400, "CHAT_TOOL_MY_ACCOUNT_INVALID_THEME_ID");
+        }
+      }
+    } else if (List.of("action-notification-mark-read", "action-notification-dismiss", "action-notification-archive", "action-notification-snooze").contains(step.actionId())) {
+      var unsupported = input.keySet().stream()
+          .filter(key -> !List.of("notificationId", "snoozedUntil").contains(key))
+          .sorted()
+          .toList();
+      if (!unsupported.isEmpty()) throw new AuthorizationException(403, "CHAT_TOOL_NOTIFICATION_UNSUPPORTED_FIELD:" + String.join(",", unsupported));
+      if (!(input.get("notificationId") instanceof String notificationId) || notificationId.isBlank()) throw new AuthorizationException(400, "CHAT_TOOL_NOTIFICATION_VISIBLE_ID_REQUIRED");
+      if (!"action-notification-snooze".equals(step.actionId()) && input.containsKey("snoozedUntil")) throw new AuthorizationException(403, "CHAT_TOOL_NOTIFICATION_SNOOZE_FIELD_FORBIDDEN");
+      if ("action-notification-snooze".equals(step.actionId()) && input.get("snoozedUntil") instanceof String snoozedUntil && !snoozedUntil.isBlank()) instantInput(Map.of("snoozedUntil", snoozedUntil), "snoozedUntil");
+    } else if ("action-notification-update-preferences".equals(step.actionId())) {
+      var unsupported = input.keySet().stream()
+          .filter(key -> !List.of("category", "enabled", "minimumPriority", "muteUntil", "includeReadInCenter").contains(key))
+          .sorted()
+          .toList();
+      if (!unsupported.isEmpty()) throw new AuthorizationException(403, "CHAT_TOOL_NOTIFICATION_PREFERENCE_UNSUPPORTED_FIELD:" + String.join(",", unsupported));
+      notificationCategoryInput(input, "category", NotificationCategory.ALL);
+      notificationPriorityInput(input, "minimumPriority", NotificationPriority.INFO);
+      if (input.get("muteUntil") instanceof String muteUntil && !muteUntil.isBlank()) instantInput(Map.of("muteUntil", muteUntil), "muteUntil");
+    }
   }
 
   private Map<String, Object> resolveChatToolStepInput(Map<String, Object> input, Map<String, Map<String, Object>> stepOutputs) {
@@ -7535,12 +7709,33 @@ public final class WorkstreamService {
 
   private static String stringInput(Object input, String key, String fallback) { if (input instanceof Map<?, ?> map && map.get(key) instanceof String value && !value.isBlank()) return value; return fallback; }
   private static Instant instantInput(Object input, String key) {
+    return instantInput(input, key, null);
+  }
+  private static Instant instantInput(Object input, String key, Instant fallback) {
     var value = stringInput(input, key, null);
-    if (value == null) return null;
+    if (value == null) return fallback;
     try {
       return Instant.parse(value);
     } catch (DateTimeParseException invalid) {
       throw new AuthorizationException(400, key + "-invalid-instant");
+    }
+  }
+  private static NotificationCategory notificationCategoryInput(Object input, String key, NotificationCategory fallback) {
+    var value = stringInput(input, key, null);
+    if (value == null) return fallback;
+    try {
+      return NotificationCategory.valueOf(value.trim().toUpperCase(Locale.ROOT).replace('-', '_'));
+    } catch (IllegalArgumentException invalid) {
+      throw new AuthorizationException(400, "notification-category-invalid");
+    }
+  }
+  private static NotificationPriority notificationPriorityInput(Object input, String key, NotificationPriority fallback) {
+    var value = stringInput(input, key, null);
+    if (value == null) return fallback;
+    try {
+      return NotificationPriority.valueOf(value.trim().toUpperCase(Locale.ROOT).replace('-', '_'));
+    } catch (IllegalArgumentException invalid) {
+      throw new AuthorizationException(400, "notification-priority-invalid");
     }
   }
   private static String rawStringInput(Object input, String key, String fallback) { if (input instanceof Map<?, ?> map && map.get(key) instanceof String value) return value; return fallback; }
