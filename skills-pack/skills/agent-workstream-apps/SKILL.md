@@ -34,7 +34,9 @@ A workstream app has:
 - continuous stream/composer for work history and requests
 - structured surfaces for dashboards, tables, forms, detail cards, decision cards, diffs, audit timelines, evidence bundles, and system messages
 - surface graph edges backed by browser actions, governed backend capabilities/tools, authorization, audit/work traces, and result surfaces
+- a bounded workstream tool catalog whose governed-tool ids can be exposed through human surface actions/browser-tools, confirmed human chat tool plans, AI agent-tools, APIs, workflows, timers, consumers, MCP-tools, or internal tools without duplicating business semantics
 - deterministic surface intent routing from composer prompts to authorized surfaces with safe editable prefill before model fallback
+- optional `human_chat_tool_plan` handling where consequential chat requests produce a detailed plan, require explicit confirmation bound to that plan, execute each governed-tool invocation through backend checks/idempotency, and return result or partial-failure surfaces
 - model-backed agents only where a concrete governed Akka Agent runtime path is required and configured
 
 Routes and pages are implementation/deep-link details. Backend capabilities and authorization are authoritative.
@@ -59,13 +61,14 @@ For each workstream/functional agent, define:
 - responsibility, non-responsibility, authority, supervision, handoff, failure, and trace boundaries for each worker
 - actor roles, scopes, capabilities, hidden/denied states, and default selection
 - backend-owned workstream-local attention category ids, canonical category/severity mappings, producers/workers, lifecycle, My Account/rail aggregation, and dashboard variants
-- prompt intent and bounded authority
-- allowed backend capabilities/tools and approval gates
+- prompt intent and bounded authority, including help/how-to behavior that stays within the selected workstream and does not require confirmation unless it becomes consequential tool execution
+- allowed backend capabilities/tools, governed-tool ids, actor adapters/exposure channels, and approval gates
 - dashboard/attention model and evidence freshness
 - surfaces, payloads, states, actions, system messages, and trace links
 - surface intent routing catalog: high-confidence prompt patterns, target surfaces, prefill fields, ambiguity/denial behavior, no-mutation guarantee, and tests
+- confirmed human chat tool-plan catalog, when allowed: prompt patterns or scope, proposed-plan detail, confirmation binding, per-tool transaction/idempotency semantics, denials before confirmation, result/partial-failure surfaces, and trace source `human_chat_tool_plan`
 - internal agent or AutonomousAgent delegation only when needed
-- tests for allowed, denied, stale, failure, and tenant/customer isolation paths
+- tests for allowed, denied, stale, failure, tenant/customer isolation, deterministic surface no-mutation, and confirmed chat execution/partial-failure paths where those adapters are modeled
 
 ## Completion standard
 

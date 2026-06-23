@@ -54,12 +54,12 @@ Every generated SaaS app and every SaaS Foundation App extension must preserve o
 - Akka-owned local authorization state: Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, selected AuthContext, Organization-backed Tenant, Customer, support access, and billing-safe platform records.
 - `/api/me` with browser-safe account, profile, settings, memberships, selected/default context, roles/capabilities, and context switching.
 - Invitation lifecycle and email-invite onboarding using Resend for production email and an explicit captured outbox adapter for local/dev/test.
-- Backend authorization for every protected route, component command, view query, stream, agent tool, workflow action, consumer side effect, and timer action.
+- Backend authorization for every protected route, surface action/browser-tool, confirmed human chat tool-plan execution, component command, view query, stream, agent tool, workflow action, consumer side effect, and timer action.
 - Organization/customer scoped commands and queries, backed by tenant/customer isolation, that mechanically reject cross-scope access.
 - AdminAuditEvent and work traces for identity, invitation/email, membership/role, support-access, billing, data access, approval, policy, and consequential AI/tool activity.
 - Governed runtime agent foundation: AgentDefinition, PromptDocument/PromptVersion, SkillDocument/SkillVersion, ReferenceDocument/ReferenceVersion, AgentSkillManifest, AgentReferenceManifest, ToolPermissionBoundary, prompt/skill/reference load traces, and AgentWorkTrace.
 - Bounded AI-assisted admin offload with decision cards for risky changes; agents may draft/recommend but must not autonomously expand authority.
-- Workstream shell surfaces and actions mapped to governed backend capabilities.
+- Workstream shell surfaces and actions mapped to governed backend capabilities, with any confirmed chat tool-plan adapters sharing the same governed-tool ids and adding explicit plan review, confirmation, result/partial-failure surfaces, and traces.
 - Security tests for tenant isolation, forbidden access, disabled users, role/scope denial, `/api/me`, invitation lifecycle, admin list/search, membership lifecycle, last-admin protection, support access, agent-governance boundaries, audit/trace, surface action authorization, markdown sanitization where used, and frontend secret boundaries.
 
 Prompt text, skill text, hidden UI state, and route names cannot grant authority. Backend authorization and tool/data boundaries remain authoritative.

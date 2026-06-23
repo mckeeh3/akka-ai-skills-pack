@@ -54,7 +54,7 @@ Do not expand into workforce decomposition when:
 
 ### 1. Identify workstreams and units of work
 
-Start from affected workstreams or domain outcomes. For each unit of work, list the verbs and triggers: inspect, monitor, decide, approve, create, update, revoke, retry, summarize, recommend, evaluate, escalate, notify, reconcile, archive, learn, audit; started by prompt, surface action, attention item, schedule, event, workflow step, integration, or deep link.
+Start from affected workstreams or domain outcomes. For each unit of work, list the verbs and triggers: inspect, monitor, decide, approve, create, update, revoke, retry, summarize, recommend, evaluate, escalate, notify, reconcile, archive, learn, audit; started by deterministic surface route, surface action, confirmed human chat tool plan, AI agent-tool call, attention item, schedule, event, workflow step, integration, API/MCP call, or deep link.
 
 ### 2. Inventory human workers
 
@@ -84,10 +84,10 @@ Record deterministic participants such as workflows, timers, consumers, projecti
 For each work unit, map:
 
 ```text
-primary worker → supporting worker(s) → reviewer/approver → escalation/fallback → handoff artifact → result surface/event → trace/audit record
+primary worker → actor adapter/exposure channel → supporting worker(s) → reviewer/approver → escalation/fallback → handoff artifact → result surface/event → trace/audit record
 ```
 
-If human and AI workers can both perform or request the same operation, map them to one governed capability/governed-tool with separate actor adapters and trace sources.
+If human and AI workers can both perform or request the same operation, map them to one governed capability/governed-tool with separate actor adapters and trace sources. Human adapters include structured surface actions/browser-tools and, when explicitly modeled, `human_chat_tool_plan` flows with proposed-plan detail, confirmation binding, per-tool idempotency/transaction behavior, denials, and result/partial-failure surfaces. AI-backed adapters require separate tool-boundary exposure and do not inherit human surface availability.
 
 ### 6. Route downstream
 
@@ -105,9 +105,9 @@ Produce a compact worker decomposition with:
 
 - affected workstreams and scope;
 - worker roster grouped by human, functional-agent, internal-agent, autonomous-agent, evaluator-agent, and system workers;
-- for each worker: responsibility, non-responsibilities, authority level, AuthContext/scope, supervising human or owning workstream, tools/capabilities, surfaces used/produced, handoffs/escalations, traces, and failure behavior;
+- for each worker: responsibility, non-responsibilities, authority level, AuthContext/scope, supervising human or owning workstream, governed tools/capabilities, actor adapters/exposure channels, surfaces used/produced, handoffs/escalations, traces, and failure behavior;
 - worker-to-work-unit responsibility matrix;
-- human/AI shared-operation map showing one governed-tool with separate actor adapters where applicable;
+- human/AI shared-operation map showing one governed-tool with separate actor adapters where applicable, including `surface_action`, `human_chat_tool_plan`, and `agent_tool_call` trace sources when those paths are allowed;
 - candidate attention categories and result surfaces each worker produces or consumes;
 - downstream skill routing and open questions only where authority, supervision, evidence, tool access, or handoff semantics would otherwise be guessed.
 

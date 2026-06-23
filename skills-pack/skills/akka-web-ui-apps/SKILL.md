@@ -28,8 +28,8 @@ Plan the UI around workstreams and surfaces before conventional pages/routes:
 1. authenticated shell and `/api/me` bootstrap
 2. functional-agent rail with role/capability visibility and attention indicators
 3. main workstream stream with items, progress/status, trace links, and history behavior
-4. persistent composer with selected-agent context, deterministic surface intent routing before model fallback, allowed requests, disabled/forbidden state, and uploads only when authorized
-5. structured surfaces: dashboard, table, form, detail card, decision card, diff, audit timeline, workflow status, evidence bundle, version card, outcome panel, and system message
+4. persistent composer with selected-agent context, deterministic surface intent routing before model fallback, optional confirmed `human_chat_tool_plan` review/confirmation flow when modeled, allowed requests, disabled/forbidden state, and uploads only when authorized
+5. structured surfaces: dashboard, table, form, detail card, decision card, diff, audit timeline, workflow status, evidence bundle, version card, outcome panel, chat-plan review/confirmation/result surfaces, and system message
 6. surface graph edges and dashboard work-object interactions: source surface, clickable/keyboard-operable card/row/counter/badge/chart/task panel/shortcut/button where relevant, browser action/tool, governed backend capability/tool, target/result/system-message surface, request/result append behavior, auth basis, correlation/idempotency id, and trace/audit outcome
 7. realtime/stale behavior through SSE/WebSocket/polling only when the product needs it
 
@@ -41,7 +41,7 @@ Routes and deep links support this model; they are not the security boundary and
 - Protected data loads through authorized `/api/...` routes. Static assets may be public; data, actions, streams, and surface payloads are protected.
 - Rendering code consumes frontend-safe DTOs/surface envelopes. It must not import server domain state or secrets.
 - Every consequential surface action and dashboard work-object interaction maps to a backend capability and is rechecked server-side. Workstream dashboards are action routers, not reports: ready dashboards must show things that need the current user's attention first and things the current user can do second. Aside from labels and minimal microcopy, visible dashboard content must be actionable/clickable indicators; passive FYI metrics, inert charts, and decorative status grids belong in report/detail/analytics surfaces or must become governed drilldowns. Dashboard objects representing attention or next work are clickable and keyboard-operable by default; ready dashboards should show authorized work rather than disabled forbidden targets.
-- Composer-entered operational requests should first pass through a backend-owned deterministic surface intent router. Matched routes append the user's request and open/prepopulate an authorized surface; they do not auto-submit forms or commands. The browser renders prefilled fields as editable advisory state with review/submit copy.
+- Composer-entered operational requests should first pass through a backend-owned deterministic surface intent router. Matched routes append the user's request and open/prepopulate an authorized surface; they do not auto-submit forms or commands. The browser renders prefilled fields as editable advisory state with review/submit copy. When no route matches or the workstream explicitly supports chat execution, a separate confirmed `human_chat_tool_plan` path may render a plan-review surface, require explicit confirmation bound to the proposed plan, execute only backend-authorized governed-tools, and then render denial, success, approval-required, or partial-failure result surfaces with trace links.
 - Denials, validation failures, approval-required results, stale/reconnect states, and no-ops render as structured feedback, not silent UI failures.
 - Do not use legacy `frontend/src/screens/**`, removed static UI fixtures, copied demo names, or pack examples as generated-app runtime structure. Static reference mockups under `../examples/web-ui/**` are visual guidance only, not runtime source or fixture completion evidence.
 
@@ -54,7 +54,8 @@ Before implementation, produce or update a compact UI plan with:
 - workstream shell regions and default selected workstream
 - required structured surfaces with type/version, payload summary, states, actions, dashboard action-router hierarchy, dashboard work-object interaction targets, zero-count behavior, auth basis, traces, and responsive behavior
 - surface intent routing plan for composer prompts: high-confidence patterns, target surfaces, prefill rendering, no-mutation copy, ambiguity/fallback behavior, and tests
-- API and realtime contracts for each surface/action
+- confirmed chat tool-plan UI plan when allowed: plan detail, editable review/correction or cancel behavior, explicit confirmation copy, changed-plan reconfirmation, result/partial-failure surfaces, trace links, and tests
+- API and realtime contracts for each surface/action and any confirmed chat tool-plan execution path
 - accessibility, keyboard/focus, loading/empty/error/forbidden/stale states
 - frontend project/build/hosting checks
 - tests: unit/component/contract, endpoint, route/assets, realtime if used, and at least one user-flow/vertical contract when product surface area is non-trivial

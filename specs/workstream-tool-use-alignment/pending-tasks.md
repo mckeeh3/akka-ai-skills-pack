@@ -220,7 +220,7 @@
 
 ### TASK-WTUA-05-001: Align workstream, SaaS, and UI skills
 
-- status: pending
+- status: done
 - source: specs/workstream-tool-use-alignment/backlog/01-workstream-tool-use-alignment-build-backlog.md
 - task brief: specs/workstream-tool-use-alignment/tasks/05-workstream-ui-skills/01-align-workstream-ui-and-saas-skills.md
 - depends on:
@@ -261,6 +261,8 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: skills-pack documentation-only alignment; no runtime code
+  - commit message: `workstream-tool-use: align workstream UI skills`
+  - checks passed: `git diff --check`; targeted edited-skill search found confirmed human chat tool-plan / `human_chat_tool_plan` guidance across workstream, SaaS, capability, audit, foundation, and web UI skills; scoped deterministic surface routing/no-mutation guidance remained present; old categorical `Do not make chat the primary control surface for consequential actions.` wording was absent.
 
 ### TASK-WTUA-06-001: Align planning, templates, examples, and validation assets
 

@@ -18,7 +18,8 @@ human objective
 → secure SaaS foundation
 → functional/context-area agents
 → continuous workstreams
-→ structured surfaces and surface actions
+→ structured surfaces and surface actions as human tool adapters
+→ confirmed human chat tool plans as natural-language tool adapters
 → governed backend capabilities
 → horizontal Akka components
 → bounded agent or agent-team execution
@@ -76,7 +77,7 @@ Even when this skill is used, apply only the AI-first patterns justified by the 
 
 Do not treat an AI-first app as a chatbot bolted onto CRUD.
 
-Conversation can collect intent or explain status, but consequential work should resolve into durable, inspectable objects such as goals, plans, tasks, policies, decisions, approvals, traces, and outcomes.
+Conversation can collect intent or explain status, and it may initiate a governed human chat tool-plan flow. Consequential chat-mediated work must still resolve into a proposed plan, explicit human confirmation bound to that plan, individually authorized governed-tool invocations, durable result/partial-failure surfaces, and inspectable objects such as goals, plans, tasks, policies, decisions, approvals, traces, and outcomes.
 
 When the user asks for a “minimum AI-first app,” “SaaS Foundation App,” “basic app,” “basic chatbot,” “smallest useful app,” or initial chatbot-like generated SaaS, load `../docs/minimum-ai-first-saas-app.md` and route to a bootstrap-authorized **SaaS Foundation App domain** shell: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy, each with the `markdown_response` structured surface. Do not start with a generic public chatbot, unauthenticated assistant, or page-first CRUD console unless the user explicitly asks for non-SaaS reference material. Preserve capability-first backend modeling before choosing Akka components or exposing browser actions/agent tools.
 
@@ -169,7 +170,7 @@ When this skill is the entry point, produce or feed downstream work with:
 - AI-first interpretation: objective, delegated work, retained human authority, and outcome loop
 - worker inventory: human workers, functional-agent workers, internal/autonomous/evaluator agent workers, system workers, responsibility/authority boundaries, handoffs, traces, and failure behavior
 - selected durable objects and why each is needed
-- generated SaaS handoff: functional agents, worker roster, role-specific dashboards, human surface graph nodes/actions, internal workstream agent graph nodes/delegations/results when applicable, initial workstreams, structured surfaces, governed-tools, and surface action-to-capability mappings
+- generated SaaS handoff: functional agents, worker roster, role-specific dashboards, human surface graph nodes/actions, internal workstream agent graph nodes/delegations/results when applicable, initial workstreams, structured surfaces, governed-tools, surface action-to-capability mappings, and any confirmed human chat tool-plan adapters that share those governed-tool ids
 - agent/team responsibilities and authority boundaries, including mandatory foundation admin agents, any app-specific agents, internal worker agents, and the governed-tool exposure labels they may use
 - policy, approval, exception, audit, and outcome implications
 - recommended downstream path and exact skills to load next, always including `core-saas-foundation` and normally `agent-workstream-apps` before capability or Akka component routing for generated SaaS apps
@@ -183,6 +184,6 @@ Before moving to code, verify:
 - agent authority is explicit and bounded
 - policy and permission controls are enforceable, not only suggested in prompts
 - approval and exception flows include evidence, risk, confidence, impact, and alternatives when consequential
-- traces connect actions and decisions to goals, policies, tools, data access, approvals, and outcomes
+- traces connect surface actions, confirmed human chat tool plans, AI agent-tool calls, decisions, goals, policies, tools, data access, approvals, and outcomes
 - UI surfaces prioritize supervision, decisions, governance, digests, and audit where those needs exist
 - the selected Akka component set is the minimal substrate for the requested scope

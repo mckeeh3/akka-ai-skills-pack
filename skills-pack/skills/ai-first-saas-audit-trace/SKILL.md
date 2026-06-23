@@ -42,6 +42,7 @@ Authorization basis:
 Policy or guardrail references:
 Prompt / skill / model / agent version when relevant:
 Tool or data resource used:
+Actor adapter / trace source, such as surface_action, human_chat_tool_plan, agent_tool_call, workflow, timer, consumer, API, or MCP:
 Input/output summary and redaction status:
 Evidence and rationale links:
 Decision / approval / exception link:
@@ -56,7 +57,7 @@ Retention and access classification:
 - Capture enough context to explain authorization, evidence, policy use, and outcome without storing unnecessary sensitive payloads.
 - Separate operational observability from business audit facts; both may be needed.
 - Redact, classify, retain, and authorize trace access deliberately.
-- Link traces across goal → plan → task → agent/tool/data/policy → decision/approval → action → outcome.
+- Link traces across goal → plan → task → actor adapter (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, or system channel) → agent/tool/data/policy → decision/approval → action → outcome.
 - Prefer append-only facts or event-sourced history for audit-grade traces.
 
 ## Akka substrate routing
@@ -75,7 +76,7 @@ Retention and access classification:
 For generated full-stack SaaS work, every audit/trace output must hand off an implementation-ready workstream contract before component selection:
 - owning or reusable functional agent, such as Audit/Trace, Agent Admin, User Admin, Governance/Policy, Outcome Metrics, or a domain supervisor agent;
 - structured surface id/type where user-facing, such as audit timeline, trace detail, investigation dashboard, digest, evidence bundle, or compliance export panel;
-- surface action list mapped to capability ids/classes, including search traces, open trace detail, request redacted export, link evidence, acknowledge finding, or start investigation;
+- surface action list and any confirmed chat tool-plan adapters mapped to capability ids/classes, including search traces, open trace detail, request redacted export, link evidence, acknowledge finding, or start investigation;
 - `AuthContext`, tenant/customer scope, auditor/support/admin role rules, redaction, retention, audit/work-trace fields, trace links, and denial behavior;
 - downstream Akka, endpoint/realtime, frontend, and test skills needed for trace producers, append stores, projections, protected access, and surface rendering.
 
@@ -87,7 +88,7 @@ Produce a compact trace design with:
 - correlation model linking goals, plans, agents, tools, policies, decisions, and outcomes
 - storage choice: event-sourced, topic/consumer append, derived view, or observability-only
 - audit search, digest, and investigation surfaces
-- tests needed for trace emission and authorization-sensitive access
+- tests needed for trace emission and authorization-sensitive access, including distinct trace evidence for surface actions, confirmed human chat tool plans with `confirmedBy`/confirmation id, AI agent-tool calls with `requestedBy` when applicable, denials, and partial failures
 - downstream Akka skills to load next
 - unresolved questions only where retention, privacy, authority, or compliance semantics would otherwise be guessed
 
