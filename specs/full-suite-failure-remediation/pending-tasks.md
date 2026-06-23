@@ -541,7 +541,7 @@
 
 ### TASK-FSFR-99-003: Verify Full Suite Failure Remediation completion after My Account frontend contract follow-up
 
-- status: pending
+- status: done
 - source: replacement terminal verification appended by `TASK-FSFR-99-002`
 - task brief: specs/full-suite-failure-remediation/tasks/99-verification/03-verify-full-suite-remediation.md
 - depends on:
@@ -577,3 +577,7 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: replacement terminal verification after `TASK-FSFR-11-001`; expected final state is clean full-suite or precise queued blockers.
+  - completed 2026-06-23: updated `specs/full-suite-failure-remediation/verification-notes.md` with final command evidence and compared the My Account frontend contract follow-up against prior residual failures and README done state.
+  - validation: `git diff --check` passed after final verification-note/queue edits; `npm --prefix frontend test -- --run` passed with 177/177 tests; `npm --prefix frontend run typecheck` passed; `mvn test` passed with 431 tests, 0 failures, 0 errors, 2 skipped.
+  - result: README done state achieved; mini-project closed with no additional follow-up tasks.
+  - commit message: `full-suite-remediation: verify clean full suite`
