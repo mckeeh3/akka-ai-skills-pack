@@ -122,7 +122,7 @@
 
 ### TASK-FSFR-03-001: Repair Governance/Policy lifecycle cluster
 
-- status: pending
+- status: done
 - source: specs/full-suite-failure-remediation/failure-inventory.md after TASK-FSFR-01-001
 - task brief: specs/full-suite-failure-remediation/tasks/03-governance-policy/01-repair-governance-policy-lifecycle-cluster.md
 - depends on:
@@ -155,6 +155,9 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: Governance/Policy workstream; policy proposal/simulation/approval/attention lifecycle repair
+  - completed 2026-06-23: repaired starter proposal submit to enter `in_review`, restored browser-safe direct new-draft proposal previews, preserved activation blocking on missing simulation evidence/rollback metadata, and kept validation/blocked result surfaces compatible with Governance/Policy browser runtime paths.
+  - validation: `mvn -Dtest=GovernancePolicyServiceTest,AttentionProducerServiceTest#governanceSubmitProducesApprovalAttentionAndDecisionResolvesWithoutLeakingToUnauthorizedOrOtherTenant,WorkstreamServiceTest#governancePolicyBackendActionsExposeReadProposalSimulationApprovalAndBlockedRuntimeSurfaces test` passed; targeted GovernancePolicyBrowserWorkstreamSmokeTest methods for proposal/simulation/dashboard/decision/outcome passed; `git diff --check` passed.
+  - commit message: `full-suite-remediation: repair governance policy lifecycle`
 
 ### TASK-FSFR-04-001: Repair Agent Admin artifact read/redaction mismatch
 

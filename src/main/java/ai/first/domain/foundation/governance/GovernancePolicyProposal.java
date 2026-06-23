@@ -68,7 +68,7 @@ public record GovernancePolicyProposal(
   public GovernancePolicyProposal submitted(String correlationId, Instant now) {
     if (status == Status.SUBMITTED || status == Status.SIMULATION_REQUIRED || status == Status.IN_REVIEW) return this;
     if (status != Status.DRAFT && status != Status.CHANGES_REQUESTED) return blocked(correlationId, now);
-    return copy(Status.SIMULATION_REQUIRED, submittedCorrelationId == null ? correlationId : submittedCorrelationId, decision, decisionRationale, decisionCorrelationId, activationCorrelationId, rollbackReference, rollbackCorrelationId, outcomeNotes, now);
+    return copy(Status.IN_REVIEW, submittedCorrelationId == null ? correlationId : submittedCorrelationId, decision, decisionRationale, decisionCorrelationId, activationCorrelationId, rollbackReference, rollbackCorrelationId, outcomeNotes, now);
   }
 
   public GovernancePolicyProposal withSimulationEvidence(String correlationId, Instant now) {

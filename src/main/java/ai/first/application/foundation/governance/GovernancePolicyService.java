@@ -236,9 +236,12 @@ public final class GovernancePolicyService {
   public SurfaceData readProposal(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
     validateScope(actor, input, correlationId);
     requireRead(actor, PROPOSAL_READ_CAPABILITY, correlationId);
-    var proposal = findScopedProposal(actor, input);
-    if (proposal != null) return proposal(actor, proposal, correlationId);
-    if (stringInput(input, "proposalId", null) != null) return validation("proposalId", "No authorized proposal found for selected AuthContext.", correlationId).surface();
+    var proposalId = stringInput(input, "proposalId", null);
+    if (proposalId != null) {
+      var proposal = findScopedProposal(actor, input);
+      if (proposal != null) return proposal(actor, proposal, correlationId);
+      return validation("proposalId", "No authorized proposal found for selected AuthContext.", correlationId).surface();
+    }
     if (actor.selectedContext().capabilities().contains(LEGACY_PROPOSE_CAPABILITY)) return newDraftProposalSurface(actor, input, correlationId);
     return systemMessage("surface-governance-policy-system-message", "not_found_or_redacted", "No authorized proposal is visible in the selected AuthContext, and draft authority is not available.", READ_CAPABILITY, correlationId);
   }
@@ -423,7 +426,7 @@ public final class GovernancePolicyService {
   }
 
   private SurfaceData proposal(AuthContextResolver.ResolvedMe actor, GovernancePolicyProposal proposal, String correlationId) {
-    var lifecycleState = proposal.status().name().toLowerCase().replace('_', '-');
+    var lifecycleState = proposal.status().name().toLowerCase();
     var visibleCapabilities = actor.selectedContext().capabilities();
     var availableTransitions = new java.util.ArrayList<Map<String, Object>>();
     if (visibleCapabilities.contains(LEGACY_PROPOSE_CAPABILITY) && (proposal.status() == GovernancePolicyProposal.Status.DRAFT || proposal.status() == GovernancePolicyProposal.Status.CHANGES_REQUESTED)) availableTransitions.add(proposalAction("action-governance-policy-draft-proposal", "Save inert draft", LEGACY_PROPOSE_CAPABILITY, "draft-policy-proposal", "surface-governance-policy-proposal", true));
@@ -568,7 +571,7 @@ public final class GovernancePolicyService {
   }
 
   private SurfaceData decision(AuthContextResolver.ResolvedMe actor, GovernancePolicyProposal proposal, String correlationId) {
-    var status = proposal.status().name().toLowerCase().replace('_', '-');
+    var status = proposal.status().name().toLowerCase();
     var commandMode = proposal.status() == GovernancePolicyProposal.Status.APPROVED ? "activate" : proposal.status() == GovernancePolicyProposal.Status.ACTIVATED ? "rollback" : "decide";
     var simulations = repository.listSimulations(actor.selectedContext().tenantId(), actor.selectedContext().customerId(), proposal.proposalId());
     var hasSimulationEvidence = !simulations.isEmpty();
@@ -602,6 +605,7 @@ public final class GovernancePolicyService {
         "activationBlocker", activationBlocker,
         "authorityBasis", REVIEW_CAPABILITY,
         "activationCapabilityId", ACTIVATE_CAPABILITY,
+        "legacyActivationCapabilityId", ACTIVATE_PROPOSAL_CAPABILITY,
         "rollbackCapabilityId", ROLLBACK_CAPABILITY,
         "outcomeCapabilityId", OUTCOMES_RECORD_CAPABILITY,
         "rationale", proposal.decisionRationale(),
@@ -656,7 +660,7 @@ public final class GovernancePolicyService {
   }
 
   private SurfaceData outcome(AuthContextResolver.ResolvedMe actor, GovernancePolicyProposal proposal, String correlationId) {
-    var status = proposal.status().name().toLowerCase().replace('_', '-');
+    var status = proposal.status().name().toLowerCase();
     var noteCount = proposal.outcomeNotes().size();
     var latestObservation = noteCount == 0 ? "No outcome note has been recorded for this visible proposal." : proposal.outcomeNotes().get(noteCount - 1);
     var canRecord = actor.selectedContext().capabilities().contains(OUTCOMES_RECORD_CAPABILITY);
@@ -798,7 +802,8 @@ public final class GovernancePolicyService {
       case "blocked-runtime", "blocked_provider_or_runtime" -> "blocked-provider-or-runtime";
       default -> Objects.toString(status, "forbidden");
     };
-    return new SurfaceData("surface-governance-policy-system-message", "system_message", "Governance/Policy " + canonicalStatus, List.of(traceId), mapOf(
+    var resolvedSurfaceId = surfaceId != null && surfaceId.startsWith("surface-") ? surfaceId : "surface-governance-policy-system-message";
+    return new SurfaceData(resolvedSurfaceId, "system_message", "Governance/Policy " + canonicalStatus, List.of(traceId), mapOf(
         "surfaceContract", "governance.policy.system_message.v1",
         "status", canonicalStatus,
         "message", message,
@@ -861,7 +866,7 @@ public final class GovernancePolicyService {
   }
 
   private ActionResult validation(String field, String message, String correlationId) {
-    var surface = systemMessage("surface-governance-policy-system-message", "validation-error", message, field, correlationId);
+    var surface = systemMessage("surface-governance-policy-validation-error", "validation-error", message, field, correlationId);
     var data = new LinkedHashMap<>(surface.data());
     data.put("field", field);
     var enriched = new SurfaceData(surface.surfaceId(), surface.surfaceType(), surface.title(), surface.traceIds(), data);

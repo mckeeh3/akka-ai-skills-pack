@@ -4,7 +4,7 @@
 
 - Given an authorized caller with selected `AuthContext`, when they open Governance/Policy, then the dashboard and allowed surfaces render only scoped data and expose only authorized actions.
 - Given an authorized caller drafts a valid proposal with an idempotency key, when the draft action is submitted, then the proposal surface returns lifecycle state `draft`, inert before/after summaries, affected capabilities, trace refs, and no authority mutation.
-- Given a draft or changes-requested proposal, when the caller submits it for review, then the proposal moves to `submitted` or `simulation-required` according to evidence prerequisites and emits policy/workstream traces.
+- Given a draft or changes-requested proposal, when the caller submits it for review, then the starter proposal moves to `in-review` while evidence-gated variants may use `submitted` or `simulation-required` according to prerequisites; policy/workstream traces and activation evidence blockers are emitted.
 - Given a proposal requiring evidence, when `simulate-policy-change` runs, then the simulation surface returns advisory expected allows/denials, warnings, confidence, evidence refs, and `noDirectMutation=true` without approval or activation.
 - Given a proposal needing deeper review, when `start-policy-impact-analysis` is submitted, then a durable task surface returns `queued` or `running` and no policy authority changes.
 - Given an impact-analysis task completes, when an authorized user accepts, rejects, or requests changes to the result, then the result surface records disposition and required reasons where applicable without approving or activating the proposal.
