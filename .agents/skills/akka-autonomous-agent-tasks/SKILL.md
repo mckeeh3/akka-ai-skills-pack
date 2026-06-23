@@ -74,12 +74,12 @@ Task operations:
 
 ## Generated SaaS guardrails
 
-For worker-style generated-app tasks, apply `../docs/autonomous-agent-worker-runtime-pattern.md` before coding the task contract. Use the curated User Admin examples for concrete task shape and runtime boundaries: `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/UserAdminAccessReviewTasks.java`, `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/AccessReviewAutonomousAgentResultRule.java`, `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/ComponentClientAccessReviewAutonomousAgentRuntime.java`, and `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/FailClosedAccessReviewAutonomousAgentRuntime.java`. Every task operation exposed through HTTP, UI, workflow, tool, timer, consumer, or MCP is a governed capability. Preserve:
+For worker-style generated-app tasks, apply `../docs/autonomous-agent-worker-runtime-pattern.md` before coding the task contract. Use the curated User Admin examples for concrete task shape and runtime boundaries: `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/UserAdminAccessReviewTasks.java`, `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/AccessReviewAutonomousAgentResultRule.java`, `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/ComponentClientAccessReviewAutonomousAgentRuntime.java`, and `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/FailClosedAccessReviewAutonomousAgentRuntime.java`. Every task operation exposed through HTTP, UI, workflow, tool, timer, consumer, or MCP is a governed capability. Every autonomous task tool call is an AI-backed adapter for a governed tool; it does not inherit authority from prompt text, task instructions, skill/reference text, or a human chat request unless the backend capability, selected AuthContext, tool catalog, and `ToolPermissionBoundary` allow it. Preserve:
 - tenant/customer-scoped task ids and agent instance ids;
 - `AuthContext`, caller permission/capability, and active membership checks;
 - model policy and provider-secret boundaries;
 - approval gates for external completion/failure, high-risk handoff, or side effects;
-- audit/work traces for task creation, assignment, completion, failure, cancellation, dependency waits, and notification exposure;
+- audit/work traces for task creation, assignment, completion, failure, cancellation, dependency waits, notification exposure, governed-tool invocation, `requestedBy` when human-requested, and partial-failure outcomes;
 - typed `worker.task.*` workstream events, attention state, and structured backend-projected surfaces for visible worker progress/results;
 - provider/runtime fail-closed states and no fake success or model-less successful findings.
 

@@ -23,7 +23,7 @@ SaaS Foundation App
   + business-specific domains added by users
     domain workstreams
     surfaces
-    agents and tools
+    agents and shared governed tools
     Akka components
     frontend/app-description/spec/doc/test extensions
 ```
@@ -68,7 +68,7 @@ Use the eleven Akka component families deliberately:
 10. gRPC Endpoint
 11. MCP Endpoint
 
-Capabilities and governed-tools are the bridge between product intent and components. The same components implement both business functionality and agent tools. Agents use tools only through explicit, backend-authorized capability/tool boundaries with durable traces.
+Capabilities and governed-tools are the bridge between product intent and components. The same components implement business functionality while exposing selected adapters such as browser-tools, confirmed `human_chat_tool_plan` paths, AI-backed agent-tools, workflows, timers, consumers, APIs, and MCP tools. Humans and agents use tools only through explicit, backend-authorized capability/tool boundaries with durable traces; the AI model is not the security boundary.
 
 ## Required runtime semantics
 
@@ -82,7 +82,7 @@ Required semantics:
 - tenant/customer boundary model where applicable;
 - durable workstream log for requests, responses, tool/capability results, denials, and trace references, while rendering one primary result surface per prompt/action instead of duplicate generic activity/detail surfaces;
 - audit/work trace substrate for identity, authorization, agent prompt/skill/reference/model/tool use, capability checks, data access, and denials;
-- capability-first backend modeling before exposing browser actions, agent tools, workflows, timers, consumers, or APIs;
+- capability-first backend modeling before exposing browser actions, confirmed human chat tool plans, agent tools, workflows, timers, consumers, or APIs;
 - model-backed workstream agents invoke concrete Akka `Agent` components through governed runtime configuration, active prompts/manifests/tool boundaries, registered runtime tools, provider boundary, and traces;
 - missing provider or security configuration fails closed with an actionable blocked/error surface, not a deterministic canned success;
 - test fixtures and fakes are isolated to tests or explicitly named fixture modes.
@@ -94,7 +94,7 @@ Use this sequence for product work:
 ```text
 understand feature intent
 → classify affected domain/workstream/surface/agent/capability
-→ define governed capability and tool boundaries
+→ define governed capability and tool boundaries plus actor adapters (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, workflow/timer/consumer/API/MCP/internal)
 → select the required Akka component family or families
 → implement backend state, behavior, endpoints/tools, traces, and tests
 → implement or extend workstream surfaces in the shell

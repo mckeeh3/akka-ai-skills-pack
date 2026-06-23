@@ -45,7 +45,7 @@ Before selecting any surface family, place it inside one or more functional/cont
 - identify reusable functional agents that may render or link the same surface without owning its semantics;
 - record workstream placement: default briefing/dashboard, timeline item, attention queue, embedded card, modal, side panel, drill-in, or direct deep link;
 - define payload/query source expectations: read/evidence capabilities, view/query sources, redaction, selected `AuthContext`, and user-visible versus drilldown/admin/support/auditor/internal metadata boundaries for trace/correlation fields;
-- list capability-backed actions and denial/result surfaces; for collection-object surfaces, list row/card selection, create, edit, destructive lifecycle, and lifecycle-specific task edges as delegated surface requests or task surfaces; for dashboard/command-center/attention surfaces, list clickable and keyboard-operable work-object interactions for cards, rows, counters, badges, chart segments, task/progress panels, shortcuts, icons, and buttons; frontend controls are exposure details only;
+- list capability-backed actions and denial/result surfaces; for collection-object surfaces, list row/card selection, create, edit, destructive lifecycle, and lifecycle-specific task edges as delegated surface requests or task surfaces; for dashboard/command-center/attention surfaces, list clickable and keyboard-operable work-object interactions for cards, rows, counters, badges, chart segments, task/progress panels, shortcuts, icons, and buttons; frontend controls are exposure details only; if the same governed-tool is also available through confirmed chat, list the `human_chat_tool_plan` review, confirmation, result, partial-failure, and trace surfaces without duplicating the surface action's business semantics;
 - link audit/work traces for payload access, worker handoffs, agent work, decisions, approvals, denials, and side effects;
 - treat routes and deep links only as implementation details that reopen a selected functional agent, workstream item, or structured surface.
 
@@ -163,7 +163,7 @@ Route to:
 - Separate automated work, human-needed work, exceptions, and FYI activity.
 - Rank attention queues by stakes/risk/SLA, not only recency.
 - Compress routine activity, but always preserve drill-down to audit facts.
-- Do not make chat the primary control surface for consequential actions.
+- Keep structured surfaces as the default and primary supervision/control path for consequential actions, but do not categorically forbid direct workstream chat execution when a complete governed `human_chat_tool_plan` boundary exists. The chat path must propose a detailed plan, show an explicit review/confirmation state, bind confirmation to that plan, execute only backend-authorized governed-tools, and render denial/result/partial-failure surfaces with trace links.
 - Do not choose visual styling implicitly; for generated full-stack AI-first SaaS, the web UI is mandatory, so if no style guide is selected, use the existing UI style-selection guidance before implementation.
 - Use visual craft only as a cosmetic layer that clarifies existing surfaces, states, authority, and attention hierarchy; it must not change functional agents, surface contracts, capability mappings, authorization, APIs, tests, or readiness semantics.
 - Keep routes, pages, and deep links as browser realization details for reopening a functional agent, workstream item, or structured surface; never use them as the primary decomposition.
@@ -175,7 +175,7 @@ Produce a compact UI-surface plan with:
 - for each durable collection object in scope, the domain-semantic list/show/create/edit/destructive-lifecycle progression, including lifecycle-state-specific show/task routing
 - workstream placement for each surface, plus route/deep-link behavior only as implementation detail
 - payload/query source expectations, backing durable objects, read models, redaction, trace requirements, and visibility split for default user content, drilldowns, role-gated diagnostics, and internal-only metadata
-- capability-backed actions per surface, including idempotency, approval/denial/result surfaces, and audit links
+- capability-backed actions per surface, including idempotency, confirmation, approval/denial/result surfaces, partial-failure handling, and audit links; when chat is an allowed adapter, include the linked `human_chat_tool_plan` review/confirmation/result surfaces and shared governed-tool id
 - API/realtime needs tied to the surface contract rather than page navigation
 - frontend state, form, loading/error/empty, accessibility, responsive, visual hierarchy, and reduced-motion requirements
 - downstream Akka and web UI skills to load next
@@ -191,4 +191,4 @@ Before implementation, verify:
 - approval/decision controls have evidence, policy, risk, impact, capability, and audit backing, while default copy translates internal backing into user-understandable language
 - every agent activity or material event can link to a trace or source artifact
 - routine summaries are auditable
-- tests can cover loading, empty, error, success, action, authorization, audit/trace, and realtime update states where in scope
+- tests can cover loading, empty, error, success, action, authorization, deterministic surface no-mutation, chat-plan confirmation/denial/partial-failure, audit/trace, and realtime update states where in scope

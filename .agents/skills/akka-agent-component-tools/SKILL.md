@@ -23,13 +23,15 @@ Read these first if present:
 
 Do not use this pattern to expose arbitrary component internals, and do not annotate every eligible generated component method by default. Component tools are one exposure surface for capabilities, not the backend design root. For managed agents or protected component tools, also load `akka-agent-tool-boundaries` and enforce the active `ToolPermissionBoundary` against the component tool id/category before executing the component method.
 
+A component tool is the AI-backed `agent_tool_call` adapter for a governed workstream tool. If the same governed tool is reachable from a human surface action or confirmed `human_chat_tool_plan`, keep one governed tool id and implement separate adapter contracts for surface confirmation, chat plan confirmation, component-tool schema, trace source, and result/partial-failure reporting. Human surface availability or prompt/skill text does not make the component method available to the model; the active workstream tool catalog and `ToolPermissionBoundary` must grant the component tool.
+
 If the agent-facing operation should compose multiple component calls, hide component layout, apply policy/scoring/redaction, or return a computed agent-safe DTO, prefer a non-component tool facade from `akka-agent-tools` that uses `ComponentClient` internally instead of exposing the component method directly. Component methods called internally by such a facade do not need `@FunctionTool` unless they are also intentionally exposed directly to the model.
 
 ## Core pattern
 
 1. Start from the capability contract: id/name, actor/caller, AuthContext, input/output schemas, data access, side effects, idempotency, policy/approval, audit/trace, exposure surfaces, and tests.
 2. Annotate only the selected component method with `@FunctionTool`; tool-ready does not mean tool-exposed.
-3. Register the component method in the tool registry/catalog with a stable tool id, capability id, tool category, read-only or side-effecting classification, and tenant/customer scope rules.
+3. Register the component method in the tool registry/catalog with a stable tool id, governed tool id, capability id, tool category, read-only or side-effecting classification, and tenant/customer scope rules.
 4. Keep component tools public, focused, and aligned to one capability operation/query.
 5. Register the component class with `.tools(ComponentClass.class)`.
 6. For entities and workflows, remember the generated tool schema includes `uniqueId`; describe how it maps to the scoped aggregate/workflow id.
@@ -46,7 +48,7 @@ If the agent-facing operation should compose multiple component calls, hide comp
 - Entity tools should expose product-level commands or safe read operations, not CRUD-shaped internals by default.
 - Workflow tools should start or advance supervised, retryable, approval-gated, or long-running capabilities.
 - Side-effecting component tools should default to proposal/approval flows unless accepted policy grants bounded autonomous authority.
-- If the same capability is also exposed through UI, HTTP/gRPC, MCP, timer, or consumer paths, preserve the same authority, validation, idempotency, approval, audit, and tenant/customer scope semantics.
+- If the same capability is also exposed through UI, confirmed human chat tool plans, HTTP/gRPC, MCP, timer, or consumer paths, preserve the same authority, validation, idempotency, approval, audit, and tenant/customer scope semantics while recording distinct trace sources such as `surface_action`, `human_chat_tool_plan`, or `agent_tool_call`.
 - Use a non-component tool facade instead when the model should see one stable capability tool rather than several component methods, or when tool behavior requires component orchestration plus processing logic.
 
 ## Repository example

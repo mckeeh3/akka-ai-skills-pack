@@ -47,11 +47,11 @@ surface.user_admin.dashboard.v1
 |---|---|---|---|
 | `action.user_admin.refresh_dashboard` | `admin.users.dashboard.read` | browser-tool, agent-tool | read-only dashboard query with AuthContext and tenant/customer scope |
 | `action.user_admin.open_invitation_queue` | `admin.users.search` | browser-tool | surface-request action; opens filtered list from dashboard queue |
-| `action.user_admin.resend_invitation` | `admin.invitations.resend` | browser-tool; human-confirmed agent-tool | command with idempotency key, permission check, Resend/captured-outbox path, audit |
+| `action.user_admin.resend_invitation` | `admin.invitations.resend` | browser-tool; `human_chat_tool_plan` when the user confirms the proposed resend plan | command with idempotency key, permission check, Resend/captured-outbox path, audit, `requestedBy`/`confirmedBy` trace facts, and partial-failure result surface |
 | `action.user_admin.start_access_review` | `admin.access_review.read` then `admin.access_review.resolve` when confirmed | browser-tool, internal-tool | starts review workflow and may launch internal investigation task; resolution remains authorized/approved |
 | `action.audit.open_trace` | `admin.audit.read` / `audit.traces.view` | browser-tool, agent-tool | redacted evidence query with sensitive-read audit when required |
 
-Every browser button, workstream-agent governed-tool, and system-message suggestion maps to one of these capabilities or to a declared follow-up capability.
+Every browser button, confirmed human chat tool plan, AI-backed agent-tool, and system-message suggestion maps to one of these capabilities or to a declared follow-up capability. Surface actions, chat plans, and agent calls are actor adapters over shared governed-tool ids rather than duplicate business semantics.
 
 ## Internal workstream agent graph and expertise
 
@@ -100,7 +100,7 @@ capability id: user_admin.invitations.resend
 AuthContext/scope: Organization Admin in selected organization; deny disabled users and cross-tenant targets
 substrate: Invitation ESE + InvitationWorkflow + Resend outbox Consumer + InvitationView + HTTP endpoint + React surface action
 events/projections/traces: InvitationResendRequested, EmailDeliveryQueued/Failed/Sent, dashboard attention update, AdminAuditEvent
-tests/local validation: idempotent resend, forbidden tenant, captured local outbox, dashboard count update, audit trace link, UI action smoke
+tests/local validation: idempotent surface resend, confirmed chat resend plan when in scope, forbidden tenant, captured local outbox, dashboard count update, partial-failure/result surface, audit trace link, UI action smoke
 ```
 
-If a generated task lacks the workstream, attention/dashboard, surface action, capability id, substrate, events/projections, traces, and validation path, repair the task before implementation.
+If a generated task lacks the workstream, attention/dashboard, surface action or other actor adapter, governed-tool id, capability id, substrate, confirmation/approval/idempotency semantics, events/projections, traces, and validation path, repair the task before implementation.

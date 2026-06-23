@@ -5,7 +5,10 @@
     "functionalAgentId": "kebab-case owning workstream agent id ending in -agent, for example user-admin-agent",
     "managedAgentDefinitionId": "tenant-governed AgentDefinition record id; may differ from functionalAgentId but must be mapped explicitly",
     "surfaceId": "stable structured surface id",
-    "capabilityId": "stable governed capability family id"
+    "capabilityId": "stable governed capability family id",
+    "governedToolId": "stable semantic operation id shared across surface_action, human_chat_tool_plan, agent_tool_call, API/workflow/timer/consumer/MCP/internal adapters",
+    "actorAdapter": "surface_action | human_chat_tool_plan | agent_tool_call | api | workflow | timer | consumer | mcp | internal",
+    "confirmationAndTrace": "side-effecting adapters must state confirmation/approval, idempotency/transaction boundary, result/partial-failure surface, and trace source"
   },
   "workstreams": [
     {
@@ -53,7 +56,11 @@
           "governedToolId": "myaccount.personal_attention.digest",
           "progressSurfaceId": "system_message",
           "resultSurfaceId": "my-account-dashboard",
-          "failureSurfaceId": "system_message"
+          "failureSurfaceId": "system_message",
+          "actorAdapter": "internal",
+          "idempotency": "worker id + trigger id + selected scope",
+          "transactionBoundary": "each governed-tool invocation is authorized, idempotent, and traced independently",
+          "traceSource": "internal"
         }
       ],
       "traceability": [
@@ -64,6 +71,28 @@
         "validate-workstream-contracts",
         "validate-surface-contracts",
         "api/ui runtime smoke before runtime-ready"
+      ],
+      "workstreamToolCatalog": [
+        {
+          "governedToolId": "myaccount.personal_attention.digest",
+          "capabilityId": "secure-tenant-user-foundation",
+          "actorAdapters": [
+            "surface_action",
+            "agent_tool_call",
+            "internal"
+          ],
+          "confirmationRequired": false,
+          "approvalPolicy": "none by default; add decision-card policy before consequential authority expansion",
+          "idempotency": "caller-provided correlation or request id",
+          "transactionBoundary": "each governed-tool invocation is authorized, idempotent, and traced independently",
+          "resultSurfaceId": "my-account-dashboard",
+          "partialFailureBehavior": "return denial or partial-failure details to system_message with trace links",
+          "traceSources": [
+            "surface_action",
+            "agent_tool_call",
+            "internal"
+          ]
+        }
       ]
     },
     {
@@ -122,7 +151,11 @@
           "governedToolId": "useradmin.internal_worker.run",
           "progressSurfaceId": "system_message",
           "resultSurfaceId": "user-admin-dashboard",
-          "failureSurfaceId": "system_message"
+          "failureSurfaceId": "system_message",
+          "actorAdapter": "internal",
+          "idempotency": "worker id + trigger id + selected scope",
+          "transactionBoundary": "each governed-tool invocation is authorized, idempotent, and traced independently",
+          "traceSource": "internal"
         },
         {
           "workerId": "invitation-delivery-investigation-worker",
@@ -133,7 +166,11 @@
           "governedToolId": "useradmin.internal_worker.run",
           "progressSurfaceId": "system_message",
           "resultSurfaceId": "user-admin-dashboard",
-          "failureSurfaceId": "system_message"
+          "failureSurfaceId": "system_message",
+          "actorAdapter": "internal",
+          "idempotency": "worker id + trigger id + selected scope",
+          "transactionBoundary": "each governed-tool invocation is authorized, idempotent, and traced independently",
+          "traceSource": "internal"
         }
       ],
       "traceability": [
@@ -144,6 +181,28 @@
         "validate-workstream-contracts",
         "validate-surface-contracts",
         "api/ui runtime smoke before runtime-ready"
+      ],
+      "workstreamToolCatalog": [
+        {
+          "governedToolId": "useradmin.invitation.create",
+          "capabilityId": "secure-tenant-user-foundation",
+          "actorAdapters": [
+            "surface_action",
+            "human_chat_tool_plan",
+            "agent_tool_call"
+          ],
+          "confirmationRequired": true,
+          "approvalPolicy": "decision-card required for risky role/scope expansion; otherwise explicit human confirmation bound to plan or form submit",
+          "idempotency": "client-generated invitation request id per target email + scope",
+          "transactionBoundary": "one invitation create governed-tool invocation; multi-step chat plans execute this and related tools as separate authorized transactions",
+          "resultSurfaceId": "user-admin-user-list",
+          "partialFailureBehavior": "report per-invite success/failure in system_message or decision-card with trace links",
+          "traceSources": [
+            "surface_action",
+            "human_chat_tool_plan",
+            "agent_tool_call"
+          ]
+        }
       ]
     },
     {
@@ -197,7 +256,11 @@
           "governedToolId": "agentadmin.behavior_change.risk_review",
           "progressSurfaceId": "system_message",
           "resultSurfaceId": "agent-governance-center",
-          "failureSurfaceId": "system_message"
+          "failureSurfaceId": "system_message",
+          "actorAdapter": "internal",
+          "idempotency": "worker id + trigger id + selected scope",
+          "transactionBoundary": "each governed-tool invocation is authorized, idempotent, and traced independently",
+          "traceSource": "internal"
         }
       ],
       "traceability": [
@@ -208,6 +271,28 @@
         "validate-workstream-contracts",
         "validate-surface-contracts",
         "api/ui runtime smoke before runtime-ready"
+      ],
+      "workstreamToolCatalog": [
+        {
+          "governedToolId": "agentadmin.behavior_change.risk_review",
+          "capabilityId": "managed-agent-foundation",
+          "actorAdapters": [
+            "surface_action",
+            "agent_tool_call",
+            "internal"
+          ],
+          "confirmationRequired": false,
+          "approvalPolicy": "none by default; add decision-card policy before consequential authority expansion",
+          "idempotency": "caller-provided correlation or request id",
+          "transactionBoundary": "each governed-tool invocation is authorized, idempotent, and traced independently",
+          "resultSurfaceId": "agent-governance-center",
+          "partialFailureBehavior": "return denial or partial-failure details to system_message with trace links",
+          "traceSources": [
+            "surface_action",
+            "agent_tool_call",
+            "internal"
+          ]
+        }
       ]
     },
     {
@@ -259,7 +344,11 @@
           "governedToolId": "audittrace.correlation.summarize",
           "progressSurfaceId": "system_message",
           "resultSurfaceId": "audit-trace-explorer",
-          "failureSurfaceId": "system_message"
+          "failureSurfaceId": "system_message",
+          "actorAdapter": "internal",
+          "idempotency": "worker id + trigger id + selected scope",
+          "transactionBoundary": "each governed-tool invocation is authorized, idempotent, and traced independently",
+          "traceSource": "internal"
         }
       ],
       "traceability": [
@@ -270,6 +359,28 @@
         "validate-workstream-contracts",
         "validate-surface-contracts",
         "api/ui runtime smoke before runtime-ready"
+      ],
+      "workstreamToolCatalog": [
+        {
+          "governedToolId": "audittrace.correlation.summarize",
+          "capabilityId": "governance-decisions-audit",
+          "actorAdapters": [
+            "surface_action",
+            "agent_tool_call",
+            "internal"
+          ],
+          "confirmationRequired": false,
+          "approvalPolicy": "none by default; add decision-card policy before consequential authority expansion",
+          "idempotency": "caller-provided correlation or request id",
+          "transactionBoundary": "each governed-tool invocation is authorized, idempotent, and traced independently",
+          "resultSurfaceId": "audit-trace-explorer",
+          "partialFailureBehavior": "return denial or partial-failure details to system_message with trace links",
+          "traceSources": [
+            "surface_action",
+            "agent_tool_call",
+            "internal"
+          ]
+        }
       ]
     },
     {
@@ -322,7 +433,11 @@
           "governedToolId": "governance.policy.simulate_impact",
           "progressSurfaceId": "system_message",
           "resultSurfaceId": "agent-governance-center",
-          "failureSurfaceId": "system_message"
+          "failureSurfaceId": "system_message",
+          "actorAdapter": "internal",
+          "idempotency": "worker id + trigger id + selected scope",
+          "transactionBoundary": "each governed-tool invocation is authorized, idempotent, and traced independently",
+          "traceSource": "internal"
         }
       ],
       "traceability": [
@@ -333,6 +448,28 @@
         "validate-workstream-contracts",
         "validate-surface-contracts",
         "api/ui runtime smoke before runtime-ready"
+      ],
+      "workstreamToolCatalog": [
+        {
+          "governedToolId": "governance.policy.simulate_impact",
+          "capabilityId": "governance-decisions-audit",
+          "actorAdapters": [
+            "surface_action",
+            "agent_tool_call",
+            "internal"
+          ],
+          "confirmationRequired": false,
+          "approvalPolicy": "none by default; add decision-card policy before consequential authority expansion",
+          "idempotency": "caller-provided correlation or request id",
+          "transactionBoundary": "each governed-tool invocation is authorized, idempotent, and traced independently",
+          "resultSurfaceId": "agent-governance-center",
+          "partialFailureBehavior": "return denial or partial-failure details to system_message with trace links",
+          "traceSources": [
+            "surface_action",
+            "agent_tool_call",
+            "internal"
+          ]
+        }
       ]
     }
   ]

@@ -13,7 +13,7 @@ Use `../references/generated-saas-input-contract.md` as the shared gate. Do not 
 
 ## AI-first state role
 
-For AI-first SaaS surfaces, model supervision and governance state explicitly. Do not collapse consequential work into a generic loading/error list. Represent active objective status, plan progress, agent activity, pending approval, exception, blocked-by-policy, evidence-ready, stale/reconnecting, committed policy change, trace-linked decision, and outcome-updated states when those concepts appear in the UI contract.
+For AI-first SaaS surfaces, model supervision and governance state explicitly. Do not collapse consequential work into a generic loading/error list. Represent active objective status, plan progress, agent activity, pending approval, exception, blocked-by-policy, evidence-ready, stale/reconnecting, committed policy change, trace-linked decision, outcome-updated, routed-prefill-review, chatPlanProposed, chatPlanConfirmed, chatPlanExecuting, and chatPlanPartiallyFailed states when those concepts appear in the UI contract.
 
 Prefer state names that match the human operating model, for example `requiresApproval`, `agentWorking`, `exceptionRaised`, `policySimulationReady`, `traceAvailable`, or `outcomePendingReview`, instead of exposing backend component names. Keep authority-sensitive actions disabled with visible reasons when a user lacks permission, evidence is incomplete, a policy gate blocks execution, or the current data is stale.
 
@@ -60,9 +60,9 @@ For generated full-stack AI-first SaaS apps:
 ## Done criteria
 
 A state/rendering implementation is done when:
-- all planned workstream shell regions, role-specific dashboard attention sources, human surface graph nodes/edges, browser-tool action states, and structured surfaces render from explicit state
+- all planned workstream shell regions, role-specific dashboard attention sources, human surface graph nodes/edges, deterministic routed-prefill states, confirmed chat tool-plan states, browser-tool action states, and structured surfaces render from explicit state
 - every data dependency has loading/empty/error behavior
 - AI-first supervision surfaces distinguish working, waiting-for-human, exception, policy-blocked, stale, trace-ready, and outcome-review states when applicable
 - action results update state without requiring a full page reload unless intentional
 - failures are visible to users, not just logged
-- approval, rejection, escalation, policy-commit, and feedback actions show concrete success/failure states when those actions are in scope
+- approval, rejection, escalation, policy-commit, feedback, and confirmed chat tool-plan execution actions show concrete success/failure/partial-failure states when those actions are in scope

@@ -90,7 +90,7 @@ Load the companion skill that matches the current compiler step. Users do not ne
 
 For generated full-stack SaaS, do not change capabilities, UI, readiness, generation scope, or implementation planning for a user-facing request without checking the relevant workstream graph nodes first.
 
-Workstreams bind together access, surfaces, agents, tools, policies, traces, tests, capabilities, realization files, and validation expectations. Global artifacts define reusable contracts; workstream files define why and how those contracts are used in a specific workstream.
+Workstreams bind together access, surfaces, agents, tools, policies, traces, tests, capabilities, realization files, and validation expectations. Global artifacts define reusable contracts; workstream files define why and how those contracts are used in a specific workstream. For consequential operations, model one shared governed tool id in the capability/workstream tool binding and attach actor-specific adapters to it: human surface action/browser-tool, confirmed human chat tool-plan, AI agent-tool, API/workflow/timer/consumer/MCP/internal exposure as applicable.
 
 ## Decision guide
 
@@ -147,7 +147,7 @@ Start with:
 - Edit the smallest complete set of app/global/domain/workstream files.
 - Use global definitions plus workstream-specific bindings for reusable surfaces, agents, tools, policies, and traces.
 - Replace superseded statements rather than appending conversation chronology.
-- Preserve links from workstream nodes to capabilities, realization files, tests, and traces.
+- Preserve links from workstream nodes to capabilities, governed tools, actor adapters, realization files, tests, and traces.
 - Treat unresolved authority, policy, data, trace, acceptance, or runtime-validation ambiguity as pending-question material.
 
 ## Final review checklist
@@ -157,7 +157,7 @@ Before finishing, verify:
 - the request is routed to the smallest suitable companion skill
 - current-intent graph nodes are identified or the reason they cannot be identified is explicit
 - broad AI-first product input is interpreted before CRUD/component decomposition
-- workstream bindings are preserved for user-facing generated-SaaS changes
+- workstream bindings are preserved for user-facing generated-SaaS changes, including global definition plus workstream binding separation for governed tools, surfaces, agents, policies, and traces
 - behavior, tests, security, UI, observability, and realization are kept separate when they change separately
 - secure SaaS foundation and runtime-completion doctrine are preserved when in scope
 - readiness is not skipped before generation

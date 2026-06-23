@@ -194,7 +194,7 @@ For implementation details, load `akka-agent-behavior-editing` to define the Age
 5. Block or flag secret-like content before approval or activation.
 6. Lifecycle changes and runtime use of active versions are audited or work-traced.
 7. Diff/history views are tenant-scoped and authorization-protected.
-8. Prompt, skill, policy, and rubric content is behavior guidance, not a security boundary.
+8. Prompt, skill, policy, reference, and rubric content is behavior guidance, not a security boundary. It may describe governed workstream tools, surface actions, confirmed `human_chat_tool_plan` behavior, or AI-backed `agent_tool_call` usage, but it cannot grant tool catalog membership, tenant/customer scope, role/capability permissions, approval authority, model policy, or side-effect permission.
 9. Filesystem defaults are not runtime behavior sources after bootstrap; runtime uses governed records only.
 10. Default-document setup must be idempotent when implemented and must not overwrite tenant-customized active content during upgrades.
 11. Runtime flows must still enforce data/tool permissions mechanically.
@@ -228,4 +228,4 @@ Provide protected catalog, editor/validation, diff/history, review, active-versi
 
 Implement in this order: confirm tenant scope/capabilities, define lifecycle permissions, model document events and immutable version snapshots, add catalog/history/active/review/diff views, add protected endpoints/UI, emit audit/work traces, then integrate active versions with agent profiles, prompt assembly, skill/reference manifests, policies, or evaluation runs.
 
-Before finishing, verify tenant/customer isolation, approval-before-activation, immutable checksummed versions, secret-like content checks, protected diff/history/review surfaces, editing-agent proposal tests, authority-expansion denial/audit, lifecycle audit events, explicit runtime version resolution, and separation between governed text and mechanical tool/data permissions.
+Before finishing, verify tenant/customer isolation, approval-before-activation, immutable checksummed versions, secret-like content checks, protected diff/history/review surfaces, editing-agent proposal tests, authority-expansion denial/audit, lifecycle audit events, explicit runtime version resolution, and separation between governed text and mechanical tool/data permissions, including denial when text attempts to expand a workstream tool catalog or bypass human chat confirmation.

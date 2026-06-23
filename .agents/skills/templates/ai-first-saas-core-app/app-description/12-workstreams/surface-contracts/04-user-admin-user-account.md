@@ -60,6 +60,10 @@ type UserAdminUserAccountData = {
 | `user-admin.resolve-detail-access-review` | `user-admin.user-detail.access-review.resolve` | `useradmin.access_review.resolve` | `secure-tenant-user-foundation` | browser-tool | `user-admin-user-account`, `decision-card`, or deferred `task-progress-surface` | review item id + decision id | true |
 | `user-admin.open-detail-audit` | `user-admin.user-detail.audit.open` | `audit.traces.view` | `governance-decisions-audit` | browser-tool | `audit-trace-explorer` | trace id | true |
 
+
+
+Action mappings must preserve the shared tool-use contract: `governedToolId`, actor adapter/source (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/workflow/timer/consumer/MCP/internal), `confirmationRequired`, `approvalPolicy`, idempotency key, transaction boundary, result/partial-failure behavior, `traceSource`, and `traceRequired`. If this surface exposes only the browser-tool adapter, state `surface_action` and keep any chat/agent adapter in the workstream tool catalog instead of duplicating business semantics.
+
 ## UI states
 
 - `loading`: preserve target identity only when already authorized.

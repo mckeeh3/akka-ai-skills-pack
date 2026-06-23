@@ -29,6 +29,7 @@ ALLOWED_EXPOSURE_CHANNELS = {
     "internal-tool",
     "api",
     "surface-request",
+    "human_chat_tool_plan",
 }
 
 
@@ -163,6 +164,50 @@ def main(argv: list[str]) -> int:
         surface_refs = surfaces if isinstance(surfaces, list) else []
         capability_refs = capabilities if isinstance(capabilities, list) else []
 
+        catalog = ws.get("workstreamToolCatalog")
+        if readiness in MAPPING_REQUIRED_READINESS and (not isinstance(catalog, list) or not catalog):
+            fail(errors, f"{prefix}.workstreamToolCatalog must be non-empty at readiness {readiness}")
+        if catalog is not None:
+            if not isinstance(catalog, list):
+                fail(errors, f"{prefix}.workstreamToolCatalog must be a list when present")
+            else:
+                allowed_actor_adapters = {"surface_action", "human_chat_tool_plan", "agent_tool_call", "api", "workflow", "timer", "consumer", "mcp", "internal"}
+                for j, tool in enumerate(catalog):
+                    tool_prefix = f"{prefix}.workstreamToolCatalog[{j}]"
+                    if not isinstance(tool, dict):
+                        fail(errors, f"{tool_prefix} must be an object")
+                        continue
+                    required_tool = [
+                        "governedToolId",
+                        "capabilityId",
+                        "actorAdapters",
+                        "confirmationRequired",
+                        "approvalPolicy",
+                        "idempotency",
+                        "transactionBoundary",
+                        "resultSurfaceId",
+                        "partialFailureBehavior",
+                        "traceSources",
+                    ]
+                    for key in required_tool:
+                        if key not in tool:
+                            fail(errors, f"{tool_prefix} missing required field: {key}")
+                    if tool.get("capabilityId") not in capability_refs:
+                        fail(errors, f"{tool_prefix}.capabilityId must reference this workstream's capabilities: {tool.get('capabilityId')!r}")
+                    if tool.get("resultSurfaceId") not in surface_refs:
+                        fail(errors, f"{tool_prefix}.resultSurfaceId must reference this workstream's surfaces: {tool.get('resultSurfaceId')!r}")
+                    adapters = tool.get("actorAdapters")
+                    if not isinstance(adapters, list) or not adapters or any(a not in allowed_actor_adapters for a in adapters):
+                        fail(errors, f"{tool_prefix}.actorAdapters must be non-empty and use allowed adapter names")
+                    traces = tool.get("traceSources")
+                    if not isinstance(traces, list) or not traces or any(t not in allowed_actor_adapters for t in traces):
+                        fail(errors, f"{tool_prefix}.traceSources must be non-empty and use allowed adapter names")
+                    if not isinstance(tool.get("confirmationRequired"), bool):
+                        fail(errors, f"{tool_prefix}.confirmationRequired must be true or false")
+                    for key in ["governedToolId", "approvalPolicy", "idempotency", "transactionBoundary", "partialFailureBehavior"]:
+                        if not isinstance(tool.get(key), str) or not tool.get(key):
+                            fail(errors, f"{tool_prefix}.{key} must be a non-empty string")
+
         mappings = ws.get("surfaceActionMappings")
         if readiness in MAPPING_REQUIRED_READINESS and (not isinstance(mappings, list) or not mappings):
             fail(errors, f"{prefix}.surfaceActionMappings must be non-empty at readiness {readiness}")
@@ -182,8 +227,14 @@ def main(argv: list[str]) -> int:
                         "governedToolId",
                         "exposureChannel",
                         "authBasis",
+                        "actorAdapter",
+                        "confirmationRequired",
+                        "approvalPolicy",
                         "idempotency",
+                        "transactionBoundary",
                         "resultSurfaceId",
+                        "partialFailureBehavior",
+                        "traceSource",
                         "traceRequired",
                     ]
                     for key in required_mapping:
@@ -201,7 +252,12 @@ def main(argv: list[str]) -> int:
                         fail(errors, f"{mapping_prefix}.capabilityId must reference this workstream's capabilities: {capability_id!r}")
                     if channel not in ALLOWED_EXPOSURE_CHANNELS:
                         fail(errors, f"{mapping_prefix}.exposureChannel invalid: {channel!r}")
-                    for key in ["actionId", "governedToolId", "authBasis", "idempotency"]:
+                    allowed_actor_adapters = {"surface_action", "human_chat_tool_plan", "agent_tool_call", "api", "workflow", "timer", "consumer", "mcp", "internal"}
+                    if mapping.get("actorAdapter") not in allowed_actor_adapters:
+                        fail(errors, f"{mapping_prefix}.actorAdapter invalid: {mapping.get('actorAdapter')!r}")
+                    if not isinstance(mapping.get("confirmationRequired"), bool):
+                        fail(errors, f"{mapping_prefix}.confirmationRequired must be true or false")
+                    for key in ["actionId", "governedToolId", "authBasis", "approvalPolicy", "idempotency", "transactionBoundary", "partialFailureBehavior", "traceSource"]:
                         if not isinstance(mapping.get(key), str) or not mapping.get(key):
                             fail(errors, f"{mapping_prefix}.{key} must be a non-empty string")
                     if not isinstance(mapping.get("traceRequired"), bool):
@@ -238,6 +294,10 @@ def main(argv: list[str]) -> int:
                         "authorityBasis",
                         "capabilityId",
                         "governedToolId",
+                        "actorAdapter",
+                        "idempotency",
+                        "transactionBoundary",
+                        "traceSource",
                         "progressSurfaceId",
                         "resultSurfaceId",
                         "failureSurfaceId",
@@ -250,7 +310,9 @@ def main(argv: list[str]) -> int:
                     for key in ["progressSurfaceId", "resultSurfaceId", "failureSurfaceId"]:
                         if worker.get(key) not in surface_refs:
                             fail(errors, f"{worker_prefix}.{key} must reference this workstream's surfaces: {worker.get(key)!r}")
-                    for key in ["workerId", "substrate", "trigger", "authorityBasis", "governedToolId"]:
+                    if worker.get("actorAdapter") != "internal":
+                        fail(errors, f"{worker_prefix}.actorAdapter must be 'internal': {worker.get('actorAdapter')!r}")
+                    for key in ["workerId", "substrate", "trigger", "authorityBasis", "governedToolId", "idempotency", "transactionBoundary", "traceSource"]:
                         if not isinstance(worker.get(key), str) or not worker.get(key):
                             fail(errors, f"{worker_prefix}.{key} must be a non-empty string")
 

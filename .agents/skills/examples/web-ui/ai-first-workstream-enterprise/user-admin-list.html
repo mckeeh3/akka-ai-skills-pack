@@ -38,6 +38,19 @@
       </div>
       <p class="muted">Selected context · <strong style="color: var(--color-text)">Organization Admin</strong> · Customer-scoped memberships visible · Backend auth enforced on every action</p>
 
+      <section class="panel panel-pad" aria-label="Proposed chat tool plan" style="margin-bottom: var(--space-5)">
+        <h2 class="panel-title"><span class="badge info">Proposed human_chat_tool_plan</span> Create organization and invite admin</h2>
+        <p>The User Admin agent can translate chat into a bounded plan, but execution waits for explicit human confirmation and backend authorization.</p>
+        <ol>
+          <li><strong>Tool:</strong> <code>useradmin.organization.create</code> via <code>human_chat_tool_plan</code> · idempotency key <code>org-create-req-1842</code></li>
+          <li><strong>Tool:</strong> <code>useradmin.invitation.create</code> sharing the same governed id used by Invite / Add user · confirmation required · decision-card if role escalation risk appears</li>
+        </ol>
+        <p class="muted">Each tool is its own transaction boundary; traces record requestedBy, confirmedBy, partial failures, and result surfaces.</p>
+        <button class="btn primary">Confirm exact plan</button>
+        <button class="btn">Edit request</button>
+        <button class="btn">Cancel</button>
+      </section>
+
       <section class="table" aria-label="User search results">
         <article class="table-row"><div class="person"><span class="avatar">SL</span><div><strong>Sofia Liu</strong><span>sofia@globex.example · last active 12m ago<br>Account linked through accepted invitation · MFA enabled</span></div></div><span class="badge success">Active</span><span class="badge info">Organization Admin</span><span>3 memberships<br><span class="muted">Tenant + 2 customers</span></span><button class="btn">View</button></article>
         <article class="table-row"><div class="person"><span class="avatar">JR</span><div><strong>Jon Reyes</strong><span>jon@northwind.example · last active 1h ago<br>Customer-scoped operator · AI decision reviewer</span></div></div><span class="badge success">Active</span><span class="badge warning">Reviewer</span><span>1 membership<br><span class="muted">Northwind Architecture</span></span><button class="btn">Review</button></article>

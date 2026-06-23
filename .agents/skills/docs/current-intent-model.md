@@ -45,7 +45,7 @@ This hierarchy expresses primary ownership, not exclusive reuse. Cross-links are
 - `app.md`: objective, operating model, tenant/customer assumptions, global non-goals, and cross-domain outcomes.
 - `global/actors` and `global/roles`: canonical actor and role definitions reused across domains and workstreams, including human-backed actors, AI-backed actors, and service actors where applicable.
 - `global/workers`: canonical worker definitions reused across domains and workstreams, including human workers, functional-agent workers, internal-agent workers, autonomous-agent workers, evaluator-agent workers, and deterministic system workers.
-- `global/policies`, `global/surfaces`, `global/agents`, `global/tools`, `global/traces`: reusable definitions that answer "what is this artifact?". Global tools define governed workstream operations; surface actions and agent tools are actor-specific exposure adapters unless explicitly local-only.
+- `global/policies`, `global/surfaces`, `global/agents`, `global/tools`, `global/traces`: reusable definitions that answer "what is this artifact?". Global tools define governed workstream operations; surface actions, confirmed human chat tool plans, agent tools, APIs, workflows, timers, consumers, MCP-tools, and internal calls are actor- or caller-specific exposure adapters unless explicitly local-only.
 - `domains/<domain>/domain.md`: domain purpose, boundaries, owned capabilities, and data/state responsibilities.
 - `capabilities/<capability>.md`: business capability contract, actors, outcomes, authorization, and realization references.
 - `data-state/<state-object>.md`: durable state, lifecycle, invariants, retention, and trace obligations.
@@ -71,12 +71,13 @@ The binding should state:
 
 - `Uses:` link to the global artifact, or identify a local-only artifact;
 - the shared governed tool id and capability id;
-- the human-backed actor exposure, such as the surface action, form, confirmation, result surface, and trace source;
+- the human-backed surface exposure, such as the surface action, form, confirmation, result surface, and trace source;
+- the human-backed chat exposure, if allowed, including proposed-plan detail, explicit confirmation binding, idempotency/transaction behavior, result/partial-failure surfaces, and trace source `human_chat_tool_plan`;
 - the AI-backed actor exposure, such as the agent tool schema, tool boundary entry, approval policy, and trace source;
 - any workflow, timer, consumer, MCP endpoint, API, or internal path that invokes it;
 - workstream-specific authorization and approval rules per actor adapter;
 - allowed inputs, effects, and denial behavior;
-- audit/work trace events, including `requestedBy` when an AI-backed action is initiated from a human supervisor request;
+- audit/work trace events, including `requestedBy` when an AI-backed action is initiated from a human supervisor request and `confirmedBy`/confirmation id when a human chat tool plan is executed;
 - tests and runtime validation expectations.
 
 ## Centrality of workstreams

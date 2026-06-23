@@ -24,14 +24,14 @@ UX design also owns visual intentionality. Do not hand off a vague "modern SaaS"
 Include these AI-first workstream/surface patterns for generated full-stack AI-first SaaS:
 - **Functional-agent rail:** role-authorized work areas, attention indicators, hidden/denied agent recovery, and selected-agent context.
 - **Main workstream:** user intent, primary result surfaces, capability results, workflow progress, decisions, traces, and follow-up actions in one continuous timeline; do not duplicate a prompt/action as both a generic activity-detail card and the actual typed result surface.
-- **Persistent composer:** contextual natural-language requests, command shortcuts, uploads where allowed, disabled/forbidden explanations, and submit progress.
+- **Persistent composer:** contextual natural-language requests, command shortcuts, uploads where allowed, disabled/forbidden explanations, deterministic surface routing with editable prefill/no-mutation copy, and, where modeled, confirmed chat tool-plan review with explicit plan-bound confirmation before consequential execution.
 - **Role-specific dashboard / command center surface:** a dashboard is an action router, not a report. Its ready state must show **things that need my attention** first and **things I can do** second. Aside from section labels, control labels, and minimal explanatory microcopy, visible dashboard content must be actionable/clickable indicators: cards, rows, counters, badges, chart segments, task/progress panels, shortcuts, icons, and buttons that support click and keyboard activation, append a request-like workstream item, and append/open the detail, decision, progress, evidence/trace, result, updated dashboard, or typed `system_message` surface where the user can inspect details and act. Passive FYI metrics, inert charts, decorative card grids, and status tiles that make a user ask “so what can I do with this?” are not acceptable dashboard content; move them to report/detail/analytics surfaces or turn them into governed drilldowns. The common rectangular tile/card with the thing's name and a large count is itself the button, including when the count is `0` and opens an empty queue, detail, explanation, setup, or history surface; `0 things need your attention` is better than hiding the indicator. Do not rely on separate "clickable buttons" while rendering the work objects themselves as inert. All dashboards with attention counters must use the same attention-card counter strip style, placed above lower-priority details/lists. Labels must be slightly larger and semibold/bold, with deliberate vertical spacing between label, number, and badge/status so the card does not feel cramped.
 - **Decision card / deviation review surface:** recommendation, evidence, risk, confidence, impact, policy trigger, alternatives, and approve/reject/defer/escalate actions.
 - **Policy/governance center surface:** policy versions, proposals, simulations, human-authorized commits, examples, thresholds, and rollback context.
 - **Async digest surface:** compressed routine activity with material events, pending decisions, outcome deltas, and trace links.
 - **Audit/work trace surface:** who/what/when/why/how-authorized, tool/data access, policy invocations, approvals, overrides, and outcomes.
 
-Do not hide consequential AI behavior behind generic dashboards, page-first CRUD screens, or chat transcripts. Conversation may help intake or explanation, but the UX handoff should resolve consequential work into durable goals, plans, decisions, approvals, traces, policies, outcomes, and structured surfaces backed by governed capabilities.
+Do not hide consequential AI behavior behind generic dashboards, page-first CRUD screens, or chat transcripts. Conversation may help intake, explanation, or confirmed human chat tool planning, but the UX handoff should resolve consequential work into durable goals, proposed plans, explicit confirmations, decisions, approvals, traces, policies, outcomes, and structured review/result surfaces backed by governed capabilities.
 
 ## Required reading
 
@@ -73,7 +73,8 @@ For each workstream shell region, structured surface, or major region, define:
 14. **UX copy** — labels, button text, helper text, empty/error/success messages in SaaS user language, not internal component/tool/policy terminology.
 15. **User-visible vs internal metadata** — default-visible fields, progressive drilldowns, role-gated audit/support/developer diagnostics, and internal-only metadata that must never be rendered to ordinary users.
 16. **Style guide and component catalog application** — how selected style tokens, named themes, reusable component catalog anatomy, reference mockup anatomy, visual hierarchy, typography, texture/depth, and purposeful motion support feedback, structured-surface form controls, and My Account preference behavior when in scope.
-17. **Browser-tool/capability mapping** — which browser-tool invokes which governed-tool/backend capability for each consequential action and how forbidden/denied states are shown without leaking raw ids or hidden facts.
+17. **Browser-tool/capability mapping** — which browser-tool invokes which governed-tool/backend capability for each consequential surface action and how forbidden/denied states are shown without leaking raw ids or hidden facts.
+18. **Confirmed chat tool-plan mapping when allowed** — which governed-tool ids may be invoked from chat after plan review, what details the plan must show, how confirmation is bound, how changed plans are reconfirmed, and which result/partial-failure/trace surfaces appear.
 
 ## UX copy rules
 
@@ -120,6 +121,7 @@ User goal:
 Primary action:
 Secondary actions:
 Browser-tool/governed-tool/capability mapping:
+Confirmed human chat tool-plan mapping (if allowed):
 Attention source and freshness (for dashboards/queues):
 Information hierarchy:
 States:

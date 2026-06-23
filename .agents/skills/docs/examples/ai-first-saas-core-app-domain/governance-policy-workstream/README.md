@@ -64,9 +64,9 @@ These surfaces inherit `ai-first-workstream-enterprise` from `../../../web-ui-st
 
 ## Capability inventory and exposure channels
 
-A capability is the governed backend contract. It may be exposed through one or more channels: surface action, browser API, workstream-agent tool, internal-agent tool, workflow step, timer, consumer, MCP tool, view, or internal method. Browser APIs and agent tools are exposure forms over the same capability; they do not redefine authorization, validation, idempotency, side effects, audit, approval, or denial behavior.
+A capability is the governed backend contract. It may be exposed through one or more channels: surface action/browser-tool, confirmed `human_chat_tool_plan`, AI-backed `agent_tool_call`/workstream-agent tool, browser API, internal-agent tool, workflow step, timer, consumer, MCP tool, view, or internal method. Browser APIs, confirmed chat plans, and agent tools are exposure forms over the same capability; they do not redefine authorization, validation, idempotency, side effects, audit, approval, or denial behavior.
 
-For this workstream, read/evidence, draft/proposal, simulation, and explanation capabilities may be exposed as workstream-agent tools so the Governance/Policy agent can answer conversational requests such as “draft a policy change” or “simulate this threshold”. Approval, activation, rollback, and authority-expanding capabilities require explicit backend-enforced approval and must not be silently invoked by agent conversation.
+For this workstream, read/evidence, draft/proposal, simulation, and explanation capabilities may be exposed as confirmed `human_chat_tool_plan` or AI-backed `agent_tool_call` adapters so the Governance/Policy agent can answer conversational requests such as “draft a policy change” or “simulate this threshold”. Approval, activation, rollback, and authority-expanding capabilities require explicit backend-enforced approval plus a backend-authorized surface action or plan-bound human confirmation, and must not be silently invoked by agent conversation.
 
 | Capability id | Class | Purpose | Side effects |
 |---|---|---|---|

@@ -15,7 +15,7 @@ This is a queue repair/materialization skill. It does not redo PRD decomposition
 
 ## Goal
 
-Create or repair `specs/pending-tasks.md` so future harness runs can execute one focused task at a time with `akka-do-next-pending-task`. Each generated or repaired queue entry must be an execution handoff, not a planning placeholder: it should include the source backlog/task brief, dependencies, smallest required reads, exact skills, expected outputs, checks, done criteria, and the inherited workstream id, dashboard/attention, surface graph node/action, surface intent route/no-route context, internal-agent graph context, governed-tool id, capability id, AuthContext/scope, role/capability rules, approval, audit/trace, UI/style, existing-app, and Java base-package context needed to implement safely without rereading the PRD.
+Create or repair `specs/pending-tasks.md` so future harness runs can execute one focused task at a time with `akka-do-next-pending-task`. Each generated or repaired queue entry must be an execution handoff, not a planning placeholder: it should include the source backlog/task brief, dependencies, smallest required reads, exact skills, expected outputs, checks, done criteria, and the inherited workstream id, dashboard/attention, surface graph node/action, surface intent route/no-route context, internal-agent graph context, workstream tool catalog, governed-tool id, actor adapter/exposure channel, capability id, AuthContext/scope, role/capability rules, confirmation/approval behavior, transaction/idempotency semantics, result/partial-failure surface, audit/trace source, UI/style, existing-app, and Java base-package context needed to implement safely without rereading the PRD.
 
 The skill must:
 - read existing solution, slice, backlog, and task-brief artifacts
@@ -101,6 +101,7 @@ Before finishing, verify:
 - required reads are minimal and sufficient, including AI-first doctrine or specs only where they affect the task
 - skills match the component family plus any necessary AI-first companion skill
 - required checks and done criteria are concrete
+- consequential generated-SaaS entries carry the tool-use contract: governed-tool id, capability id, actor adapter/exposure channel, confirmation/approval behavior, idempotency/transaction boundary, result/partial-failure surface, and trace evidence; if those fields are missing, the entry is blocked for backlog/task-brief repair rather than guessed
 - no application code was changed
 
 ## Response style

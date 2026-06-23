@@ -11,7 +11,7 @@ Use this skill for user-facing browser UI quality. It is required for full web a
 
 For AI-first SaaS supervision, decision, governance, digest, and audit surfaces, accessibility protects human authority. Reviewers must be able to understand agent status, evidence, risk, policy triggers, approval requirements, exceptions, and trace links without relying on color, hover-only affordances, dense wide tables, or inaccessible live updates.
 
-Ensure keyboard and screen-reader paths reach consequential actions such as approve, reject, defer, escalate, request more evidence, commit policy, roll back, and inspect trace history when those actions are in scope. On narrow screens, preserve the primary review or supervision task before secondary diagnostics.
+Ensure keyboard and screen-reader paths reach consequential actions such as approve, reject, defer, escalate, request more evidence, commit policy, roll back, inspect trace history, review a proposed chat tool plan, confirm or cancel it, and inspect partial-failure results when those actions are in scope. On narrow screens, preserve the primary review or supervision task before secondary diagnostics.
 
 
 ## Generated SaaS input contract
@@ -65,7 +65,7 @@ Before finishing, verify:
 - form errors are announced or associated with inputs
 - content remains usable at narrow widths
 - status/error information is not color-only
-- AI-first status, evidence, risk, policy-trigger, approval, exception, trace, and outcome information is available as text when applicable
+- AI-first status, evidence, risk, policy-trigger, approval, exception, proposed chat tool-plan detail, confirmation requirement, partial-failure result, trace, and outcome information is available as text when applicable
 - narrow layouts preserve the main supervision, decision, or governance task before secondary diagnostics
 - each required named theme color-token bundle, focus ring, form control, and status color satisfies the selected style guide and accessibility contrast expectations; light/dark tone is contrast metadata, not a user-facing mode
 - My Account named-theme selection previews immediately without breaking keyboard focus or accessible field announcements, and durable persistence still uses the governed save path
