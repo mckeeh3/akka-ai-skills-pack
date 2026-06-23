@@ -701,7 +701,7 @@
 
 ### TASK-WCTE-99-002: Re-verify Workstream Chat Tool Execution completion
 
-- status: pending
+- status: done
 - source: TASK-WCTE-99-001 blocked terminal verification
 - task brief: specs/workstream-chat-tool-execution/tasks/99-verification/02-reverify-workstream-chat-tool-execution.md
 - depends on:
@@ -755,3 +755,12 @@
   - Akka substrate/API/frontend path: WorkstreamService, governed agent runtime/provider fail-closed path, catalog/dispatcher, protected HTTP endpoints, frontend surfaces, and tests/smoke are the intended local path.
   - audit/work trace requirements: audit/work trace, correlation/idempotency, provider blocked, confirmation, per-step outcome, denial, and browser-safe trace copy evidence required.
   - local validation path: targeted backend/API tests, `npm --prefix frontend test -- --run`, `npm --prefix frontend run typecheck`, runtime-evidence validator, workstream-contract validator, and local API/manual smoke when provider/auth/runtime configuration allows.
+  - result: done/closed; README done state achieved for first-pass confirmed human-chat tool execution across all five foundation workstreams.
+  - readiness level: runtime-ready for the stated representative scope; provider-unavailable or runtime-unavailable planning remains fail-closed and is not counted as successful model-backed planning.
+  - verification notes: `specs/workstream-chat-tool-execution/verification-notes.md`.
+  - selected-scope evidence: User Admin motivating prompt is no-mutation before confirmation and executes Organization create plus Organization Admin invitation after exact snapshot confirmation when authorized; My Account, Agent Admin, Audit/Trace, and Governance/Policy retain representative confirmed plan coverage.
+  - denial/provider evidence: missing bearer, unproposed confirmation, selected-context/capability denial, out-of-catalog snapshot, provider/runtime/tool-boundary fail-closed, and approval-required paths are covered without unauthorized mutation.
+  - trace evidence: proposal, confirmation, provider-blocked, per-step completed/failed/skipped/approval-required, idempotency/correlation, requestedBy, and confirmedBy trace refs are verified as browser-safe evidence.
+  - local validation passed: targeted backend/API/agent tests; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`; runtime-evidence validator; workstream-contract validator; `git diff --check`.
+  - local API/UI smoke: targeted `UserAdminBrowserWorkstreamSmokeTest` loads `/ui`, exercises protected `/api/workstream/messages` and `/api/workstream/chat-tool-plans/confirm`, proves no pre-confirmation mutation, conditionally confirms provider-backed proposals, verifies fail-closed `noFakeSuccess`, and denies unproposed confirmations.
+  - commit message: `workstream-chat-tools: reverify completion`.
