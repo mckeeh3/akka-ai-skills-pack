@@ -130,7 +130,7 @@
 
 ### TASK-WCTC-03-001: Add catalog classification and prompt guardrails
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-catalog-expansion/backlog/01-chat-tool-catalog-expansion-build-backlog.md
 - task brief: specs/workstream-chat-tool-catalog-expansion/tasks/03-catalog-contract/01-add-catalog-classification-guardrails.md
 - depends on:
@@ -161,6 +161,10 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: shared backend catalog/guardrail substrate; no per-workstream expansion claim yet
+  - added backend catalog classification/risk/rationale/guardrail metadata and prompt guardrails that fail closed after deterministic routing and before model planning for unsupported/high-risk execution prompts
+  - required checks passed: `git diff --check`; targeted backend catalog/guardrail tests (`mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest#chatToolCatalogListsBoundedHumanChatPlanEntries+submitMessageBlocksUnsupportedAndHighRiskChatToolPromptsAfterDeterministicRouting+submitMessageRoutesMatchedSurfaceIntentBeforeModelInvocation+submitMessageRoutesUserAdminMotivatingPromptToModelBackedPlanProposalWithoutMutation test`)
+  - broader class run note: full `WorkstreamServiceTest` currently has pre-existing unrelated failures outside this task scope; targeted task checks pass
+  - commit message: `workstream-chat-catalog: add catalog guardrails`
 
 ### TASK-WCTC-04-001: Expand My Account chat tool catalog
 

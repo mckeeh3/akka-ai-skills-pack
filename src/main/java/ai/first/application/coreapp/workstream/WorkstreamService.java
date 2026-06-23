@@ -1438,6 +1438,10 @@ public final class WorkstreamService {
     }
 
     var chatToolPlanCandidate = representativeChatToolPlanCandidate(request.functionalAgentId(), request.prompt(), firstNonBlank(request.idempotencyKey(), requestCorrelationId, request.functionalAgentId()));
+    var promptGuardrail = chatToolPromptGuardrail(request.functionalAgentId(), request.prompt(), chatToolPlanCandidate.isPresent());
+    if (promptGuardrail.isPresent()) {
+      return blockedChatToolPromptMessageResponse(actor, functionalAgent, workstreamScopeId, request, requestCorrelationId, promptGuardrail.orElseThrow());
+    }
     if (chatToolPlanCandidate.isPresent()) {
       return representativeChatToolPlanMessageResponse(actor, functionalAgent, workstreamScopeId, request, requestCorrelationId, chatToolPlanCandidate.orElseThrow());
     }
@@ -1811,6 +1815,23 @@ public final class WorkstreamService {
     return new WorkstreamMessageResponse(persisted.correlationId(), persisted.idempotencyKey(), persisted.userItem(), persisted.agentItem(), persisted.surface());
   }
 
+  private WorkstreamMessageResponse blockedChatToolPromptMessageResponse(AuthContextResolver.ResolvedMe actor, MeResponse.FunctionalAgentSummary functionalAgent, String workstreamScopeId, WorkstreamMessageRequest request, String correlationId, ChatToolPromptGuardrail guardrail) {
+    var responseSeed = firstNonBlank(request.idempotencyKey(), correlationId, request.functionalAgentId());
+    var traceIds = List.of("trace-human-chat-tool-plan-guardrail-" + stableSuffix(correlationId + ":" + guardrail.code()));
+    var userItem = new WorkstreamItem(
+        "item-chat-tool-plan-user-" + stableSuffix(responseSeed + ":user"),
+        request.functionalAgentId(),
+        "user-request",
+        Instant.now().toString(),
+        correlationId,
+        traceIds,
+        null,
+        null,
+        request.prompt(),
+        "ready");
+    return persistChatToolPlanSystemMessage(actor, functionalAgent, workstreamScopeId, request, correlationId, responseSeed, userItem, guardrail.code(), guardrail.message(), traceIds);
+  }
+
   private WorkstreamMessageResponse persistChatToolPlanSystemMessage(AuthContextResolver.ResolvedMe actor, MeResponse.FunctionalAgentSummary functionalAgent, String workstreamScopeId, WorkstreamMessageRequest request, String correlationId, String responseSeed, WorkstreamItem userItem, String code, String message, List<String> traceIds) {
     var now = Instant.now();
     var safeTraceIds = traceIds == null || traceIds.isEmpty() ? List.of("trace-human-chat-tool-plan-provider-blocked-" + stableSuffix(responseSeed)) : List.copyOf(traceIds);
@@ -1845,7 +1866,7 @@ public final class WorkstreamService {
     var stepKeys = steps.stream().map(ChatToolPlanStep::actionId).collect(Collectors.toSet());
     return chatToolCatalog(functionalAgentId).stream()
         .filter(entry -> stepKeys.contains(entry.actionId()))
-        .map(entry -> "actionId=" + entry.actionId() + "; browserToolId=" + entry.browserToolId() + "; governedToolId=" + entry.governedToolId() + "; capabilityId=" + entry.capabilityId() + "; inputSchemaRef=" + entry.inputSchemaRef() + "; idempotencyRequired=" + entry.idempotencyRequired() + "; requiresConfirmation=" + entry.requiresConfirmation() + "; requiresApproval=" + entry.requiresApproval() + "; resultSurfaceId=" + entry.expectedResultSurfaceId() + "; traceRequirements=" + entry.traceRequirements())
+        .map(entry -> "actionId=" + entry.actionId() + "; classification=" + entry.classification() + "; riskLevel=" + entry.riskLevel() + "; browserToolId=" + entry.browserToolId() + "; governedToolId=" + entry.governedToolId() + "; capabilityId=" + entry.capabilityId() + "; inputSchemaRef=" + entry.inputSchemaRef() + "; idempotencyRequired=" + entry.idempotencyRequired() + "; requiresConfirmation=" + entry.requiresConfirmation() + "; requiresApproval=" + entry.requiresApproval() + "; resultSurfaceId=" + entry.expectedResultSurfaceId() + "; guardrails=" + entry.guardrails() + "; rationale=" + entry.rationale() + "; traceRequirements=" + entry.traceRequirements())
         .collect(Collectors.joining("\n"));
   }
 
@@ -1893,6 +1914,64 @@ public final class WorkstreamService {
           governancePolicyDraftProposalPlanSteps(idempotencyRoot)));
     }
     return Optional.empty();
+  }
+
+  private Optional<ChatToolPromptGuardrail> chatToolPromptGuardrail(String functionalAgentId, String prompt, boolean catalogCandidatePresent) {
+    if (prompt == null || prompt.isBlank()) return Optional.empty();
+    var normalized = " " + prompt.toLowerCase(Locale.ROOT).replace('-', ' ') + " ";
+    var highRiskReason = highRiskPromptReason(functionalAgentId, normalized);
+    if (highRiskReason != null) {
+      return Optional.of(new ChatToolPromptGuardrail(
+          "CHAT_TOOL_PROMPT_APPROVAL_GATED",
+          "approval-gated",
+          highRiskReason,
+          "This request references approval-gated or blocked " + workstreamLabel(functionalAgentId) + " authority that is not executable through the shared human_chat_tool_plan catalog. No tools executed; open the structured surface or wait for a modeled approval path."));
+    }
+    if (!catalogCandidatePresent && hasExecutionIntent(normalized) && hasProtectedWorkstreamTarget(functionalAgentId, normalized)) {
+      return Optional.of(new ChatToolPromptGuardrail(
+          "CHAT_TOOL_PROMPT_OUT_OF_CATALOG",
+          "blocked-pending-design",
+          "Execution-oriented prompt did not match a backend-owned chat catalog entry after deterministic surface routing.",
+          "This request is outside the current " + workstreamLabel(functionalAgentId) + " human_chat_tool_plan catalog. No tools executed; use the structured surface or a supported exact-confirmation plan."));
+    }
+    return Optional.empty();
+  }
+
+  private String highRiskPromptReason(String functionalAgentId, String normalizedPrompt) {
+    if (containsAny(normalizedPrompt, " activate ", " deactivate ", " rollback ", " approve ", " reject ", " suspend ", " reactivate ", " disable ", " permanently remove ", " delete ", " support access ", " identity relink ", " grant ", " revoke ", " export ", " unredacted ", " raw evidence ", " change role ", " role change ", " replace role ")) {
+      return "Prompt references high-impact lifecycle, authority, export, support-access, role, or raw-evidence actions that require separate approval/design guardrails.";
+    }
+    if (USER_ADMIN_AGENT_ID.equals(functionalAgentId) && containsAny(normalizedPrompt, " archive ", " remove account ", " remove user ")) {
+      return "Prompt references destructive User Admin lifecycle changes that require separate approval/design guardrails.";
+    }
+    if (AGENT_ADMIN_AGENT_ID.equals(functionalAgentId) && containsAny(normalizedPrompt, " model ref ", " model reference ", " tool boundary ", " behavior proposal ") && containsAny(normalizedPrompt, " commit ", " switch ", " publish ", " deploy ")) {
+      return "Prompt references managed-agent behavior/model/tool-boundary authority changes that cannot be granted by chat prompt text.";
+    }
+    if (GOVERNANCE_POLICY_AGENT_ID.equals(functionalAgentId) && containsAny(normalizedPrompt, " weaken ", " threshold ", " production ", " live policy ")) {
+      return "Prompt references live policy authority changes that remain approval-gated or blocked pending design.";
+    }
+    return null;
+  }
+
+  private boolean hasExecutionIntent(String normalizedPrompt) {
+    return containsAny(normalizedPrompt, " create ", " invite ", " update ", " change ", " set ", " submit ", " start ", " run ", " append ", " draft ", " simulate ", " mark ", " dismiss ", " snooze ", " resend ", " rename ");
+  }
+
+  private boolean hasProtectedWorkstreamTarget(String functionalAgentId, String normalizedPrompt) {
+    return switch (functionalAgentId) {
+      case MY_ACCOUNT_AGENT_ID -> containsAny(normalizedPrompt, " profile ", " settings ", " theme ", " notification ", " preference ", " digest ", " context ");
+      case USER_ADMIN_AGENT_ID -> containsAny(normalizedPrompt, " org ", " organization ", " customer ", " invitation ", " invite ", " user ", " admin ", " member ", " role ", " account ", " support access ");
+      case AGENT_ADMIN_AGENT_ID -> containsAny(normalizedPrompt, " agent ", " prompt ", " skill ", " tool ", " model ", " manifest ", " boundary ", " behavior ", " proposal ", " risk review ");
+      case AUDIT_TRACE_AGENT_ID -> containsAny(normalizedPrompt, " audit ", " trace ", " timeline ", " evidence ", " investigation ", " note ", " export ", " summary ");
+      case GOVERNANCE_POLICY_AGENT_ID -> containsAny(normalizedPrompt, " governance ", " policy ", " proposal ", " approval ", " impact ", " analysis ", " simulation ", " export ");
+      default -> false;
+    };
+  }
+
+  private boolean containsAny(String value, String... needles) {
+    if (value == null || value.isBlank()) return false;
+    for (var needle : needles) if (value.contains(needle)) return true;
+    return false;
   }
 
   private List<ChatToolPlanStep> userAdminOrganizationAndAdminInvitePlanSteps(UserAdminChatToolPlanCandidate candidate, String idempotencyRoot) {
@@ -2300,15 +2379,15 @@ public final class WorkstreamService {
 
   private List<ChatToolCatalogEntry> chatToolCatalogEntries() {
     return List.of(
-        chatToolCatalogEntry(MY_ACCOUNT_AGENT_ID, updateSettingsAction(), "human_chat_tool_plan", "Human-confirmed personal settings update only; no role, context, provider, or notification authority expansion.", false, List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "human_chat_tool_plan.step_failed")),
-        chatToolCatalogEntry(USER_ADMIN_AGENT_ID, submitOrganizationCreateAction(), "human_chat_tool_plan", "Human-confirmed SaaS Owner Organization create; backend selected AuthContext, capability, idempotency, and duplicate/no-enumeration policies remain authoritative.", false, List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "human_chat_tool_plan.step_failed")),
-        chatToolCatalogEntry(USER_ADMIN_AGENT_ID, organizationAdminInviteAction(), "human_chat_tool_plan", "Human-confirmed Organization Admin invitation only after a visible Organization is bound; invitation provider/outbox failures fail closed without exposing tokens.", false, List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "human_chat_tool_plan.step_failed", "invitation.outbox")),
-        chatToolCatalogEntry(AGENT_ADMIN_AGENT_ID, startPromptRiskReviewAction(), "human_chat_tool_plan", "Human-confirmed prompt-risk review task start; model/provider runtime may fail closed and approval policy cannot be bypassed.", true, List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_failed", "agent.work_trace")),
-        chatToolCatalogEntry(AUDIT_TRACE_AGENT_ID, auditTraceAppendInvestigationNoteAction(), "human_chat_tool_plan", "Human-confirmed browser-safe investigation note append to an authorized visible trace/correlation only; no export or evidence mutation authority.", false, List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.note")),
-        chatToolCatalogEntry(GOVERNANCE_POLICY_AGENT_ID, governanceDraftProposalAction(), "human_chat_tool_plan", "Human-confirmed inert policy proposal draft only; no approval, activation, rollback, or production authority change.", false, List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "policy.proposal_trace")));
+        chatToolCatalogEntry(MY_ACCOUNT_AGENT_ID, updateSettingsAction(), "human_chat_tool_plan", "chat-executable-now", "low", "Self-scoped settings update uses the existing backend-authorized settings action with exact confirmation and idempotency.", "Human-confirmed personal settings update only; no role, context, provider, or notification authority expansion.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "unsupported-fields-denied"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "human_chat_tool_plan.step_failed")),
+        chatToolCatalogEntry(USER_ADMIN_AGENT_ID, submitOrganizationCreateAction(), "human_chat_tool_plan", "chat-executable-now", "medium", "SaaS Owner Organization creation has a bounded backend action, selected AuthContext authorization, idempotency, and duplicate/no-enumeration handling.", "Human-confirmed SaaS Owner Organization create; backend selected AuthContext, capability, idempotency, and duplicate/no-enumeration policies remain authoritative.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "tenant-scope", "idempotency"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "human_chat_tool_plan.step_failed")),
+        chatToolCatalogEntry(USER_ADMIN_AGENT_ID, organizationAdminInviteAction(), "human_chat_tool_plan", "chat-executable-now", "medium-high", "Organization Admin invitations are bounded to a visible Organization and pinned TENANT_ADMIN role through the existing invitation/outbox boundary.", "Human-confirmed Organization Admin invitation only after a visible Organization is bound; invitation provider/outbox failures fail closed without exposing tokens.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-target-binding", "provider-fail-closed"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "human_chat_tool_plan.step_failed", "invitation.outbox")),
+        chatToolCatalogEntry(AGENT_ADMIN_AGENT_ID, startPromptRiskReviewAction(), "human_chat_tool_plan", "approval-gated", "medium", "Prompt-risk review start creates only a governed advisory task and remains blocked by the dispatcher until separate approval policy is modeled.", "Human-confirmed prompt-risk review task start; model/provider runtime may fail closed and approval policy cannot be bypassed.", true, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "tool-boundary", "provider-fail-closed", "approval-gate"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_failed", "agent.work_trace")),
+        chatToolCatalogEntry(AUDIT_TRACE_AGENT_ID, auditTraceAppendInvestigationNoteAction(), "human_chat_tool_plan", "chat-executable-now", "low-medium", "Investigation note append is an idempotent annotation on an authorized trace/correlation; source evidence and policy state remain immutable.", "Human-confirmed browser-safe investigation note append to an authorized visible trace/correlation only; no export or evidence mutation authority.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-trace-binding", "redaction"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.note")),
+        chatToolCatalogEntry(GOVERNANCE_POLICY_AGENT_ID, governanceDraftProposalAction(), "human_chat_tool_plan", "chat-proposal-only", "medium", "Policy drafting creates an inert proposal artifact only; approval, activation, rollback, exports, and live authority changes stay outside this executable path.", "Human-confirmed inert policy proposal draft only; no approval, activation, rollback, or production authority change.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "proposal-only", "no-activation"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "policy.proposal_trace")));
   }
 
-  private ChatToolCatalogEntry chatToolCatalogEntry(String workstreamId, SurfaceAction action, String exposureChannel, String policySummary, boolean requiresApproval, List<String> traceRequirements) {
+  private ChatToolCatalogEntry chatToolCatalogEntry(String workstreamId, SurfaceAction action, String exposureChannel, String classification, String riskLevel, String rationale, String policySummary, boolean requiresApproval, List<String> guardrails, List<String> traceRequirements) {
     return new ChatToolCatalogEntry(
         workstreamId,
         action.actionId(),
@@ -2320,6 +2399,10 @@ public final class WorkstreamService {
         action.idempotency() != null && action.idempotency().required(),
         action.idempotency() == null ? null : action.idempotency().keySource(),
         policySummary,
+        classification,
+        riskLevel,
+        rationale,
+        guardrails,
         true,
         requiresApproval || action.requiresApproval(),
         false,
@@ -7568,8 +7651,9 @@ public final class WorkstreamService {
       steps = List.copyOf(steps == null ? List.of() : steps);
     }
   }
-  public record ChatToolCatalogEntry(String workstreamId, String actionId, String browserToolId, String governedToolId, String capabilityId, String exposureChannel, String inputSchemaRef, boolean idempotencyRequired, String idempotencyScope, String policySummary, boolean requiresConfirmation, boolean requiresApproval, boolean destructive, String expectedResultSurfaceType, String expectedResultSurfaceId, List<String> traceRequirements) {
+  public record ChatToolCatalogEntry(String workstreamId, String actionId, String browserToolId, String governedToolId, String capabilityId, String exposureChannel, String inputSchemaRef, boolean idempotencyRequired, String idempotencyScope, String policySummary, String classification, String riskLevel, String rationale, List<String> guardrails, boolean requiresConfirmation, boolean requiresApproval, boolean destructive, String expectedResultSurfaceType, String expectedResultSurfaceId, List<String> traceRequirements) {
     public ChatToolCatalogEntry {
+      guardrails = List.copyOf(guardrails == null ? List.of() : guardrails);
       traceRequirements = List.copyOf(traceRequirements == null ? List.of() : traceRequirements);
     }
   }
@@ -7579,6 +7663,7 @@ public final class WorkstreamService {
   public record ChatToolPlanSystemMessage(String code, String message, List<String> recoverySteps, boolean noFakeSuccess, List<String> traceIds) {}
   public record ChatToolPlanSurfaceData(String surfaceContract, String status, ChatToolPlanProposal proposal, ChatToolPlanConfirmationSnapshot confirmationSnapshot, ChatToolPlanExecutionResult result, ChatToolPlanSystemMessage systemMessage, boolean noDirectMutation, boolean noMutation, boolean executionEnabled, String sideEffect, String workstreamEntryId, List<String> traceRefs) {}
   private record UserAdminChatToolPlanCandidate(String organizationName, String email, String displayName) {}
+  private record ChatToolPromptGuardrail(String code, String classification, String reason, String message) {}
   private record RepresentativeChatToolPlanCandidate(String functionalAgentId, String proposalItemBody, String defaultSummary, String defaultApprovalSummary, List<ChatToolPlanStep> steps) {}
   public record WorkstreamEvent(String eventId, String eventType, String tenantId, String customerId, String functionalAgentId, String surfaceId, String surfaceType, String surfaceVersion, String correlationId, List<String> traceIds, String occurredAt, Integer sequence, Map<String, Object> patch) {}
 

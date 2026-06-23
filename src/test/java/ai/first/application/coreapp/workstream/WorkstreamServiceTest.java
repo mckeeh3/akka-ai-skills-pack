@@ -1958,6 +1958,10 @@ class WorkstreamServiceTest {
         && entry.capabilityId().equals("my_account.update_profile_settings")
         && entry.exposureChannel().equals("human_chat_tool_plan")
         && entry.inputSchemaRef().equals("schema.my-account.settings.update.v1")
+        && entry.classification().equals("chat-executable-now")
+        && entry.riskLevel().equals("low")
+        && entry.rationale().contains("Self-scoped")
+        && entry.guardrails().contains("deterministic-surface-routing-first")
         && entry.idempotencyRequired()
         && entry.requiresConfirmation()
         && !entry.requiresApproval()
@@ -1976,13 +1980,17 @@ class WorkstreamServiceTest {
         && entry.traceRequirements().contains("invitation.outbox")));
     assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("agent-admin-agent")
         && entry.actionId().equals("action-agent-prompt-risk-review-start")
+        && entry.classification().equals("approval-gated")
+        && entry.guardrails().contains("approval-gate")
         && entry.requiresApproval()));
     assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("audit-trace-agent")
         && entry.governedToolId().equals("draft-investigation-note")
         && entry.capabilityId().equals("audit.trace.investigation_note.append")));
     assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("governance-policy-agent")
         && entry.governedToolId().equals("governance.policy.propose")
-        && entry.capabilityId().equals("governance.policy.propose")));
+        && entry.capabilityId().equals("governance.policy.propose")
+        && entry.classification().equals("chat-proposal-only")
+        && entry.rationale().contains("inert proposal")));
   }
 
   @Test
@@ -2383,39 +2391,56 @@ class WorkstreamServiceTest {
   }
 
   @Test
-  void submitMessageFallsBackSafelyForUnauthorizedAmbiguousOrHighRiskSurfacePrompts() {
+  void submitMessageBlocksUnsupportedAndHighRiskChatToolPromptsAfterDeterministicRouting() {
+    var tenantCountBefore = identityRepository.tenantRows().size();
+    var invitationCountBefore = invitationRepository.invitations().size();
+
     var tenantCreate = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
         "membership-admin", "user-admin-agent", "create organization \"Tenant Hidden\"", "corr-route-tenant-org-create", "idem-route-tenant-org-create"), "corr-header");
 
-    assertEquals("markdown_response", tenantCreate.agentItem().kind());
-    assertEquals("markdown_response", tenantCreate.surface().surfaceType());
+    assertEquals("chat_tool_plan_system_message", tenantCreate.agentItem().kind());
+    assertEquals("chat_tool_plan_system_message", tenantCreate.surface().surfaceType());
+    assertTrue(tenantCreate.toString().contains("CHAT_TOOL_PROMPT_OUT_OF_CATALOG"));
     assertNull(tenantCreate.surface().data().get("surfaceIntentRoute"));
     assertFalse(tenantCreate.toString().contains("surface-user-admin-organization-create"));
-    assertEquals(1, trackingRuntimeInvoker.invocationCount(), "Unauthorized selected contexts must fall back without deterministic target enumeration");
 
     var ambiguous = service.submitMessage(ownerIdentity(), "membership-owner", new WorkstreamService.WorkstreamMessageRequest(
         "membership-owner", "user-admin-agent", "create organization \"Org 2\" and invite user alice@example.com", "corr-route-ambiguous", "idem-route-ambiguous"), "corr-header");
 
-    assertEquals("markdown_response", ambiguous.agentItem().kind());
-    assertEquals("markdown_response", ambiguous.surface().surfaceType());
+    assertEquals("chat_tool_plan_system_message", ambiguous.agentItem().kind());
+    assertEquals("chat_tool_plan_system_message", ambiguous.surface().surfaceType());
+    assertTrue(ambiguous.toString().contains("CHAT_TOOL_PROMPT_OUT_OF_CATALOG"));
     assertNull(ambiguous.surface().data().get("surfaceIntentRoute"));
-    assertEquals(2, trackingRuntimeInvoker.invocationCount(), "Ambiguous multi-target prompts must preserve the governed model-backed fallback");
-    assertEquals("user-admin-agent", trackingRuntimeInvoker.lastRequest().agentDefinitionId());
-    assertEquals("create organization \"Org 2\" and invite user alice@example.com", trackingRuntimeInvoker.lastRequest().userInput());
+
+    var unsafeCompound = service.submitMessage(ownerIdentity(), "membership-owner", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-owner", "user-admin-agent", "create org \"Org Unsafe\", invite mckee.hugh+unsafe@gmail.com as an org admin, and activate agent", "corr-route-unsafe-compound", "idem-route-unsafe-compound"), "corr-header");
+    assertEquals("chat_tool_plan_system_message", unsafeCompound.agentItem().kind());
+    assertTrue(unsafeCompound.toString().contains("CHAT_TOOL_PROMPT_APPROVAL_GATED"));
+    assertFalse(unsafeCompound.toString().contains("chat_tool_plan_proposal"), "High-risk suffixes must not be silently trimmed into executable catalog steps.");
 
     var highRiskAgentLifecycle = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
         "membership-admin", "agent-admin-agent", "activate agent", "corr-route-high-risk-agent", "idem-route-high-risk-agent"), "corr-header");
-    assertEquals("markdown_response", highRiskAgentLifecycle.agentItem().kind());
+    assertEquals("chat_tool_plan_system_message", highRiskAgentLifecycle.agentItem().kind());
+    assertTrue(highRiskAgentLifecycle.toString().contains("CHAT_TOOL_PROMPT_APPROVAL_GATED"));
     assertNull(highRiskAgentLifecycle.surface().data().get("surfaceIntentRoute"));
     assertFalse(highRiskAgentLifecycle.toString().contains("surface-agent-activation-confirmation"));
 
     var approvalGatedGovernance = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
         "membership-admin", "governance-policy-agent", "approve proposal", "corr-route-high-risk-governance", "idem-route-high-risk-governance"), "corr-header");
-    assertEquals("markdown_response", approvalGatedGovernance.agentItem().kind());
+    assertEquals("chat_tool_plan_system_message", approvalGatedGovernance.agentItem().kind());
+    assertTrue(approvalGatedGovernance.toString().contains("CHAT_TOOL_PROMPT_APPROVAL_GATED"));
     assertNull(approvalGatedGovernance.surface().data().get("surfaceIntentRoute"));
     assertFalse(approvalGatedGovernance.toString().contains("action-governance-policy-decide"));
 
-    assertEquals(4, trackingRuntimeInvoker.invocationCount(), "High-risk or approval-gated prompts must fall back safely without deterministic command execution");
+    assertEquals(0, trackingRuntimeInvoker.invocationCount(), "Unsupported/high-risk execution prompts must fail closed before model fallback or planning.");
+    assertEquals(0, trackingRuntimeInvoker.planInvocationCount(), "Unsupported/high-risk execution prompts must not invoke model-backed planning.");
+    assertEquals(tenantCountBefore, identityRepository.tenantRows().size());
+    assertEquals(invitationCountBefore, invitationRepository.invitations().size());
+    assertBrowserPayloadSafe(tenantCreate.surface());
+    assertBrowserPayloadSafe(ambiguous.surface());
+    assertBrowserPayloadSafe(unsafeCompound.surface());
+    assertBrowserPayloadSafe(highRiskAgentLifecycle.surface());
+    assertBrowserPayloadSafe(approvalGatedGovernance.surface());
   }
 
   @Test
