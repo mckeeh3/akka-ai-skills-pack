@@ -1577,6 +1577,18 @@ export const agentAdminSurfaceActions = {
     resultSurface: { updateSurfaceId: 'surface-agent-seed-material', openPlacement: 'inline' },
     audit: { eventType: 'AgentSeedDefaultsImported', traceRequired: true }
   },
+  seedMaterialOpenAgentDetail: {
+    actionId: 'action-agent-seed-material-open-agent-detail',
+    label: 'Open target agent detail',
+    intent: 'read',
+    capabilityId: agentDefinitionReadCapability,
+    governedToolId: agentDefinitionReadCapability,
+    browserToolId: 'action-agent-seed-material-open-agent-detail',
+    inputSchemaRef: 'schema.agent-admin.seed-material.open-agent-detail.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-detail', openPlacement: 'inline' },
+    audit: { eventType: 'AgentDefinitionDetailDisplayed', traceRequired: true }
+  },
   startPromptRiskReview: {
     actionId: 'action-agentadmin-start-prompt-risk-review',
     label: 'Start prompt-risk review',
@@ -3158,17 +3170,18 @@ export const agentSeedMaterialSurface = envelope(
     surfaceContract: 'agent_admin.seed_material.v1',
     query: { bundle: 'starter-v1', tenantScoped: true },
     rows: [
-      { id: 'seed-agent-admin-agent', artifactKind: 'AgentDefinition', artifactId: 'agent-admin-agent', status: 'active', seedBundleId: 'starter-v1', tenantCustomized: false, checksum: 'sha256:agent-admin-definition', traceId: 'trace-agent-admin-seed-agent-admin-agent' },
+      { id: 'seed-agent-admin-agent', artifactKind: 'AgentDefinition', artifactId: 'agent-admin-agent', displayName: 'Agent Admin Agent', status: 'active', seedBundleId: 'starter-v1', tenantCustomized: false, checksum: 'sha256:agent-admin-definition', recommendedManagedAgentTarget: 'agent-admin-agent', traceId: 'trace-agent-admin-seed-agent-admin-agent' },
       { id: 'seed-prompt-agent-admin-system', artifactKind: 'PromptDocument', artifactId: 'prompt-agent-admin-system', status: 'active', seedBundleId: 'starter-v1', tenantCustomized: false, checksum: 'sha256:prompt-agent-admin-system', traceId: 'trace-agent-admin-seed-prompt-agent-admin-system' },
       { id: 'seed-tool-boundary-agent-admin', artifactKind: 'ToolPermissionBoundary', artifactId: 'tool-boundary-agent-admin', status: 'active', seedBundleId: 'starter-v1', tenantCustomized: false, checksum: 'sha256:tool-boundary-agent-admin', traceId: 'trace-agent-admin-seed-tool-boundary-agent-admin' }
     ],
     pageInfo: { totalKnownCount: 3 },
     redaction: 'Seed provenance shows resource ids, checksums, tenantCustomized, and trace links; raw prompt/skill/reference bodies and provider secrets are omitted.',
     traceLinks: ['trace-agent-admin-seed-material'],
+    provenanceInspection: { state: 'ready-provenance', selectedSeedMaterialId: 'seed-agent-admin-agent', artifactKind: 'AgentDefinition', displayName: 'Agent Admin Agent', sourceLineage: 'starter-v1 / agent-definition-agent-admin.yaml', reviewHistorySummary: 'Seed provenance was imported through the backend seed loader and is trace-linked for Agent Admin review.', rawContentVisible: false },
     mobileFallback: 'table-to-card',
     systemStates: ['loading', 'empty', 'forbidden', 'stale']
   },
-  [agentAdminSurfaceActions.listSeedMaterial, agentAdminSurfaceActions.importSeedDefaults, agentAdminSurfaceActions.openAgentTrace]
+  [agentAdminSurfaceActions.listSeedMaterial, agentAdminSurfaceActions.importSeedDefaults, agentAdminSurfaceActions.seedMaterialOpenAgentDetail, agentAdminSurfaceActions.openAgentTrace]
 );
 
 export const agentTestConsoleSurface = envelope(

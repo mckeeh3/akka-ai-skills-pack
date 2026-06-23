@@ -203,7 +203,8 @@ function AgentAdminInspectionDetail({ envelope, onAction }: { envelope: SurfaceE
   const taskEntryActions = envelope.actions;
   const provider = envelope.data.providerReadiness as { status?: string; safeReason?: string; secretVisibility?: string } | undefined;
   const relatedArtifacts = envelope.data.relatedArtifacts as Array<Record<string, unknown>> | undefined;
-  const actionContext = { ...(envelope.data.actionContext ?? {}), recordId: envelope.data.recordId ?? '', correlationId: envelope.correlationId };
+  const behaviorArtifactCards = (envelope.data as unknown as { behaviorArtifactCards?: Array<Record<string, unknown>> }).behaviorArtifactCards;
+  const actionContext = { ...(envelope.data.actionContext ?? {}), agentDefinitionId: envelope.data.recordId ?? '', recordId: envelope.data.recordId ?? '', correlationId: envelope.correlationId };
   return (
     <SurfaceStateFrame envelope={envelope}>
       <section className="user-admin-detail-clean agent-admin-detail-clean" aria-label="Agent Admin readiness and behavior inspection">
@@ -228,9 +229,18 @@ function AgentAdminInspectionDetail({ envelope, onAction }: { envelope: SurfaceE
           </article>
         </section>
 
+        {behaviorArtifactCards && behaviorArtifactCards.length > 0 && (
+          <section className="user-admin-list-panel" aria-label="Governed prompt and skill drill-downs">
+            <div className="surface-section-heading compact"><div><p className="eyebrow">Behavior drill-downs</p><h4>Open this agent's prompt and skills</h4></div><p>Prompt, skill/reference manifest, model, and tool-boundary inspections open dedicated backend-authorized surfaces; raw prompt and skill bodies remain redacted.</p></div>
+            <div className="user-admin-clean-list" role="list">
+              {behaviorArtifactCards.map((artifact) => <AgentAdminBehaviorArtifactButton key={String(artifact.artifactCategory ?? artifact.artifactId ?? artifact.displayLabel)} artifact={artifact} actions={envelope.actions} surfaceId={envelope.surfaceId} actionContext={actionContext} onAction={onAction} />)}
+            </div>
+          </section>
+        )}
+
         {relatedArtifacts && relatedArtifacts.length > 0 && (
           <section className="user-admin-list-panel" aria-label="Behavior artifacts and governance objects">
-            <div className="surface-section-heading compact"><div><p className="eyebrow">Behavior artifacts</p><h4>Prompt, manifest, model, and tool-boundary readiness</h4></div><p>Artifact ids and capability details are diagnostic; use task entry points for changes.</p></div>
+            <div className="surface-section-heading compact"><div><p className="eyebrow">Behavior artifacts</p><h4>Prompt, manifest, model, and tool-boundary readiness</h4></div><p>Artifact ids and capability details are diagnostic; use the drill-downs and task entry points for governed review.</p></div>
             <div className="user-admin-clean-list" role="list">
               {relatedArtifacts.map((artifact) => <article key={String(artifact.artifactId)} role="listitem" className="user-admin-clean-row agent-admin-artifact-card"><span className="user-admin-person"><strong>{agentAdminArtifactTitle(artifact)}</strong><small>{agentAdminArtifactSummary(artifact)}</small></span><span className={`status-pill ${statusTone(String(artifact.status ?? 'ready'))}`}>{humanize(String(artifact.status ?? 'ready'))}</span></article>)}
             </div>
@@ -256,6 +266,22 @@ function AgentAdminInspectionDetail({ envelope, onAction }: { envelope: SurfaceE
         </details>
       </section>
     </SurfaceStateFrame>
+  );
+}
+
+function AgentAdminBehaviorArtifactButton({ artifact, actions, surfaceId, actionContext, onAction }: { artifact: Record<string, unknown>; actions: SurfaceAction[]; surfaceId: string; actionContext: Record<string, string>; onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void }) {
+  const actionId = String(artifact.actionId ?? '');
+  const action = actions.find((candidate) => candidate.actionId === actionId);
+  const label = String(artifact.displayLabel ?? artifact.artifactCategory ?? 'Behavior artifact');
+  const targetSurfaceId = String(artifact.targetSurfaceId ?? action?.resultSurface?.updateSurfaceId ?? 'governed surface');
+  const redactionNote = String(artifact.redactionNote ?? 'Raw behavior content remains redacted.');
+  return (
+    <button type="button" role="listitem" className="user-admin-clean-row agent-admin-artifact-card" disabled={!action || Boolean(action.disabled)} onClick={() => action && onAction?.(action, surfaceId, { ...actionContext, targetSurfaceId })} aria-label={`Open ${label} drill-down for this managed agent`}>
+      <span className="user-admin-person"><strong>{label}</strong><small>{redactionNote}</small></span>
+      <span className="user-admin-role">{String(artifact.governedCapability ?? action?.capabilityId ?? 'governed')}</span>
+      <span className="status-pill info">{targetSurfaceId.replace('surface-agent-', '').replace(/-/g, ' ')}</span>
+      {action?.disabled?.message && <span className="form-error denied-reason">{action.disabled.message}</span>}
+    </button>
   );
 }
 

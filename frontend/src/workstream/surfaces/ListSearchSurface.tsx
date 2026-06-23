@@ -190,7 +190,7 @@ function AgentAdminSeedMaterialView({ envelope, onAction }: ListSearchSurfacePro
         <button type="submit" className="surface-action-link secondary" disabled={!searchAction}>Search</button>
       </form>
       {envelope.data.partial && <p className="surface-state-inline partial" role="status">Partial seed state: unauthorized or redacted seed evidence is omitted.</p>}
-      <SeedMaterialSelectionPanel envelope={envelope} />
+      <SeedMaterialSelectionPanel envelope={envelope} onAction={onAction} />
       {rows.length === 0 ? <p className="surface-empty-copy">{envelope.data.emptyMessage ?? 'No seed material is visible in this selected scope.'}</p> : (
         <div className="user-admin-clean-list agent-admin-seed-list" role="list" aria-label="Seed material cards">
           {rows.map((row, index) => <SeedMaterialRow key={String(row.id ?? index)} row={row} actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} />)}
@@ -206,19 +206,28 @@ function AgentAdminSeedMaterialView({ envelope, onAction }: ListSearchSurfacePro
   );
 }
 
-function SeedMaterialSelectionPanel({ envelope }: { envelope: SurfaceEnvelope<ListSearchSurfaceData> }) {
+function SeedMaterialSelectionPanel({ envelope, onAction }: { envelope: SurfaceEnvelope<ListSearchSurfaceData>; onAction?: (action: SurfaceAction, surfaceId: string, input?: Record<string, string>) => void }) {
   const provenanceInspection = (envelope.data as unknown as { provenanceInspection?: unknown }).provenanceInspection;
   const inspection = typeof provenanceInspection === 'object' && provenanceInspection ? provenanceInspection as Record<string, unknown> : undefined;
   if (!inspection || inspection.state === 'empty-no-seed-material') return null;
+  const selectedRow = envelope.data.rows.find((row) => row.id === inspection.selectedSeedMaterialId || row.artifactId === inspection.selectedSeedMaterialId);
+  const openDetailAction = envelope.actions.find((action) => action.actionId === 'action-agent-seed-material-open-agent-detail');
+  const traceAction = envelope.actions.find((action) => action.actionId === 'action-agent-seed-material-open-trace' || action.actionId === 'action-open-agent-trace');
+  const canOpenAgentDetail = Boolean(openDetailAction && selectedRow && (selectedRow.artifactKind === 'AgentDefinition' || selectedRow.recommendedManagedAgentTarget || selectedRow.agentDefinitionId));
   return (
     <aside className="agent-admin-seed-selection" role="status" aria-live="polite">
       <div>
         <p className="eyebrow">Selected seed provenance</p>
         <h4>{String(inspection.displayName ?? inspection.selectedSeedMaterialId ?? 'Seed material')}</h4>
         <p>{String(inspection.reviewHistorySummary ?? 'Seed provenance opened with browser-safe redaction.')}</p>
+        <small>{String(inspection.sourceLineage ?? inspection.safeReason ?? 'Raw seed content remains role-gated and omitted.')}</small>
       </div>
-      <span className="status-pill info">{String(inspection.artifactKind ?? 'seed artifact')}</span>
-      <small>{String(inspection.sourceLineage ?? inspection.safeReason ?? 'Raw seed content remains role-gated and omitted.')}</small>
+      <div className="agent-admin-seed-selection-actions" aria-label="Selected seed drill-down actions">
+        <span className="status-pill info">{String(inspection.artifactKind ?? 'seed artifact')}</span>
+        {canOpenAgentDetail && openDetailAction && selectedRow && <button type="button" className="surface-action-link primary" onClick={() => onAction?.(openDetailAction, envelope.surfaceId, seedMaterialRowInput(selectedRow))}>Open agent detail</button>}
+        {traceAction && selectedRow && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(traceAction, envelope.surfaceId, seedMaterialRowInput(selectedRow))}>Open seed trace</button>}
+      </div>
+      {canOpenAgentDetail && <p className="surface-state-inline">Agent detail exposes governed prompt and skill/reference manifest drill-downs with raw content redacted.</p>}
     </aside>
   );
 }

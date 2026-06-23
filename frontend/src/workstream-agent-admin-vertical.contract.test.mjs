@@ -15,6 +15,8 @@ const apiClient = read('./__tests__/fixtures/api/FixtureWorkstreamApiClient.ts')
 const agentAdminTaskSurface = read('./workstream/surfaces/AgentAdminTaskSurface.tsx');
 const decisionSurface = read('./workstream/surfaces/DecisionSurface.tsx');
 const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
+const detailEditSurface = read('./workstream/surfaces/DetailEditSurface.tsx');
+const listSearchSurface = read('./workstream/surfaces/ListSearchSurface.tsx');
 const workflowStatusSurface = read('./workstream/surfaces/WorkflowStatusSurface.tsx');
 
 test('Agent Admin functional agent is visible and capability backed for governed runtime', () => {
@@ -241,6 +243,7 @@ test('Agent Admin actions and fixture client return structured surfaces instead 
     'action-manage-model-ref',
     'action-list-agent-seed-material',
     'action-import-agent-seed-defaults',
+    'action-agent-seed-material-open-agent-detail',
     'action-open-agent-trace',
     'action-agentadmin-start-prompt-risk-review',
     'action-agentadmin-read-prompt-risk-review',
@@ -263,6 +266,17 @@ test('Agent Admin actions and fixture client return structured surfaces instead 
   assert.match(apiClient, /displayAgentPromptRiskReviewActionResult/);
   assert.match(apiClient, /agent_admin\.list_definitions/);
   assert.match(apiClient, /agent_admin\.list_seed_material/);
+});
+
+test('Agent Admin seed provenance and detail surfaces expose prompt and skill drill-downs', () => {
+  assert.match(listSearchSurface, /Open agent detail/);
+  assert.match(listSearchSurface, /Agent detail exposes governed prompt and skill\/reference manifest drill-downs/);
+  assert.match(detailEditSurface, /Open this agent's prompt and skills/);
+  assert.match(detailEditSurface, /Governed prompt and skill drill-downs/);
+  assert.match(surfaces, /action-agent-seed-material-open-agent-detail/);
+  assert.match(surfaces, /behaviorArtifactCards/);
+  assert.match(surfaces, /action-agent-detail-open-prompt-governance/);
+  assert.match(surfaces, /action-agent-detail-open-skill-manifest/);
 });
 
 test('Agent Admin starts without bootstrap markdown and keeps structured governance surfaces available', () => {
