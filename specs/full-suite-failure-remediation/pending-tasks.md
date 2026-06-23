@@ -303,7 +303,7 @@
 
 ### TASK-FSFR-08-001: Repair remaining browser smoke failures
 
-- status: pending
+- status: done
 - source: specs/full-suite-failure-remediation/failure-inventory.md after TASK-FSFR-01-001
 - task brief: specs/full-suite-failure-remediation/tasks/08-browser-smoke/01-repair-remaining-browser-smoke-failures.md
 - depends on:
@@ -332,6 +332,9 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: browser smoke/API/UI runtime path repair
+  - completed 2026-06-23: repaired the remaining User Admin browser-smoke safety assertion so provider secret detection remains enforced without treating safe backend-authored identifiers such as `task-...` as leaked OpenAI-style secret keys.
+  - validation: `mvn -Dtest=UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesUserAdminSystemMessageRuntimeCoverage test` passed; `mvn -Dtest=GovernancePolicyBrowserWorkstreamSmokeTest,UserAdminBrowserWorkstreamSmokeTest,MyAccountBrowserWorkstreamSmokeTest test` passed with 33/33 browser smoke tests; `git diff --check` passed. No frontend paths changed, so frontend tests/typecheck were not required.
+  - commit message: `full-suite-remediation: repair remaining browser smoke`
 
 ### TASK-FSFR-09-001: Repair attention producer failure
 

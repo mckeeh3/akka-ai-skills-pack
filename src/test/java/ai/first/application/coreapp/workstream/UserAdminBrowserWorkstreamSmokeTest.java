@@ -4448,7 +4448,7 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertFalse(text.contains("invite-token"));
     assertFalse(text.contains("tokenHash"));
     assertFalse(text.contains("providerSecret"));
-    assertFalse(text.contains("sk-"));
+    assertFalse(text.matches("(?is).*\\bsk-[A-Za-z0-9_-]{8,}.*"), "Browser payload must not expose provider secret tokens.");
     assertFalse(text.contains("Bearer "));
     assertFalse(text.contains("workos-admin"));
     assertFalse(text.contains("test-fake-provider"));
