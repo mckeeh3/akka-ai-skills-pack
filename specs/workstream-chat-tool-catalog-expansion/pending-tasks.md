@@ -1,0 +1,498 @@
+# Pending Tasks: Workstream Chat Tool Catalog Expansion
+
+## Queue rules
+
+- Execute one task per fresh harness context.
+- Select the first `pending` task whose dependencies are satisfied.
+- Preserve task IDs; supersede obsolete tasks rather than deleting them.
+- Do not combine adjacent tasks unless this file is first updated to merge them.
+- Read this mini-project's README, conversation capture, selected sprint, selected backlog, selected task entry, and task brief before editing.
+- Update this file before finishing the harness response.
+- Each task must make one focused git commit before being marked `done`; the commit should include only that task's intended changes and the queue-status update.
+- If the queue status update is included in the same commit, record the commit message in task notes instead of attempting to amend the commit hash.
+- Commit message format: `workstream-chat-catalog: <short task title>`.
+- Do not commit unrelated changes while executing this root app-realization queue.
+- Preserve deterministic surface intent routing, selected `AuthContext`, tenant/customer scoping, backend authorization, idempotency, provider fail-closed behavior, audit/work traces, frontend secret boundaries, and exact plan-snapshot confirmation.
+- Existing dirty static frontend build assets under `src/main/resources/static-resources/**` are out of scope unless a selected task explicitly requires production frontend build output.
+- The terminal verification task must append bounded follow-up tasks plus a new terminal verification task if the README done state is not fully achieved.
+
+## Tasks
+
+### TASK-WCTC-00-001: Create Workstream Chat Tool Catalog Expansion planning scaffold
+
+- status: done
+- source: user completed manual testing of confirmed chat tool execution and asked to deepen chat-tool coverage beyond representative paths
+- task brief: specs/workstream-chat-tool-catalog-expansion/tasks/00-planning/00-create-chat-tool-catalog-expansion-queue.md
+- depends on: []
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - current conversation context
+  - specs/workstream-chat-tool-execution/verification-notes.md
+  - specs/workstream-chat-tool-execution/source-and-design-map.md
+- skills:
+  - project-discussed-idea-to-pending-project
+- expected outputs:
+  - specs/workstream-chat-tool-catalog-expansion/README.md
+  - specs/workstream-chat-tool-catalog-expansion/conversation-capture.md
+  - specs/workstream-chat-tool-catalog-expansion/pending-tasks.md
+  - specs/workstream-chat-tool-catalog-expansion/sprints/*.md
+  - specs/workstream-chat-tool-catalog-expansion/backlog/*.md
+  - specs/workstream-chat-tool-catalog-expansion/tasks/**/*.md
+- required checks:
+  - `git diff --check -- specs/workstream-chat-tool-catalog-expansion`
+- done criteria:
+  - scope, done state, non-goals, implementation order, and verification loop are explicit
+  - first non-done task is runnable without guessing
+  - unrelated working tree changes are not committed
+  - changes and queue update are committed
+- notes:
+  - commit message: `workstream-chat-catalog: add expansion queue`
+  - unrelated working tree note: static frontend build assets were already dirty before this scaffold and are not part of this task
+
+### TASK-WCTC-01-001: Inventory and classify foundation workstream actions
+
+- status: pending
+- source: specs/workstream-chat-tool-catalog-expansion/backlog/01-chat-tool-catalog-expansion-build-backlog.md
+- task brief: specs/workstream-chat-tool-catalog-expansion/tasks/01-inventory/01-inventory-classify-foundation-actions.md
+- depends on:
+  - TASK-WCTC-00-001
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/workstream-chat-tool-catalog-expansion/README.md
+  - specs/workstream-chat-tool-catalog-expansion/conversation-capture.md
+  - specs/workstream-chat-tool-catalog-expansion/sprints/01-inventory-and-current-intent.md
+  - specs/workstream-chat-tool-catalog-expansion/backlog/01-chat-tool-catalog-expansion-build-backlog.md
+  - specs/workstream-chat-tool-catalog-expansion/tasks/01-inventory/01-inventory-classify-foundation-actions.md
+  - specs/workstream-chat-tool-execution/source-and-design-map.md
+  - specs/workstream-chat-tool-execution/verification-notes.md
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - app-description/domains/core-starter/workstreams/**
+  - frontend/src/workstream/surfaces/**
+- skills:
+  - agent-workstream-apps
+  - capability-first-backend
+  - akka-agent-tool-boundaries
+  - akka-agent-work-trace
+- expected outputs:
+  - specs/workstream-chat-tool-catalog-expansion/catalog-inventory.md
+  - queue update
+- required checks:
+  - `git diff --check -- specs/workstream-chat-tool-catalog-expansion`
+- done criteria:
+  - inventory covers all five foundation workstreams
+  - each relevant action is classified with rationale, risk, prerequisites, expected tests, and first-pass recommendation
+  - first expansion set is explicit and safe
+  - changes and queue update are committed
+- notes:
+  - vertical contract: docs/spec inventory only; no runtime feature completed
+
+### TASK-WCTC-02-001: Update expanded chat tool current intent
+
+- status: pending
+- source: specs/workstream-chat-tool-catalog-expansion/backlog/01-chat-tool-catalog-expansion-build-backlog.md
+- task brief: specs/workstream-chat-tool-catalog-expansion/tasks/02-current-intent/01-update-expanded-chat-tool-current-intent.md
+- depends on:
+  - TASK-WCTC-01-001
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/workstream-chat-tool-catalog-expansion/README.md
+  - specs/workstream-chat-tool-catalog-expansion/catalog-inventory.md
+  - specs/workstream-chat-tool-catalog-expansion/tasks/02-current-intent/01-update-expanded-chat-tool-current-intent.md
+  - app-description/domains/core-starter/workstreams/**
+- skills:
+  - app-description-functional-agent-modeling
+  - app-description-surface-modeling
+  - app-description-capability-modeling
+  - app-description-auth-security
+  - app-description-test-specification
+- expected outputs:
+  - app-description updates for expanded/blocked `human_chat_tool_plan` catalog coverage
+  - specs/workstream-chat-tool-catalog-expansion/catalog-coverage-map.md
+  - queue update
+- required checks:
+  - `git diff --check`
+  - focused search proving all five workstreams have expanded catalog classification and blocked/surface-only rationale
+- done criteria:
+  - current intent distinguishes executable, proposal-only, approval-gated, surface-only, router-only, internal-only, blocked, and out-of-scope actions
+  - no app-description wording grants unrestricted chat mutation or autonomous AI authority
+  - changes and queue update are committed
+- notes:
+  - vertical contract: app-description/current-intent only; no runtime code
+
+### TASK-WCTC-03-001: Add catalog classification and prompt guardrails
+
+- status: pending
+- source: specs/workstream-chat-tool-catalog-expansion/backlog/01-chat-tool-catalog-expansion-build-backlog.md
+- task brief: specs/workstream-chat-tool-catalog-expansion/tasks/03-catalog-contract/01-add-catalog-classification-guardrails.md
+- depends on:
+  - TASK-WCTC-02-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-chat-tool-catalog-expansion/README.md
+  - specs/workstream-chat-tool-catalog-expansion/catalog-inventory.md
+  - specs/workstream-chat-tool-catalog-expansion/catalog-coverage-map.md
+  - specs/workstream-chat-tool-catalog-expansion/tasks/03-catalog-contract/01-add-catalog-classification-guardrails.md
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - related tests named by the inventory
+- skills:
+  - capability-first-backend
+  - akka-agent-tool-boundaries
+  - akka-agent-work-trace
+- expected outputs:
+  - backend catalog classification fields and rationale
+  - prompt guardrails preserving deterministic surface routing first
+  - tests for unsafe exposure prevention and classification behavior
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted backend catalog/guardrail tests
+- done criteria:
+  - unsupported/high-risk prompts cannot silently become executable steps
+  - catalog entries carry enough metadata for frontend/trace/test reporting
+  - changes and queue update are committed
+- notes:
+  - vertical contract: shared backend catalog/guardrail substrate; no per-workstream expansion claim yet
+
+### TASK-WCTC-04-001: Expand My Account chat tool catalog
+
+- status: pending
+- source: specs/workstream-chat-tool-catalog-expansion/backlog/01-chat-tool-catalog-expansion-build-backlog.md
+- task brief: specs/workstream-chat-tool-catalog-expansion/tasks/04-my-account/01-expand-my-account-chat-tool-catalog.md
+- depends on:
+  - TASK-WCTC-03-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-chat-tool-catalog-expansion/README.md
+  - specs/workstream-chat-tool-catalog-expansion/catalog-inventory.md
+  - specs/workstream-chat-tool-catalog-expansion/catalog-coverage-map.md
+  - specs/workstream-chat-tool-catalog-expansion/tasks/04-my-account/01-expand-my-account-chat-tool-catalog.md
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - app-description/domains/core-starter/workstreams/my-account/**
+  - relevant frontend My Account surfaces/tests
+- skills:
+  - capability-first-backend
+  - akka-web-ui-forms-validation
+  - akka-agent-work-trace
+- expected outputs:
+  - expanded My Account chat tool catalog entries and prompt examples
+  - backend execution/proposal behavior and tests
+  - frontend contract updates if needed
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted backend My Account chat tool tests
+  - `npm --prefix frontend test -- --run` if frontend contracts change
+  - `npm --prefix frontend run typecheck` if frontend contracts change
+- done criteria:
+  - My Account expanded paths require exact confirmation and selected AuthContext validation
+  - profile/settings/preference changes remain scoped to the current account and never expose secrets
+  - changes and queue update are committed
+- notes:
+  - vertical contract: My Account workstream; selected AuthContext/self-service scope; human_chat_tool_plan expansion
+
+### TASK-WCTC-05-001: Expand User Admin chat tool catalog
+
+- status: pending
+- source: specs/workstream-chat-tool-catalog-expansion/backlog/01-chat-tool-catalog-expansion-build-backlog.md
+- task brief: specs/workstream-chat-tool-catalog-expansion/tasks/05-user-admin/01-expand-user-admin-chat-tool-catalog.md
+- depends on:
+  - TASK-WCTC-04-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-chat-tool-catalog-expansion/README.md
+  - specs/workstream-chat-tool-catalog-expansion/catalog-inventory.md
+  - specs/workstream-chat-tool-catalog-expansion/catalog-coverage-map.md
+  - specs/workstream-chat-tool-catalog-expansion/tasks/05-user-admin/01-expand-user-admin-chat-tool-catalog.md
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - app-description/domains/core-starter/workstreams/user-admin/**
+  - relevant User Admin service/surface/tests
+- skills:
+  - capability-first-backend
+  - akka-saas-invitation-onboarding
+  - akka-agent-tool-boundaries
+  - akka-agent-work-trace
+- expected outputs:
+  - expanded User Admin chat tool entries selected by inventory
+  - explicit blocked/approval-gated handling for high-risk paths
+  - backend/frontend tests as needed
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted backend User Admin chat tool tests
+  - frontend tests/typecheck if frontend contracts change
+- done criteria:
+  - no high-risk User Admin action executes unless fully confirmation/approval modeled
+  - invitation and organization/customer actions preserve tenant/customer scope, idempotency, provider/outbox fail-closed behavior, and traces
+  - changes and queue update are committed
+- notes:
+  - vertical contract: User Admin workstream; tenant/customer/admin scope; human_chat_tool_plan expansion
+
+### TASK-WCTC-06-001: Expand Agent Admin chat tool catalog
+
+- status: pending
+- source: specs/workstream-chat-tool-catalog-expansion/backlog/01-chat-tool-catalog-expansion-build-backlog.md
+- task brief: specs/workstream-chat-tool-catalog-expansion/tasks/06-agent-admin/01-expand-agent-admin-chat-tool-catalog.md
+- depends on:
+  - TASK-WCTC-05-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-chat-tool-catalog-expansion/README.md
+  - specs/workstream-chat-tool-catalog-expansion/catalog-inventory.md
+  - specs/workstream-chat-tool-catalog-expansion/catalog-coverage-map.md
+  - specs/workstream-chat-tool-catalog-expansion/tasks/06-agent-admin/01-expand-agent-admin-chat-tool-catalog.md
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - app-description/domains/core-starter/workstreams/agent-admin/**
+  - relevant Agent Admin seed/runtime/surface/tests
+- skills:
+  - akka-agent-behavior-profiles
+  - akka-agent-prompt-governance
+  - akka-agent-skill-governance
+  - akka-agent-tool-boundaries
+  - akka-agent-work-trace
+- expected outputs:
+  - expanded Agent Admin chat tool entries selected by inventory
+  - approval-gated/blocked handling for activation, rollback, deactivation, and authority expansion when prerequisites are incomplete
+  - tests and queue update
+- required checks:
+  - `git diff --check`
+  - targeted backend Agent Admin chat tool tests
+  - seed/import tests if seed resources change
+  - frontend tests/typecheck if frontend contracts change
+- done criteria:
+  - prompt/skill/reference/model/tool-boundary text cannot grant authority
+  - high-impact lifecycle changes remain approval-gated or blocked unless fully modeled
+  - changes and queue update are committed
+- notes:
+  - vertical contract: Agent Admin workstream; managed-agent governance scope; human_chat_tool_plan expansion
+
+### TASK-WCTC-07-001: Expand Audit/Trace chat tool catalog
+
+- status: pending
+- source: specs/workstream-chat-tool-catalog-expansion/backlog/01-chat-tool-catalog-expansion-build-backlog.md
+- task brief: specs/workstream-chat-tool-catalog-expansion/tasks/07-audit-trace/01-expand-audit-trace-chat-tool-catalog.md
+- depends on:
+  - TASK-WCTC-06-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-chat-tool-catalog-expansion/README.md
+  - specs/workstream-chat-tool-catalog-expansion/catalog-inventory.md
+  - specs/workstream-chat-tool-catalog-expansion/catalog-coverage-map.md
+  - specs/workstream-chat-tool-catalog-expansion/tasks/07-audit-trace/01-expand-audit-trace-chat-tool-catalog.md
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - app-description/domains/core-starter/workstreams/audit-trace/**
+  - relevant Audit/Trace services/surfaces/tests
+- skills:
+  - capability-first-backend
+  - ai-first-saas-audit-trace
+  - akka-agent-work-trace
+- expected outputs:
+  - expanded Audit/Trace chat tool entries selected by inventory
+  - export/raw evidence handling remains approval-gated/surface-only unless fully modeled
+  - tests and queue update
+- required checks:
+  - `git diff --check`
+  - targeted backend Audit/Trace chat tool tests
+  - frontend tests/typecheck if frontend contracts change
+- done criteria:
+  - trace data remains scoped, redacted, and browser-safe
+  - export or privileged raw evidence paths cannot execute through chat unless full approval/redaction policy is modeled
+  - changes and queue update are committed
+- notes:
+  - vertical contract: Audit/Trace workstream; trace/audit scope; human_chat_tool_plan expansion
+
+### TASK-WCTC-08-001: Expand Governance/Policy chat tool catalog
+
+- status: pending
+- source: specs/workstream-chat-tool-catalog-expansion/backlog/01-chat-tool-catalog-expansion-build-backlog.md
+- task brief: specs/workstream-chat-tool-catalog-expansion/tasks/08-governance-policy/01-expand-governance-policy-chat-tool-catalog.md
+- depends on:
+  - TASK-WCTC-07-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-chat-tool-catalog-expansion/README.md
+  - specs/workstream-chat-tool-catalog-expansion/catalog-inventory.md
+  - specs/workstream-chat-tool-catalog-expansion/catalog-coverage-map.md
+  - specs/workstream-chat-tool-catalog-expansion/tasks/08-governance-policy/01-expand-governance-policy-chat-tool-catalog.md
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - app-description/domains/core-starter/workstreams/governance-policy/**
+  - relevant Governance/Policy services/surfaces/tests
+- skills:
+  - ai-first-saas-policy-governance
+  - ai-first-saas-decision-cards
+  - capability-first-backend
+  - akka-agent-work-trace
+- expected outputs:
+  - expanded Governance/Policy chat tool entries selected by inventory
+  - activation, rollback, threshold changes, and live authority changes remain approval-gated/blocked unless fully modeled
+  - tests and queue update
+- required checks:
+  - `git diff --check`
+  - targeted backend Governance/Policy chat tool tests
+  - frontend tests/typecheck if frontend contracts change
+- done criteria:
+  - policy changes remain governed proposals until explicit approval/activation paths are satisfied
+  - chat cannot directly activate or weaken policies
+  - changes and queue update are committed
+- notes:
+  - vertical contract: Governance/Policy workstream; policy-governance scope; human_chat_tool_plan expansion
+
+### TASK-WCTC-09-001: Polish expanded chat tool plan UX
+
+- status: pending
+- source: specs/workstream-chat-tool-catalog-expansion/backlog/01-chat-tool-catalog-expansion-build-backlog.md
+- task brief: specs/workstream-chat-tool-catalog-expansion/tasks/09-frontend-ux/01-polish-expanded-chat-tool-plan-ux.md
+- depends on:
+  - TASK-WCTC-08-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-chat-tool-catalog-expansion/README.md
+  - specs/workstream-chat-tool-catalog-expansion/catalog-coverage-map.md
+  - specs/workstream-chat-tool-catalog-expansion/tasks/09-frontend-ux/01-polish-expanded-chat-tool-plan-ux.md
+  - completed per-workstream implementation notes
+  - frontend/src/workstream/surfaces/**
+  - frontend/src/workstream/types/**
+  - frontend/src/api/**
+- skills:
+  - akka-web-ui-api-client
+  - akka-web-ui-state-rendering
+  - akka-web-ui-forms-validation
+  - akka-web-ui-accessibility-responsive
+- expected outputs:
+  - frontend copy/rendering improvements for expanded plan classifications and result states
+  - contract tests for expanded metadata and no auto-submit behavior
+  - queue update
+- required checks:
+  - `git diff --check`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+- done criteria:
+  - users can distinguish executable, approval-gated, proposal-only, and blocked steps before confirming
+  - UI remains accessible and browser-safe
+  - changes and queue update are committed without unrelated generated static assets unless explicitly required
+- notes:
+  - vertical contract: frontend-rendered expanded plan UX; no backend scope expansion unless needed for DTO compatibility
+
+### TASK-WCTC-10-001: Update expanded catalog seeds and traceability
+
+- status: pending
+- source: specs/workstream-chat-tool-catalog-expansion/backlog/01-chat-tool-catalog-expansion-build-backlog.md
+- task brief: specs/workstream-chat-tool-catalog-expansion/tasks/10-seeds-traceability/01-update-expanded-catalog-seeds-and-traceability.md
+- depends on:
+  - TASK-WCTC-09-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-chat-tool-catalog-expansion/README.md
+  - specs/workstream-chat-tool-catalog-expansion/catalog-coverage-map.md
+  - specs/workstream-chat-tool-catalog-expansion/tasks/10-seeds-traceability/01-update-expanded-catalog-seeds-and-traceability.md
+  - completed per-workstream implementation notes
+  - src/main/resources/agent-behavior-seeds/starter-v1/**
+  - src/main/java/ai/first/application/foundation/agent/AgentBehaviorSeedLoader.java
+  - app-description/domains/core-starter/workstreams/**
+- skills:
+  - akka-agent-behavior-profiles
+  - akka-agent-prompt-governance
+  - akka-agent-skill-governance
+  - akka-agent-reference-governance
+  - akka-agent-work-trace
+- expected outputs:
+  - seed prompt/skill/reference updates for expanded catalog guidance
+  - checksum/import updates if needed
+  - traceability map/docs updates
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted seed/import tests if seed resources change
+  - targeted search proving seed material does not claim unrestricted mutation authority
+- done criteria:
+  - agents can explain expanded catalog classifications accurately
+  - seed text does not grant authority or bypass confirmation/approval
+  - changes and queue update are committed
+- notes:
+  - vertical contract: managed-agent seed/traceability update; no new runtime behavior beyond prior tasks
+
+### TASK-WCTC-11-001: Add expanded catalog regression tests
+
+- status: pending
+- source: specs/workstream-chat-tool-catalog-expansion/backlog/01-chat-tool-catalog-expansion-build-backlog.md
+- task brief: specs/workstream-chat-tool-catalog-expansion/tasks/11-regression/01-add-expanded-catalog-regression-tests.md
+- depends on:
+  - TASK-WCTC-10-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-chat-tool-catalog-expansion/README.md
+  - specs/workstream-chat-tool-catalog-expansion/catalog-coverage-map.md
+  - specs/workstream-chat-tool-catalog-expansion/tasks/11-regression/01-add-expanded-catalog-regression-tests.md
+  - completed per-workstream implementation files and task notes
+  - related backend/frontend tests
+- skills:
+  - akka-agent-testing
+  - akka-http-endpoint-testing
+  - akka-web-ui-testing
+  - akka-runtime-feature-verification
+- expected outputs:
+  - backend/API tests for expanded catalog no-mutation, confirmation, denials, idempotency, approval-gated behavior, partial failure, provider fail-closed, and traces
+  - frontend contract tests if not already covered
+  - queue update
+- required checks:
+  - `git diff --check`
+  - targeted backend/API expanded catalog tests
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - runtime-evidence/workstream-contract validators if queue notes are updated materially
+- done criteria:
+  - tests fail if blocked/surface-only actions execute through chat
+  - tests cover each workstream's expanded path and at least one denial path
+  - changes and queue update are committed
+- notes:
+  - vertical contract: cross-workstream regression coverage for expanded human_chat_tool_plan catalog
+
+### TASK-WCTC-99-001: Verify Workstream Chat Tool Catalog Expansion completion
+
+- status: pending
+- source: specs/workstream-chat-tool-catalog-expansion/README.md done state
+- task brief: specs/workstream-chat-tool-catalog-expansion/tasks/99-verification/01-verify-chat-tool-catalog-expansion.md
+- depends on:
+  - TASK-WCTC-11-001
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/workstream-chat-tool-catalog-expansion/README.md
+  - specs/workstream-chat-tool-catalog-expansion/conversation-capture.md
+  - specs/workstream-chat-tool-catalog-expansion/pending-tasks.md
+  - specs/workstream-chat-tool-catalog-expansion/catalog-inventory.md
+  - specs/workstream-chat-tool-catalog-expansion/catalog-coverage-map.md
+  - specs/workstream-chat-tool-catalog-expansion/tasks/99-verification/01-verify-chat-tool-catalog-expansion.md
+  - completed task notes and changed files
+- skills:
+  - akka-runtime-feature-verification
+  - akka-agent-testing
+  - akka-web-ui-testing
+  - akka-agent-work-trace
+- expected outputs:
+  - specs/workstream-chat-tool-catalog-expansion/verification-notes.md
+  - queue update marking verification done only when README done state is achieved
+  - new bounded follow-up tasks plus a new terminal verification task if material gaps remain
+  - commit for verification notes and queue updates
+- required checks:
+  - `git diff --check`
+  - targeted backend/API expanded catalog tests
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - `npm --prefix frontend run build` if frontend runtime output changed materially
+  - `mvn test` if shared backend workstream/agent behavior changed materially
+  - runtime-evidence and workstream-contract validators
+  - local API/UI/manual smoke for representative expanded paths when provider/auth/runtime configuration allows it
+- done criteria:
+  - verification notes compare completed work against every README done-state bullet
+  - catalog inventory/classification coverage is complete for foundation workstream actions
+  - expanded executable/proposal/approval-gated paths are proven safe at the stated readiness level
+  - blocked/surface-only classifications are documented and cannot execute through chat
+  - provider missing config fails closed and is not counted as successful planning
+  - audit/work trace evidence is recorded
+  - if gaps remain, new bounded tasks plus a new terminal verification task are appended
+  - changes and queue update are committed
+- notes:
+  - vertical contract: terminal runtime verification for expanded Workstream Chat Tool Catalog across all five foundation workstreams
