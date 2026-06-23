@@ -499,7 +499,7 @@
 
 ### TASK-WCTE-99-001: Verify Workstream Chat Tool Execution completion
 
-- status: pending
+- status: blocked
 - source: specs/workstream-chat-tool-execution/README.md done state
 - task brief: specs/workstream-chat-tool-execution/tasks/99-verification/01-verify-workstream-chat-tool-execution.md
 - depends on:
@@ -542,3 +542,115 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: terminal runtime verification for root app feature; readiness target runtime-ready where local provider/auth config allows, otherwise precise fail-closed/manual-ready evidence and follow-up tasks
+  - result: blocked/open; README done state is not fully achieved because `npm --prefix frontend test -- --run` fails in `frontend/src/workstream-user-admin-expertise.contract.test.mjs` and queue evidence validators report missing runtime-evidence labels/fields in completed task notes
+  - verification notes: `specs/workstream-chat-tool-execution/verification-notes.md`
+  - readiness evidence recorded: `api-smoked` for protected User Admin API/provider-boundary path, `backend-ready` for confirmed User Admin execution and all-workstream representative dispatcher coverage, `frontend-rendered` for chat-plan contracts; not `runtime-ready`
+  - checks: targeted backend chat tool execution/API/agent tests passed; `npm --prefix frontend test -- --run` failed; `npm --prefix frontend run typecheck` passed; runtime-evidence and workstream-contract validators failed as recorded in verification notes
+
+### TASK-WCTE-12-001: Repair User Admin expertise seed contract drift
+
+- status: pending
+- source: TASK-WCTE-99-001 terminal verification failure
+- task brief: specs/workstream-chat-tool-execution/tasks/12-follow-up/01-repair-user-admin-expertise-seed-contract-drift.md
+- depends on:
+  - TASK-WCTE-11-001
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/workstream-chat-tool-execution/README.md
+  - specs/workstream-chat-tool-execution/verification-notes.md
+  - frontend/src/workstream-user-admin-expertise.contract.test.mjs
+  - src/main/resources/agent-behavior-seeds/starter-v1/user-admin-agent-expertise.yaml
+  - src/main/resources/agent-behavior-seeds/starter-v1/manifest.properties
+  - related User Admin seed/skill/reference files touched by TASK-WCTE-11-001
+- skills:
+  - akka-agent-skill-governance
+  - akka-agent-reference-governance
+  - akka-agent-work-trace
+- expected outputs:
+  - repaired User Admin expertise seed/test alignment for unassigned skill/reference and tool-boundary denial wording
+  - checksum/import updates if seed content changes
+  - queue update
+- required checks:
+  - `git diff --check`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - targeted seed/import tests if seed resources or checksums change
+- done criteria:
+  - frontend test `User Admin expertise contract covers unassigned and tool-boundary denials` passes without weakening denial/authority-expansion expectations
+  - seed text still does not grant roles, tenant scope, governed-tool access, approval rights, backend capabilities, or chat execution authority
+  - changes and queue update are committed
+
+### TASK-WCTE-12-002: Normalize runtime completion evidence in queue notes
+
+- status: pending
+- source: TASK-WCTE-99-001 terminal verification validator failures
+- task brief: specs/workstream-chat-tool-execution/tasks/12-follow-up/02-normalize-runtime-completion-evidence.md
+- depends on:
+  - TASK-WCTE-12-001
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/workstream-chat-tool-execution/README.md
+  - specs/workstream-chat-tool-execution/pending-tasks.md
+  - specs/workstream-chat-tool-execution/verification-notes.md
+  - completed task notes and changed files
+- skills:
+  - akka-runtime-feature-verification
+  - akka-agent-work-trace
+- expected outputs:
+  - pending-task notes repaired with explicit readiness labels and bounded runtime evidence for completed feature-bearing tasks
+  - validator failures resolved or explicitly justified with blocked follow-up evidence
+  - queue update
+- required checks:
+  - `git diff --check`
+  - `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/workstream-chat-tool-execution/pending-tasks.md`
+  - `bash skills-pack/tools/validate-pending-task-workstream-contract.sh specs/workstream-chat-tool-execution/pending-tasks.md`
+- done criteria:
+  - completed task notes distinguish described/surface-ready/backend-ready/frontend-rendered/api-smoked/runtime-ready levels without over-claiming
+  - provider fail-closed evidence is recorded and not counted as successful model-backed planning
+  - validators pass or any remaining failures are represented as bounded follow-up tasks before terminal verification
+  - changes and queue update are committed
+
+### TASK-WCTE-99-002: Re-verify Workstream Chat Tool Execution completion
+
+- status: pending
+- source: TASK-WCTE-99-001 blocked terminal verification
+- task brief: specs/workstream-chat-tool-execution/tasks/99-verification/02-reverify-workstream-chat-tool-execution.md
+- depends on:
+  - TASK-WCTE-12-002
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/workstream-chat-tool-execution/README.md
+  - specs/workstream-chat-tool-execution/conversation-capture.md
+  - specs/workstream-chat-tool-execution/pending-tasks.md
+  - specs/workstream-chat-tool-execution/source-and-design-map.md
+  - specs/workstream-chat-tool-execution/verification-notes.md
+  - completed follow-up task notes and changed files
+  - related backend/frontend/app-description files
+- skills:
+  - akka-runtime-feature-verification
+  - akka-agent-testing
+  - akka-web-ui-testing
+  - akka-agent-work-trace
+- expected outputs:
+  - updated specs/workstream-chat-tool-execution/verification-notes.md
+  - queue update marking verification done only when README done state is achieved
+  - additional bounded follow-up tasks plus another terminal verification task if material gaps remain
+  - commit for verification notes and queue updates
+- required checks:
+  - `git diff --check`
+  - targeted backend chat tool execution tests
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - runtime-evidence and workstream-contract validators
+  - local API/UI/manual smoke for the User Admin example when provider/auth/runtime configuration allows it
+- done criteria:
+  - verification notes compare completed work against every README done-state bullet
+  - User Admin example is proven no-mutation before confirmation and executed after confirmation when authorized
+  - all five foundation workstreams have representative confirmed chat tool-plan coverage
+  - provider missing config fails closed and is not counted as successful model-backed planning
+  - audit/work trace evidence is recorded
+  - all required checks pass or new bounded follow-up tasks are appended and the mini-project remains open
+  - changes and queue update are committed
