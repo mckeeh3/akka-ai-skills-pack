@@ -506,7 +506,7 @@
 
 ### TASK-WCTC-99-001: Verify Workstream Chat Tool Catalog Expansion completion
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-catalog-expansion/README.md done state
 - task brief: specs/workstream-chat-tool-catalog-expansion/tasks/99-verification/01-verify-chat-tool-catalog-expansion.md
 - depends on:
@@ -551,3 +551,75 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: terminal runtime verification for expanded Workstream Chat Tool Catalog across all five foundation workstreams
+  - verification-notes.md created; 29 targeted expansion tests pass; 176/177 frontend tests pass; typecheck clean; git diff --check clean
+  - 6 pre-existing full-suite failures documented; all existed before expansion; 2 are material to expansion done state (My Account direct-action field/timezone validation)
+  - material gap: `myAccountRejectsUnsupportedSelfServiceFieldsBeforeMutation` and `myAccountSettingsRejectInvalidTimezoneBeforeMutation` fail; direct-action-level settings field allowlist and timezone validation not implemented in `runAction` path
+  - follow-up: TASK-WCTC-12-001 (add My Account direct-action validation) and TASK-WCTC-99-002 (re-verify after fix) appended
+  - commit message: `workstream-chat-catalog: verify completion`
+
+### TASK-WCTC-12-001: Add My Account direct-action settings field and timezone validation
+
+- status: pending
+- source: specs/workstream-chat-tool-catalog-expansion/verification-notes.md Material Gap 1
+- task brief: inline (see notes)
+- depends on:
+  - TASK-WCTC-99-001
+- required reads:
+  - AGENTS.md
+  - specs/workstream-chat-tool-catalog-expansion/README.md
+  - specs/workstream-chat-tool-catalog-expansion/verification-notes.md
+  - src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  - src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java (tests `myAccountRejectsUnsupportedSelfServiceFieldsBeforeMutation` and `myAccountSettingsRejectInvalidTimezoneBeforeMutation`)
+- skills:
+  - capability-first-backend
+  - akka-agent-tool-boundaries
+- expected outputs:
+  - `runAction` path for `action-update-my-settings` and `action-update-my-profile` validates against field allowlist (rejects unsupported fields with `MY_ACCOUNT_UNSUPPORTED_SELF_SERVICE_FIELD`) and against timezone allowlist (rejects unknown timezones with `MY_ACCOUNT_INVALID_PREFERENCE`)
+  - `myAccountRejectsUnsupportedSelfServiceFieldsBeforeMutation` and `myAccountSettingsRejectInvalidTimezoneBeforeMutation` pass
+  - queue update
+- required checks:
+  - `git diff --check`
+  - `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest#myAccountRejectsUnsupportedSelfServiceFieldsBeforeMutation+myAccountSettingsRejectInvalidTimezoneBeforeMutation+expandedMyAccountChatToolPlansRequireExactConfirmationAndStaySelfScoped+myAccountSettingsUpdatePersistsThemeLocaleAndTimezone test`
+- done criteria:
+  - `runAction` for `action-update-my-settings` throws `AuthorizationException` with `MY_ACCOUNT_UNSUPPORTED_SELF_SERVICE_FIELD` when input contains unsupported fields (e.g., `roleIds`)
+  - `runAction` for `action-update-my-settings` throws `AuthorizationException` with `MY_ACCOUNT_INVALID_PREFERENCE` when input contains an unrecognized timezone (e.g., `Hidden/Provider`)
+  - existing passing tests (`myAccountSettingsUpdatePersistsThemeLocaleAndTimezone`, `expandedMyAccountChatToolPlansRequireExactConfirmationAndStaySelfScoped`) continue to pass
+  - changes and queue update are committed
+- notes:
+  - vertical contract: My Account settings/profile direct-action input validation; defense-in-depth for field allowlist and timezone validation
+  - commit message: `workstream-chat-catalog: add my account direct action validation`
+
+### TASK-WCTC-99-002: Re-verify Workstream Chat Tool Catalog Expansion completion
+
+- status: pending
+- source: specs/workstream-chat-tool-catalog-expansion/verification-notes.md (Material Gap 1 follow-up)
+- task brief: inline (see notes)
+- depends on:
+  - TASK-WCTC-12-001
+- required reads:
+  - AGENTS.md
+  - specs/AGENTS.md
+  - specs/workstream-chat-tool-catalog-expansion/README.md
+  - specs/workstream-chat-tool-catalog-expansion/verification-notes.md
+  - specs/workstream-chat-tool-catalog-expansion/pending-tasks.md
+  - completed TASK-WCTC-12-001 notes
+- skills:
+  - akka-runtime-feature-verification
+  - akka-agent-testing
+- expected outputs:
+  - updated specs/workstream-chat-tool-catalog-expansion/verification-notes.md confirming all README done-state bullets satisfied
+  - queue update marking this task done and mini-project closed, or new bounded follow-up tasks if additional gaps remain
+- required checks:
+  - `git diff --check`
+  - `mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest#myAccountRejectsUnsupportedSelfServiceFieldsBeforeMutation+myAccountSettingsRejectInvalidTimezoneBeforeMutation test`
+  - full targeted expansion test suite (29 tests)
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+- done criteria:
+  - all pre-expansion targeted tests pass
+  - `myAccountRejectsUnsupportedSelfServiceFieldsBeforeMutation` and `myAccountSettingsRejectInvalidTimezoneBeforeMutation` pass
+  - verification notes updated to mark mini-project closed (or new follow-up tasks appended if further gaps found)
+  - changes and queue update are committed
+- notes:
+  - vertical contract: final re-verification pass after Material Gap 1 fix
+  - commit message: `workstream-chat-catalog: reverify completion`
