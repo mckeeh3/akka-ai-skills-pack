@@ -370,7 +370,7 @@
 
 ### TASK-WCTE-09-001: Add User Admin chat tool execution tests
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-execution/backlog/01-workstream-chat-tool-execution-build-backlog.md
 - task brief: specs/workstream-chat-tool-execution/tasks/09-user-admin-tests/01-add-user-admin-chat-tool-execution-tests.md
 - depends on:
@@ -404,6 +404,11 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: verification task for User Admin proof; target API/UI-source evidence plus backend/contract tests
+  - added backend tests for out-of-catalog confirmation denial and partial-failure trace evidence; added protected HTTP API coverage for initial no-mutation planning, provider-configured proposal/confirmation or fail-closed distinction, missing-bearer denial, and unproposed-plan denial
+  - added frontend User Admin contract coverage for Organization create plus Organization Admin invitation plan rendering, exact confirmation, result/recovery states, and no auto-submit behavior
+  - minimal production fix: canonicalized chat plan step-hash input ordering so a browser-returned plan snapshot remains confirmable after API serialization
+  - checks: `mvn -q -Dtest=WorkstreamServiceTest#chatToolPlanProposalRecordsPersistWithoutExecutingToolsAndReplayByIdempotency+submitMessageRoutesUserAdminMotivatingPromptToModelBackedPlanProposalWithoutMutation+submitMessageReturnsPlanUnavailableSystemMessageWhenPlanningRuntimeFailsClosed+submitMessageReturnsPlanUnavailableSystemMessageWhenSelectedAuthContextCannotUseUserAdminPlanCapabilities+confirmedChatToolPlanRequiresExactSnapshotAndExplicitHumanConfirmationBeforeExecution+confirmedUserAdminChatToolPlanExecutesOrganizationAndInvitationIdempotently+confirmedUserAdminChatToolPlanReportsPartialFailureAndRecoveryWithoutRollingBackCompletedStep+confirmedUserAdminChatToolPlanRejectsOutOfCatalogSnapshotBeforeAnyStepExecutes,UserAdminBrowserWorkstreamSmokeTest#protectedWorkstreamApiCoversUserAdminChatToolPlanningProviderBoundaryAndUnproposedConfirmationDenial test`; `npm --prefix frontend test -- --run`; `npm --prefix frontend run typecheck`; `git diff --check`
+  - commit message: `workstream-chat-tools: add user admin execution tests`
 
 ### TASK-WCTE-10-001: Expand representative chat tool plans to all five foundation workstreams
 

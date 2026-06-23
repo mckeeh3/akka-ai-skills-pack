@@ -17,6 +17,7 @@ const detailEditSurface = read('./workstream/surfaces/DetailEditSurface.tsx');
 const userAdminTaskSurface = read('./workstream/surfaces/UserAdminTaskSurface.tsx');
 const userAdminScopedAdminSurface = read('./workstream/surfaces/UserAdminScopedAdminSurface.tsx');
 const organizationAdminSurface = read('./workstream/surfaces/OrganizationAdminSurface.tsx');
+const chatToolPlanSurface = read('./workstream/surfaces/ChatToolPlanSurface.tsx');
 const workflowStatusSurface = read('./workstream/surfaces/WorkflowStatusSurface.tsx');
 const systemMessageSurface = read('./workstream/surfaces/SystemMessageSurface.tsx');
 const renderer = read('./workstream/surfaces/SurfaceRenderer.tsx');
@@ -100,6 +101,37 @@ test('User Admin dashboard follows current actionable command-center rules', () 
   assert.match(componentsCss, /\.user-admin-work-card/);
   assert.ok(dashboardSurface.indexOf('Things that need my attention') < dashboardSurface.indexOf('Things I can do'));
   assert.doesNotMatch(dashboardSurface, /Open the queue, decision card, or trace|Queue drilldowns|User Admin attention queue drilldowns|Access operations|Administer scoped users|User Admin selected scope and authority|Access health and blockers|Primary User Admin next actions|user-admin-next-actions/);
+});
+
+test('User Admin chat tool plan vertical renders Organization create and Organization Admin invitation without auto-submit', () => {
+  for (const backendContract of [
+    'userAdminOrganizationAndAdminInvitePlanSteps',
+    'action-submit-organization-create',
+    'action-submit-organization-admin-invitation',
+    'manage-organizations',
+    'manage-organization-admins',
+    'saas_owner.tenant.manage',
+    'saas_owner.organization_admin.invite',
+    'schema.organization-admin.create.submit.v1',
+    'schema.organization-admin.invitation-create.v1',
+    'surface-user-admin-organization-detail',
+    'surface-user-admin-invitation-detail',
+    'human_chat_tool_plan.step_started',
+    'human_chat_tool_plan.step_completed'
+  ]) {
+    assert.match(workstreamService, new RegExp(backendContract.replaceAll('.', '\\.')));
+  }
+  assert.match(chatToolPlanSurface, /No governed tools have executed/);
+  assert.match(chatToolPlanSurface, /Type the exact confirmation phrase/);
+  assert.match(chatToolPlanSurface, /CONFIRM \$\{confirmableSnapshot\.planSnapshotId\}/);
+  assert.match(chatToolPlanSurface, /confirmationMatches/);
+  assert.match(chatToolPlanSurface, /disabled=\{!canSubmit\}/);
+  assert.match(chatToolPlanSurface, /Completed steps/);
+  assert.match(chatToolPlanSurface, /Failed steps/);
+  assert.match(chatToolPlanSurface, /Skipped steps/);
+  assert.match(chatToolPlanSurface, /Recovery/);
+  assert.match(chatToolPlanSurface, /provider secrets\/payloads/);
+  assert.doesNotMatch(chatToolPlanSurface, /useEffect\([\s\S]*onAction|globalThis\.confirm|window\.confirm/);
 });
 
 test('User Admin surface actions map to capability ids and trace or audit affordances', () => {

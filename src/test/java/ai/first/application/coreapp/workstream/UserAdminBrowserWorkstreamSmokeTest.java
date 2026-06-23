@@ -10,8 +10,11 @@ import akka.javasdk.JsonSupport;
 import akka.javasdk.testkit.TestKitSupport;
 import ai.first.application.coreapp.workstream.WorkstreamService.CapabilityActionRequest;
 import ai.first.application.coreapp.workstream.WorkstreamService.CapabilityActionResult;
+import ai.first.application.coreapp.workstream.WorkstreamService.ChatToolPlanConfirmationRequest;
 import ai.first.application.coreapp.workstream.WorkstreamService.SurfaceEnvelope;
 import ai.first.application.coreapp.workstream.WorkstreamService.WorkstreamBootstrapResponse;
+import ai.first.application.coreapp.workstream.WorkstreamService.WorkstreamMessageRequest;
+import ai.first.application.coreapp.workstream.WorkstreamService.WorkstreamMessageResponse;
 import ai.first.application.foundation.identity.AkkaIdentityRepository;
 import ai.first.application.foundation.invitation.AkkaInvitationRepository;
 import ai.first.domain.foundation.email.EmailDeliveryStatus;
@@ -4143,6 +4146,115 @@ class UserAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertFalse(customerAdminDenied.resultSurface().toString().contains("Beta Customer"));
     assertFalse(customerAdminDenied.resultSurface().toString().contains("Hidden Customer"));
     assertBrowserSafe(customerAdminDenied.resultSurface());
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void protectedWorkstreamApiCoversUserAdminChatToolPlanningProviderBoundaryAndUnproposedConfirmationDenial() throws Exception {
+    var identityRepository = new AkkaIdentityRepository(componentClient);
+    var invitationRepository = new AkkaInvitationRepository(componentClient);
+    var tenantCountBefore = identityRepository.tenantRows().size();
+    var invitationCountBefore = invitationRepository.invitations().size();
+
+    assertThrows(IllegalArgumentException.class, () -> httpClient
+        .POST("/api/workstream/chat-tool-plans/confirm")
+        .addHeader("X-Selected-Context-Id", "membership-owner")
+        .addHeader("X-Correlation-Id", "corr-chat-plan-confirm-missing-bearer")
+        .withRequestBody(new ChatToolPlanConfirmationRequest(
+            "membership-owner",
+            "chat-tool-plan-fake",
+            "chat-tool-plan-snapshot-fake",
+            "CONFIRM chat-tool-plan-snapshot-fake",
+            Map.of("step-create-organization", "step-hash-fake"),
+            "idem-chat-plan-confirm-missing-bearer",
+            "corr-chat-plan-confirm-missing-bearer"))
+        .responseBodyAs(String.class)
+        .invoke(), "Chat tool plan confirmation endpoint must reject missing bearer tokens before any execution path.");
+
+    var plan = httpClient
+        .POST("/api/workstream/messages")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-owner", "owner@example.test", "SaaS Owner"))
+        .addHeader("X-Selected-Context-Id", "membership-owner")
+        .addHeader("X-Correlation-Id", "corr-chat-plan-api-provider-boundary")
+        .withRequestBody(new WorkstreamMessageRequest(
+            "membership-owner",
+            "user-admin-agent",
+            "create org \"Org API\", and invite mckee.hugh+api@gmail.com as an org admin",
+            "corr-chat-plan-api-provider-boundary",
+            "idem-chat-plan-api-provider-boundary"))
+        .responseBodyAs(WorkstreamMessageResponse.class)
+        .invoke();
+
+    assertTrue(plan.status().isSuccess());
+    assertEquals(true, plan.body().surface().data().get("noMutation"));
+    assertEquals(true, plan.body().surface().data().get("noDirectMutation"));
+    assertFalse(plan.body().surface().traceIds().isEmpty());
+    assertEquals(tenantCountBefore, identityRepository.tenantRows().size(), "Initial HTTP chat request must not create an Organization before exact confirmation, even when a provider is configured.");
+    assertEquals(invitationCountBefore, invitationRepository.invitations().size(), "Initial HTTP chat request must not create an invitation before exact confirmation, even when a provider is configured.");
+    assertBrowserSafe(plan.body().surface());
+
+    if ("chat_tool_plan_system_message".equals(plan.body().agentItem().kind())) {
+      assertEquals("blocked", plan.body().agentItem().status());
+      assertEquals("chat_tool_plan_system_message", plan.body().surface().surfaceType());
+      assertEquals("chat_tool_plan.system_message.v1", plan.body().surface().data().get("surfaceContract"));
+      assertTrue(plan.body().surface().toString().contains("noFakeSuccess=true"));
+    } else {
+      assertEquals("chat_tool_plan_proposal", plan.body().agentItem().kind());
+      assertEquals("waiting-for-human", plan.body().agentItem().status());
+      assertEquals("chat_tool_plan_proposal", plan.body().surface().surfaceType());
+      assertEquals("chat_tool_plan.proposal.v1", plan.body().surface().data().get("surfaceContract"));
+      var proposal = (Map<String, Object>) plan.body().surface().data().get("proposal");
+      var snapshot = (Map<String, Object>) plan.body().surface().data().get("confirmationSnapshot");
+      var planId = String.valueOf(proposal.get("planId"));
+      var planSnapshotId = String.valueOf(snapshot.get("planSnapshotId"));
+      var stepHashes = (Map<String, String>) snapshot.get("stepHashes");
+      assertTrue(plan.body().surface().toString().contains("action-confirm-chat-tool-plan"));
+
+      var confirmed = httpClient
+          .POST("/api/workstream/chat-tool-plans/confirm")
+          .addHeader("Authorization", "Bearer " + bearerToken("workos-owner", "owner@example.test", "SaaS Owner"))
+          .addHeader("X-Selected-Context-Id", "membership-owner")
+          .addHeader("X-Correlation-Id", "corr-chat-plan-confirm-api")
+          .withRequestBody(new ChatToolPlanConfirmationRequest(
+              "membership-owner",
+              planId,
+              planSnapshotId,
+              "CONFIRM " + planSnapshotId,
+              stepHashes,
+              "idem-chat-plan-confirm-api",
+              "corr-chat-plan-confirm-api"))
+          .responseBodyAs(WorkstreamMessageResponse.class)
+          .invoke();
+      assertTrue(confirmed.status().isSuccess());
+      assertEquals("chat_tool_plan_result", confirmed.body().agentItem().kind());
+      assertEquals("chat_tool_plan_result", confirmed.body().surface().surfaceType());
+      assertEquals("chat_tool_plan.result.v1", confirmed.body().surface().data().get("surfaceContract"));
+      assertTrue(confirmed.body().surface().toString().contains("completedSteps"));
+      assertTrue(confirmed.body().surface().traceIds().stream().anyMatch(traceId -> traceId.contains("trace-human-chat-tool-plan-confirmed")));
+      assertEquals(tenantCountBefore + 1, identityRepository.tenantRows().size());
+      assertEquals(invitationCountBefore + 1, invitationRepository.invitations().size());
+      assertBrowserSafe(confirmed.body().surface());
+    }
+
+    var tenantCountAfterPlanFlow = identityRepository.tenantRows().size();
+    var invitationCountAfterPlanFlow = invitationRepository.invitations().size();
+    assertThrows(RuntimeException.class, () -> httpClient
+        .POST("/api/workstream/chat-tool-plans/confirm")
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-owner", "owner@example.test", "SaaS Owner"))
+        .addHeader("X-Selected-Context-Id", "membership-owner")
+        .addHeader("X-Correlation-Id", "corr-chat-plan-confirm-unproposed")
+        .withRequestBody(new ChatToolPlanConfirmationRequest(
+            "membership-owner",
+            "chat-tool-plan-unproposed",
+            "chat-tool-plan-snapshot-unproposed",
+            "CONFIRM chat-tool-plan-snapshot-unproposed",
+            Map.of("step-create-organization", "step-hash-unproposed"),
+            "idem-chat-plan-confirm-unproposed",
+            "corr-chat-plan-confirm-unproposed"))
+        .responseBodyAs(String.class)
+        .invoke(), "Confirmation endpoint must reject unproposed plan snapshots instead of executing caller-supplied steps.");
+    assertEquals(tenantCountAfterPlanFlow, identityRepository.tenantRows().size());
+    assertEquals(invitationCountAfterPlanFlow, invitationRepository.invitations().size());
   }
 
   @Test

@@ -1971,7 +1971,7 @@ public final class WorkstreamService {
     var stepHashes = proposal.steps().stream()
         .collect(Collectors.toMap(
             step -> firstNonBlank(step.stepId(), "step-" + step.sequence()),
-            step -> "step-hash-" + stableSuffix(String.join(":", firstNonBlank(step.stepId(), "step"), firstNonBlank(step.actionId(), "action"), firstNonBlank(step.browserToolId(), "browser"), firstNonBlank(step.governedToolId(), "tool"), firstNonBlank(step.capabilityId(), "capability"), String.valueOf(step.input()), firstNonBlank(step.idempotencyKey(), "idempotency"))),
+            step -> "step-hash-" + stableSuffix(String.join(":", firstNonBlank(step.stepId(), "step"), firstNonBlank(step.actionId(), "action"), firstNonBlank(step.browserToolId(), "browser"), firstNonBlank(step.governedToolId(), "tool"), firstNonBlank(step.capabilityId(), "capability"), String.valueOf(canonicalChatToolHashValue(step.input())), firstNonBlank(step.idempotencyKey(), "idempotency"))),
             (left, right) -> left,
             LinkedHashMap::new));
     return new ChatToolPlanConfirmationSnapshot(
@@ -1989,6 +1989,18 @@ public final class WorkstreamService {
         proposal.traceIds(),
         true,
         "Confirmation must echo planId, planSnapshotId, selected AuthContext, requestedBy, and step hashes before the governed dispatcher can execute any step.");
+  }
+
+  private Object canonicalChatToolHashValue(Object value) {
+    if (value instanceof Map<?, ?> map) {
+      var canonical = new LinkedHashMap<String, Object>();
+      map.entrySet().stream()
+          .sorted((left, right) -> String.valueOf(left.getKey()).compareTo(String.valueOf(right.getKey())))
+          .forEach(entry -> canonical.put(String.valueOf(entry.getKey()), canonicalChatToolHashValue(entry.getValue())));
+      return canonical;
+    }
+    if (value instanceof List<?> list) return list.stream().map(this::canonicalChatToolHashValue).toList();
+    return value;
   }
 
   private SurfaceEnvelope chatToolPlanProposalSurface(ChatToolPlanProposal proposal, ChatToolPlanConfirmationSnapshot confirmationSnapshot, AuthContextResolver.ResolvedMe actor, String itemId, String correlationId, List<String> traceIds, Instant now) {

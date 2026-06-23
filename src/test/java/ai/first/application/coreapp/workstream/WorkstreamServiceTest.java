@@ -2090,9 +2090,56 @@ class WorkstreamServiceTest {
     assertFalse(result.recoverySteps().isEmpty());
     assertNotNull(confirmed.surface().data().get("systemMessage"));
     assertTrue(confirmed.surface().toString().contains("completed steps remain committed"));
+    assertTrue(result.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-human-chat-tool-plan-step-started")));
+    assertTrue(result.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-human-chat-tool-plan-step-skipped")));
+    assertTrue(confirmed.surface().traceIds().stream().anyMatch(traceId -> traceId.contains("trace-human-chat-tool-plan-confirmed")));
     assertEquals(tenantCountBefore + 1, identityRepository.tenantRows().size(), "Committed Organization remains valid after invitation failure.");
     assertEquals(invitationCountBefore, invitationRepository.invitations().size(), "Invalid invitation step must not send an invitation.");
     assertBrowserPayloadSafe(confirmed.surface());
+  }
+
+  @Test
+  void confirmedUserAdminChatToolPlanRejectsOutOfCatalogSnapshotBeforeAnyStepExecutes() {
+    var tenantCountBefore = identityRepository.tenantRows().size();
+    var invitationCountBefore = invitationRepository.invitations().size();
+    var outOfCatalogStep = new WorkstreamService.ChatToolPlanStep(
+        "step-out-of-catalog-agent-activation",
+        1,
+        "Attempt Agent Admin activation from User Admin chat plan",
+        "action-agent-activation-confirm",
+        "agent-admin.activate-agent",
+        "agent_admin.activate_agent",
+        "agent_admin.activate_agent",
+        "schema.agent-admin.activation-confirm.v1",
+        Map.of("agentDefinitionId", "user-admin-agent", "acknowledgement", "ACTIVATE"),
+        List.of(),
+        Map.of(),
+        "idem-chat-out-of-catalog-step",
+        "independent-command",
+        true,
+        false,
+        "decision-card",
+        "surface-agent-admin-activation-confirmation",
+        List.of("human_chat_tool_plan.step_started"));
+    var response = service.createChatToolPlanProposal(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-owner",
+        "user-admin-agent",
+        "create org \"Org Out Of Catalog\", then activate a managed agent",
+        "corr-chat-out-of-catalog-proposal",
+        "idem-chat-out-of-catalog-proposal",
+        null,
+        "Unsafe proposal fixture used to prove confirmation rejects out-of-catalog steps before mutation.",
+        List.of(outOfCatalogStep),
+        "Out-of-catalog steps must never execute."));
+    var proposal = (WorkstreamService.ChatToolPlanProposal) response.surface().data().get("proposal");
+    var snapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) response.surface().data().get("confirmationSnapshot");
+
+    var denied = assertThrows(AuthorizationException.class, () -> service.confirmChatToolPlan(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanConfirmationRequest(
+        "membership-owner", proposal.planId(), proposal.planSnapshotId(), "CONFIRM " + proposal.planSnapshotId(), snapshot.stepHashes(), "idem-chat-out-of-catalog-execute", "corr-chat-out-of-catalog-execute")));
+
+    assertTrue(denied.reasonCode().contains("CHAT_TOOL_OUT_OF_WORKSTREAM_CATALOG"), denied.reasonCode());
+    assertEquals(tenantCountBefore, identityRepository.tenantRows().size(), "Out-of-catalog confirmed snapshots must be rejected before Organization creation.");
+    assertEquals(invitationCountBefore, invitationRepository.invitations().size(), "Out-of-catalog confirmed snapshots must be rejected before invitation creation.");
   }
 
   @Test
