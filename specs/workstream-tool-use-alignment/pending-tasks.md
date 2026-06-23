@@ -135,7 +135,7 @@
 
 ### TASK-WTUA-03-001: Align app-description and intent skills with workstream tool catalogs
 
-- status: pending
+- status: done
 - source: specs/workstream-tool-use-alignment/backlog/01-workstream-tool-use-alignment-build-backlog.md
 - task brief: specs/workstream-tool-use-alignment/tasks/03-app-description-skills/01-align-app-description-tool-modeling-skills.md
 - depends on:
@@ -171,6 +171,8 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: skills-pack documentation-only alignment; no generated-app runtime feature
+  - commit message: `workstream-tool-use: align app-description tool modeling skills`
+  - checks passed: `git diff --check`; targeted app-description/intent skill search found governed tool/shared governed-tool ids, surface action/browser-tool adapters, confirmed human chat tool-plan confirmation semantics, AI agent-tool adapters, trace sources, idempotency/transaction, partial-failure, and global definition plus workstream binding guidance across the edited skills.
 
 ### TASK-WTUA-04-001: Align agent, tool-boundary, and trace skills
 

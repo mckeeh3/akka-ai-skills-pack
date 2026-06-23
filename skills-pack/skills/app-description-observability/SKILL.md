@@ -80,11 +80,11 @@ For each requested change, identify and describe as applicable:
 - linked capability ids/classes and exposure surfaces that require evidence
 - important events that must be logged or audited
 - metrics that must be recorded
-- trace continuity expectations across requests, workflows, async steps, agent actions, tool calls, data access, approvals, policy use, and outcomes
+- trace continuity expectations across requests, surface actions/browser-tools, confirmed human chat tool plans, agent-tool calls, workflows, async steps, data access, approvals, policy use, and outcomes
 - health indicators or status signals
 - alert-worthy thresholds or conditions
 - diagnosability expectations for failures or stuck work
-- actor, tenant, agent, goal, plan, decision, policy version, tool, data resource, or correlation context needed for diagnosis
+- actor, tenant, agent, goal, plan, decision, policy version, governed tool id, actor adapter/source (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/workflow/timer/consumer/MCP/internal), data resource, `requestedBy`, `confirmedBy`, confirmation id, or correlation context needed for diagnosis
 - sensitive-data constraints on observability output
 - dependencies on behavior, security, and test graph nodes
 
@@ -109,7 +109,7 @@ When flows cross boundaries, define what correlation, request, tenant, workflow,
 
 ### 5. Separate operational telemetry from AI-first audit facts
 For delegated work, define durable work-trace and decision-trace evidence in addition to logs, metrics, and technical traces.
-Capture policy invocations, approval gates, evidence/rationale links, tool/data access, evaluator results, overrides, and outcome links when they affect explainability or governance.
+Capture policy invocations, approval gates, evidence/rationale links, governed tool invocations, adapter/source (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/workflow/timer/consumer/MCP/internal), tool/data access, evaluator results, overrides, `requestedBy`/`confirmedBy` relationships, partial failures, and outcome links when they affect explainability or governance.
 
 ### 6. Support supervision and digest surfaces
 When command centers, decision queues, async digests, governance centers, or audit investigations are in scope, define the read-model evidence those surfaces need rather than only raw telemetry.
@@ -138,7 +138,7 @@ Good questions include:
 - "What correlation key should connect this flow across steps or services?"
 - "Which conditions should produce alerts rather than dashboards only?"
 - "Are there data fields that must be masked or omitted from logs and audit events?"
-- "Which agent actions, tool calls, policy invocations, approvals, overrides, or outcome links must be durable audit facts?"
+- "Which surface actions, confirmed human chat tool plans, agent actions, governed tool calls, policy invocations, approvals, overrides, partial failures, or outcome links must be durable audit facts?"
 - "Which evidence must command centers, decision queues, digests, or audit investigations expose?"
 
 ## Handoff to other skills

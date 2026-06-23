@@ -31,6 +31,7 @@ Before editing, state:
 
 - source current-intent graph nodes/spec files and exact slice being realized
 - target runtime paths: Java packages, frontend folders, app-description/spec extensions, docs, tests
+- governed tool ids, capability ids, and actor adapters/exposure channels being realized, including surface action/browser-tool, confirmed human chat tool-plan, AI agent-tool, API/workflow/timer/consumer/MCP/internal paths where in scope
 - what is in scope, explicitly deferred, blocked, or assumed
 - validation evidence required before claiming completion
 
@@ -59,6 +60,7 @@ Depending on scope, update all applicable artifacts together:
 
 - Java domain/application/api code and resources
 - deterministic surface intent routing/catalog code for composer-enabled workstreams when in scope, preserving no-direct-command behavior before user submit
+- confirmed human chat tool-plan review/confirmation/execution/result paths when explicitly modeled, preserving shared governed tool ids, per-tool transaction/idempotency behavior, backend authorization, traces, and partial-failure surfaces
 - frontend source under `frontend/**` and rebuilt static resources when required
 - app-description extensions or readiness state when implementation discoveries change the authoritative model
 - specs/task brief/pending queue status
@@ -71,7 +73,7 @@ Final handoff must include:
 
 - generated/changed files grouped by backend, frontend, description/spec/docs/tests
 - runtime path exercised and commands run with exit codes
-- runtime evidence for feature-bearing changes: readiness level, browser/surface/API/Akka path, role/AuthContext/tenant setup, deterministic route/prefill/no-mutation evidence when applicable, denial/provider fail-closed coverage, trace/audit evidence, and manual/browser/API smoke result
+- runtime evidence for feature-bearing changes: readiness level, browser/surface/API/Akka path, role/AuthContext/tenant setup, governed tool ids and actor adapters exercised, deterministic route/prefill/no-mutation evidence when applicable, human chat confirmation/partial-failure evidence when in scope, agent-tool boundary evidence when in scope, denial/provider fail-closed coverage, trace/audit evidence, and manual/browser/API smoke result
 - what passed, failed, or could not be run
 - description/spec assumptions or drift discovered
 - incomplete/blocked items with recommended next task

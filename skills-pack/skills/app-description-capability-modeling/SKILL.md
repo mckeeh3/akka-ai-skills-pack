@@ -79,7 +79,7 @@ A capability should be:
 
 ## Generated SaaS exposure rule
 
-For generated full-stack SaaS, a user-facing capability change must record the source functional agent, attention category or role-specific dashboard context, workstream action, structured surface, surface graph edge, surface action, and governed-tool that expose or consume the capability under `domains/<domain>/workstreams/<workstream>/**`. If no human workstream or browser surface should expose it, state `internal-only` explicitly and name the internal caller class. This prevents capability modeling from bypassing workstream bindings, frontend realization files, and surface-to-capability traceability.
+For generated full-stack SaaS, a user-facing capability change must record the source functional agent, attention category or role-specific dashboard context, workstream action, structured surface, surface graph edge, surface action, and governed-tool that expose or consume the capability under `domains/<domain>/workstreams/<workstream>/**`. Model the governed tool as the shared semantic operation, then bind each allowed actor adapter/exposure channel separately: human surface action/browser-tool, confirmed `human_chat_tool_plan`, AI `agent-tool`, API, workflow, timer, consumer, MCP, or internal-tool. If no human workstream or browser surface should expose it, state `internal-only` explicitly and name the internal caller class. This prevents capability modeling from bypassing workstream bindings, frontend realization files, and surface-to-capability traceability.
 
 For durable internal/background model-driven work, record the internal workstream agent graph exposure explicitly: virtual dashboard agent, worker-agent/delegation node, start/query/cancel/result-read/external-complete/external-fail capabilities, task lifecycle state, snapshot/result schemas, notification/projection updates, governed-tools available to each worker, result/proposal/system-message surfaces, escalation rules, and whether Akka `AutonomousAgent` is the intended substrate. AutonomousAgent tasks do not grant authority; every lifecycle action and governed-tool call still inherits this capability contract.
 
@@ -96,20 +96,20 @@ For each capability, identify and describe as applicable:
 - typed output schema, redaction rules, user/agent-safe fields, safe denial/error shape, and evidence boundaries
 - data access boundaries, tenant/customer filters, PII/secret handling, and raw-state exposure limitations
 - side effects such as state changes, external calls, publications, timers, emails, notifications, workflow starts, attention projection changes, AutonomousAgent task starts/results, or no side effects for read-only capabilities
-- governed-tools inside the capability: stable governed-tool id, operation/query class, actors/callers, AuthContext, schemas, side effects, idempotency, approval/policy, audit/work trace, implementation mapping, and exposure as `browser-tool`, `agent-tool`, `internal-tool`, `workflow-tool`, `timer-tool`, `consumer-tool`, `MCP-tool`, API, view/query, or non-exposed backend method
+- governed-tools inside the capability: stable governed-tool id, operation/query class, actors/callers, AuthContext, schemas, side effects, idempotency, approval/policy, audit/work trace, implementation mapping, and exposure as human surface action/browser-tool, confirmed `human_chat_tool_plan`, AI `agent-tool`, `internal-tool`, `workflow-tool`, `timer-tool`, `consumer-tool`, `MCP-tool`, API, view/query, or non-exposed backend method
 - autonomous task lifecycle contract when applicable: task type, start criteria, progress/result surface, notification stream, dependency/timeout/failure/cancellation semantics, governed-tools used by the task, and result authority
 - delegated operational work, if any
 - retained human authority, approvals, exceptions, or supervision needs, if any
 - policy, permission, risk/confidence threshold, evidence, trace, learning, or outcome-accountability needs, if any
 - source functional agents, workstream actions, structured surfaces, surface actions, and action-to-capability map entries for user-facing exposure, or an explicit `internal-only` declaration
-- selected exposure surfaces: workstream surface action, browser UI/API action (`browser-tool`), HTTP/gRPC API, request-based Agent tool (`agent-tool`), AutonomousAgent tool/task action, MCP-tool/resource/prompt, workflow-tool, view/query, timer-tool, consumer-tool, or internal-tool method
+- selected exposure surfaces: workstream surface action, browser UI/API action (`browser-tool`), confirmed human chat tool-plan adapter, HTTP/gRPC API, request-based Agent tool (`agent-tool`), AutonomousAgent tool/task action, MCP-tool/resource/prompt, workflow-tool, view/query, timer-tool, consumer-tool, or internal-tool method
 - notification and projection outputs for dashboards, My Account aggregate attention, left rail summaries, surface stale/reconnect behavior, and audit/work traces
 - in-scope outcomes
 - out-of-scope outcomes
 - major constraints or assumptions
 - linked app/global/domain/workstream operating-model artifacts for generated AI-first SaaS semantics
 - linked behavior artifacts
-- linked test artifacts, including success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and surface-specific cases
+- linked test artifacts, including success, validation, forbidden, tenant-isolation, idempotency, audit, approval, confirmation binding, partial-failure, trace-source, and surface/chat/agent-tool-specific cases
 - linked auth/security artifacts
 - linked observability artifacts
 - linked UI and traceability artifacts when relevant
@@ -168,7 +168,7 @@ Avoid:
 Before finishing, verify:
 - the capability is named clearly
 - business goal and actors are explicit
-- AuthContext/scope, input/output shape, side effects, idempotency, policy/approval, audit/trace, governed-tools, exposure surfaces, and tests are explicit enough for downstream work
+- AuthContext/scope, input/output shape, side effects, per-tool transaction and idempotency behavior, policy/approval, audit/trace, governed-tools, exposure surfaces/adapters, and tests are explicit enough for downstream work
 - linked behavior, auth/security, tests, UI, observability, traceability, and readiness impacts are named whenever the capability contract changes
 - in-scope and out-of-scope outcomes are explicit
 - major assumptions are recorded when relevant
