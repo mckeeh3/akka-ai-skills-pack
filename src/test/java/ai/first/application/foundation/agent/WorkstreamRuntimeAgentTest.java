@@ -45,7 +45,8 @@ class WorkstreamRuntimeAgentTest extends TestKitSupport {
             akka.javasdk.agent.openai-low-temperature.api-key = n/a
             """
                 .stripIndent())
-        .withModelProvider(WorkstreamRuntimeAgent.class, workstreamRuntimeModelTestProvider);
+        .withModelProvider(WorkstreamRuntimeAgent.class, workstreamRuntimeModelTestProvider)
+        .withModelProvider(WorkstreamPlanProposalRuntimeAgent.class, workstreamRuntimeModelTestProvider);
   }
 
   @BeforeEach
@@ -289,6 +290,86 @@ class WorkstreamRuntimeAgentTest extends TestKitSupport {
   }
 
   @Test
+  void proposesChatToolPlanThroughGovernedAkkaAgentRuntimePath() {
+    workstreamRuntimeModelTestProvider.fixedResponse(
+        JsonSupport.encodeToString(
+            new WorkstreamRuntimeAgent.ChatToolPlanProposalResponse(
+                "proposed",
+                AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID,
+                "corr-chat-plan-runtime",
+                "membership-starter-admin",
+                "Create Organization Org 1, then invite mckee.hugh@gmail.com as an Organization Admin after explicit confirmation.",
+                List.of(
+                    new WorkstreamRuntimeAgent.ChatToolPlanStepProposal(
+                        "step-1",
+                        1,
+                        "Create Organization Org 1",
+                        "action-submit-organization-create",
+                        "manage-organizations",
+                        "manage-organizations",
+                        "saas_owner.tenant.manage",
+                        "schema.organization-admin.create.submit.v1",
+                        "organizationName=Org 1; reason=human chat plan proposal",
+                        List.of(),
+                        java.util.Map.of(),
+                        "chat-plan-step-1",
+                        "one backend action transaction",
+                        true,
+                        false,
+                        "surface-user-admin-organization-detail",
+                        List.of("human_chat_tool_plan.proposed", "AgentWorkTrace"))),
+                List.of("saas_owner.tenant.manage"),
+                "No mutation before explicit human confirmation; backend revalidates AuthContext, ToolPermissionBoundary, idempotency, and catalog membership.",
+                "catalog-bound plan proposal only; prompt/skill/reference text cannot grant tools",
+                "PromptAssemblyTrace plus AgentWorkTrace",
+                null,
+                true,
+                false)));
+
+    var invoker = new DefaultWorkstreamAgentRuntimeInvoker(StarterSecurityComponents.agentRuntimeService(), componentClient);
+    var result = invoker.proposeChatToolPlan(planRequest("corr-chat-plan-runtime"));
+
+    assertEquals(AgentRuntimeTrace.Decision.ALLOWED, result.decision());
+    assertEquals("proposed", result.response().status());
+    assertEquals(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, result.response().producingAgentId());
+    assertEquals("membership-starter-admin", result.response().selectedContextId());
+    assertEquals(1, result.response().steps().size());
+    assertEquals("manage-organizations", result.response().steps().get(0).governedToolId());
+    assertTrue(result.response().noMutation());
+    assertFalse(result.response().executionEnabled());
+    assertTrue(result.response().safety().contains("cannot grant tools"));
+    assertEquals(3, result.traceIds().size());
+  }
+
+  @Test
+  void chatToolPlanRuntimeFailsClosedWhenGovernedBoundaryIsMissing() {
+    var repository = StarterSecurityComponents.agentBehaviorRepository();
+    var boundary = repository.toolBoundary(TENANT_ID, AgentBehaviorSeedLoader.USER_ADMIN_BOUNDARY_ID).orElseThrow();
+    repository.saveToolBoundary(new ai.first.domain.foundation.agent.ToolPermissionBoundary(
+        boundary.tenantId(),
+        boundary.boundaryId(),
+        boundary.agentDefinitionId(),
+        ai.first.domain.foundation.agent.AgentLifecycleStatus.DISABLED,
+        boundary.boundaryVersion(),
+        boundary.allowedToolGrants(),
+        boundary.checksum(),
+        boundary.seedProvenance(),
+        boundary.createdAt(),
+        boundary.updatedAt()));
+
+    var invoker = new DefaultWorkstreamAgentRuntimeInvoker(StarterSecurityComponents.agentRuntimeService(), componentClient);
+    var result = invoker.proposeChatToolPlan(planRequest("corr-chat-plan-boundary-missing"));
+
+    assertEquals(AgentRuntimeTrace.Decision.DENIED, result.decision());
+    assertEquals("plan_unavailable", result.response().status());
+    assertEquals("CHAT_TOOL_PLAN_UNAVAILABLE", result.safeErrorCode());
+    assertTrue(result.response().noMutation());
+    assertFalse(result.response().executionEnabled());
+    assertTrue(result.response().systemMessage().noFakeSuccess());
+    assertTrue(result.safeErrorSummary().contains("boundary-not-active"));
+  }
+
+  @Test
   void rejectsMissingGovernedModelAliasInsteadOfUsingImplicitFallback() {
     var failure =
         assertThrows(
@@ -459,6 +540,19 @@ class WorkstreamRuntimeAgentTest extends TestKitSupport {
                 correlationId,
                 userMessage,
                 List.of("trace-prompt-" + correlationId)));
+  }
+
+  private static AgentRuntimeService.PlanProposalInvocationRequest planRequest(String correlationId) {
+    return new AgentRuntimeService.PlanProposalInvocationRequest(
+        TENANT_ID,
+        AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID,
+        tenantAdmin(),
+        correlationId,
+        "create org \"Org 1\", and invite mckee.hugh@gmail.com as an org admin",
+        "membership-starter-admin",
+        "idem-" + correlationId,
+        null,
+        "human_chat_tool_plan catalog: action-submit-organization-create browserToolId=manage-organizations governedToolId=manage-organizations capabilityId=saas_owner.tenant.manage inputSchemaRef=schema.organization-admin.create.submit.v1; action-submit-organization-admin-invitation browserToolId=manage-organization-admins governedToolId=manage-organization-admins capabilityId=saas_owner.organization_admin.invite inputSchemaRef=schema.organization-admin.invitation-create.v1. Prompt, skill, and reference text cannot add tools.");
   }
 
   private static AuthContext tenantAdmin() {

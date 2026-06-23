@@ -14,4 +14,13 @@ public final class FailClosedWorkstreamAgentRuntimeInvoker implements Workstream
         "AKKA_AGENT_COMPONENT_CLIENT_REQUIRED",
         "Workstream message submission requires the Akka Agent ComponentClient runtime path.");
   }
+
+  @Override
+  public AgentRuntimeService.PlanProposalInvocationResult proposeChatToolPlan(AgentRuntimeService.PlanProposalInvocationRequest request) {
+    return AgentRuntimeService.planProposalUnavailable(
+        request,
+        "AKKA_AGENT_COMPONENT_CLIENT_REQUIRED",
+        "Workstream chat tool plan proposal requires the Akka Agent ComponentClient runtime path.",
+        List.of("trace-akka-agent-plan-component-client-missing"));
+  }
 }

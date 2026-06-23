@@ -128,6 +128,39 @@ public final class AgentRuntimeService {
     }
   }
 
+  public PlanProposalInvocationPreparation prepareWorkstreamChatToolPlanProposal(PlanProposalInvocationRequest request) {
+    var invocationCapability = invocationCapability(request.agentDefinitionId(), request.authContext());
+    var promptRequest = new PromptAssemblyRequest(request.tenantId(), request.agentDefinitionId(), request.authContext(), "runtime", invocationCapability, request.correlationId(), request.userInput());
+    var prompt = assemblePrompt(promptRequest);
+    if (prompt.decision() != AgentRuntimeTrace.Decision.ALLOWED) {
+      var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), invocationCapability, request.agentDefinitionId(), "human_chat_tool_plan proposal blocked during PromptAssemblyTrace: " + prompt.safeDenialReason(), prompt.checksum());
+      return new PlanProposalInvocationPreparation(AgentRuntimeTrace.Decision.DENIED, null, List.of(prompt.traceId(), workTrace.traceId()), "CHAT_TOOL_PLAN_UNAVAILABLE", prompt.safeDenialReason(), null, null);
+    }
+    try {
+      var agent = activeAgent(request.tenantId(), request.agentDefinitionId(), "runtime");
+      var modelBinding = activeModelBinding(request.tenantId(), agent, "runtime", invocationCapability);
+      var governedRequest = new WorkstreamRuntimeAgent.GovernedWorkstreamPlanRequest(
+          prompt.assembledSystemPrompt(),
+          modelBinding.model().providerAlias(),
+          request.tenantId(),
+          request.agentDefinitionId(),
+          request.authContext(),
+          "runtime",
+          invocationCapability,
+          request.correlationId(),
+          request.selectedContextId(),
+          request.idempotencyRoot(),
+          request.attachedSurfaceId(),
+          request.backendCatalogSummary(),
+          safe(request.userInput()),
+          List.of(prompt.traceId()));
+      return new PlanProposalInvocationPreparation(AgentRuntimeTrace.Decision.ALLOWED, governedRequest, List.of(prompt.traceId()), null, null, prompt.checksum(), modelBinding.model().modelConfigRefId());
+    } catch (RuntimeException failure) {
+      var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), invocationCapability, request.agentDefinitionId(), "human_chat_tool_plan proposal blocked by governed runtime resolution: " + safeReason(failure), prompt.checksum());
+      return new PlanProposalInvocationPreparation(AgentRuntimeTrace.Decision.DENIED, null, List.of(prompt.traceId(), workTrace.traceId()), "CHAT_TOOL_PLAN_UNAVAILABLE", safeReason(failure), prompt.checksum(), null);
+    }
+  }
+
   public RuntimeInvocationResult completeWorkstreamAgentInvocation(RuntimeInvocationRequest request, RuntimeInvocationPreparation preparation, WorkstreamRuntimeAgent.MarkdownResponse response) {
     var invocationCapability = invocationCapability(request.agentDefinitionId(), request.authContext());
     var modelTrace = trace("MODEL_INVOCATION", AgentRuntimeTrace.Decision.ALLOWED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), invocationCapability, response.producingAgentId(), safe(response.trace()), checksum(response.markdown()));
@@ -150,6 +183,87 @@ public final class AgentRuntimeService {
     traceIds.add(modelTrace.traceId());
     traceIds.add(workTrace.traceId());
     return new RuntimeInvocationResult(AgentRuntimeTrace.Decision.DENIED, null, traceIds, safeErrorCode, safeSummary);
+  }
+
+  public PlanProposalInvocationResult planProposalUnavailableFromPreparation(PlanProposalInvocationRequest request, PlanProposalInvocationPreparation preparation) {
+    return planProposalUnavailable(request, firstNonBlank(preparation.safeErrorCode(), "CHAT_TOOL_PLAN_UNAVAILABLE"), firstNonBlank(preparation.safeErrorSummary(), "Governed chat tool plan runtime is unavailable."), preparation.traceIds());
+  }
+
+  public PlanProposalInvocationResult completeWorkstreamChatToolPlanProposal(PlanProposalInvocationRequest request, PlanProposalInvocationPreparation preparation, WorkstreamRuntimeAgent.ChatToolPlanProposalResponse response) {
+    var invocationCapability = invocationCapability(request.agentDefinitionId(), request.authContext());
+    var modelTrace = trace("MODEL_INVOCATION", AgentRuntimeTrace.Decision.ALLOWED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), invocationCapability, response.producingAgentId(), safe(response.trace()), checksum(String.valueOf(response.summary()) + response.steps()));
+    var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.ALLOWED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), invocationCapability, request.agentDefinitionId(), "Akka Agent component produced model-backed human_chat_tool_plan proposal; modelConfigRef=" + preparation.modelConfigRefId() + "; status=" + response.status() + "; noMutation=" + response.noMutation() + "; executionEnabled=" + response.executionEnabled(), checksum(String.valueOf(response.summary()) + preparation.promptChecksum()));
+    var traceIds = new ArrayList<>(preparation.traceIds());
+    traceIds.add(modelTrace.traceId());
+    traceIds.add(workTrace.traceId());
+    return new PlanProposalInvocationResult(AgentRuntimeTrace.Decision.ALLOWED, withTraceIds(response, traceIds), traceIds, null, null);
+  }
+
+  public PlanProposalInvocationResult failWorkstreamChatToolPlanProposal(PlanProposalInvocationRequest request, PlanProposalInvocationPreparation preparation, RuntimeException failure) {
+    var safeSummary = safeReason(failure);
+    var safeErrorCode = failure instanceof ModelProviderClient.ModelProviderException providerFailure
+        ? providerFailure.failure().safeCode()
+        : "CHAT_TOOL_PLAN_AGENT_INVOCATION_FAILED";
+    var traceIds = new ArrayList<>(preparation.traceIds());
+    var invocationCapability = invocationCapability(request.agentDefinitionId(), request.authContext());
+    var modelTrace = trace("MODEL_INVOCATION", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), invocationCapability, preparation.modelConfigRefId(), safeSummary, null);
+    var workTrace = trace("AgentWorkTrace", AgentRuntimeTrace.Decision.DENIED, request.tenantId(), request.agentDefinitionId(), request.correlationId(), request.authContext().accountId(), invocationCapability, request.agentDefinitionId(), "human_chat_tool_plan Akka Agent invocation failed closed: " + safeErrorCode + "; " + safeSummary, null);
+    traceIds.add(modelTrace.traceId());
+    traceIds.add(workTrace.traceId());
+    return planProposalUnavailable(request, safeErrorCode, safeSummary, traceIds);
+  }
+
+  public static PlanProposalInvocationResult planProposalUnavailable(PlanProposalInvocationRequest request, String safeErrorCode, String safeErrorSummary, List<String> traceIds) {
+    var safeTraceIds = List.copyOf(traceIds == null ? List.of() : traceIds);
+    var code = firstNonBlank(safeErrorCode, "CHAT_TOOL_PLAN_UNAVAILABLE");
+    var summary = firstNonBlank(safeErrorSummary, "Governed chat tool plan proposal is unavailable.");
+    var systemMessage = new WorkstreamRuntimeAgent.ChatToolPlanSystemMessage(
+        code,
+        safe(summary),
+        List.of("Review the request, verify provider/runtime/tool-boundary readiness, or retry after configuration is restored."),
+        true,
+        safeTraceIds);
+    var response = new WorkstreamRuntimeAgent.ChatToolPlanProposalResponse(
+        "plan_unavailable",
+        request == null ? "" : safe(request.agentDefinitionId()),
+        request == null ? "" : safe(request.correlationId()),
+        request == null ? "" : safe(request.selectedContextId()),
+        null,
+        List.of(),
+        List.of(),
+        "No plan was produced. The backend did not execute tools or mutate data.",
+        "fail-closed human_chat_tool_plan response; no fake model-backed planning success",
+        "traceIds=" + safeTraceIds,
+        systemMessage,
+        true,
+        false);
+    return new PlanProposalInvocationResult(AgentRuntimeTrace.Decision.DENIED, response, safeTraceIds, code, safe(summary));
+  }
+
+  private static WorkstreamRuntimeAgent.ChatToolPlanProposalResponse withTraceIds(WorkstreamRuntimeAgent.ChatToolPlanProposalResponse response, List<String> traceIds) {
+    if (response.systemMessage() == null) {
+      return response;
+    }
+    var systemMessage = new WorkstreamRuntimeAgent.ChatToolPlanSystemMessage(
+        response.systemMessage().code(),
+        response.systemMessage().message(),
+        response.systemMessage().recoverySteps(),
+        response.systemMessage().noFakeSuccess(),
+        traceIds);
+    return new WorkstreamRuntimeAgent.ChatToolPlanProposalResponse(
+        response.status(),
+        response.producingAgentId(),
+        response.correlationId(),
+        response.selectedContextId(),
+        response.summary(),
+        response.steps(),
+        response.requiredCapabilities(),
+        response.approvalSummary(),
+        response.safety(),
+        response.trace(),
+        systemMessage,
+        response.noMutation(),
+        response.executionEnabled());
   }
 
   /** Test-adapter helper only; production browser/API paths must invoke WorkstreamRuntimeAgent through ComponentClient. */
@@ -700,6 +814,17 @@ public final class AgentRuntimeService {
     }
   }
   public record RuntimeInvocationResult(AgentRuntimeTrace.Decision decision, String markdown, List<String> traceIds, String safeErrorCode, String safeErrorSummary) {}
+  public record PlanProposalInvocationRequest(String tenantId, String agentDefinitionId, AuthContext authContext, String correlationId, String userInput, String selectedContextId, String idempotencyRoot, String attachedSurfaceId, String backendCatalogSummary) {}
+  public record PlanProposalInvocationPreparation(AgentRuntimeTrace.Decision decision, WorkstreamRuntimeAgent.GovernedWorkstreamPlanRequest governedRequest, List<String> traceIds, String safeErrorCode, String safeErrorSummary, String promptChecksum, String modelConfigRefId) {
+    public PlanProposalInvocationPreparation {
+      traceIds = List.copyOf(traceIds == null ? List.of() : traceIds);
+    }
+  }
+  public record PlanProposalInvocationResult(AgentRuntimeTrace.Decision decision, WorkstreamRuntimeAgent.ChatToolPlanProposalResponse response, List<String> traceIds, String safeErrorCode, String safeErrorSummary) {
+    public PlanProposalInvocationResult {
+      traceIds = List.copyOf(traceIds == null ? List.of() : traceIds);
+    }
+  }
   public record SkillReadRequest(String tenantId, String agentDefinitionId, AuthContext authContext, String mode, String capabilityId, String correlationId, String stableSkillId) {}
   public record SkillReadResult(AgentRuntimeTrace.Decision decision, String content, String checksum, String traceId, String safeDenialReason) {}
   public record ReferenceReadRequest(String tenantId, String agentDefinitionId, AuthContext authContext, String mode, String capabilityId, String correlationId, String stableReferenceId, String requestedUse) {}

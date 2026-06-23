@@ -165,7 +165,7 @@
 
 ### TASK-WCTE-04-001: Add governed plan proposal runtime path
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-execution/backlog/01-workstream-chat-tool-execution-build-backlog.md
 - task brief: specs/workstream-chat-tool-execution/tasks/04-runtime-agent/01-add-governed-plan-proposal-runtime.md
 - depends on:
@@ -201,6 +201,9 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: model-backed planning substrate; provider fail-closed required; no chat execution yet
+  - added governed Akka plan-proposal agent path with typed plan_unavailable fail-closed results; no dispatcher/execution behavior added
+  - checks: `mvn -q -Dtest=AgentRuntimeToolResolverTest,AgentRuntimeServiceTest,WorkstreamRuntimeAgentTest test`; `git diff --check`
+  - commit message: `workstream-chat-tools: add governed plan proposal runtime`
 
 ### TASK-WCTE-05-001: Add chat tool catalog and dispatcher
 

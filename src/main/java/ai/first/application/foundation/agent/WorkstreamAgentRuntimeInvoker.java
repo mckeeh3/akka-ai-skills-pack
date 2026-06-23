@@ -10,4 +10,12 @@ package ai.first.application.foundation.agent;
 @FunctionalInterface
 public interface WorkstreamAgentRuntimeInvoker {
   AgentRuntimeService.RuntimeInvocationResult invokeWorkstreamAgent(AgentRuntimeService.RuntimeInvocationRequest request);
+
+  default AgentRuntimeService.PlanProposalInvocationResult proposeChatToolPlan(AgentRuntimeService.PlanProposalInvocationRequest request) {
+    return AgentRuntimeService.planProposalUnavailable(
+        request,
+        "CHAT_TOOL_PLAN_RUNTIME_NOT_IMPLEMENTED",
+        "Workstream chat tool plan proposal requires the governed Akka Agent runtime path.",
+        java.util.List.of("trace-chat-tool-plan-runtime-not-implemented"));
+  }
 }

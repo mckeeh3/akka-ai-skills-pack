@@ -31,4 +31,22 @@ public final class DefaultWorkstreamAgentRuntimeInvoker implements WorkstreamAge
       return agentRuntimeService.failWorkstreamAgentInvocation(request, preparation, failure);
     }
   }
+
+  @Override
+  public AgentRuntimeService.PlanProposalInvocationResult proposeChatToolPlan(AgentRuntimeService.PlanProposalInvocationRequest request) {
+    var preparation = agentRuntimeService.prepareWorkstreamChatToolPlanProposal(request);
+    if (preparation.decision() != AgentRuntimeTrace.Decision.ALLOWED) {
+      return agentRuntimeService.planProposalUnavailableFromPreparation(request, preparation);
+    }
+    try {
+      var response = componentClient
+          .forAgent()
+          .inSession("workstream-plan-" + request.authContext().membershipId() + "-" + request.agentDefinitionId())
+          .method(WorkstreamPlanProposalRuntimeAgent::proposeChatToolPlan)
+          .invoke(preparation.governedRequest());
+      return agentRuntimeService.completeWorkstreamChatToolPlanProposal(request, preparation, response);
+    } catch (RuntimeException failure) {
+      return agentRuntimeService.failWorkstreamChatToolPlanProposal(request, preparation, failure);
+    }
+  }
 }
