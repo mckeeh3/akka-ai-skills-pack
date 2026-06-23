@@ -338,7 +338,7 @@
 
 ### TASK-FSFR-09-001: Repair attention producer failure
 
-- status: pending
+- status: done
 - source: specs/full-suite-failure-remediation/failure-inventory.md after TASK-FSFR-01-001
 - task brief: specs/full-suite-failure-remediation/tasks/09-attention/01-repair-attention-producer-failure.md
 - depends on:
@@ -366,6 +366,9 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: attention producer/governance decision surface repair
+  - completed 2026-06-23: re-verified the Governance/Policy submit attention path after lifecycle repairs; submit now produces the approval attention item, member/cross-tenant list attempts remain empty, and approve resolves the item without exposing unauthorized or other-tenant data.
+  - validation: `mvn -Dtest=AttentionProducerServiceTest#governanceSubmitProducesApprovalAttentionAndDecisionResolvesWithoutLeakingToUnauthorizedOrOtherTenant test` passed; `mvn -Dtest=GovernancePolicyServiceTest test` passed; `git diff --check` passed.
+  - commit message: `full-suite-remediation: repair attention producer`
 
 ### TASK-FSFR-99-001: Verify Full Suite Failure Remediation completion
 
