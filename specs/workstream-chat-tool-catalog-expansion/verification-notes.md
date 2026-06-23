@@ -150,6 +150,88 @@ These paths are verified through targeted automated tests since live Akka runtim
 
 ---
 
-## Mini-project status
+## Mini-project status (TASK-WCTC-99-001)
 
 **Not fully closed.** Material Gap 1 (My Account direct-action settings field/timezone validation) is a bounded gap against the README done state. Two bounded follow-up tasks are appended (TASK-WCTC-12-001 and TASK-WCTC-99-002) to resolve and re-verify this gap before the mini-project is marked closed.
+
+---
+
+# Re-verification Notes: TASK-WCTC-99-002
+
+Task: `TASK-WCTC-99-002`
+
+Verified: 2026-06-23
+
+## Scope
+
+Re-verification after TASK-WCTC-12-001 (My Account direct-action settings field and timezone validation). Checks run against HEAD at `6855fd7d` (workstream-chat-catalog: add my account direct action validation).
+
+---
+
+## Checks run
+
+| Check | Result | Notes |
+|---|---|---|
+| `git diff --check` | ✅ clean | No whitespace/merge-conflict errors |
+| `myAccountRejectsUnsupportedSelfServiceFieldsBeforeMutation` | ✅ pass | Material Gap 1 fixed by TASK-WCTC-12-001 |
+| `myAccountSettingsRejectInvalidTimezoneBeforeMutation` | ✅ pass | Material Gap 1 fixed by TASK-WCTC-12-001 |
+| 31 targeted expansion backend tests (29 prior + 2 Material Gap 1) | ✅ 31/31 pass | All pass; full list includes both new gap-closure tests |
+| 9 seed loader tests (`AgentBehaviorSeedLoaderTest`) | ✅ 9/9 pass | Unchanged from TASK-WCTC-99-001 |
+| `npm --prefix frontend test -- --run` | ✅ 176 pass, 1 pre-existing failure | Same pre-existing failure as TASK-WCTC-99-001 |
+| `npm --prefix frontend run typecheck` | ✅ clean | No TypeScript errors |
+| `mvn test` (full suite) | ⚠️ 431 tests, 16 failures, 4 errors | All failures/errors are **pre-existing** — confirmed by reverting to ba58828a and stash-checking each test class; see Pre-existing table below |
+
+---
+
+## Material Gap 1 closure
+
+Both tests introduced by the Material Gap 1 finding now pass:
+
+| Test | Status | Fix |
+|---|---|---|
+| `myAccountRejectsUnsupportedSelfServiceFieldsBeforeMutation` | ✅ pass | `validateMyAccountDirectActionInput` added to `runAction` before try block; rejects `roleIds` and other unsupported keys with `MY_ACCOUNT_UNSUPPORTED_SELF_SERVICE_FIELD` |
+| `myAccountSettingsRejectInvalidTimezoneBeforeMutation` | ✅ pass | `validateMyAccountDirectActionInput` also calls `UserSettings.normalizeTimeZone()`; rejects unknown timezone with `MY_ACCOUNT_INVALID_PREFERENCE` |
+
+---
+
+## Updated pre-existing full-suite failures
+
+All 20 failures/errors in the full `mvn test` suite are pre-existing before the expansion project. TASK-WCTC-12-001 only modified `WorkstreamService.java` (adding `validateMyAccountDirectActionInput`) and `pending-tasks.md`; none of the remaining failures appear in those changed lines. Confirmed by reverting `WorkstreamService.java` to `ba58828a` and re-running each failing class.
+
+| Test | Status | Materiality to expansion |
+|---|---|---|
+| `WorkstreamServiceTest.starterSourceContainsConcreteAkkaWorkstreamRuntimeAgentAndInvokerSeam` | Pre-existing failure | Outside expansion scope (aspirational Akka runtime seam) |
+| `WorkstreamServiceTest.agentAdminCatalogDetailAndArtifactReadsAreBackendAuthoritativeAndRedacted` | Pre-existing failure (missed in TASK-WCTC-99-001 notes; confirmed at ba58828a) | Outside expansion scope (Agent Admin artifact read surface ID mismatch; predates expansion project) |
+| `WorkstreamServiceTest.governancePolicyBackendActionsExposeReadProposalSimulationApprovalAndBlockedRuntimeSurfaces` | Pre-existing failure | Outside expansion scope (governance submit-proposal in_review vs simulation-required workflow mismatch) |
+| `WorkstreamServiceTest.userAdminStatusActionsDisableReactivateNoOpAndDenyManualSelfDisable` | Pre-existing failure | Outside expansion scope (disable-member no-op vs accepted behavior) |
+| `WorkstreamServiceTest.auditTraceSummaryWorkerFailsClosedUntilRealAutonomousRuntimeExists` | Pre-existing error (Akka binding) | Outside expansion scope (aspirational Akka autonomous agent runtime) |
+| `GovernancePolicyServiceTest` (4 failures: proposalDraftSubmit, rejectionBlocks, requestChanges, simulationDecision) | Pre-existing failures | Outside expansion scope (governance policy lifecycle workflow state mismatch) |
+| `MeServiceTest.configuredBootstrapAdminLinksOnlyExplicitSaasOwnerLocalAccount` | Pre-existing failure | Outside expansion scope (audit role ID mismatch: saas_owner.audit.read vs audit.trace.read) |
+| `GovernancePolicyBrowserWorkstreamSmokeTest.protectedWorkstreamApiExercisesGovernancePolicyOutcomeRuntimePath` | Pre-existing failure | Outside expansion scope (browser smoke test, governance workflow state) |
+| `UserAdminBrowserWorkstreamSmokeTest` (2 failures) | Pre-existing failures | Outside expansion scope (browser smoke tests for support-access grant and system-message coverage) |
+| `MyAccountBrowserWorkstreamSmokeTest` (2 errors) | Pre-existing errors (RuntimeException) | Outside expansion scope (browser smoke tests extend TestKitSupport; Akka runtime not available) |
+| `AttentionProducerServiceTest.governanceSubmitProducesApprovalAttentionAndDecisionResolvesWithoutLeakingToUnauthorizedOrOtherTenant` | Pre-existing error (NoSuchElement) | Outside expansion scope |
+
+---
+
+## README done-state re-assessment
+
+| Done-state bullet | Status | Evidence |
+|---|---|---|
+| All foundation workstream surface actions inventoried and classified | ✅ | `catalog-inventory.md`; unchanged from TASK-WCTC-99-001 |
+| App-description current intent records expanded catalog for all 5 workstreams | ✅ | `catalog-coverage-map.md`; unchanged from TASK-WCTC-99-001 |
+| Backend catalog entries exist with all required metadata | ✅ | 31 targeted expansion tests all pass; Material Gap 1 now closed |
+| Prompt classification recognizes useful requests without stealing surface routing | ✅ | `submitMessageRoutesMatchedSurfaceIntentBeforeModelInvocation` and `submitMessageBlocksUnsupportedAndHighRiskChatToolPromptsAfterDeterministicRouting` pass |
+| Confirmation requires exact plan snapshot and selected AuthContext | ✅ | `confirmedChatToolPlanRequiresExactSnapshotAndExplicitHumanConfirmationBeforeExecution` passes |
+| Each executed step uses existing backend-authorized paths | ✅ | All step execution tests verify correct action path and result surface |
+| High-impact actions are modeled or remain approval-gated/surface-only/blocked | ✅ | `expandedCatalogSurfaceOnlyAndBlockedActionsAreOutOfCatalogAcrossAllFiveWorkstreams` passes (7 cross-workstream denials) |
+| Frontend plan proposal/result surfaces usable for larger catalogs | ✅ | 176/177 frontend tests pass; typecheck clean |
+| Starter agent seed material explains expanded catalog | ✅ | 9/9 seed loader tests pass |
+| Tests cover no-mutation, exact confirmation, out-of-catalog, capability denial, approval-gated, idempotency, partial failure/recovery, and trace evidence | ✅ | All 31 targeted tests pass including both Material Gap 1 tests |
+| Terminal verification records evidence and appends follow-up tasks if gaps remain | ✅ | This document; no further gaps found |
+
+---
+
+## Mini-project status
+
+**Closed.** All README done-state bullets are satisfied. Material Gap 1 (My Account direct-action settings field/timezone validation) was fixed by TASK-WCTC-12-001 and confirmed by TASK-WCTC-99-002. No additional material gaps remain. All remaining full-suite test failures are pre-existing and outside the expansion scope.

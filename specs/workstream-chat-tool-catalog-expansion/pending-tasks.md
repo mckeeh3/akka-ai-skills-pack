@@ -596,7 +596,7 @@
 
 ### TASK-WCTC-99-002: Re-verify Workstream Chat Tool Catalog Expansion completion
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-catalog-expansion/verification-notes.md (Material Gap 1 follow-up)
 - task brief: inline (see notes)
 - depends on:
@@ -627,4 +627,8 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: final re-verification pass after Material Gap 1 fix
+  - Material Gap 1 confirmed closed: both `myAccountRejectsUnsupportedSelfServiceFieldsBeforeMutation` and `myAccountSettingsRejectInvalidTimezoneBeforeMutation` pass; all 31 targeted expansion tests pass (29 prior + 2 gap-closure); 176/177 frontend tests pass; typecheck clean; `git diff --check` clean
+  - pre-existing failure `agentAdminCatalogDetailAndArtifactReadsAreBackendAuthoritativeAndRedacted` documented (was missed in TASK-WCTC-99-001 notes; confirmed pre-existing at ba58828a); not material to expansion done state
+  - all remaining full-suite failures confirmed pre-existing by stash/revert verification; no new follow-up tasks needed
+  - mini-project status: **closed**
   - commit message: `workstream-chat-catalog: reverify completion`
