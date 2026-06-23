@@ -161,7 +161,7 @@
 
 ### TASK-FSFR-04-001: Repair Agent Admin artifact read/redaction mismatch
 
-- status: pending
+- status: done
 - source: specs/full-suite-failure-remediation/failure-inventory.md after TASK-FSFR-01-001
 - task brief: specs/full-suite-failure-remediation/tasks/04-agent-admin/01-repair-agent-admin-artifact-read-redaction.md
 - depends on:
@@ -192,6 +192,9 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: Agent Admin workstream; governed artifact read/redaction repair
+  - completed 2026-06-23: aligned Agent Admin artifact-read regression coverage with current Agent Admin surface contracts: manifest, tool-boundary, and model-reference reads stay backend-authoritative/redacted through the governance review surfaces while preserving legacy artifact contract aliases for backend evidence.
+  - validation: `mvn -Dtest=WorkstreamServiceTest#agentAdminCatalogDetailAndArtifactReadsAreBackendAuthoritativeAndRedacted test` passed; `git diff --check` passed. No seed/import behavior changed, so related seed/import tests were not required.
+  - commit message: `full-suite-remediation: repair agent admin artifact redaction`
 
 ### TASK-FSFR-05-001: Repair User Admin status and browser-smoke cluster
 
