@@ -1486,7 +1486,7 @@ public final class WorkstreamService {
       var existing = duplicate.orElseThrow();
       return new WorkstreamMessageResponse(existing.correlationId(), existing.idempotencyKey(), existing.userItem(), existing.agentItem(), existing.surface());
     }
-    if (MY_ACCOUNT_AGENT_ID.equals(request.functionalAgentId()) || USER_ADMIN_AGENT_ID.equals(request.functionalAgentId())) {
+    if (MY_ACCOUNT_AGENT_ID.equals(request.functionalAgentId()) || USER_ADMIN_AGENT_ID.equals(request.functionalAgentId()) || AGENT_ADMIN_AGENT_ID.equals(request.functionalAgentId())) {
       var boundary = activeChatToolBoundary(actor, request.functionalAgentId(), correlationId);
       var requestedSteps = request.steps() == null ? List.<ChatToolPlanStep>of() : request.steps();
       requestedSteps.forEach(step -> validateChatToolStepAgainstCatalog(actor, boundary, request.functionalAgentId(), step));
@@ -1642,7 +1642,7 @@ public final class WorkstreamService {
         traceIds.addAll(stepTraceIds);
         var resultSurfaceId = actionResult.resultSurface() == null ? null : actionResult.resultSurface().surfaceId();
         if (resultSurfaceId != null) resultSurfaceIds.add(resultSurfaceId);
-        var completedStatus = List.of("accepted", "no-op", "recorded", "full", "summary_only").contains(actionResult.status());
+        var completedStatus = chatToolStepCompleted(entry, actionResult);
         var stepResult = new ChatToolPlanStepResult(stepId, completedStatus ? "completed" : "failed", actionResult.message(), step.actionId(), step.governedToolId(), step.capabilityId(), resultSurfaceId, List.copyOf(stepTraceIds), startedAt.toString(), Instant.now().toString(), completedStatus ? null : firstNonBlank(actionResult.status(), "action_failed"));
         if (completedStatus) {
           completed.add(stepResult);
@@ -1665,6 +1665,12 @@ public final class WorkstreamService {
         ? List.<String>of()
         : List.of("Review failed and skipped step trace refs before retrying.", "Retry only uncompleted idempotent steps with the same selected AuthContext or repair the plan through a new proposal.");
     return new ChatToolPlanExecutionResult(request.planId(), request.planSnapshotId(), status, List.copyOf(completed), List.copyOf(failed), List.copyOf(skipped), recoverySteps, List.copyOf(resultSurfaceIds), List.copyOf(traceIds), correlationId);
+  }
+
+  private boolean chatToolStepCompleted(ChatToolCatalogEntry entry, CapabilityActionResult actionResult) {
+    if (actionResult == null) return false;
+    if (List.of("accepted", "no-op", "recorded", "full", "summary_only").contains(actionResult.status())) return true;
+    return "chat-proposal-only".equals(entry.classification()) && "approval-required".equals(actionResult.status());
   }
 
   private void requireExplicitChatToolPlanConfirmation(ChatToolPlanConfirmationRequest request) {
@@ -1888,7 +1894,7 @@ public final class WorkstreamService {
           "No Organization or invitation is created from this proposal. Human confirmation, selected AuthContext authorization, exact plan snapshot validation, per-step idempotency, and trace capture are required before execution.",
           userAdminOrganizationAndAdminInvitePlanSteps(candidate, idempotencyRoot)));
     }
-    var normalized = prompt.toLowerCase(Locale.ROOT);
+    var normalized = " " + prompt.toLowerCase(Locale.ROOT).replace('-', ' ') + " ";
     if (MY_ACCOUNT_AGENT_ID.equals(functionalAgentId)) {
       var displayName = myAccountDisplayNamePromptValue(prompt);
       if (displayName.isPresent()) {
@@ -1917,13 +1923,17 @@ public final class WorkstreamService {
             myAccountThemePlanSteps(idempotencyRoot)));
       }
     }
-    if (AGENT_ADMIN_AGENT_ID.equals(functionalAgentId) && normalized.contains("prompt risk review") && (normalized.contains("start") || normalized.contains("run"))) {
-      return Optional.of(new RepresentativeChatToolPlanCandidate(
-          AGENT_ADMIN_AGENT_ID,
-          "Review the Agent Admin governed-tool plan. Prompt-risk review start remains approval-gated; explicit confirmation cannot bypass policy gates.",
-          "Start an approval-gated prompt-risk review task for the Agent Admin prompt proposal only when backend policy permits it.",
-          "No managed-agent behavior, prompt, skill, reference, model, provider, or lifecycle artifact changes from this proposal. Confirmation rechecks authorization and the dispatcher blocks approval-gated execution until the separate policy gate is modeled.",
-          agentAdminPromptRiskReviewPlanSteps(idempotencyRoot)));
+    if (AGENT_ADMIN_AGENT_ID.equals(functionalAgentId)) {
+      var agentAdminExpanded = agentAdminExpandedChatToolPlanCandidate(normalized, idempotencyRoot);
+      if (agentAdminExpanded.isPresent()) return agentAdminExpanded;
+      if (normalized.contains("prompt risk review") && (normalized.contains("start") || normalized.contains("run"))) {
+        return Optional.of(new RepresentativeChatToolPlanCandidate(
+            AGENT_ADMIN_AGENT_ID,
+            "Review the Agent Admin governed-tool plan. Prompt-risk review start remains approval-gated; explicit confirmation cannot bypass policy gates.",
+            "Start an approval-gated prompt-risk review task for the Agent Admin prompt proposal only when backend policy permits it.",
+            "No managed-agent behavior, prompt, skill, reference, model, provider, or lifecycle artifact changes from this proposal. Confirmation rechecks authorization and the dispatcher blocks approval-gated execution until the separate policy gate is modeled.",
+            agentAdminPromptRiskReviewPlanSteps(idempotencyRoot)));
+      }
     }
     if (AUDIT_TRACE_AGENT_ID.equals(functionalAgentId) && normalized.contains("append") && normalized.contains("investigation note")) {
       return Optional.of(new RepresentativeChatToolPlanCandidate(
@@ -1966,7 +1976,7 @@ public final class WorkstreamService {
   }
 
   private String highRiskPromptReason(String functionalAgentId, String normalizedPrompt) {
-    if (containsAny(normalizedPrompt, " activate ", " deactivate ", " rollback ", " approve ", " reject ", " suspend ", " reactivate ", " permanently remove ", " delete ", " support access ", " identity relink ", " grant ", " revoke ", " export ", " unredacted ", " raw evidence ", " change role ", " role change ", " replace role ")) {
+    if (containsAny(normalizedPrompt, " activate ", " activation ", " deactivate ", " deactivation ", " rollback ", " approve ", " reject ", " suspend ", " reactivate ", " permanently remove ", " delete ", " support access ", " identity relink ", " grant ", " revoke ", " export ", " unredacted ", " raw evidence ", " change role ", " role change ", " replace role ")) {
       return "Prompt references high-impact lifecycle, authority, export, support-access, role, or raw-evidence actions that require separate approval/design guardrails.";
     }
     if (USER_ADMIN_AGENT_ID.equals(functionalAgentId) && containsAny(normalizedPrompt, " archive ", " disable ", " remove account ", " remove user ")) {
@@ -2169,6 +2179,99 @@ public final class WorkstreamService {
     if (normalizedPrompt.contains(" provider ") || normalizedPrompt.contains(" readiness ")) return "provider_readiness";
     if (normalizedPrompt.contains(" digest ")) return "digest_ready";
     return "all";
+  }
+
+  private Optional<RepresentativeChatToolPlanCandidate> agentAdminExpandedChatToolPlanCandidate(String normalizedPrompt, String idempotencyRoot) {
+    if (containsAny(normalizedPrompt, " no side effect test ", " no side effect runtime test ", " run test ", " test this agent ")) {
+      return Optional.of(agentAdminRepresentativeCandidate(
+          "Review the Agent Admin governed-tool plan. No-side-effect test setup cannot activate managed-agent behavior.",
+          "Run a no-side-effect managed-agent runtime test after exact human confirmation.",
+          "No managed-agent behavior, prompt, skill, reference, model, provider, tool boundary, or lifecycle state changes from this proposal. Runtime/provider unavailability must fail closed and cannot be counted as model-backed success.",
+          agentAdminChatToolPlanStep("step-run-agent-test", "Run no-side-effect managed-agent test", "action-agent-detail-run-test", AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY, AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY, "schema.agent-runtime.test.v1", mapOf("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "prompt", "Run no-side-effect Agent Admin runtime readiness test.", "reason", "human_chat_tool_plan no-side-effect managed-agent test"), "surface-agent-test-console", idempotencyRoot, "agent-detail-run-test")));
+    }
+    if (containsAny(normalizedPrompt, " simulate prompt governance ", " prompt governance simulation ")) {
+      return Optional.of(agentAdminRepresentativeCandidate(
+          "Review the Agent Admin governed-tool plan. Prompt-governance simulation is advisory and cannot activate prompt behavior.",
+          "Run a no-side-effect prompt-governance simulation after exact human confirmation.",
+          "No prompt text, tool boundary, provider routing, or lifecycle state changes from this proposal. Prompt content cannot grant authority and provider/runtime failures fail closed.",
+          agentAdminChatToolPlanStep("step-simulate-prompt-governance", "Simulate prompt governance without side effects", "action-agent-prompt-governance-simulate", AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY, AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY, "schema.agent-admin.prompt-governance.simulate.v1", mapOf("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "prompt", "Simulate prompt-governance behavior without side effects.", "reason", "human_chat_tool_plan prompt-governance simulation"), "surface-agent-test-console", idempotencyRoot, "prompt-governance-simulate")));
+    }
+    if (containsAny(normalizedPrompt, " simulate skill manifest ", " skill manifest simulation ", " simulate manifest ")) {
+      return Optional.of(agentAdminRepresentativeCandidate(
+          "Review the Agent Admin governed-tool plan. Skill/reference manifest simulation is advisory and cannot activate manifest changes.",
+          "Run a no-side-effect skill/reference manifest simulation after exact human confirmation.",
+          "No skill, reference, prompt, provider, tool-boundary, or lifecycle state changes from this proposal. Skill/reference text cannot grant authority and loader/tool-boundary failures fail closed.",
+          agentAdminChatToolPlanStep("step-simulate-skill-manifest", "Simulate skill/reference manifest without side effects", "action-agent-skill-manifest-simulate", AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY, AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY, "schema.agent-admin.skill-manifest.simulate.v1", mapOf("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "prompt", "Simulate skill/reference manifest behavior without side effects.", "reason", "human_chat_tool_plan skill-manifest simulation"), "surface-agent-test-console", idempotencyRoot, "skill-manifest-simulate")));
+    }
+    if (containsAny(normalizedPrompt, " simulate tool boundary ", " tool boundary simulation ", " tool boundary review simulation ")) {
+      return Optional.of(agentAdminRepresentativeCandidate(
+          "Review the Agent Admin governed-tool plan. Tool-boundary simulation is advisory and cannot expand the active boundary.",
+          "Run a no-side-effect ToolPermissionBoundary simulation after exact human confirmation.",
+          "No governed tool grants, side-effect permissions, provider routing, or lifecycle state changes from this proposal. Tool-boundary text cannot grant authority and expansion remains approval-gated.",
+          agentAdminChatToolPlanStep("step-simulate-tool-boundary", "Simulate tool-boundary behavior without side effects", "action-agent-tool-boundary-simulate", AGENT_ADMIN_SIMULATE_TOOL_BOUNDARY_CAPABILITY, AGENT_ADMIN_SIMULATE_TOOL_BOUNDARY_CAPABILITY, "schema.agent-admin.tool-boundary.simulate.v1", mapOf("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "reason", "human_chat_tool_plan tool-boundary simulation"), "surface-agent-test-console", idempotencyRoot, "tool-boundary-simulate")));
+    }
+    if (containsAny(normalizedPrompt, " model reference readiness test ", " model refs readiness test ", " model reference test ")) {
+      return Optional.of(agentAdminRepresentativeCandidate(
+          "Review the Agent Admin governed-tool plan. Model-reference readiness tests are no-side-effect and fail closed without provider/runtime configuration.",
+          "Run a no-side-effect model-reference readiness test after exact human confirmation.",
+          "No model/provider routing, prompt, skill, reference, tool-boundary, or lifecycle state changes from this proposal. Missing provider/runtime configuration returns a blocked state rather than fixture success.",
+          agentAdminChatToolPlanStep("step-run-model-reference-test", "Run model-reference readiness test", "action-agent-model-refs-run-test", AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY, AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY, "schema.agent-admin.model-refs.run-test.v1", mapOf("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "reason", "human_chat_tool_plan model-reference readiness test"), "surface-agent-test-console", idempotencyRoot, "model-refs-run-test")));
+    }
+    if (containsAny(normalizedPrompt, " submit prompt governance ", " submit prompt change ", " prompt governance change for review ")) {
+      return Optional.of(agentAdminRepresentativeCandidate(
+          "Review the Agent Admin governed-tool plan. Prompt governance submit creates review evidence only and cannot activate prompt behavior.",
+          "Submit a redacted prompt-governance change for human review after exact human confirmation.",
+          "No active prompt, provider, tool-boundary, model, skill, reference, or lifecycle state changes from this proposal. Review submission is not approval or activation.",
+          agentAdminChatToolPlanStep("step-submit-prompt-governance-review", "Submit prompt-governance change for review", "action-agent-prompt-governance-submit-review", AGENT_ADMIN_SUBMIT_REVIEW_CAPABILITY, AGENT_ADMIN_SUBMIT_REVIEW_CAPABILITY, "schema.agent-admin.prompt-governance.submit-review.v1", mapOf("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "changeSummary", "redacted prompt governance review submission", "reason", "human_chat_tool_plan prompt governance submit-review"), "surface-agent-behavior-proposal", idempotencyRoot, "prompt-governance-submit-review")));
+    }
+    if (containsAny(normalizedPrompt, " submit skill manifest ", " submit manifest review ", " skill manifest review ")) {
+      return Optional.of(agentAdminRepresentativeCandidate(
+          "Review the Agent Admin governed-tool plan. Skill/reference manifest submit creates review evidence only and cannot activate manifest behavior.",
+          "Submit a redacted skill/reference manifest change for human review after exact human confirmation.",
+          "No active skill, reference, prompt, provider, tool-boundary, model, or lifecycle state changes from this proposal. Review submission is not approval or activation.",
+          agentAdminChatToolPlanStep("step-submit-skill-manifest-review", "Submit skill/reference manifest change for review", "action-agent-skill-manifest-submit-review", AGENT_ADMIN_SUBMIT_REVIEW_CAPABILITY, AGENT_ADMIN_SUBMIT_REVIEW_CAPABILITY, "schema.agent-admin.skill-manifest.submit-review.v1", mapOf("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "changeSummary", "redacted skill/reference manifest review submission", "reason", "human_chat_tool_plan skill manifest submit-review"), "surface-agent-behavior-proposal", idempotencyRoot, "skill-manifest-submit-review")));
+    }
+    if (containsAny(normalizedPrompt, " submit tool boundary ", " tool boundary review ")) {
+      return Optional.of(agentAdminRepresentativeCandidate(
+          "Review the Agent Admin governed-tool plan. Tool-boundary submit creates review evidence only and cannot expand the active boundary.",
+          "Submit a redacted tool-boundary change for human review after exact human confirmation.",
+          "No active tool grants, side-effect permissions, provider routing, or lifecycle state changes from this proposal. Tool-boundary expansion remains approval-gated.",
+          agentAdminChatToolPlanStep("step-submit-tool-boundary-review", "Submit tool-boundary change for review", "action-agent-tool-boundary-submit-review", AGENT_ADMIN_SUBMIT_REVIEW_CAPABILITY, AGENT_ADMIN_SUBMIT_REVIEW_CAPABILITY, "schema.agent-admin.tool-boundary.submit-review.v1", mapOf("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "changeSummary", "redacted tool-boundary review submission", "reason", "human_chat_tool_plan tool-boundary submit-review"), "surface-agent-behavior-proposal", idempotencyRoot, "tool-boundary-submit-review")));
+    }
+    if (containsAny(normalizedPrompt, " submit model references ", " submit model reference ", " model references for review ")) {
+      return Optional.of(agentAdminRepresentativeCandidate(
+          "Review the Agent Admin governed-tool plan. Model-reference submit creates review evidence only and cannot switch provider/model routing.",
+          "Submit a redacted model-reference change for human review after exact human confirmation.",
+          "No active model/provider routing, prompt, skill, reference, tool-boundary, or lifecycle state changes from this proposal. Review submission is not approval or activation.",
+          agentAdminChatToolPlanStep("step-submit-model-reference-review", "Submit model-reference change for review", "action-agent-model-refs-submit-review", AGENT_ADMIN_SUBMIT_REVIEW_CAPABILITY, AGENT_ADMIN_SUBMIT_REVIEW_CAPABILITY, "schema.agent-admin.model-refs.submit-review.v1", mapOf("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "changeSummary", "redacted model-reference review submission", "reason", "human_chat_tool_plan model refs submit-review"), "surface-agent-behavior-proposal", idempotencyRoot, "model-refs-submit-review")));
+    }
+    return Optional.empty();
+  }
+
+  private RepresentativeChatToolPlanCandidate agentAdminRepresentativeCandidate(String proposalItemBody, String defaultSummary, String defaultApprovalSummary, ChatToolPlanStep step) {
+    return new RepresentativeChatToolPlanCandidate(AGENT_ADMIN_AGENT_ID, proposalItemBody, defaultSummary, defaultApprovalSummary, List.of(step));
+  }
+
+  private ChatToolPlanStep agentAdminChatToolPlanStep(String stepId, String label, String actionId, String governedToolId, String capabilityId, String inputSchemaRef, Map<String, Object> input, String expectedResultSurfaceId, String idempotencyRoot, String idempotencySuffix) {
+    return new ChatToolPlanStep(
+        stepId,
+        1,
+        label,
+        actionId,
+        actionId,
+        governedToolId,
+        capabilityId,
+        inputSchemaRef,
+        input,
+        List.of(),
+        Map.of(),
+        "idem-" + stableSuffix(idempotencyRoot + ":" + idempotencySuffix),
+        "proposal-only-command: Agent Admin advisory/test/review step is one backend transaction boundary; active behavior and lifecycle state remain unchanged",
+        true,
+        false,
+        "workflow-status",
+        expectedResultSurfaceId,
+        List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_pending", "human_chat_tool_plan.step_started", "agent.work_trace"));
   }
 
   private List<ChatToolPlanStep> agentAdminPromptRiskReviewPlanSteps(String idempotencyRoot) {
@@ -2530,6 +2633,18 @@ public final class WorkstreamService {
         chatToolCatalogEntry(USER_ADMIN_AGENT_ID, submitCustomerRenameAction(), "human_chat_tool_plan", "chat-executable-now", "medium", "Customer rename is a bounded display-label update for a visible Customer in the selected tenant.", "Human-confirmed Customer rename only; backend rechecks visible customer id, selected tenant authority, stale/conflict/no-op policy, idempotency, and trace evidence.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-customer-id", "idempotency"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "human_chat_tool_plan.step_failed")),
         chatToolCatalogEntry(USER_ADMIN_AGENT_ID, submitOrganizationRenameAction(), "human_chat_tool_plan", "chat-executable-now", "medium", "Organization rename is a bounded display-label update for a visible Organization and does not expose tenant app data.", "Human-confirmed Organization rename only; backend rechecks visible Organization id, SaaS Owner authority, stale/conflict/no-op policy, idempotency, and trace evidence.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-organization-id", "tenant-app-data-redacted", "idempotency"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "human_chat_tool_plan.step_failed")),
         chatToolCatalogEntry(AGENT_ADMIN_AGENT_ID, startPromptRiskReviewAction(), "human_chat_tool_plan", "approval-gated", "medium", "Prompt-risk review start creates only a governed advisory task and remains blocked by the dispatcher until separate approval policy is modeled.", "Human-confirmed prompt-risk review task start; model/provider runtime may fail closed and approval policy cannot be bypassed.", true, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "tool-boundary", "provider-fail-closed", "approval-gate"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_failed", "agent.work_trace")),
+        chatToolCatalogEntry(AGENT_ADMIN_AGENT_ID, agentDetailRunTestAction(), "human_chat_tool_plan", "chat-proposal-only", "medium", "No-side-effect managed-agent test assembles governed prompt/loader/tool-boundary evidence and cannot activate behavior.", "Human-confirmed advisory runtime test only; prompt/skill/reference/model/tool-boundary text cannot grant authority and provider/runtime failures fail closed.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-agent-definition", "no-side-effect-tools", "provider-fail-closed", "no-activation"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "agent.work_trace", "prompt.assembly_trace", "skill.load_trace")),
+        chatToolCatalogEntry(AGENT_ADMIN_AGENT_ID, agentPromptGovernanceSimulateAction(), "human_chat_tool_plan", "chat-proposal-only", "medium", "Prompt-governance simulation is advisory and no-side-effect; active prompt behavior remains unchanged.", "Human-confirmed prompt simulation only; prompt text cannot grant authority, broaden data/tool scope, approve changes, or activate behavior.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-agent-definition", "no-side-effect-tools", "provider-fail-closed", "prompt-text-not-authority"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "agent.work_trace", "prompt.assembly_trace")),
+        chatToolCatalogEntry(AGENT_ADMIN_AGENT_ID, agentSkillManifestSimulateAction(), "human_chat_tool_plan", "chat-proposal-only", "medium", "Skill/reference manifest simulation is advisory and no-side-effect; active manifest assignments remain unchanged.", "Human-confirmed manifest simulation only; skill/reference text cannot grant tools, scope, approval authority, or side effects.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-agent-definition", "no-side-effect-tools", "provider-fail-closed", "skill-reference-text-not-authority"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "agent.work_trace", "skill.load_trace", "reference.load_trace")),
+        chatToolCatalogEntry(AGENT_ADMIN_AGENT_ID, agentToolBoundarySimulateAction(), "human_chat_tool_plan", "chat-proposal-only", "medium", "Tool-boundary simulation is advisory and cannot expand active governed tool grants or side-effect permissions.", "Human-confirmed ToolPermissionBoundary simulation only; boundary text or model output cannot grant authority and expansion remains review/approval gated.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-agent-definition", "no-side-effect-tools", "tool-boundary-enforced", "no-authority-expansion"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "agent.work_trace", "tool.boundary_trace")),
+        chatToolCatalogEntry(AGENT_ADMIN_AGENT_ID, agentModelRefsRunTestAction(true), "human_chat_tool_plan", "chat-proposal-only", "medium", "Model-reference readiness test is no-side-effect and must fail closed when provider/runtime configuration is unavailable.", "Human-confirmed model-reference readiness test only; model/reference text cannot switch provider routing or expose provider secrets.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-agent-definition", "no-side-effect-tools", "provider-fail-closed", "provider-secrets-redacted"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "agent.work_trace", "model.readiness_trace")),
+        chatToolCatalogEntry(AGENT_ADMIN_AGENT_ID, agentPromptGovernanceSubmitReviewAction(), "human_chat_tool_plan", "chat-proposal-only", "medium", "Prompt-governance submit-review creates or submits review evidence only; active prompt behavior remains unchanged.", "Human-confirmed prompt review submission only; review submission is not approval, activation, or authority expansion.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-agent-definition", "redacted-diff-only", "prompt-text-not-authority", "no-activation"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "agent.work_trace", "behavior.proposal_trace")),
+        chatToolCatalogEntry(AGENT_ADMIN_AGENT_ID, agentSkillManifestSubmitReviewAction(), "human_chat_tool_plan", "chat-proposal-only", "medium", "Skill/reference manifest submit-review creates or submits review evidence only; active manifest assignments remain unchanged.", "Human-confirmed manifest review submission only; skill/reference text cannot grant tool authority, approval authority, tenant scope, or side effects.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-agent-definition", "redacted-diff-only", "skill-reference-text-not-authority", "no-activation"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "agent.work_trace", "behavior.proposal_trace")),
+        chatToolCatalogEntry(AGENT_ADMIN_AGENT_ID, agentToolBoundarySubmitReviewAction(), "human_chat_tool_plan", "chat-proposal-only", "medium-high", "Tool-boundary submit-review creates review evidence only; active tool grants remain unchanged.", "Human-confirmed tool-boundary review submission only; active ToolPermissionBoundary grants cannot be expanded by chat, prompt, skill, reference, model, or tool-description text.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-agent-definition", "redacted-diff-only", "tool-boundary-enforced", "no-authority-expansion", "no-activation"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "agent.work_trace", "behavior.proposal_trace", "tool.boundary_trace")),
+        chatToolCatalogEntry(AGENT_ADMIN_AGENT_ID, agentModelRefsSubmitReviewAction(), "human_chat_tool_plan", "chat-proposal-only", "medium-high", "Model-reference submit-review creates review evidence only; active model/provider routing remains unchanged.", "Human-confirmed model-reference review submission only; provider aliases, model refs, and provider secrets remain governed and cannot be changed by text.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-agent-definition", "redacted-diff-only", "provider-secrets-redacted", "model-text-not-authority", "no-activation"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "agent.work_trace", "behavior.proposal_trace", "model.readiness_trace")),
+        chatToolCatalogEntry(AGENT_ADMIN_AGENT_ID, proposePromptDiffAction(), "human_chat_tool_plan", "chat-proposal-only", "medium", "Prompt-diff proposal creates inert draft/review evidence only; active prompt behavior remains unchanged.", "Human-confirmed prompt diff proposal only; prompt text cannot grant authority and activation remains a separate lifecycle command.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-agent-definition", "redacted-diff-only", "prompt-text-not-authority", "no-activation"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "agent.work_trace", "behavior.proposal_trace")),
+        chatToolCatalogEntry(AGENT_ADMIN_AGENT_ID, submitBehaviorChangeAction(), "human_chat_tool_plan", "chat-proposal-only", "medium", "Behavior-change submit creates review evidence only; active behavior and lifecycle state remain unchanged.", "Human-confirmed behavior-change submission only; submission is not approval, activation, rollback, or deactivation.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-agent-definition", "redacted-diff-only", "no-authority-expansion", "no-activation"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "agent.work_trace", "behavior.proposal_trace")),
+        chatToolCatalogEntry(AGENT_ADMIN_AGENT_ID, agentBehaviorProposalSubmitAction(false), "human_chat_tool_plan", "chat-proposal-only", "medium", "Behavior proposal submit advances a visible draft/proposed proposal to review only; active behavior remains unchanged.", "Human-confirmed behavior proposal submission only; visible proposal state is rechecked and approval/activation remain separate gates.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-proposal-id", "no-authority-expansion", "no-activation"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "agent.work_trace", "behavior.proposal_trace")),
         chatToolCatalogEntry(AUDIT_TRACE_AGENT_ID, auditTraceAppendInvestigationNoteAction(), "human_chat_tool_plan", "chat-executable-now", "low-medium", "Investigation note append is an idempotent annotation on an authorized trace/correlation; source evidence and policy state remain immutable.", "Human-confirmed browser-safe investigation note append to an authorized visible trace/correlation only; no export or evidence mutation authority.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-trace-binding", "redaction"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.note")),
         chatToolCatalogEntry(GOVERNANCE_POLICY_AGENT_ID, governanceDraftProposalAction(), "human_chat_tool_plan", "chat-proposal-only", "medium", "Policy drafting creates an inert proposal artifact only; approval, activation, rollback, exports, and live authority changes stay outside this executable path.", "Human-confirmed inert policy proposal draft only; no approval, activation, rollback, or production authority change.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "proposal-only", "no-activation"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "policy.proposal_trace")));
   }
@@ -2593,6 +2708,51 @@ public final class WorkstreamService {
     if (boundary.allowedToolGrants().isEmpty()) throw new AuthorizationException(403, "CHAT_TOOL_BOUNDARY_EMPTY");
     if (MY_ACCOUNT_AGENT_ID.equals(workstreamId)) validateMyAccountChatToolStepInput(step);
     if (USER_ADMIN_AGENT_ID.equals(workstreamId)) validateUserAdminChatToolStepInput(step);
+    if (AGENT_ADMIN_AGENT_ID.equals(workstreamId)) validateAgentAdminChatToolStepInput(actor, step);
+  }
+
+  private void validateAgentAdminChatToolStepInput(AuthContextResolver.ResolvedMe actor, ChatToolPlanStep step) {
+    var input = step.input() == null ? Map.<String, Object>of() : step.input();
+    var actionId = step.actionId();
+    denyAgentAdminAuthorityGrantingText(input);
+    if (List.of("action-agent-detail-run-test", "action-agent-prompt-governance-simulate", "action-agent-skill-manifest-simulate", "action-agent-tool-boundary-simulate", "action-agent-model-refs-run-test").contains(actionId)) {
+      rejectUnsupportedChatToolFields(input, List.of("agentDefinitionId", "prompt", "reason", "artifactKind", "proposalId", "redactedDiffSummary", "changeSummary"), "CHAT_TOOL_AGENT_ADMIN_UNSUPPORTED_SIMULATION_FIELD");
+      requireVisibleAgentAdminDefinition(actor, input);
+    } else if (List.of("action-agent-prompt-governance-submit-review", "action-agent-skill-manifest-submit-review", "action-agent-tool-boundary-submit-review", "action-agent-model-refs-submit-review", "action-propose-prompt-diff", "action-submit-behavior-change").contains(actionId)) {
+      rejectUnsupportedChatToolFields(input, List.of("agentDefinitionId", "proposalId", "behaviorProposalId", "artifactKind", "changeSummary", "redactedDiffSummary", "reason"), "CHAT_TOOL_AGENT_ADMIN_UNSUPPORTED_REVIEW_FIELD");
+      requireVisibleAgentAdminDefinition(actor, input);
+    } else if ("action-agent-behavior-proposal-submit".equals(actionId)) {
+      rejectUnsupportedChatToolFields(input, List.of("proposalId", "behaviorProposalId", "reason"), "CHAT_TOOL_AGENT_ADMIN_UNSUPPORTED_PROPOSAL_FIELD");
+      requireStringInput(input, input.containsKey("behaviorProposalId") ? "behaviorProposalId" : "proposalId", "CHAT_TOOL_AGENT_ADMIN_VISIBLE_PROPOSAL_REQUIRED");
+    } else if ("action-agent-prompt-risk-review-start".equals(actionId)) {
+      rejectUnsupportedChatToolFields(input, List.of("agentDefinitionId", "proposalId", "artifactDeltas", "reason"), "CHAT_TOOL_AGENT_ADMIN_UNSUPPORTED_PROMPT_RISK_FIELD");
+      requireVisibleAgentAdminDefinition(actor, input);
+      requireStringInput(input, "proposalId", "CHAT_TOOL_AGENT_ADMIN_VISIBLE_PROPOSAL_REQUIRED");
+    }
+  }
+
+  private void requireVisibleAgentAdminDefinition(AuthContextResolver.ResolvedMe actor, Map<String, Object> input) {
+    var agentDefinitionId = input.get("agentDefinitionId") instanceof String value && !value.isBlank() ? value : AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID;
+    if (!AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID.equals(agentDefinitionId)) throw new AuthorizationException(403, "CHAT_TOOL_AGENT_ADMIN_VISIBLE_AGENT_REQUIRED");
+    if (agentBehaviorRepository.agentDefinition(agentGovernanceScopeId(actor), agentDefinitionId).isEmpty()) throw new AuthorizationException(403, "CHAT_TOOL_AGENT_ADMIN_VISIBLE_AGENT_REQUIRED");
+  }
+
+  private void denyAgentAdminAuthorityGrantingText(Object value) {
+    if (value == null) return;
+    if (value instanceof String text) {
+      var normalized = " " + text.toLowerCase(Locale.ROOT).replace('-', ' ') + " ";
+      if (containsAny(normalized, " bypass ", " ignore authorization ", " ignore approval ", " without approval ", " unrestricted ", " grant authority ", " grant tool ", " grant role ", " expand authority ", " approve and activate ", " activate immediately ", " provider secret ", " api key ", " raw jwt ", " bearer token ")) {
+        throw new AuthorizationException(403, "CHAT_TOOL_AGENT_ADMIN_AUTHORITY_TEXT_DENIED");
+      }
+      return;
+    }
+    if (value instanceof Map<?, ?> map) {
+      map.values().forEach(this::denyAgentAdminAuthorityGrantingText);
+      return;
+    }
+    if (value instanceof Iterable<?> iterable) {
+      iterable.forEach(this::denyAgentAdminAuthorityGrantingText);
+    }
   }
 
   private void validateUserAdminChatToolStepInput(ChatToolPlanStep step) {

@@ -246,7 +246,7 @@
 
 ### TASK-WCTC-06-001: Expand Agent Admin chat tool catalog
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-catalog-expansion/backlog/01-chat-tool-catalog-expansion-build-backlog.md
 - task brief: specs/workstream-chat-tool-catalog-expansion/tasks/06-agent-admin/01-expand-agent-admin-chat-tool-catalog.md
 - depends on:
@@ -281,6 +281,11 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: Agent Admin workstream; managed-agent governance scope; human_chat_tool_plan expansion
+  - expanded runtime catalog for simulation/test paths (`action-agent-detail-run-test`, `action-agent-prompt-governance-simulate`, `action-agent-skill-manifest-simulate`, `action-agent-tool-boundary-simulate`, `action-agent-model-refs-run-test`), submit-review paths (`action-agent-prompt-governance-submit-review`, `action-agent-skill-manifest-submit-review`, `action-agent-tool-boundary-submit-review`, `action-agent-model-refs-submit-review`), and proposal paths (`action-propose-prompt-diff`, `action-submit-behavior-change`, `action-agent-behavior-proposal-submit`); all classified `chat-proposal-only` with authority-granting text denial, visible-agent-definition requirement, no-activation guardrails, and `approval-required` completion support
+  - lifecycle/activation/rollback/deactivation prompts remain blocked by `highRiskPromptReason` before model planning; `AGENT_ADMIN_AGENT_ID` added to `createChatToolPlanProposal` tool-boundary dispatcher; `chatToolStepCompleted` extracted to support `approval-required` status for proposal-only steps
+  - required checks passed: `git diff --check`; targeted backend Agent Admin chat tool tests (`mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest#chatToolCatalogListsBoundedHumanChatPlanEntries+expandedAgentAdminSimulationChatToolPlanIsProposalOnlyAndNoSideEffect+expandedAgentAdminSubmitReviewChatToolPlanCannotGrantAuthorityOrActivateLifecycle+expandedAgentAdminLifecyclePromptsRemainBlockedBeforeModelPlanning test`); regression guardrail regression (`mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest#representativeChatToolPlansCoverAllFiveFoundationWorkstreamsWithConfirmationAndTraceSemantics+submitMessageRoutesMatchedSurfaceIntentBeforeModelInvocation+submitMessageBlocksUnsupportedAndHighRiskChatToolPromptsAfterDeterministicRouting+submitMessageRoutesUserAdminMotivatingPromptToModelBackedPlanProposalWithoutMutation test`)
+  - frontend contracts were not changed, so frontend checks were not required
+  - commit message: `workstream-chat-catalog: expand agent admin catalog`
 
 ### TASK-WCTC-07-001: Expand Audit/Trace chat tool catalog
 

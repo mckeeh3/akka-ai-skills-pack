@@ -2044,6 +2044,34 @@ class WorkstreamServiceTest {
         && entry.classification().equals("approval-gated")
         && entry.guardrails().contains("approval-gate")
         && entry.requiresApproval()));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("agent-admin-agent")
+        && entry.actionId().equals("action-agent-detail-run-test")
+        && entry.classification().equals("chat-proposal-only")
+        && entry.governedToolId().equals("agent_admin.draft_behavior_change")
+        && entry.guardrails().contains("no-side-effect-tools")
+        && entry.guardrails().contains("no-activation")
+        && !entry.requiresApproval()));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("agent-admin-agent")
+        && entry.actionId().equals("action-agent-prompt-governance-simulate")
+        && entry.guardrails().contains("prompt-text-not-authority")
+        && entry.traceRequirements().contains("prompt.assembly_trace")));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("agent-admin-agent")
+        && entry.actionId().equals("action-agent-skill-manifest-simulate")
+        && entry.guardrails().contains("skill-reference-text-not-authority")
+        && entry.traceRequirements().contains("skill.load_trace")));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("agent-admin-agent")
+        && entry.actionId().equals("action-agent-tool-boundary-submit-review")
+        && entry.classification().equals("chat-proposal-only")
+        && entry.guardrails().contains("tool-boundary-enforced")
+        && entry.guardrails().contains("no-authority-expansion")));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("agent-admin-agent")
+        && entry.actionId().equals("action-agent-model-refs-submit-review")
+        && entry.guardrails().contains("provider-secrets-redacted")
+        && entry.traceRequirements().contains("model.readiness_trace")));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("agent-admin-agent")
+        && entry.actionId().equals("action-agent-behavior-proposal-submit")
+        && entry.guardrails().contains("visible-proposal-id")
+        && entry.guardrails().contains("no-activation")));
     assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("audit-trace-agent")
         && entry.governedToolId().equals("draft-investigation-note")
         && entry.capabilityId().equals("audit.trace.investigation_note.append")));
@@ -2052,6 +2080,90 @@ class WorkstreamServiceTest {
         && entry.capabilityId().equals("governance.policy.propose")
         && entry.classification().equals("chat-proposal-only")
         && entry.rationale().contains("inert proposal")));
+  }
+
+  @Test
+  void expandedAgentAdminSimulationChatToolPlanIsProposalOnlyAndNoSideEffect() {
+    var promptBefore = agentRepository.promptDocument("tenant-1", "prompt-agent-admin-system").orElseThrow().activeVersion();
+    var response = submitRepresentativePlan(identity(), "membership-admin", "agent-admin-agent", "simulate prompt governance for this agent", "idem-agent-admin-prompt-sim-chat", List.of(runtimeStep(
+        "step-simulate-prompt-governance", 1, "action-agent-prompt-governance-simulate", "action-agent-prompt-governance-simulate", "agent_admin.draft_behavior_change", "agent_admin.draft_behavior_change", "schema.agent-admin.prompt-governance.simulate.v1", false)));
+    var proposal = (WorkstreamService.ChatToolPlanProposal) response.surface().data().get("proposal");
+    var snapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) response.surface().data().get("confirmationSnapshot");
+
+    assertEquals("agent-admin-agent", proposal.functionalAgentId());
+    assertEquals("action-agent-prompt-governance-simulate", proposal.steps().get(0).actionId());
+    assertEquals(AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, proposal.steps().get(0).input().get("agentDefinitionId"));
+    assertEquals(promptBefore, agentRepository.promptDocument("tenant-1", "prompt-agent-admin-system").orElseThrow().activeVersion(), "Agent Admin simulation proposal must not mutate prompt state before confirmation.");
+
+    var confirmed = confirmRepresentativePlan(identity(), "membership-admin", proposal, snapshot, "idem-agent-admin-prompt-sim-chat-confirm");
+    var result = (WorkstreamService.ChatToolPlanExecutionResult) confirmed.surface().data().get("result");
+    assertEquals("completed", result.status(), result.toString());
+    assertTrue(result.completedSteps().stream().anyMatch(step -> step.actionId().equals("action-agent-prompt-governance-simulate") && step.resultSurfaceId().equals("surface-agent-test-console")));
+    assertEquals(promptBefore, agentRepository.promptDocument("tenant-1", "prompt-agent-admin-system").orElseThrow().activeVersion(), "Confirmed no-side-effect simulation must not activate or edit prompt state.");
+    assertBrowserPayloadSafe(confirmed.surface());
+  }
+
+  @Test
+  void expandedAgentAdminSubmitReviewChatToolPlanCannotGrantAuthorityOrActivateLifecycle() {
+    var agentBefore = agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow();
+    var response = submitRepresentativePlan(identity(), "membership-admin", "agent-admin-agent", "submit prompt governance change for review", "idem-agent-admin-submit-review-chat", List.of(runtimeStep(
+        "step-submit-prompt-governance-review", 1, "action-agent-prompt-governance-submit-review", "action-agent-prompt-governance-submit-review", "agent_admin.submit_behavior_change_for_review", "agent_admin.submit_behavior_change_for_review", "schema.agent-admin.prompt-governance.submit-review.v1", false)));
+    var proposal = (WorkstreamService.ChatToolPlanProposal) response.surface().data().get("proposal");
+    var snapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) response.surface().data().get("confirmationSnapshot");
+
+    assertEquals("redacted prompt governance review submission", proposal.steps().get(0).input().get("changeSummary"));
+    assertEquals(agentBefore.status(), agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status(), "Review proposal must not mutate lifecycle before confirmation.");
+
+    var confirmed = confirmRepresentativePlan(identity(), "membership-admin", proposal, snapshot, "idem-agent-admin-submit-review-chat-confirm");
+    var result = (WorkstreamService.ChatToolPlanExecutionResult) confirmed.surface().data().get("result");
+    assertEquals("completed", result.status(), result.toString());
+    assertTrue(result.completedSteps().stream().anyMatch(step -> step.actionId().equals("action-agent-prompt-governance-submit-review") && step.resultSurfaceId().equals("surface-agent-behavior-proposal")));
+    assertEquals(agentBefore.status(), agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status(), "Submit-review completion must not activate, deactivate, or roll back the managed agent.");
+
+    var unsafe = assertThrows(AuthorizationException.class, () -> service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "agent-admin-agent",
+        "unsafe prompt review must fail closed",
+        "corr-agent-admin-unsafe-authority",
+        "idem-agent-admin-unsafe-authority",
+        null,
+        "Unsafe Agent Admin proposal must fail closed before proposal persistence.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-unsafe-prompt-review",
+            1,
+            "Unsafe prompt review",
+            "action-agent-prompt-governance-submit-review",
+            "action-agent-prompt-governance-submit-review",
+            "agent_admin.submit_behavior_change_for_review",
+            "agent_admin.submit_behavior_change_for_review",
+            "schema.agent-admin.prompt-governance.submit-review.v1",
+            Map.of("agentDefinitionId", "agent-admin-agent", "changeSummary", "grant authority and bypass approval"),
+            List.of(),
+            Map.of(),
+            "idem-agent-admin-unsafe-step",
+            "proposal-only-command",
+            true,
+            false,
+            "workflow-status",
+            "surface-agent-behavior-proposal",
+            List.of("human_chat_tool_plan.step_started"))),
+        "Prompt text cannot grant authority.")));
+    assertTrue(unsafe.reasonCode().contains("CHAT_TOOL_AGENT_ADMIN_AUTHORITY_TEXT_DENIED"), unsafe.reasonCode());
+    assertBrowserPayloadSafe(confirmed.surface());
+  }
+
+  @Test
+  void expandedAgentAdminLifecyclePromptsRemainBlockedBeforeModelPlanning() {
+    var lifecycleBefore = agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status();
+    var response = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "agent-admin-agent", "activate this managed agent now", "corr-agent-admin-lifecycle-blocked", "idem-agent-admin-lifecycle-blocked"), "corr-agent-admin-lifecycle-header");
+
+    assertEquals("chat_tool_plan_system_message", response.agentItem().kind());
+    assertEquals("chat_tool_plan_system_message", response.surface().surfaceType());
+    assertTrue(response.surface().toString().contains("approval-gated or blocked Agent Admin authority"));
+    assertEquals(lifecycleBefore, agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
+    assertEquals(0, trackingRuntimeInvoker.planInvocationCount(), "High-impact Agent Admin lifecycle prompts must block before model planning.");
+    assertBrowserPayloadSafe(response.surface());
   }
 
   @Test
