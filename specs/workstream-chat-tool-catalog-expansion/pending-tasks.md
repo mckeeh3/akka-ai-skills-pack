@@ -93,7 +93,7 @@
 
 ### TASK-WCTC-02-001: Update expanded chat tool current intent
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-catalog-expansion/backlog/01-chat-tool-catalog-expansion-build-backlog.md
 - task brief: specs/workstream-chat-tool-catalog-expansion/tasks/02-current-intent/01-update-expanded-chat-tool-current-intent.md
 - depends on:
@@ -124,6 +124,9 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: app-description/current-intent only; no runtime code
+  - output: `specs/workstream-chat-tool-catalog-expansion/catalog-coverage-map.md`
+  - required checks passed: `git diff --check`; focused search proved all five workstreams have expanded catalog classification and blocked/surface-only rationale
+  - commit message: `workstream-chat-catalog: update expanded current intent`
 
 ### TASK-WCTC-03-001: Add catalog classification and prompt guardrails
 

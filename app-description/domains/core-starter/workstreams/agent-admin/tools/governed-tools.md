@@ -11,18 +11,34 @@ Allowed governed tools: list-agent-catalog, read-agent-behavior-detail, draft-ag
 Tools are exposed as browser, agent, or internal tools only as stated by the linked capability. Side-effecting or high-impact tools require idempotency, correlation, authorization, approval policy, and audit/work traces. Denied tool calls are traced and return safe feedback.
 
 
-## `human_chat_tool_plan` shared adapter catalog
+## `human_chat_tool_plan` expanded current-intent catalog
 
-The first-pass chat executable catalog for Agent Admin reuses the same backend-governed tool ids as the corresponding surface actions. Exposure channel `human_chat_tool_plan` is proposal-and-confirmation only: the initial chat request can return a plan proposal surface, but no mutation occurs until explicit human confirmation and backend authorization succeed.
+This catalog records current intent for later runtime expansion. It reuses the same governed tool ids as browser surface actions and does not by itself change runtime behavior. Exposure channel `human_chat_tool_plan` remains proposal-and-confirmation only: deterministic no-mutation surface routing runs first, the initial execution-oriented chat request may only return a no-mutation plan proposal, and no state changes until exact human plan-snapshot confirmation and backend authorization succeed.
 
-| Adapter exposure | Representative prompt | Surface action ids | Shared governed tool ids | Capability ids | Input schema and validation | Result surface(s) |
+Allowed expanded entries:
+
+| Classification | Representative prompts | Surface action ids | Shared governed tool ids | Capability ids | Input schema and validation | Result surface(s) |
 |---|---|---|---|---|---|---|
-| `human_chat_tool_plan` | `start prompt risk review for the Agent Admin prompt proposal` | `action-agent-prompt-risk-review-start` | `agent_admin.start_behavior_review_task` | `agent_admin.start_behavior_review_task` | `schema.agent-admin.prompt-risk-review.start.v1` with visible `agentDefinitionId`, `proposalId`, redacted `artifactDeltas`, reason, and idempotency key | `surface-agent-admin-prompt-risk-review` |
+| `approval-gated` | `start prompt risk review for this prompt proposal` | `action-agent-prompt-risk-review-start` | `agent_admin.start_behavior_review_task` | `agent_admin.start_behavior_review_task` | `schema.agent-admin.prompt-risk-review.start.v1`; require visible `agentDefinitionId`, proposal id, redacted artifact deltas, reason, provider/runtime/tool-boundary fail-closed evidence, and idempotency key | `surface-agent-admin-prompt-risk-review` |
+| `chat-proposal-only` | `run a no-side-effect test for this agent`; `simulate prompt governance`; `simulate skill manifest`; `simulate tool boundary`; `run model reference readiness test` | `action-agent-detail-run-test`; `action-agent-prompt-governance-simulate`; `action-agent-skill-manifest-simulate`; `action-agent-tool-boundary-simulate`; `action-agent-model-refs-run-test` | agent-admin simulation/test governed tools | `agent_admin.start_behavior_review_task` or specific simulation capabilities | Simulation/run-test schemas under `schema.agent-admin.*`; require visible agent/artifact ids, no-side-effect tool boundary, provider/runtime fail-closed state, redacted outputs, and idempotency key | Test console, governance simulation, model refs, or safe system-message surfaces |
+| `chat-proposal-only` | `submit this prompt governance change for review`; `submit skill manifest review`; `submit tool boundary review`; `submit model references for review` | `action-agent-prompt-governance-submit-review`; `action-agent-skill-manifest-submit-review`; `action-agent-tool-boundary-submit-review`; `action-agent-model-refs-submit-review`; `action-propose-prompt-diff`; `action-submit-behavior-change`; `action-agent-behavior-proposal-submit` | `draft-agent-behavior-proposal`; `submit-agent-behavior-proposal` | `agent_admin.draft_behavior_change`; `agent_admin.submit_behavior_change_for_review` | Submit-review schemas under `schema.agent-admin.*submit-review*`; require visible draft/proposal ids, redacted diff summaries, authority-expansion denial, no activation, and idempotency key | `surface-agent-behavior-proposal`; artifact review surfaces |
 
-Execution requirements:
+Expanded classification and blocked/surface-only rationale:
 
-- proposal step validation rejects out-of-catalog action/tool/capability combinations, hidden targets, unsafe output bindings, missing provider/runtime/tool-boundary readiness, and unsupported input fields;
-- confirmation must bind `planId`, `planSnapshotId`, selected `AuthContext`, requestedBy, confirmedBy, step hashes, idempotency root, correlation id, and visible side-effect acknowledgements;
+| Classification | Action groups | Rationale and boundary |
+|---|---|---|
+| `router-only` | Dashboard/catalog/search/filter/detail opens and refreshes | Structured surfaces preserve target visibility and redaction; chat plans must not enumerate hidden agents or raw artifacts. |
+| `surface-only` | Target-specific artifact reads, seed material prepare/read, prompt-risk read/source/trace opens, trace drill-ins | The browser surface owns redacted evidence review, target binding, and diagnostics. |
+| `chat-proposal-only` | No-side-effect tests/simulations and behavior/prompt/skill/tool/model submit-review paths | These may create advisory evidence or proposal artifacts only; active managed-agent behavior remains unchanged. |
+| `approval-gated` | Prompt-risk review start; proposal approve/reject/defer/cancel; prompt/skill/tool/model review decisions; seed import start/cancel; lifecycle activation/deactivation/rollback | These require visible proposal state, provider/tool-boundary readiness, human governance decisions, and lifecycle prerequisites beyond chat confirmation. |
+| `blocked-pending-design` | Direct activation/rollback/deactivation without approved proposal metadata; trace export/escalation from Agent Admin; customization-overwriting seed import | High-impact authority or evidence export needs separate approval/redaction/recovery design. |
+| `internal-only` | Skill/reference loaders, provider readiness probes, import diff builders, task workers, audit projection consumers | Governed service/model/provider paths are available only through assigned boundaries and not direct chat steps. |
+| `out-of-scope` | Business-domain managed agents and non-foundation agent teams | Outside the five foundation workstreams for this catalog expansion. |
+
+Execution requirements for every accepted Agent Admin entry:
+
+- proposal step validation rejects out-of-catalog action/tool/capability combinations, hidden targets, unsafe output bindings, missing provider/runtime/tool-boundary readiness, unsupported input fields, and any prompt/skill/model text that attempts to grant authority;
+- confirmation must bind `planId`, `planSnapshotId`, selected `AuthContext`, requestedBy, confirmedBy, step hashes, idempotency root, correlation id, and visible side-effect/approval acknowledgements;
 - every confirmed step recomputes backend authorization and approval policy, uses its own idempotency key and transaction boundary, emits trace evidence, and returns the declared typed result surface or safe system message;
-- idempotent replay returns the prior proposal/result without duplicating side effects; partial failure reports completed, failed, skipped, and recovery steps;
+- provider/model/runtime unavailable states are `provider_blocked`/`noFakeSuccess` outcomes, not successful analysis;
 - no workstream agent, prompt, frontend route, disabled/visible control, or tool description grants autonomous mutation authority.

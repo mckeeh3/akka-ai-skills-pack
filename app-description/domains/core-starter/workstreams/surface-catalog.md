@@ -66,6 +66,29 @@ First-pass representative `human_chat_tool_plan` catalog entries reuse the same 
 
 High-impact actions such as policy activation/rollback, managed-agent activation/rollback, account disabling, role grants, trace export delivery, and support-access grants remain blocked, approval-gated, or surface-only until their exact confirmation, prerequisite, authorization, and recovery semantics are modeled in a later bounded task.
 
+## Expanded `human_chat_tool_plan` catalog classification intent
+
+The expanded catalog is current intent for later implementation tasks; it does not claim runtime expansion until backend/frontend/tests are completed. Every workstream must continue to evaluate deterministic surface routing before chat tool planning. These classes are mutually exclusive for a specific adapter exposure:
+
+- `chat-executable-now`: current-intent candidate for exact-confirmed chat execution using an existing backend-authorized surface action, selected `AuthContext`, idempotency, trace, and result surface.
+- `chat-proposal-only`: current-intent candidate for creating/reading an inert proposal, draft, advisory task, or simulation result; it never commits final authority or lifecycle state.
+- `approval-gated`: may be proposed or routed only when a separate approval/decision/confirmation surface remains authoritative; chat confirmation alone is insufficient.
+- `surface-only`: must remain a structured browser surface action because target context, evidence review, field validation, or recovery UX is authoritative in the surface.
+- `router-only`: deterministic no-mutation open/prefill route, not a chat execution step.
+- `internal-only`: backend/service/provider/support path not appropriate for direct chat catalog exposure.
+- `blocked-pending-design`: missing prerequisite design/runtime policy/test coverage for safe chat exposure.
+- `out-of-scope`: outside this five-workstream foundation catalog expansion.
+
+Expanded coverage by workstream:
+
+| Workstream | Accepted expanded catalog classes | Blocked/surface-only rationale |
+|---|---|---|
+| My Account | `chat-executable-now` for profile/settings updates and in-app notification lifecycle/preferences. | Context switch, sign-out, digest disposition, external notification provider controls, and provider readiness remain `surface-only`, `approval-gated`, or `blocked-pending-design` because they need backend-authored choices, browser/session UX, provider fail-closed proof, or external-channel policy. |
+| User Admin | `chat-executable-now` for role-pinned invitations, visible invitation resend/revoke, Organization/Customer create, and visible Organization/Customer rename. `chat-proposal-only` for role/capability preview and advisory review evidence. | Destructive lifecycle, role/status/account changes, support access, identity recovery, and access-review disposition remain `approval-gated`, `surface-only`, or `blocked-pending-design` because authority, last-admin/self-action, provider/outbox, and recovery semantics need dedicated surfaces/policies. |
+| Agent Admin | `chat-proposal-only` for no-side-effect tests/simulations and submit-review proposal artifacts; prompt-risk review start remains `approval-gated`. | Activation/deactivation/rollback, governance decisions, seed import, raw artifact reads, trace export/escalation, and loader/provider internals remain `approval-gated`, `surface-only`, `internal-only`, or `blocked-pending-design` because prompt/skill/model text cannot grant authority or expose secrets. |
+| Audit/Trace | `chat-executable-now` for scoped redacted search/detail/timeline/failure/guide reads and idempotent investigation-note append. | Export, model-backed summaries, raw evidence, hidden trace delivery, and ingestion/projection internals remain `approval-gated`, `surface-only`, `internal-only`, or `blocked-pending-design` to preserve redaction, provider fail-closed behavior, and no hidden-target enumeration. |
+| Governance/Policy | `chat-executable-now` for scoped list/read; `chat-proposal-only` for inert proposal draft/submit, simulation, and start/read impact analysis. | Decisions, activation, rollback, impact disposition, threshold weakening, outcome-note target binding, enforcement hooks, and workers remain `approval-gated`, `surface-only`, `internal-only`, or `blocked-pending-design` until lifecycle prerequisites, approval, rollback, and recovery policies are modeled. |
+
 ## Catalog: My Account
 
 catalog-workstream: `my-account-agent`

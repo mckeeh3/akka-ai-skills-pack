@@ -21,17 +21,31 @@ Tools are exposed as browser, agent, or internal tools only as stated by the lin
 Forbidden tool exposure: role/capability grants, tenant/customer administration, provider secrets, external notification provider controls, fake digest success, hidden workstream enumeration, or client-side authority changes.
 
 
-## `human_chat_tool_plan` shared adapter catalog
+## `human_chat_tool_plan` expanded current-intent catalog
 
-The first-pass chat executable catalog for My Account reuses the same backend-governed tool ids as the corresponding surface actions. Exposure channel `human_chat_tool_plan` is proposal-and-confirmation only: the initial chat request can return a plan proposal surface, but no mutation occurs until explicit human confirmation and backend authorization succeed.
+This catalog records current intent for later runtime expansion. It reuses the same governed tool ids as browser surface actions and does not by itself change runtime behavior. Exposure channel `human_chat_tool_plan` remains proposal-and-confirmation only: deterministic no-mutation surface routing runs first, the initial execution-oriented chat request may only return a no-mutation plan proposal, and no state changes until exact human plan-snapshot confirmation and backend authorization succeed.
 
-| Adapter exposure | Representative prompt | Surface action ids | Shared governed tool ids | Capability ids | Input schema and validation | Result surface(s) |
+Allowed expanded entries:
+
+| Classification | Representative prompts | Surface action ids | Shared governed tool ids | Capability ids | Input schema and validation | Result surface(s) |
 |---|---|---|---|---|---|---|
-| `human_chat_tool_plan` | `change my theme to Obsidian Dark` | `action-update-my-settings` | `my_account.update_profile_settings` | `my_account.update_profile_settings` | `schema.my-account.settings.update.v1` with `preferredThemeId=obsidian-dark` selected from backend-valid theme options | `surface-my-settings` |
+| `chat-executable-now` | `change my display name to Hugh`; `change my theme to Obsidian Dark` | `action-update-my-profile`; `action-update-my-settings` | `my_account.update_profile_settings` | `my_account.update_profile_settings` | `schema.my-account.profile.update.v1` / `schema.my-account.settings.update.v1`; allow only self-scoped display name, locale, timezone, and backend-valid named theme/preference fields | `surface-my-profile`; `surface-my-settings` |
+| `chat-executable-now` | `mark notification n-123 read`; `dismiss this notification`; `archive this notification`; `snooze this notification until tomorrow`; `update my notification preferences for security alerts` | `action-notification-mark-read`; `action-notification-dismiss`; `action-notification-archive`; `action-notification-snooze`; `action-notification-update-preferences` | `notification.mark_read`; `notification.dismiss`; `notification.archive`; `notification.snooze`; `notification.update_preferences` | `notification.manage_own_state`; `notification.update_own_preferences` | `schema.notification.mark-read.v1`, `.dismiss.v1`, `.archive.v1`, `.snooze.v1`, `.preferences.update.v1`; require backend-visible notification id/category, bounded snooze time, preference-category validation, selected user scope, and idempotency key | `surface-my-account-notification-center` |
 
-Execution requirements:
+Expanded classification and blocked/surface-only rationale:
 
-- proposal step validation rejects out-of-catalog action/tool/capability combinations, hidden targets, unsafe output bindings, missing provider/runtime/tool-boundary readiness, and unsupported input fields;
+| Classification | Action groups | Rationale and boundary |
+|---|---|---|
+| `router-only` | Dashboard/profile/settings/context opens; sibling workstream/source opens | Navigation and prefill are deterministic, no-mutation, and backend-authorized through target surfaces; chat execution would add confirmation without value and could enumerate hidden workstreams. |
+| `surface-only` | `action-select-my-context`; `action-sign-out`; personal digest read/result review | Context switching, browser session boundaries, and advisory digest disposition need backend-authored choices, shell refresh, and dedicated stale/recovery UX rather than chat-plan compression. |
+| `approval-gated` | Personal digest start/cancel/accept/reject | Provider/model-backed advisory digest work must fail closed and human disposition must remain explicit; chat confirmation alone is insufficient. |
+| `blocked-pending-design` | External/email notification preferences and external provider readiness checks | External delivery/provider behavior needs provider/outbox policy, secret redaction, and fail-closed tests before chat exposure. |
+| `internal-only` | Account bootstrap/session internals, provider identity linkage, notification producers, and attention aggregation jobs | These are service/provider/background paths and are never direct chat catalog steps. |
+| `out-of-scope` | Business-domain profile extensions and non-foundation notification channels | Outside the five foundation workstreams for this catalog expansion. |
+
+Execution requirements for every accepted My Account entry:
+
+- proposal step validation rejects out-of-catalog action/tool/capability combinations, hidden targets, unsafe output bindings, missing provider/runtime/tool-boundary readiness, unsupported input fields, external-channel changes, and cross-account edits;
 - confirmation must bind `planId`, `planSnapshotId`, selected `AuthContext`, requestedBy, confirmedBy, step hashes, idempotency root, correlation id, and visible side-effect acknowledgements;
 - every confirmed step recomputes backend authorization and approval policy, uses its own idempotency key and transaction boundary, emits trace evidence, and returns the declared typed result surface or safe system message;
 - idempotent replay returns the prior proposal/result without duplicating side effects; partial failure reports completed, failed, skipped, and recovery steps;
