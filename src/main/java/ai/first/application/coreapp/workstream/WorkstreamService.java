@@ -1488,7 +1488,7 @@ public final class WorkstreamService {
     var agentItemId = "item-chat-tool-plan-proposal-" + stableSuffix(responseSeed + ":proposal");
     var userItem = new WorkstreamItem(userItemId, request.functionalAgentId(), "user-request", now.toString(), correlationId, traceIds, null, null, request.prompt(), "ready");
     var surface = chatToolPlanProposalSurface(proposal, confirmationSnapshot, actor, agentItemId, correlationId, traceIds, now);
-    var agentItem = new WorkstreamItem(agentItemId, request.functionalAgentId(), "chat_tool_plan_proposal", now.toString(), correlationId, traceIds, surface.surfaceId(), functionalAgent.label(), "Review the proposed governed-tool plan. No tools have executed; explicit confirmation is required in a later bounded capability path.", "waiting-for-human");
+    var agentItem = new WorkstreamItem(agentItemId, request.functionalAgentId(), "chat_tool_plan_proposal", now.toString(), correlationId, traceIds, surface.surfaceId(), functionalAgent.label(), "Review the proposed governed-tool plan. No tools have executed; explicit confirmation must echo this exact snapshot before execution.", "waiting-for-human");
     var persisted = workstreamLogRepository.appendMessage(new WorkstreamLogRepository.WorkstreamMessageLogEntry(workstreamScopeId, actor.selectedContext().membershipId(), request.functionalAgentId(), request.idempotencyKey(), correlationId, userItem, agentItem, surface));
     return new WorkstreamMessageResponse(persisted.correlationId(), persisted.idempotencyKey(), persisted.userItem(), persisted.agentItem(), persisted.surface());
   }
@@ -1499,7 +1499,75 @@ public final class WorkstreamService {
         .toList();
   }
 
-  public ChatToolPlanExecutionResult dispatchChatToolPlanSteps(WorkosIdentity identity, String selectedContextId, ChatToolPlanDispatchRequest request) {
+  public WorkstreamMessageResponse confirmChatToolPlan(WorkosIdentity identity, String selectedContextId, ChatToolPlanConfirmationRequest request) {
+    var correlationId = firstNonBlank(request.correlationId(), "chat-tool-plan-confirm");
+    if (request.selectedContextId() == null || request.selectedContextId().isBlank() || !Objects.equals(selectedContextId, request.selectedContextId())) throw new AuthorizationException(403, "CONTEXT_FORBIDDEN");
+    if (request.planId() == null || request.planId().isBlank() || request.planSnapshotId() == null || request.planSnapshotId().isBlank()) throw new AuthorizationException(400, "CHAT_TOOL_PLAN_SNAPSHOT_REQUIRED");
+    if (request.idempotencyKey() == null || request.idempotencyKey().isBlank()) throw new AuthorizationException(400, "CHAT_TOOL_PLAN_CONFIRMATION_IDEMPOTENCY_REQUIRED");
+    requireExplicitChatToolPlanConfirmation(request);
+    var actor = authContextResolver.resolveMe(identity, selectedContextId, correlationId);
+    var workstreamScopeId = workstreamEventTenantId(actor.selectedContext());
+    var duplicate = workstreamLogRepository.findByIdempotencyKey(workstreamScopeId, actor.selectedContext().membershipId(), USER_ADMIN_AGENT_ID, request.idempotencyKey());
+    if (duplicate.isPresent()) {
+      var existing = duplicate.orElseThrow();
+      return new WorkstreamMessageResponse(existing.correlationId(), existing.idempotencyKey(), existing.userItem(), existing.agentItem(), existing.surface());
+    }
+    var proposalSurfaceId = "surface-chat-tool-plan-" + request.planId();
+    var proposalSurface = workstreamLogRepository.surface(workstreamScopeId, actor.selectedContext().membershipId(), proposalSurfaceId)
+        .orElseThrow(() -> new AuthorizationException(404, "CHAT_TOOL_PLAN_NOT_FOUND_OR_FORBIDDEN"));
+    if (!CHAT_TOOL_PLAN_PROPOSAL_SURFACE_TYPE.equals(proposalSurface.surfaceType())) throw new AuthorizationException(403, "CHAT_TOOL_PLAN_NOT_CONFIRMABLE");
+    var proposal = chatToolPlanProposalFromSurface(proposalSurface);
+    if (!USER_ADMIN_AGENT_ID.equals(proposal.functionalAgentId())) throw new AuthorizationException(403, "CHAT_TOOL_PLAN_WORKSTREAM_NOT_SUPPORTED");
+    var expectedSnapshot = chatToolPlanConfirmationSnapshot(proposal);
+    validateChatToolPlanConfirmationSnapshot(actor, request, proposal, expectedSnapshot);
+    var result = dispatchConfirmedChatToolPlanSteps(identity, selectedContextId, new ChatToolPlanDispatchRequest(
+        selectedContextId,
+        proposal.functionalAgentId(),
+        proposal.planId(),
+        proposal.planSnapshotId(),
+        expectedSnapshot.steps(),
+        request.idempotencyKey(),
+        correlationId));
+    var now = Instant.now();
+    var traceIds = new ArrayList<String>();
+    traceIds.add("trace-human-chat-tool-plan-confirmed-" + stableSuffix(correlationId + ":" + proposal.planSnapshotId()));
+    traceIds.addAll(result.traceIds());
+    var partialFailure = "completed".equals(result.status()) ? null : new ChatToolPlanPartialFailure(
+        result.planId(),
+        result.planSnapshotId(),
+        result.completedSteps(),
+        result.failedSteps(),
+        result.skippedSteps(),
+        result.recoverySteps(),
+        "Confirmed User Admin chat tool plan finished with " + result.status() + "; completed steps remain committed and uncompleted steps require recovery or retry.");
+    var resultSurface = chatToolPlanResultSurface(result, partialFailure, actor, proposal.functionalAgentId(), correlationId, List.copyOf(traceIds), now);
+    var userItem = new WorkstreamItem(
+        "item-chat-tool-plan-confirm-user-" + stableSuffix(request.idempotencyKey() + ":user"),
+        proposal.functionalAgentId(),
+        "user-confirmation",
+        now.toString(),
+        correlationId,
+        List.copyOf(traceIds),
+        proposalSurface.surfaceId(),
+        "Confirmed chat tool plan",
+        "Human confirmation matched the exact plan snapshot; backend reauthorized each step before execution.",
+        "ready");
+    var agentItem = new WorkstreamItem(
+        "item-chat-tool-plan-result-" + stableSuffix(request.idempotencyKey() + ":result"),
+        proposal.functionalAgentId(),
+        "chat_tool_plan_result",
+        now.toString(),
+        correlationId,
+        List.copyOf(traceIds),
+        resultSurface.surfaceId(),
+        "Chat tool plan result",
+        "Confirmed User Admin plan execution status: " + result.status() + ".",
+        result.status());
+    var persisted = workstreamLogRepository.appendMessage(new WorkstreamLogRepository.WorkstreamMessageLogEntry(workstreamScopeId, actor.selectedContext().membershipId(), proposal.functionalAgentId(), request.idempotencyKey(), correlationId, userItem, agentItem, resultSurface));
+    return new WorkstreamMessageResponse(persisted.correlationId(), persisted.idempotencyKey(), persisted.userItem(), persisted.agentItem(), persisted.surface());
+  }
+
+  private ChatToolPlanExecutionResult dispatchConfirmedChatToolPlanSteps(WorkosIdentity identity, String selectedContextId, ChatToolPlanDispatchRequest request) {
     var correlationId = firstNonBlank(request.correlationId(), "chat-tool-plan-dispatch");
     if (request.selectedContextId() == null || request.selectedContextId().isBlank() || !Objects.equals(selectedContextId, request.selectedContextId())) throw new AuthorizationException(403, "CONTEXT_FORBIDDEN");
     if (request.functionalAgentId() == null || request.functionalAgentId().isBlank()) throw new AuthorizationException(404, "TARGET_NOT_FOUND_OR_FORBIDDEN");
@@ -1588,6 +1656,110 @@ public final class WorkstreamService {
     return new ChatToolPlanExecutionResult(request.planId(), request.planSnapshotId(), status, List.copyOf(completed), List.copyOf(failed), List.copyOf(skipped), recoverySteps, List.copyOf(resultSurfaceIds), List.copyOf(traceIds), correlationId);
   }
 
+  private void requireExplicitChatToolPlanConfirmation(ChatToolPlanConfirmationRequest request) {
+    var expected = "CONFIRM " + firstNonBlank(request.planSnapshotId(), "");
+    if (!expected.equals(firstNonBlank(request.confirmationText(), ""))) throw new AuthorizationException(400, "CHAT_TOOL_PLAN_CONFIRMATION_TEXT_REQUIRED");
+  }
+
+  private void validateChatToolPlanConfirmationSnapshot(AuthContextResolver.ResolvedMe actor, ChatToolPlanConfirmationRequest request, ChatToolPlanProposal proposal, ChatToolPlanConfirmationSnapshot expectedSnapshot) {
+    if (!Objects.equals(request.planId(), proposal.planId()) || !Objects.equals(request.planSnapshotId(), proposal.planSnapshotId())) throw new AuthorizationException(409, "CHAT_TOOL_PLAN_SNAPSHOT_MISMATCH");
+    if (!Objects.equals(request.selectedContextId(), proposal.selectedContextId()) || !Objects.equals(actor.selectedContext().membershipId(), proposal.selectedContextId())) throw new AuthorizationException(403, "CHAT_TOOL_PLAN_CONTEXT_MISMATCH");
+    if (!Objects.equals(actor.account().accountId(), proposal.requestedByAccountId())) throw new AuthorizationException(403, "CHAT_TOOL_PLAN_REQUESTED_BY_MISMATCH");
+    if (!Objects.equals(request.planSnapshotId(), expectedSnapshot.planSnapshotId())) throw new AuthorizationException(409, "CHAT_TOOL_PLAN_SNAPSHOT_STALE");
+    if (request.stepHashes() == null || request.stepHashes().isEmpty() || !Objects.equals(request.stepHashes(), expectedSnapshot.stepHashes())) throw new AuthorizationException(409, "CHAT_TOOL_PLAN_STEP_HASH_MISMATCH");
+    try {
+      if (!Instant.parse(proposal.expiresAt()).isAfter(Instant.now())) throw new AuthorizationException(409, "CHAT_TOOL_PLAN_EXPIRED");
+    } catch (DateTimeParseException error) {
+      throw new AuthorizationException(409, "CHAT_TOOL_PLAN_EXPIRY_INVALID");
+    }
+  }
+
+  private ChatToolPlanProposal chatToolPlanProposalFromSurface(SurfaceEnvelope surface) {
+    var raw = surface.data().get("proposal");
+    if (raw instanceof ChatToolPlanProposal proposal) return proposal;
+    if (!(raw instanceof Map<?, ?> map)) throw new AuthorizationException(409, "CHAT_TOOL_PLAN_PROPOSAL_UNREADABLE");
+    return new ChatToolPlanProposal(
+        stringFromMap(map, "planId"),
+        stringFromMap(map, "planSnapshotId"),
+        stringFromMap(map, "status"),
+        stringFromMap(map, "selectedContextId"),
+        stringFromMap(map, "functionalAgentId"),
+        stringFromMap(map, "requestedByAccountId"),
+        stringFromMap(map, "requestedAt"),
+        stringFromMap(map, "sourcePrompt"),
+        stringFromMap(map, "summary"),
+        chatToolPlanStepsFromObject(map.get("steps")),
+        stringListFromObject(map.get("requiredCapabilities")),
+        stringFromMap(map, "approvalSummary"),
+        stringFromMap(map, "idempotencyRoot"),
+        stringListFromObject(map.get("traceIds")),
+        stringFromMap(map, "expiresAt"),
+        booleanFromMap(map, "noMutation", true));
+  }
+
+  private List<ChatToolPlanStep> chatToolPlanStepsFromObject(Object value) {
+    if (!(value instanceof List<?> values)) return List.of();
+    return values.stream().map(item -> {
+      if (item instanceof ChatToolPlanStep step) return step;
+      if (!(item instanceof Map<?, ?> map)) throw new AuthorizationException(409, "CHAT_TOOL_PLAN_STEP_UNREADABLE");
+      return new ChatToolPlanStep(
+          stringFromMap(map, "stepId"),
+          intFromMap(map, "sequence", 0),
+          stringFromMap(map, "label"),
+          stringFromMap(map, "actionId"),
+          stringFromMap(map, "browserToolId"),
+          stringFromMap(map, "governedToolId"),
+          stringFromMap(map, "capabilityId"),
+          stringFromMap(map, "inputSchemaRef"),
+          objectMapFromObject(map.get("input")),
+          stringListFromObject(map.get("dependsOnStepIds")),
+          stringMapFromObject(map.get("outputBindings")),
+          stringFromMap(map, "idempotencyKey"),
+          stringFromMap(map, "transactionBoundary"),
+          booleanFromMap(map, "requiresConfirmation", false),
+          booleanFromMap(map, "requiresApproval", false),
+          stringFromMap(map, "expectedResultSurfaceType"),
+          stringFromMap(map, "expectedResultSurfaceId"),
+          stringListFromObject(map.get("traceRequirements")));
+    }).toList();
+  }
+
+  private static String stringFromMap(Map<?, ?> map, String key) {
+    var value = map.get(key);
+    return value == null ? null : String.valueOf(value);
+  }
+
+  private static int intFromMap(Map<?, ?> map, String key, int fallback) {
+    var value = map.get(key);
+    if (value instanceof Number number) return number.intValue();
+    if (value != null) try { return Integer.parseInt(String.valueOf(value)); } catch (NumberFormatException ignored) { return fallback; }
+    return fallback;
+  }
+
+  private static boolean booleanFromMap(Map<?, ?> map, String key, boolean fallback) {
+    var value = map.get(key);
+    return value instanceof Boolean bool ? bool : value == null ? fallback : Boolean.parseBoolean(String.valueOf(value));
+  }
+
+  private static List<String> stringListFromObject(Object value) {
+    if (!(value instanceof List<?> values)) return List.of();
+    return values.stream().map(String::valueOf).filter(item -> !item.isBlank()).toList();
+  }
+
+  private static Map<String, String> stringMapFromObject(Object value) {
+    if (!(value instanceof Map<?, ?> map)) return Map.of();
+    var result = new LinkedHashMap<String, String>();
+    map.forEach((key, item) -> { if (item != null) result.put(String.valueOf(key), String.valueOf(item)); });
+    return result;
+  }
+
+  private static Map<String, Object> objectMapFromObject(Object value) {
+    if (!(value instanceof Map<?, ?> map)) return Map.of();
+    var result = new LinkedHashMap<String, Object>();
+    map.forEach((key, item) -> result.put(String.valueOf(key), item));
+    return result;
+  }
+
   private WorkstreamMessageResponse userAdminChatToolPlanMessageResponse(AuthContextResolver.ResolvedMe actor, MeResponse.FunctionalAgentSummary functionalAgent, String workstreamScopeId, WorkstreamMessageRequest request, String correlationId, UserAdminChatToolPlanCandidate candidate) {
     var responseSeed = firstNonBlank(request.idempotencyKey(), correlationId, request.functionalAgentId());
     var now = Instant.now();
@@ -1635,7 +1807,7 @@ public final class WorkstreamService {
     var confirmationSnapshot = chatToolPlanConfirmationSnapshot(proposal);
     var agentItemId = "item-chat-tool-plan-proposal-" + stableSuffix(responseSeed + ":proposal");
     var surface = chatToolPlanProposalSurface(proposal, confirmationSnapshot, actor, agentItemId, correlationId, traceIds, now);
-    var agentItem = new WorkstreamItem(agentItemId, request.functionalAgentId(), "chat_tool_plan_proposal", now.toString(), correlationId, traceIds, surface.surfaceId(), functionalAgent.label(), "Review the User Admin governed-tool plan. No Organization or invitation has been created; explicit confirmation is required in a later bounded capability path.", "waiting-for-human");
+    var agentItem = new WorkstreamItem(agentItemId, request.functionalAgentId(), "chat_tool_plan_proposal", now.toString(), correlationId, traceIds, surface.surfaceId(), functionalAgent.label(), "Review the User Admin governed-tool plan. No Organization or invitation has been created; explicit confirmation must echo this exact snapshot before execution.", "waiting-for-human");
     var persisted = workstreamLogRepository.appendMessage(new WorkstreamLogRepository.WorkstreamMessageLogEntry(workstreamScopeId, actor.selectedContext().membershipId(), request.functionalAgentId(), request.idempotencyKey(), correlationId, userItem, agentItem, surface));
     return new WorkstreamMessageResponse(persisted.correlationId(), persisted.idempotencyKey(), persisted.userItem(), persisted.agentItem(), persisted.surface());
   }
@@ -1839,10 +2011,10 @@ public final class WorkstreamService {
             true,
             true,
             false,
-            "none: proposal record only; no governed tools are executed before a later confirmation/dispatcher path.",
+            "none: proposal record only; no governed tools are executed before exact snapshot confirmation.",
             itemId,
             traceIds),
-        List.of(chatToolPlanConfirmActionDisabled(proposal)));
+        List.of(chatToolPlanConfirmAction(proposal)));
   }
 
   @SuppressWarnings("unused")
@@ -1866,10 +2038,10 @@ public final class WorkstreamService {
             true,
             true,
             false,
-            "none: confirmation snapshot binds the immutable plan; execution is not available in this substrate task.",
+            "none until explicit confirmation: confirmation snapshot binds the immutable plan before execution can start.",
             null,
             traceIds),
-        List.of(chatToolPlanConfirmActionDisabled(proposal)));
+        List.of(chatToolPlanConfirmAction(proposal)));
   }
 
   @SuppressWarnings("unused")
@@ -1893,7 +2065,7 @@ public final class WorkstreamService {
             true,
             false,
             false,
-            "result surface only; each committed step must be reported by a later dispatcher task.",
+            "external/account state may have changed after explicit confirmation; each step result records completed, failed, skipped, and recovery states.",
             null,
             traceIds),
         List.of());
@@ -1930,7 +2102,7 @@ public final class WorkstreamService {
     return new SurfaceEnvelope(surfaceId, surfaceType, "v1", title, functionalAgentId, List.of(AUDIT_TRACE_AGENT_ID), selectedAuthContextData(actor), correlationId, traceIds, now.toString(), null, mapOf("profile", "chat-tool-plan", "classification", "browser-safe", "minimumRedactionLevel", "FULL"), chatToolPlanSurfaceDataMap(surfaceData), actions, List.of(mapOf("label", "Open plan trace", "href", "/ui?traceId=" + (traceIds.isEmpty() ? stableSuffix(correlationId) : traceIds.get(0)), "rel", "trace")));
   }
 
-  private SurfaceAction chatToolPlanConfirmActionDisabled(ChatToolPlanProposal proposal) {
+  private SurfaceAction chatToolPlanConfirmAction(ChatToolPlanProposal proposal) {
     return new SurfaceAction(
         "action-confirm-chat-tool-plan",
         "Confirm this plan",
@@ -1941,7 +2113,7 @@ public final class WorkstreamService {
         "schema.chat-tool-plan.confirmation.v1",
         true,
         true,
-        new DisabledReason("confirmation-api-not-bound", "The governed dispatcher substrate exists, but this surface is not yet bound to a plan-confirmation API; a later workstream task will validate exact snapshots before execution."),
+        null,
         new Idempotency(true, "plan-snapshot"),
         new ResultSurface(null, "surface-chat-tool-plan-result-" + proposal.planId(), "inline"),
         new Audit("HumanChatToolPlanConfirmationRequested", true));
@@ -7223,7 +7395,11 @@ public final class WorkstreamService {
     }
   }
   public record ChatToolPlanConfirmationSnapshot(String planId, String planSnapshotId, String selectedContextId, String functionalAgentId, String requestedByAccountId, String requestedAt, String expiresAt, List<ChatToolPlanStep> steps, List<String> requiredCapabilities, Map<String, String> stepHashes, String idempotencyRoot, List<String> traceIds, boolean acknowledgementRequired, String confirmationInstructions) {}
-  public record ChatToolPlanConfirmationRequest(String selectedContextId, String planId, String planSnapshotId, String confirmationText, String idempotencyKey, String correlationId) {}
+  public record ChatToolPlanConfirmationRequest(String selectedContextId, String planId, String planSnapshotId, String confirmationText, Map<String, String> stepHashes, String idempotencyKey, String correlationId) {
+    public ChatToolPlanConfirmationRequest {
+      stepHashes = Map.copyOf(stepHashes == null ? Map.of() : stepHashes);
+    }
+  }
   public record ChatToolPlanDispatchRequest(String selectedContextId, String functionalAgentId, String planId, String planSnapshotId, List<ChatToolPlanStep> steps, String idempotencyKey, String correlationId) {
     public ChatToolPlanDispatchRequest {
       steps = List.copyOf(steps == null ? List.of() : steps);

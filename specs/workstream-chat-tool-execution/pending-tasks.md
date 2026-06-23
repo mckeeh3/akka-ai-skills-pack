@@ -284,7 +284,7 @@
 
 ### TASK-WCTE-07-001: Execute confirmed User Admin chat tool plan
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-execution/backlog/01-workstream-chat-tool-execution-build-backlog.md
 - task brief: specs/workstream-chat-tool-execution/tasks/07-user-admin-execution/01-execute-confirmed-user-admin-chat-tool-plan.md
 - depends on:
@@ -320,6 +320,10 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: User Admin workstream; Organization create + Organization Admin invitation; readiness target backend-ready execution path
+  - added `POST /api/workstream/chat-tool-plans/confirm` and service confirmation path requiring exact plan id, snapshot id, selected AuthContext, requestedBy account, step hashes, explicit `CONFIRM <planSnapshotId>` acknowledgement, and idempotency before any execution
+  - confirmed User Admin execution reuses existing Organization create and Organization Admin invitation governed action paths; every step is reauthorized and dependent steps are skipped after failures with recovery guidance
+  - checks: `mvn -q -Dtest=WorkstreamServiceTest#chatToolPlanProposalRecordsPersistWithoutExecutingToolsAndReplayByIdempotency+submitMessageRoutesUserAdminMotivatingPromptToModelBackedPlanProposalWithoutMutation+chatToolCatalogListsBoundedHumanChatPlanEntries+confirmedChatToolPlanRequiresExactSnapshotAndExplicitHumanConfirmationBeforeExecution+confirmedUserAdminChatToolPlanExecutesOrganizationAndInvitationIdempotently+confirmedUserAdminChatToolPlanReportsPartialFailureAndRecoveryWithoutRollingBackCompletedStep test`; `git diff --check`
+  - commit message: `workstream-chat-tools: execute user admin plan`
 
 ### TASK-WCTE-08-001: Render chat tool plan confirmation and result surfaces
 

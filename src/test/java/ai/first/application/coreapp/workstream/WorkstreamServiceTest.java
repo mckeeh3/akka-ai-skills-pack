@@ -1747,7 +1747,7 @@ class WorkstreamServiceTest {
     assertEquals(true, response.surface().data().get("noDirectMutation"));
     assertEquals(true, response.surface().data().get("noMutation"));
     assertEquals(false, response.surface().data().get("executionEnabled"));
-    assertEquals("none: proposal record only; no governed tools are executed before a later confirmation/dispatcher path.", response.surface().data().get("sideEffect"));
+    assertEquals("none: proposal record only; no governed tools are executed before exact snapshot confirmation.", response.surface().data().get("sideEffect"));
     assertEquals("membership-owner", response.surface().authContext().get("selectedContextId"));
     assertEquals("owner@example.test", response.surface().authContext().get("requestedByAccountId"));
     var proposal = (WorkstreamService.ChatToolPlanProposal) response.surface().data().get("proposal");
@@ -1781,7 +1781,7 @@ class WorkstreamServiceTest {
     assertFalse(snapshot.traceIds().isEmpty());
     assertTrue(snapshot.stepHashes().containsKey("step-create-organization"));
     assertTrue(snapshot.stepHashes().containsKey("step-invite-organization-admin"));
-    assertTrue(response.surface().actions().stream().anyMatch(action -> action.actionId().equals("action-confirm-chat-tool-plan") && action.disabled() != null));
+    assertTrue(response.surface().actions().stream().anyMatch(action -> action.actionId().equals("action-confirm-chat-tool-plan") && action.disabled() == null));
     assertEquals(tenantCountBefore, identityRepository.tenantRows().size(), "Plan proposal records must not create Organizations before confirmation.");
     assertEquals(invitationCountBefore, invitationRepository.invitations().size(), "Plan proposal records must not create invitations before confirmation.");
     assertEquals(0, trackingRuntimeInvoker.invocationCount(), "TASK-WCTE-03-001 only adds the proposal substrate; model-backed planning is later.");
@@ -1896,7 +1896,7 @@ class WorkstreamServiceTest {
     assertEquals("membership-owner", snapshot.selectedContextId());
     assertTrue(snapshot.stepHashes().containsKey("step-create-organization"));
     assertTrue(snapshot.stepHashes().containsKey("step-invite-organization-admin"));
-    assertTrue(response.surface().actions().stream().anyMatch(action -> action.actionId().equals("action-confirm-chat-tool-plan") && action.disabled() != null));
+    assertTrue(response.surface().actions().stream().anyMatch(action -> action.actionId().equals("action-confirm-chat-tool-plan") && action.disabled() == null));
     assertEquals(tenantCountBefore, identityRepository.tenantRows().size(), "Chat proposal must not create the Organization before confirmation.");
     assertEquals(invitationCountBefore, invitationRepository.invitations().size(), "Chat proposal must not create the invitation before confirmation.");
     assertEquals(1, trackingRuntimeInvoker.planInvocationCount());
@@ -1985,188 +1985,114 @@ class WorkstreamServiceTest {
   }
 
   @Test
-  void chatToolDispatcherRejectsStepsOutsideSelectedWorkstreamCatalogBeforeExecution() {
-    var beforeTheme = identityRepository.settings("admin@example.test").themeId();
-    var myAccountStep = new WorkstreamService.ChatToolPlanStep(
-        "step-change-theme",
-        1,
-        "Change own theme",
-        "action-update-my-settings",
-        "action-update-my-settings",
-        "my_account.update_profile_settings",
-        "my_account.update_profile_settings",
-        "schema.my-account.settings.update.v1",
-        Map.of("preferredThemeId", "obsidian-dark"),
-        List.of(),
-        Map.of(),
-        "idem-chat-dispatch-theme-wrong-workstream",
-        "independent-command",
-        true,
-        false,
-        null,
-        "surface-my-settings",
-        List.of("human_chat_tool_plan.step_started"));
-
-    var denied = assertThrows(AuthorizationException.class, () -> service.dispatchChatToolPlanSteps(identity(), "membership-admin", new WorkstreamService.ChatToolPlanDispatchRequest(
-        "membership-admin",
+  void confirmedChatToolPlanRequiresExactSnapshotAndExplicitHumanConfirmationBeforeExecution() {
+    var tenantCountBefore = identityRepository.tenantRows().size();
+    var invitationCountBefore = invitationRepository.invitations().size();
+    var response = service.createChatToolPlanProposal(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-owner",
         "user-admin-agent",
-        "plan-wrong-workstream",
-        "snapshot-wrong-workstream",
-        List.of(myAccountStep),
-        "idem-chat-dispatch-wrong-workstream",
-        "corr-chat-dispatch-wrong-workstream")));
+        "create org \"Org Confirm Gate\", and invite mckee.hugh+gate@gmail.com as an org admin",
+        "corr-chat-confirm-gate-proposal",
+        "idem-chat-confirm-gate-proposal",
+        null,
+        "Create an Organization and invite its Organization Admin after confirmation.",
+        userAdminOrganizationInviteSteps("Org Confirm Gate", "mckee.hugh+gate@gmail.com", "Hugh Gate", "idem-chat-confirm-gate", List.of("TENANT_ADMIN"), false),
+        "Human confirmation is required."));
+    var proposal = (WorkstreamService.ChatToolPlanProposal) response.surface().data().get("proposal");
+    var snapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) response.surface().data().get("confirmationSnapshot");
 
-    assertTrue(denied.getMessage().contains("CHAT_TOOL_OUT_OF_WORKSTREAM_CATALOG"));
-    assertEquals(beforeTheme, identityRepository.settings("admin@example.test").themeId());
+    var missingConfirmation = assertThrows(AuthorizationException.class, () -> service.confirmChatToolPlan(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanConfirmationRequest(
+        "membership-owner", proposal.planId(), proposal.planSnapshotId(), "confirm", snapshot.stepHashes(), "idem-chat-confirm-gate-execute", "corr-chat-confirm-gate-missing")));
+    assertTrue(missingConfirmation.reasonCode().contains("CHAT_TOOL_PLAN_CONFIRMATION_TEXT_REQUIRED"));
+
+    var tamperedHashes = new java.util.LinkedHashMap<>(snapshot.stepHashes());
+    tamperedHashes.put("step-create-organization", "step-hash-tampered");
+    var tampered = assertThrows(AuthorizationException.class, () -> service.confirmChatToolPlan(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanConfirmationRequest(
+        "membership-owner", proposal.planId(), proposal.planSnapshotId(), "CONFIRM " + proposal.planSnapshotId(), tamperedHashes, "idem-chat-confirm-gate-tampered", "corr-chat-confirm-gate-tampered")));
+    assertTrue(tampered.reasonCode().contains("CHAT_TOOL_PLAN_STEP_HASH_MISMATCH"));
+    assertEquals(tenantCountBefore, identityRepository.tenantRows().size(), "Plan must not execute without exact snapshot confirmation.");
+    assertEquals(invitationCountBefore, invitationRepository.invitations().size(), "Plan must not invite without exact snapshot confirmation.");
   }
 
   @Test
-  void chatToolDispatcherExecutesEachStepThroughExistingActionPathWithIdempotencyAndOutputBindings() {
+  void confirmedUserAdminChatToolPlanExecutesOrganizationAndInvitationIdempotently() {
     var tenantCountBefore = identityRepository.tenantRows().size();
     var invitationCountBefore = invitationRepository.invitations().size();
-    var steps = List.of(
-        new WorkstreamService.ChatToolPlanStep(
-            "step-create-organization",
-            1,
-            "Create Organization Org Dispatch",
-            "action-submit-organization-create",
-            "user-admin.submit-organization-create",
-            "manage-organizations",
-            "saas_owner.tenant.manage",
-            "schema.organization-admin.create.submit.v1",
-            Map.of("organizationName", "Org Dispatch", "reason", "human_chat_tool_plan dispatcher test"),
-            List.of(),
-            Map.of("organizationId", "organizationId"),
-            "idem-chat-dispatch-org-create",
-            "independent-command",
-            true,
-            false,
-            "show-inspection",
-            "surface-user-admin-organization-detail",
-            List.of("human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed")),
-        new WorkstreamService.ChatToolPlanStep(
-            "step-invite-organization-admin",
-            2,
-            "Invite Organization Admin",
-            "action-submit-organization-admin-invitation",
-            "user-admin.invite-organization-admin",
-            "manage-organization-admins",
-            "saas_owner.organization_admin.invite",
-            "schema.organization-admin.invitation-create.v1",
-            Map.of("organizationId", "${step-create-organization.organizationId}", "email", "mckee.hugh+dispatch@gmail.com", "displayName", "Hugh Dispatch", "roles", List.of("TENANT_ADMIN"), "reason", "human_chat_tool_plan dispatcher test"),
-            List.of("step-create-organization"),
-            Map.of(),
-            "idem-chat-dispatch-org-admin-invite",
-            "independent-command-after-dependency",
-            true,
-            false,
-            "show-inspection",
-            "surface-user-admin-invitation-detail",
-            List.of("human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "invitation.outbox")));
-
-    var result = service.dispatchChatToolPlanSteps(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanDispatchRequest(
+    var response = service.createChatToolPlanProposal(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanProposalRequest(
         "membership-owner",
         "user-admin-agent",
-        "plan-dispatch-user-admin",
-        "snapshot-dispatch-user-admin",
-        steps,
-        "idem-chat-dispatch-user-admin",
-        "corr-chat-dispatch-user-admin"));
+        "create org \"Org Confirmed\", and invite mckee.hugh+confirmed@gmail.com as an org admin",
+        "corr-chat-confirm-proposal",
+        "idem-chat-confirm-proposal",
+        null,
+        "Create an Organization and invite its Organization Admin after confirmation.",
+        userAdminOrganizationInviteSteps("Org Confirmed", "mckee.hugh+confirmed@gmail.com", "Hugh Confirmed", "idem-chat-confirm", List.of("TENANT_ADMIN"), false),
+        "Human confirmation, exact snapshot validation, per-step authorization, idempotency, and traces are required."));
+    var proposal = (WorkstreamService.ChatToolPlanProposal) response.surface().data().get("proposal");
+    var snapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) response.surface().data().get("confirmationSnapshot");
 
+    var confirmed = service.confirmChatToolPlan(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanConfirmationRequest(
+        "membership-owner", proposal.planId(), proposal.planSnapshotId(), "CONFIRM " + proposal.planSnapshotId(), snapshot.stepHashes(), "idem-chat-confirm-execute", "corr-chat-confirm-execute"));
+
+    assertEquals("chat_tool_plan_result", confirmed.agentItem().kind());
+    assertEquals("completed", confirmed.agentItem().status());
+    assertEquals("chat_tool_plan_result", confirmed.surface().surfaceType());
+    assertEquals("chat_tool_plan.result.v1", confirmed.surface().data().get("surfaceContract"));
+    var result = (WorkstreamService.ChatToolPlanExecutionResult) confirmed.surface().data().get("result");
     assertEquals("completed", result.status(), result.toString());
     assertEquals(2, result.completedSteps().size());
     assertEquals(0, result.failedSteps().size());
     assertEquals(0, result.skippedSteps().size());
-    assertTrue(result.completedSteps().stream().allMatch(step -> step.status().equals("completed")));
     assertTrue(result.completedSteps().stream().anyMatch(step -> step.actionId().equals("action-submit-organization-create") && step.resultSurfaceId().equals("surface-user-admin-organization-detail")));
     assertTrue(result.completedSteps().stream().anyMatch(step -> step.actionId().equals("action-submit-organization-admin-invitation") && step.resultSurfaceId().equals("surface-user-admin-invitation-detail")));
     assertTrue(result.traceIds().stream().anyMatch(trace -> trace.contains("trace-human-chat-tool-plan-step-started")));
+    assertTrue(confirmed.surface().data().get("sideEffect").toString().contains("external/account state may have changed"));
+    assertEquals(tenantCountBefore + 1, identityRepository.tenantRows().size());
+    assertEquals(invitationCountBefore + 1, invitationRepository.invitations().size());
+    assertTrue(invitationRepository.invitations().stream().anyMatch(invitation -> "mckee.hugh+confirmed@gmail.com".equals(invitation.normalizedEmail())));
+    assertBrowserPayloadSafe(confirmed.surface());
+
+    var replay = service.confirmChatToolPlan(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanConfirmationRequest(
+        "membership-owner", proposal.planId(), proposal.planSnapshotId(), "CONFIRM " + proposal.planSnapshotId(), snapshot.stepHashes(), "idem-chat-confirm-execute", "corr-chat-confirm-replay"));
+    assertEquals(confirmed.surface().surfaceId(), replay.surface().surfaceId());
+    assertEquals("corr-chat-confirm-execute", replay.correlationId());
     assertEquals(tenantCountBefore + 1, identityRepository.tenantRows().size());
     assertEquals(invitationCountBefore + 1, invitationRepository.invitations().size());
   }
 
   @Test
-  void chatToolDispatcherReportsFailedAndSkippedDependentStepsWithoutRollingBackCompletedSteps() {
+  void confirmedUserAdminChatToolPlanReportsPartialFailureAndRecoveryWithoutRollingBackCompletedStep() {
     var tenantCountBefore = identityRepository.tenantRows().size();
     var invitationCountBefore = invitationRepository.invitations().size();
-    var steps = List.of(
-        new WorkstreamService.ChatToolPlanStep(
-            "step-create-organization",
-            1,
-            "Create Organization Org Partial",
-            "action-submit-organization-create",
-            "user-admin.submit-organization-create",
-            "manage-organizations",
-            "saas_owner.tenant.manage",
-            "schema.organization-admin.create.submit.v1",
-            Map.of("organizationName", "Org Partial", "reason", "human_chat_tool_plan partial failure test"),
-            List.of(),
-            Map.of(),
-            "idem-chat-dispatch-partial-org-create",
-            "independent-command",
-            true,
-            false,
-            "show-inspection",
-            "surface-user-admin-organization-detail",
-            List.of("human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed")),
-        new WorkstreamService.ChatToolPlanStep(
-            "step-invite-organization-admin",
-            2,
-            "Invite Organization Admin with invalid role",
-            "action-submit-organization-admin-invitation",
-            "user-admin.invite-organization-admin",
-            "manage-organization-admins",
-            "saas_owner.organization_admin.invite",
-            "schema.organization-admin.invitation-create.v1",
-            Map.of("organizationId", "${step-create-organization.organizationId}", "email", "mckee.hugh+partial@gmail.com", "displayName", "Hugh Partial", "roles", List.of("TENANT_EMPLOYEE"), "reason", "human_chat_tool_plan partial failure test"),
-            List.of("step-create-organization"),
-            Map.of(),
-            "idem-chat-dispatch-partial-org-admin-invite",
-            "independent-command-after-dependency",
-            true,
-            false,
-            "show-inspection",
-            "surface-user-admin-invitation-detail",
-            List.of("human_chat_tool_plan.step_started", "human_chat_tool_plan.step_failed")),
-        new WorkstreamService.ChatToolPlanStep(
-            "step-dependent-after-failure",
-            3,
-            "Dependent retry placeholder",
-            "action-submit-organization-admin-invitation",
-            "user-admin.invite-organization-admin",
-            "manage-organization-admins",
-            "saas_owner.organization_admin.invite",
-            "schema.organization-admin.invitation-create.v1",
-            Map.of("organizationId", "${step-create-organization.organizationId}", "email", "second+partial@example.test", "displayName", "Second Partial", "roles", List.of("TENANT_ADMIN"), "reason", "must skip after failed dependency"),
-            List.of("step-invite-organization-admin"),
-            Map.of(),
-            "idem-chat-dispatch-partial-skipped",
-            "independent-command-after-dependency",
-            true,
-            false,
-            "show-inspection",
-            "surface-user-admin-invitation-detail",
-            List.of("human_chat_tool_plan.step_skipped")));
-
-    var result = service.dispatchChatToolPlanSteps(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanDispatchRequest(
+    var response = service.createChatToolPlanProposal(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanProposalRequest(
         "membership-owner",
         "user-admin-agent",
-        "plan-dispatch-partial",
-        "snapshot-dispatch-partial",
-        steps,
-        "idem-chat-dispatch-partial",
-        "corr-chat-dispatch-partial"));
+        "create org \"Org Confirm Partial\", and invite mckee.hugh+partial@gmail.com as an org admin",
+        "corr-chat-confirm-partial-proposal",
+        "idem-chat-confirm-partial-proposal",
+        null,
+        "Create an Organization and invite its Organization Admin after confirmation.",
+        userAdminOrganizationInviteSteps("Org Confirm Partial", "mckee.hugh+partial@gmail.com", "Hugh Partial", "idem-chat-confirm-partial", List.of("TENANT_EMPLOYEE"), true),
+        "Human confirmation is required; invalid role requests fail closed."));
+    var proposal = (WorkstreamService.ChatToolPlanProposal) response.surface().data().get("proposal");
+    var snapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) response.surface().data().get("confirmationSnapshot");
 
-    assertEquals("partial-failure", result.status());
+    var confirmed = service.confirmChatToolPlan(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanConfirmationRequest(
+        "membership-owner", proposal.planId(), proposal.planSnapshotId(), "CONFIRM " + proposal.planSnapshotId(), snapshot.stepHashes(), "idem-chat-confirm-partial-execute", "corr-chat-confirm-partial-execute"));
+
+    var result = (WorkstreamService.ChatToolPlanExecutionResult) confirmed.surface().data().get("result");
+    assertEquals("partial-failure", result.status(), result.toString());
     assertEquals(1, result.completedSteps().size());
     assertEquals(1, result.failedSteps().size());
     assertEquals(1, result.skippedSteps().size());
-    assertEquals("failed", result.failedSteps().get(0).status());
     assertEquals("validation-error", result.failedSteps().get(0).errorCode(), result.toString());
     assertEquals("skipped", result.skippedSteps().get(0).status());
     assertFalse(result.recoverySteps().isEmpty());
-    assertEquals(tenantCountBefore + 1, identityRepository.tenantRows().size(), "Committed prior step remains valid after later step failure.");
+    assertNotNull(confirmed.surface().data().get("systemMessage"));
+    assertTrue(confirmed.surface().toString().contains("completed steps remain committed"));
+    assertEquals(tenantCountBefore + 1, identityRepository.tenantRows().size(), "Committed Organization remains valid after invitation failure.");
     assertEquals(invitationCountBefore, invitationRepository.invitations().size(), "Invalid invitation step must not send an invitation.");
+    assertBrowserPayloadSafe(confirmed.surface());
   }
 
   @Test
@@ -3095,6 +3021,70 @@ class WorkstreamServiceTest {
     assertTrue(response.surface().data().get("message").toString().contains("blocked before a response was produced"));
     assertTrue(response.surface().toString().contains("model-provider-config-missing"));
     assertFalse(response.surface().toString().contains("should not be used"));
+  }
+
+  private List<WorkstreamService.ChatToolPlanStep> userAdminOrganizationInviteSteps(String organizationName, String email, String displayName, String idempotencyRoot, List<String> inviteRoles, boolean includeDependentAfterInvite) {
+    var steps = new java.util.ArrayList<WorkstreamService.ChatToolPlanStep>();
+    steps.add(new WorkstreamService.ChatToolPlanStep(
+        "step-create-organization",
+        1,
+        "Create Organization " + organizationName,
+        "action-submit-organization-create",
+        "user-admin.submit-organization-create",
+        "manage-organizations",
+        "saas_owner.tenant.manage",
+        "schema.organization-admin.create.submit.v1",
+        Map.of("organizationName", organizationName, "reason", "human_chat_tool_plan confirmed execution test"),
+        List.of(),
+        Map.of("organizationId", "organizationId"),
+        idempotencyRoot + "-org-create",
+        "independent-command",
+        true,
+        false,
+        "show-inspection",
+        "surface-user-admin-organization-detail",
+        List.of("human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed")));
+    steps.add(new WorkstreamService.ChatToolPlanStep(
+        "step-invite-organization-admin",
+        2,
+        "Invite Organization Admin",
+        "action-submit-organization-admin-invitation",
+        "user-admin.invite-organization-admin",
+        "manage-organization-admins",
+        "saas_owner.organization_admin.invite",
+        "schema.organization-admin.invitation-create.v1",
+        Map.of("organizationId", "${step-create-organization.organizationId}", "email", email, "displayName", displayName, "roles", inviteRoles, "reason", "human_chat_tool_plan confirmed execution test"),
+        List.of("step-create-organization"),
+        Map.of(),
+        idempotencyRoot + "-org-admin-invite",
+        "independent-command-after-dependency",
+        true,
+        false,
+        "show-inspection",
+        "surface-user-admin-invitation-detail",
+        List.of("human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "invitation.outbox")));
+    if (includeDependentAfterInvite) {
+      steps.add(new WorkstreamService.ChatToolPlanStep(
+          "step-dependent-after-failure",
+          3,
+          "Dependent retry placeholder",
+          "action-submit-organization-admin-invitation",
+          "user-admin.invite-organization-admin",
+          "manage-organization-admins",
+          "saas_owner.organization_admin.invite",
+          "schema.organization-admin.invitation-create.v1",
+          Map.of("organizationId", "${step-create-organization.organizationId}", "email", "second+partial@example.test", "displayName", "Second Partial", "roles", List.of("TENANT_ADMIN"), "reason", "must skip after failed dependency"),
+          List.of("step-invite-organization-admin"),
+          Map.of(),
+          idempotencyRoot + "-dependent-after-failure",
+          "independent-command-after-dependency",
+          true,
+          false,
+          "show-inspection",
+          "surface-user-admin-invitation-detail",
+          List.of("human_chat_tool_plan.step_skipped")));
+    }
+    return List.copyOf(steps);
   }
 
   private WorkstreamService serviceWithAccessReviewRuntime(AccessReviewAutonomousAgentRuntime runtime) {

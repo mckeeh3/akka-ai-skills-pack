@@ -22,6 +22,7 @@ import ai.first.application.foundation.identity.StarterSecurityComponents;
 import ai.first.application.foundation.identity.WorkosIdentityResolver;
 import ai.first.application.coreapp.workstream.WorkstreamService;
 import ai.first.application.coreapp.workstream.WorkstreamService.CapabilityActionRequest;
+import ai.first.application.coreapp.workstream.WorkstreamService.ChatToolPlanConfirmationRequest;
 import ai.first.application.coreapp.workstream.WorkstreamService.WorkstreamMessageRequest;
 import ai.first.application.coreapp.workstream.WorkstreamService.WorkstreamShellRequest;
 import ai.first.domain.foundation.identity.WorkosIdentity;
@@ -74,6 +75,11 @@ public class WorkstreamEndpoint extends AbstractHttpEndpoint {
   @Post("/messages")
   public HttpResponse message(WorkstreamMessageRequest request) {
     return authorized((identity, selectedContextId, correlationId) -> HttpResponses.ok(workstreamService.submitMessage(identity, selectedContextId, request, correlationId)));
+  }
+
+  @Post("/chat-tool-plans/confirm")
+  public HttpResponse confirmChatToolPlan(ChatToolPlanConfirmationRequest request) {
+    return authorized((identity, selectedContextId, correlationId) -> HttpResponses.ok(workstreamService.confirmChatToolPlan(identity, selectedContextId, request)));
   }
 
   @Post("/invitations/accept")
