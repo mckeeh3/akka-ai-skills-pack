@@ -2073,6 +2073,56 @@ class WorkstreamServiceTest {
         && entry.guardrails().contains("visible-proposal-id")
         && entry.guardrails().contains("no-activation")));
     assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("audit-trace-agent")
+        && entry.actionId().equals("action-audit-trace-search")
+        && entry.governedToolId().equals("search-audit-traces")
+        && entry.capabilityId().equals("audit.trace.search")
+        && entry.classification().equals("chat-executable-now")
+        && entry.inputSchemaRef().equals("schema.audit-trace.search.v1")
+        && entry.guardrails().contains("visible-filter-or-correlation-binding")
+        && entry.guardrails().contains("redaction")
+        && entry.guardrails().contains("no-hidden-enumeration")
+        && entry.guardrails().contains("no-export-authority")
+        && !entry.idempotencyRequired()
+        && !entry.requiresApproval()
+        && entry.requiresConfirmation()
+        && entry.traceRequirements().contains("audit.trace.read")));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("audit-trace-agent")
+        && entry.actionId().equals("action-audit-trace-detail")
+        && entry.governedToolId().equals("read-trace-detail")
+        && entry.capabilityId().equals("audit.trace.detail.read")
+        && entry.classification().equals("chat-executable-now")
+        && entry.guardrails().contains("visible-trace-id")
+        && entry.guardrails().contains("redaction")
+        && entry.guardrails().contains("no-export-authority")
+        && !entry.idempotencyRequired()
+        && !entry.requiresApproval()));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("audit-trace-agent")
+        && entry.actionId().equals("action-audit-trace-timeline")
+        && entry.governedToolId().equals("read-trace-timeline")
+        && entry.capabilityId().equals("audit.trace.timeline.read")
+        && entry.classification().equals("chat-executable-now")
+        && entry.guardrails().contains("visible-correlation-id")
+        && entry.guardrails().contains("no-raw-provider-secrets")
+        && !entry.requiresApproval()));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("audit-trace-agent")
+        && entry.actionId().equals("action-audit-trace-failure-evidence")
+        && entry.governedToolId().equals("read-trace-failure-evidence")
+        && entry.capabilityId().equals("audit.trace.failureEvidence.read")
+        && entry.classification().equals("chat-executable-now")
+        && entry.guardrails().contains("visible-failure-category-filter")
+        && entry.guardrails().contains("no-raw-provider-secrets")
+        && entry.guardrails().contains("no-export-authority")
+        && !entry.requiresApproval()));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("audit-trace-agent")
+        && entry.actionId().equals("action-audit-trace-investigation-guide")
+        && entry.governedToolId().equals("read-investigation-guide")
+        && entry.capabilityId().equals("audit.trace.investigationGuide.read")
+        && entry.classification().equals("chat-executable-now")
+        && entry.guardrails().contains("visible-correlation-id")
+        && entry.guardrails().contains("no-export-authority")
+        && entry.guardrails().contains("approval-gated-export-and-summary")
+        && !entry.requiresApproval()));
+    assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("audit-trace-agent")
         && entry.governedToolId().equals("draft-investigation-note")
         && entry.capabilityId().equals("audit.trace.investigation_note.append")));
     assertTrue(entries.stream().anyMatch(entry -> entry.workstreamId().equals("governance-policy-agent")
@@ -3688,6 +3738,391 @@ class WorkstreamServiceTest {
         .orElseThrow()
         .requiredCapabilityIds()
         .contains("governance.policy.read"));
+  }
+
+  @Test
+  void expandedAuditTraceChatToolPlanExecutesRedactedReadPathsWithVisibleTraceBinding() {
+    // Search - plan proposal + confirmed execution
+    var searchResponse = service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "audit-trace-agent",
+        "search audit traces for runtime failures after confirmation",
+        "corr-audit-search-chat-plan",
+        "idem-audit-search-chat-plan",
+        null,
+        "Search audit traces with scoped, redacted results; no source evidence mutated before or after confirmation.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-audit-trace-search",
+            1,
+            "Search audit traces with redacted results",
+            "action-audit-trace-search",
+            "action-audit-trace-search",
+            "search-audit-traces",
+            "audit.trace.search",
+            "schema.audit-trace.search.v1",
+            Map.of("filter", "runtime", "pageSize", 10),
+            List.of(),
+            Map.of(),
+            null,
+            "independent-read: audit trace search returns scoped redacted rows with no source mutation",
+            true,
+            false,
+            null,
+            "surface-audit-trace-search",
+            List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.read"))),
+        "Human confirmation, selected AuthContext authorization, backend redaction, and no-hidden-enumeration policy are required."));
+    var searchProposal = (WorkstreamService.ChatToolPlanProposal) searchResponse.surface().data().get("proposal");
+    var searchSnapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) searchResponse.surface().data().get("confirmationSnapshot");
+    assertEquals("audit-trace-agent", searchProposal.functionalAgentId());
+    assertEquals("action-audit-trace-search", searchProposal.steps().get(0).actionId());
+    assertBrowserPayloadSafe(searchResponse.surface());
+
+    var searchConfirmed = confirmRepresentativePlan(identity(), "membership-admin", searchProposal, searchSnapshot, "idem-audit-search-chat-plan-confirm");
+    var searchResult = (WorkstreamService.ChatToolPlanExecutionResult) searchConfirmed.surface().data().get("result");
+    assertEquals("completed", searchResult.status(), searchResult.toString());
+    assertTrue(searchResult.completedSteps().stream().anyMatch(step ->
+        step.actionId().equals("action-audit-trace-search")
+        && step.governedToolId().equals("search-audit-traces")
+        && step.capabilityId().equals("audit.trace.search")
+        && step.resultSurfaceId().equals("surface-audit-trace-search")));
+    assertBrowserPayloadSafe(searchConfirmed.surface());
+    assertFalse(searchConfirmed.surface().toString().contains("sk-"));
+
+    // Detail - plan proposal + confirmed execution with visible trace id
+    var detailResponse = service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "audit-trace-agent",
+        "open audit trace detail for visible trace after confirmation",
+        "corr-audit-detail-chat-plan",
+        "idem-audit-detail-chat-plan",
+        null,
+        "Open redacted audit trace detail for a visible authorized trace; no source evidence mutated.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-audit-trace-detail",
+            1,
+            "Open redacted audit trace detail",
+            "action-audit-trace-detail",
+            "action-audit-trace-detail",
+            "read-trace-detail",
+            "audit.trace.detail.read",
+            "schema.audit-trace.detail.v1",
+            Map.of("traceId", "trace-provider-blocked-002"),
+            List.of(),
+            Map.of(),
+            null,
+            "independent-read: trace detail returns backend-scoped redacted evidence with no mutation",
+            true,
+            false,
+            null,
+            "surface-audit-trace-detail",
+            List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.read"))),
+        "Human confirmation, visible trace id, backend redaction, and tenant/customer isolation are required."));
+    var detailProposal = (WorkstreamService.ChatToolPlanProposal) detailResponse.surface().data().get("proposal");
+    var detailSnapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) detailResponse.surface().data().get("confirmationSnapshot");
+    assertBrowserPayloadSafe(detailResponse.surface());
+
+    var detailConfirmed = confirmRepresentativePlan(identity(), "membership-admin", detailProposal, detailSnapshot, "idem-audit-detail-chat-plan-confirm");
+    var detailResult = (WorkstreamService.ChatToolPlanExecutionResult) detailConfirmed.surface().data().get("result");
+    assertEquals("completed", detailResult.status(), detailResult.toString());
+    assertTrue(detailResult.completedSteps().stream().anyMatch(step ->
+        step.actionId().equals("action-audit-trace-detail")
+        && step.governedToolId().equals("read-trace-detail")
+        && step.capabilityId().equals("audit.trace.detail.read")
+        && step.resultSurfaceId().equals("surface-audit-trace-detail")));
+    assertBrowserPayloadSafe(detailConfirmed.surface());
+
+    // Timeline - plan proposal + confirmed execution with visible correlationId
+    var timelineResponse = service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "audit-trace-agent",
+        "open correlation timeline for authorized correlation after confirmation",
+        "corr-audit-timeline-chat-plan",
+        "idem-audit-timeline-chat-plan",
+        null,
+        "Open correlation timeline for an authorized visible correlation; no source evidence mutated.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-audit-trace-timeline",
+            1,
+            "Open correlation timeline",
+            "action-audit-trace-timeline",
+            "action-audit-trace-timeline",
+            "read-trace-timeline",
+            "audit.trace.timeline.read",
+            "schema.audit-trace.timeline.v1",
+            Map.of("correlationId", "corr-audit-runtime"),
+            List.of(),
+            Map.of(),
+            null,
+            "independent-read: timeline returns backend-scoped redacted correlation evidence with no mutation",
+            true,
+            false,
+            null,
+            "surface-audit-trace-timeline",
+            List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.read"))),
+        "Human confirmation, visible correlation id, backend redaction, and tenant/customer isolation are required."));
+    var timelineProposal = (WorkstreamService.ChatToolPlanProposal) timelineResponse.surface().data().get("proposal");
+    var timelineSnapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) timelineResponse.surface().data().get("confirmationSnapshot");
+    assertBrowserPayloadSafe(timelineResponse.surface());
+
+    var timelineConfirmed = confirmRepresentativePlan(identity(), "membership-admin", timelineProposal, timelineSnapshot, "idem-audit-timeline-chat-plan-confirm");
+    var timelineResult = (WorkstreamService.ChatToolPlanExecutionResult) timelineConfirmed.surface().data().get("result");
+    assertEquals("completed", timelineResult.status(), timelineResult.toString());
+    assertTrue(timelineResult.completedSteps().stream().anyMatch(step ->
+        step.actionId().equals("action-audit-trace-timeline")
+        && step.governedToolId().equals("read-trace-timeline")
+        && step.capabilityId().equals("audit.trace.timeline.read")
+        && step.resultSurfaceId().equals("surface-audit-trace-timeline")));
+
+    // Failure evidence - plan proposal + confirmed execution
+    var failureResponse = service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "audit-trace-agent",
+        "open failure evidence for provider_blocked category after confirmation",
+        "corr-audit-failure-chat-plan",
+        "idem-audit-failure-chat-plan",
+        null,
+        "Open redacted failure evidence for an authorized failure category; no source evidence mutated.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-audit-trace-failure-evidence",
+            1,
+            "Open redacted failure evidence",
+            "action-audit-trace-failure-evidence",
+            "action-audit-trace-failure-evidence",
+            "read-trace-failure-evidence",
+            "audit.trace.failureEvidence.read",
+            "schema.audit-trace.failure-evidence.v1",
+            Map.of("failureCategory", "provider_blocked"),
+            List.of(),
+            Map.of(),
+            null,
+            "independent-read: failure evidence returns backend-scoped redacted evidence with no mutation and no provider secrets",
+            true,
+            false,
+            null,
+            "surface-audit-trace-failure-evidence",
+            List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.read"))),
+        "Human confirmation, failure category filter, backend redaction, and no-raw-provider-secrets policy are required."));
+    var failureProposal = (WorkstreamService.ChatToolPlanProposal) failureResponse.surface().data().get("proposal");
+    var failureSnapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) failureResponse.surface().data().get("confirmationSnapshot");
+    assertBrowserPayloadSafe(failureResponse.surface());
+
+    var failureConfirmed = confirmRepresentativePlan(identity(), "membership-admin", failureProposal, failureSnapshot, "idem-audit-failure-chat-plan-confirm");
+    var failureResult = (WorkstreamService.ChatToolPlanExecutionResult) failureConfirmed.surface().data().get("result");
+    assertEquals("completed", failureResult.status(), failureResult.toString());
+    assertTrue(failureResult.completedSteps().stream().anyMatch(step ->
+        step.actionId().equals("action-audit-trace-failure-evidence")
+        && step.governedToolId().equals("read-trace-failure-evidence")
+        && step.capabilityId().equals("audit.trace.failureEvidence.read")
+        && step.resultSurfaceId().equals("surface-audit-trace-failure-evidence")));
+    assertFalse(failureConfirmed.surface().toString().contains("sk-"));
+    assertFalse(failureConfirmed.surface().toString().contains("rawProviderCredential\":\"actual"));
+
+    // Investigation guide - plan proposal + confirmed execution with visible correlationId
+    var guideResponse = service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "audit-trace-agent",
+        "open investigation guide for authorized correlation after confirmation",
+        "corr-audit-guide-chat-plan",
+        "idem-audit-guide-chat-plan",
+        null,
+        "Open investigation guide for an authorized visible correlation; export and summary paths remain approval-gated.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-audit-trace-investigation-guide",
+            1,
+            "Open investigation guide",
+            "action-audit-trace-investigation-guide",
+            "action-audit-trace-investigation-guide",
+            "read-investigation-guide",
+            "audit.trace.investigationGuide.read",
+            "schema.audit-trace.investigation-guide.v1",
+            Map.of("correlationId", "corr-audit-runtime"),
+            List.of(),
+            Map.of(),
+            null,
+            "independent-read: investigation guide returns backend-authored next steps; export and summary paths remain approval-gated",
+            true,
+            false,
+            null,
+            "surface-audit-trace-investigation-guide",
+            List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.read"))),
+        "Human confirmation, visible correlation id, backend redaction, and no-export-authority policy are required."));
+    var guideProposal = (WorkstreamService.ChatToolPlanProposal) guideResponse.surface().data().get("proposal");
+    var guideSnapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) guideResponse.surface().data().get("confirmationSnapshot");
+    assertBrowserPayloadSafe(guideResponse.surface());
+
+    var guideConfirmed = confirmRepresentativePlan(identity(), "membership-admin", guideProposal, guideSnapshot, "idem-audit-guide-chat-plan-confirm");
+    var guideResult = (WorkstreamService.ChatToolPlanExecutionResult) guideConfirmed.surface().data().get("result");
+    assertEquals("completed", guideResult.status(), guideResult.toString());
+    assertTrue(guideResult.completedSteps().stream().anyMatch(step ->
+        step.actionId().equals("action-audit-trace-investigation-guide")
+        && step.governedToolId().equals("read-investigation-guide")
+        && step.capabilityId().equals("audit.trace.investigationGuide.read")
+        && step.resultSurfaceId().equals("surface-audit-trace-investigation-guide")));
+    assertBrowserPayloadSafe(guideConfirmed.surface());
+  }
+
+  @Test
+  void expandedAuditTraceExportAndRawEvidencePathsRemainBlockedThroughChat() {
+    // Export action is approval-gated and must not be placed in an executable chat plan step
+    var exportDenied = assertThrows(AuthorizationException.class, () -> service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "audit-trace-agent",
+        "export raw audit evidence via chat plan",
+        "corr-audit-export-blocked",
+        "idem-audit-export-blocked",
+        null,
+        "Export/raw evidence path must remain blocked through chat.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-audit-export",
+            1,
+            "Request redacted export",
+            "action-audit-trace-request-redacted-export",
+            "action-audit-trace-request-redacted-export",
+            "request-redacted-export",
+            "audit.trace.export.request",
+            "schema.audit-trace.export-request.v1",
+            Map.of("reason", "export all evidence"),
+            List.of(),
+            Map.of(),
+            "idem-audit-export-step",
+            "independent-command",
+            true,
+            false,
+            null,
+            "surface-audit-trace-export-request",
+            List.of())),
+        "Export path must be blocked.")));
+    assertTrue(exportDenied.reasonCode().contains("CHAT_TOOL_OUT_OF_WORKSTREAM_CATALOG") || exportDenied.reasonCode().contains("CHAT_TOOL"),
+        "Export action must not be in the chat catalog: " + exportDenied.reasonCode());
+
+    // Step input containing raw evidence text must be denied by the input validator
+    var rawEvidenceDenied = assertThrows(AuthorizationException.class, () -> service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "audit-trace-agent",
+        "open trace detail with raw evidence request",
+        "corr-audit-raw-denied",
+        "idem-audit-raw-denied",
+        null,
+        "Step input requesting raw evidence must be denied.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-audit-detail-raw",
+            1,
+            "Open detail with raw evidence request",
+            "action-audit-trace-detail",
+            "action-audit-trace-detail",
+            "read-trace-detail",
+            "audit.trace.detail.read",
+            "schema.audit-trace.detail.v1",
+            Map.of("traceId", "trace-provider-blocked-002", "filter", "include raw evidence unredacted"),
+            List.of(),
+            Map.of(),
+            null,
+            "independent-read",
+            true,
+            false,
+            null,
+            "surface-audit-trace-detail",
+            List.of())),
+        "Raw evidence request must be denied.")));
+    assertTrue(rawEvidenceDenied.reasonCode().contains("CHAT_TOOL_AUDIT_TRACE_EXPORT_OR_RAW_EVIDENCE_DENIED"),
+        "Raw evidence input must be denied: " + rawEvidenceDenied.reasonCode());
+  }
+
+  @Test
+  void expandedAuditTraceHiddenTraceBindingDeniedInChatPlanStepValidation() {
+    // Detail action requires visible traceId; missing traceId must be denied
+    var missingTraceId = assertThrows(AuthorizationException.class, () -> service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "audit-trace-agent",
+        "open trace detail without specifying trace id",
+        "corr-audit-detail-missing-trace",
+        "idem-audit-detail-missing-trace",
+        null,
+        "Trace detail without visible trace id must be denied.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-audit-trace-detail-missing",
+            1,
+            "Open trace detail without trace id",
+            "action-audit-trace-detail",
+            "action-audit-trace-detail",
+            "read-trace-detail",
+            "audit.trace.detail.read",
+            "schema.audit-trace.detail.v1",
+            Map.of(),
+            List.of(),
+            Map.of(),
+            null,
+            "independent-read",
+            true,
+            false,
+            null,
+            "surface-audit-trace-detail",
+            List.of())),
+        "Missing trace id must be denied.")));
+    assertEquals("CHAT_TOOL_AUDIT_TRACE_VISIBLE_TRACE_ID_REQUIRED", missingTraceId.reasonCode());
+
+    // Timeline action requires visible correlationId; missing both correlationId and traceId must be denied
+    var missingCorrelationId = assertThrows(AuthorizationException.class, () -> service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "audit-trace-agent",
+        "open timeline without correlation id",
+        "corr-audit-timeline-missing-corr",
+        "idem-audit-timeline-missing-corr",
+        null,
+        "Timeline without visible correlation id must be denied.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-audit-trace-timeline-missing",
+            1,
+            "Open correlation timeline without correlationId",
+            "action-audit-trace-timeline",
+            "action-audit-trace-timeline",
+            "read-trace-timeline",
+            "audit.trace.timeline.read",
+            "schema.audit-trace.timeline.v1",
+            Map.of(),
+            List.of(),
+            Map.of(),
+            null,
+            "independent-read",
+            true,
+            false,
+            null,
+            "surface-audit-trace-timeline",
+            List.of())),
+        "Missing correlation id must be denied.")));
+    assertEquals("CHAT_TOOL_AUDIT_TRACE_VISIBLE_CORRELATION_ID_REQUIRED", missingCorrelationId.reasonCode());
+
+    // Search action with unsupported field must be denied
+    var unsupportedField = assertThrows(AuthorizationException.class, () -> service.createChatToolPlanProposal(identity(), "membership-admin", new WorkstreamService.ChatToolPlanProposalRequest(
+        "membership-admin",
+        "audit-trace-agent",
+        "search traces with unsupported field",
+        "corr-audit-search-unsupported",
+        "idem-audit-search-unsupported",
+        null,
+        "Unsupported search field must be denied.",
+        List.of(new WorkstreamService.ChatToolPlanStep(
+            "step-audit-trace-search-unsupported",
+            1,
+            "Search with unsupported rawPayload field",
+            "action-audit-trace-search",
+            "action-audit-trace-search",
+            "search-audit-traces",
+            "audit.trace.search",
+            "schema.audit-trace.search.v1",
+            Map.of("filter", "runtime", "rawPayload", "include all fields"),
+            List.of(),
+            Map.of(),
+            null,
+            "independent-read",
+            true,
+            false,
+            null,
+            "surface-audit-trace-search",
+            List.of())),
+        "Unsupported field must be denied.")));
+    assertTrue(unsupportedField.reasonCode().contains("CHAT_TOOL_AUDIT_TRACE_UNSUPPORTED_SEARCH_FIELD"),
+        "Unsupported field must be denied: " + unsupportedField.reasonCode());
   }
 
   @Test

@@ -289,7 +289,7 @@
 
 ### TASK-WCTC-07-001: Expand Audit/Trace chat tool catalog
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-catalog-expansion/backlog/01-chat-tool-catalog-expansion-build-backlog.md
 - task brief: specs/workstream-chat-tool-catalog-expansion/tasks/07-audit-trace/01-expand-audit-trace-chat-tool-catalog.md
 - depends on:
@@ -321,6 +321,14 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: Audit/Trace workstream; trace/audit scope; human_chat_tool_plan expansion
+  - expanded runtime catalog for `action-audit-trace-search`, `action-audit-trace-detail`, `action-audit-trace-timeline`, `action-audit-trace-failure-evidence`, `action-audit-trace-investigation-guide`; all classified `chat-executable-now` with visible trace/correlation/filter binding requirements, redaction, no-hidden-enumeration, no-export-authority, and tenant/customer scope guardrails
+  - `validateAuditTraceChatToolStepInput()` added to enforce per-action input allowlists, visible binding requirements, and export/raw-evidence input denial
+  - representative plan candidates added for search/detail/timeline/failure-evidence/guide prompts in `representativeChatToolPlanCandidate()`
+  - AUDIT_TRACE_AGENT_ID and GOVERNANCE_POLICY_AGENT_ID added to `createChatToolPlanProposal` catalog validation condition so all catalog-carrying agents validate steps at proposal creation
+  - export/raw evidence paths remain approval-gated and out-of-catalog; export action not in chat plan catalog; raw evidence text in step input denied
+  - required checks passed: `git diff --check`; targeted backend Audit/Trace chat tool tests (`mvn -Dtest=ai.first.application.coreapp.workstream.WorkstreamServiceTest#chatToolCatalogListsBoundedHumanChatPlanEntries+expandedAuditTraceChatToolPlanExecutesRedactedReadPathsWithVisibleTraceBinding+expandedAuditTraceExportAndRawEvidencePathsRemainBlockedThroughChat+expandedAuditTraceHiddenTraceBindingDeniedInChatPlanStepValidation test`); regression guardrail regression (`mvn -Dtest=...#representativeChatToolPlansCoverAllFiveFoundationWorkstreamsWithConfirmationAndTraceSemantics+submitMessageRoutesMatchedSurfaceIntentBeforeModelInvocation+submitMessageBlocksUnsupportedAndHighRiskChatToolPromptsAfterDeterministicRouting+auditTraceActionsReturnScopedSearchDetailTimelineFailureAndGuidanceSurfaces+auditTraceSearchValidatesInputAndDeniesCrossTenantScope+auditTraceCapabilitiesAreForbiddenForMemberWithoutAuditAuthority test`); pre-existing unrelated failure `auditTraceSummaryWorkerFailsClosedUntilRealAutonomousRuntimeExists` (Akka runtime binding) was not caused by this task
+  - frontend contracts were not changed, so frontend checks were not required
+  - commit message: `workstream-chat-catalog: expand audit trace catalog`
 
 ### TASK-WCTC-08-001: Expand Governance/Policy chat tool catalog
 

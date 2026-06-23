@@ -1486,7 +1486,7 @@ public final class WorkstreamService {
       var existing = duplicate.orElseThrow();
       return new WorkstreamMessageResponse(existing.correlationId(), existing.idempotencyKey(), existing.userItem(), existing.agentItem(), existing.surface());
     }
-    if (MY_ACCOUNT_AGENT_ID.equals(request.functionalAgentId()) || USER_ADMIN_AGENT_ID.equals(request.functionalAgentId()) || AGENT_ADMIN_AGENT_ID.equals(request.functionalAgentId())) {
+    if (MY_ACCOUNT_AGENT_ID.equals(request.functionalAgentId()) || USER_ADMIN_AGENT_ID.equals(request.functionalAgentId()) || AGENT_ADMIN_AGENT_ID.equals(request.functionalAgentId()) || AUDIT_TRACE_AGENT_ID.equals(request.functionalAgentId()) || GOVERNANCE_POLICY_AGENT_ID.equals(request.functionalAgentId())) {
       var boundary = activeChatToolBoundary(actor, request.functionalAgentId(), correlationId);
       var requestedSteps = request.steps() == null ? List.<ChatToolPlanStep>of() : request.steps();
       requestedSteps.forEach(step -> validateChatToolStepAgainstCatalog(actor, boundary, request.functionalAgentId(), step));
@@ -1935,13 +1935,55 @@ public final class WorkstreamService {
             agentAdminPromptRiskReviewPlanSteps(idempotencyRoot)));
       }
     }
-    if (AUDIT_TRACE_AGENT_ID.equals(functionalAgentId) && normalized.contains("append") && normalized.contains("investigation note")) {
-      return Optional.of(new RepresentativeChatToolPlanCandidate(
-          AUDIT_TRACE_AGENT_ID,
-          "Review the Audit/Trace governed-tool plan. No note has been appended; explicit confirmation must echo this exact snapshot before execution.",
-          "Append a browser-safe investigation note to an authorized trace reference after explicit human confirmation.",
-          "No trace note is recorded from this proposal. Human confirmation, selected AuthContext authorization, exact plan snapshot validation, per-step idempotency, and trace capture are required before execution; source evidence and policy remain immutable.",
-          auditTraceInvestigationNotePlanSteps(prompt, idempotencyRoot)));
+    if (AUDIT_TRACE_AGENT_ID.equals(functionalAgentId)) {
+      if (normalized.contains("append") && normalized.contains("investigation note")) {
+        return Optional.of(new RepresentativeChatToolPlanCandidate(
+            AUDIT_TRACE_AGENT_ID,
+            "Review the Audit/Trace governed-tool plan. No note has been appended; explicit confirmation must echo this exact snapshot before execution.",
+            "Append a browser-safe investigation note to an authorized trace reference after explicit human confirmation.",
+            "No trace note is recorded from this proposal. Human confirmation, selected AuthContext authorization, exact plan snapshot validation, per-step idempotency, and trace capture are required before execution; source evidence and policy remain immutable.",
+            auditTraceInvestigationNotePlanSteps(prompt, idempotencyRoot)));
+      }
+      if ((normalized.contains(" search ") || normalized.contains(" search traces ")) && !normalized.contains(" export ") && !normalized.contains(" raw ")) {
+        return Optional.of(new RepresentativeChatToolPlanCandidate(
+            AUDIT_TRACE_AGENT_ID,
+            "Review the Audit/Trace governed-tool plan. No source evidence mutated; explicit confirmation must echo this exact snapshot before execution.",
+            "Search audit traces with scoped, redacted results after explicit human confirmation.",
+            "No evidence is mutated from this proposal. Human confirmation, selected AuthContext authorization, backend redaction, tenant/customer isolation, and no-hidden-enumeration policy remain authoritative.",
+            auditTraceSearchPlanSteps(idempotencyRoot)));
+      }
+      if ((normalized.contains(" trace detail ") || normalized.contains(" detail ")) && normalized.contains(" trace ") && !normalized.contains(" export ")) {
+        return Optional.of(new RepresentativeChatToolPlanCandidate(
+            AUDIT_TRACE_AGENT_ID,
+            "Review the Audit/Trace governed-tool plan. No source evidence mutated; explicit confirmation must echo this exact snapshot before execution.",
+            "Open redacted audit trace detail for an authorized visible trace after explicit human confirmation.",
+            "No evidence is mutated from this proposal. Visible trace id, backend redaction, and tenant/customer isolation remain authoritative.",
+            auditTraceDetailPlanSteps(idempotencyRoot)));
+      }
+      if ((normalized.contains(" timeline ") || normalized.contains(" correlation timeline ")) && !normalized.contains(" export ")) {
+        return Optional.of(new RepresentativeChatToolPlanCandidate(
+            AUDIT_TRACE_AGENT_ID,
+            "Review the Audit/Trace governed-tool plan. No source evidence mutated; explicit confirmation must echo this exact snapshot before execution.",
+            "Open the correlation timeline for an authorized visible correlation after explicit human confirmation.",
+            "No evidence is mutated from this proposal. Visible correlation id, backend redaction, and tenant/customer isolation remain authoritative.",
+            auditTraceTimelinePlanSteps(idempotencyRoot)));
+      }
+      if ((normalized.contains(" failure evidence ") || normalized.contains(" failure ")) && normalized.contains(" trace ") && !normalized.contains(" export ")) {
+        return Optional.of(new RepresentativeChatToolPlanCandidate(
+            AUDIT_TRACE_AGENT_ID,
+            "Review the Audit/Trace governed-tool plan. No source evidence mutated; explicit confirmation must echo this exact snapshot before execution.",
+            "Open redacted failure evidence for an authorized failure category after explicit human confirmation.",
+            "No evidence is mutated from this proposal. Backend redaction, no-raw-provider-secrets, and tenant/customer isolation remain authoritative.",
+            auditTraceFailureEvidencePlanSteps(idempotencyRoot)));
+      }
+      if ((normalized.contains(" investigation guide ") || normalized.contains(" guide ")) && normalized.contains(" trace ") && !normalized.contains(" export ")) {
+        return Optional.of(new RepresentativeChatToolPlanCandidate(
+            AUDIT_TRACE_AGENT_ID,
+            "Review the Audit/Trace governed-tool plan. No source evidence mutated; explicit confirmation must echo this exact snapshot before execution.",
+            "Open the investigation guide for an authorized correlation after explicit human confirmation.",
+            "No evidence is mutated from this proposal. Visible correlation id, backend redaction, and tenant/customer isolation remain authoritative; export and summary remain approval-gated.",
+            auditTraceInvestigationGuidePlanSteps(idempotencyRoot)));
+      }
     }
     if (GOVERNANCE_POLICY_AGENT_ID.equals(functionalAgentId) && normalized.contains("draft") && normalized.contains("policy proposal") && normalized.contains("redacted export")) {
       return Optional.of(new RepresentativeChatToolPlanCandidate(
@@ -2319,6 +2361,116 @@ public final class WorkstreamService {
         List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_pending", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.note")));
   }
 
+  private List<ChatToolPlanStep> auditTraceSearchPlanSteps(String idempotencyRoot) {
+    return List.of(new ChatToolPlanStep(
+        "step-audit-trace-search",
+        1,
+        "Search audit traces with scoped redacted results",
+        "action-audit-trace-search",
+        "action-audit-trace-search",
+        governedToolId(AUDIT_TRACE_SEARCH_CAPABILITY),
+        AUDIT_TRACE_SEARCH_CAPABILITY,
+        "schema.audit-trace.search.v1",
+        mapOf("filter", "runtime", "pageSize", 10),
+        List.of(),
+        Map.of(),
+        null,
+        "independent-read: audit trace search is a backend-scoped, redacted read with no evidence mutation",
+        true,
+        false,
+        null,
+        "surface-audit-trace-search",
+        List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.read")));
+  }
+
+  private List<ChatToolPlanStep> auditTraceDetailPlanSteps(String idempotencyRoot) {
+    return List.of(new ChatToolPlanStep(
+        "step-audit-trace-detail",
+        1,
+        "Open redacted audit trace detail for visible trace",
+        "action-audit-trace-detail",
+        "action-audit-trace-detail",
+        governedToolId(AUDIT_TRACE_DETAIL_CAPABILITY),
+        AUDIT_TRACE_DETAIL_CAPABILITY,
+        "schema.audit-trace.detail.v1",
+        mapOf("traceId", "trace-auth-context-" + stableSuffix(idempotencyRoot)),
+        List.of(),
+        Map.of(),
+        null,
+        "independent-read: audit trace detail is a backend-scoped, redacted read with no evidence mutation",
+        true,
+        false,
+        null,
+        "surface-audit-trace-detail",
+        List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.read")));
+  }
+
+  private List<ChatToolPlanStep> auditTraceTimelinePlanSteps(String idempotencyRoot) {
+    return List.of(new ChatToolPlanStep(
+        "step-audit-trace-timeline",
+        1,
+        "Open correlation timeline for authorized correlation",
+        "action-audit-trace-timeline",
+        "action-audit-trace-timeline",
+        governedToolId(AUDIT_TRACE_TIMELINE_CAPABILITY),
+        AUDIT_TRACE_TIMELINE_CAPABILITY,
+        "schema.audit-trace.timeline.v1",
+        mapOf("correlationId", "corr-auth-context-" + stableSuffix(idempotencyRoot)),
+        List.of(),
+        Map.of(),
+        null,
+        "independent-read: correlation timeline is a backend-scoped, redacted read with no evidence mutation",
+        true,
+        false,
+        null,
+        "surface-audit-trace-timeline",
+        List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.read")));
+  }
+
+  private List<ChatToolPlanStep> auditTraceFailureEvidencePlanSteps(String idempotencyRoot) {
+    return List.of(new ChatToolPlanStep(
+        "step-audit-trace-failure-evidence",
+        1,
+        "Open redacted failure evidence for authorized failure category",
+        "action-audit-trace-failure-evidence",
+        "action-audit-trace-failure-evidence",
+        governedToolId(AUDIT_TRACE_FAILURE_EVIDENCE_CAPABILITY),
+        AUDIT_TRACE_FAILURE_EVIDENCE_CAPABILITY,
+        "schema.audit-trace.failure-evidence.v1",
+        mapOf("failureCategory", "provider_blocked"),
+        List.of(),
+        Map.of(),
+        null,
+        "independent-read: failure evidence is a backend-scoped, redacted read with no source evidence mutation",
+        true,
+        false,
+        null,
+        "surface-audit-trace-failure-evidence",
+        List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.read")));
+  }
+
+  private List<ChatToolPlanStep> auditTraceInvestigationGuidePlanSteps(String idempotencyRoot) {
+    return List.of(new ChatToolPlanStep(
+        "step-audit-trace-investigation-guide",
+        1,
+        "Open investigation guide for authorized correlation",
+        "action-audit-trace-investigation-guide",
+        "action-audit-trace-investigation-guide",
+        governedToolId(AUDIT_TRACE_GUIDE_CAPABILITY),
+        AUDIT_TRACE_GUIDE_CAPABILITY,
+        "schema.audit-trace.investigation-guide.v1",
+        mapOf("correlationId", "corr-auth-context-" + stableSuffix(idempotencyRoot)),
+        List.of(),
+        Map.of(),
+        null,
+        "independent-read: investigation guide returns backend-authored next steps; export and summary paths remain approval-gated",
+        true,
+        false,
+        null,
+        "surface-audit-trace-investigation-guide",
+        List.of("human_chat_tool_plan.proposed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.read")));
+  }
+
   private List<ChatToolPlanStep> governancePolicyDraftProposalPlanSteps(String idempotencyRoot) {
     return List.of(new ChatToolPlanStep(
         "step-draft-policy-proposal",
@@ -2645,6 +2797,11 @@ public final class WorkstreamService {
         chatToolCatalogEntry(AGENT_ADMIN_AGENT_ID, proposePromptDiffAction(), "human_chat_tool_plan", "chat-proposal-only", "medium", "Prompt-diff proposal creates inert draft/review evidence only; active prompt behavior remains unchanged.", "Human-confirmed prompt diff proposal only; prompt text cannot grant authority and activation remains a separate lifecycle command.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-agent-definition", "redacted-diff-only", "prompt-text-not-authority", "no-activation"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "agent.work_trace", "behavior.proposal_trace")),
         chatToolCatalogEntry(AGENT_ADMIN_AGENT_ID, submitBehaviorChangeAction(), "human_chat_tool_plan", "chat-proposal-only", "medium", "Behavior-change submit creates review evidence only; active behavior and lifecycle state remain unchanged.", "Human-confirmed behavior-change submission only; submission is not approval, activation, rollback, or deactivation.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-agent-definition", "redacted-diff-only", "no-authority-expansion", "no-activation"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "agent.work_trace", "behavior.proposal_trace")),
         chatToolCatalogEntry(AGENT_ADMIN_AGENT_ID, agentBehaviorProposalSubmitAction(false), "human_chat_tool_plan", "chat-proposal-only", "medium", "Behavior proposal submit advances a visible draft/proposed proposal to review only; active behavior remains unchanged.", "Human-confirmed behavior proposal submission only; visible proposal state is rechecked and approval/activation remain separate gates.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-proposal-id", "no-authority-expansion", "no-activation"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "agent.work_trace", "behavior.proposal_trace")),
+        chatToolCatalogEntry(AUDIT_TRACE_AGENT_ID, auditTraceSearchAction(), "human_chat_tool_plan", "chat-executable-now", "low-medium", "Audit trace search returns backend-scoped, redacted rows for visible filter or correlation bindings only; no hidden trace enumeration.", "Human-confirmed audit trace search only; backend redaction, tenant/customer isolation, and no-hidden-enumeration policy remain authoritative; export paths blocked.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-filter-or-correlation-binding", "redaction", "no-hidden-enumeration", "tenant-customer-scope", "no-export-authority"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.read")),
+        chatToolCatalogEntry(AUDIT_TRACE_AGENT_ID, auditTraceDetailAction(), "human_chat_tool_plan", "chat-executable-now", "low-medium", "Audit trace detail returns redacted evidence for a visible and authorized trace id; cross-tenant trace ids are denied and not-found-or-redacted.", "Human-confirmed audit trace detail only; visible trace id required, backend redaction and tenant/customer isolation remain authoritative; export paths blocked.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-trace-id", "redaction", "tenant-customer-scope", "no-export-authority"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.read")),
+        chatToolCatalogEntry(AUDIT_TRACE_AGENT_ID, auditTraceTimelineAction(), "human_chat_tool_plan", "chat-executable-now", "low-medium", "Correlation timeline assembles authorized evidence for a visible correlation or trace id; provider secrets, raw payloads, and JWT tokens remain redacted.", "Human-confirmed correlation timeline only; visible correlation id required, backend redaction and tenant/customer isolation remain authoritative; no source evidence mutation.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-correlation-id", "redaction", "tenant-customer-scope", "no-raw-provider-secrets"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.read")),
+        chatToolCatalogEntry(AUDIT_TRACE_AGENT_ID, auditTraceFailureEvidenceAction(), "human_chat_tool_plan", "chat-executable-now", "low-medium", "Failure evidence surface returns redacted fail-closed evidence for a visible failure category; no provider secrets, raw payloads, or JWT tokens are exposed.", "Human-confirmed failure evidence read only; failure category filter required, backend redaction and tenant/customer isolation remain authoritative; raw provider credentials and export paths blocked.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-failure-category-filter", "redaction", "no-raw-provider-secrets", "no-export-authority"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.read")),
+        chatToolCatalogEntry(AUDIT_TRACE_AGENT_ID, auditTraceInvestigationGuideAction(), "human_chat_tool_plan", "chat-executable-now", "low-medium", "Investigation guide returns backend-authored next steps for an authorized correlation; export, model-backed summary, and raw evidence delivery remain separate approval-gated paths.", "Human-confirmed investigation guide only; visible correlation id required, backend redaction and tenant/customer isolation remain authoritative; export and summary paths remain approval-gated.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-correlation-id", "redaction", "no-export-authority", "approval-gated-export-and-summary"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.read")),
         chatToolCatalogEntry(AUDIT_TRACE_AGENT_ID, auditTraceAppendInvestigationNoteAction(), "human_chat_tool_plan", "chat-executable-now", "low-medium", "Investigation note append is an idempotent annotation on an authorized trace/correlation; source evidence and policy state remain immutable.", "Human-confirmed browser-safe investigation note append to an authorized visible trace/correlation only; no export or evidence mutation authority.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "visible-trace-binding", "redaction"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "audit.trace.note")),
         chatToolCatalogEntry(GOVERNANCE_POLICY_AGENT_ID, governanceDraftProposalAction(), "human_chat_tool_plan", "chat-proposal-only", "medium", "Policy drafting creates an inert proposal artifact only; approval, activation, rollback, exports, and live authority changes stay outside this executable path.", "Human-confirmed inert policy proposal draft only; no approval, activation, rollback, or production authority change.", false, List.of("catalog-membership", "deterministic-surface-routing-first", "exact-plan-snapshot", "selected-auth-context", "proposal-only", "no-activation"), List.of("human_chat_tool_plan.confirmed", "human_chat_tool_plan.step_started", "human_chat_tool_plan.step_completed", "policy.proposal_trace")));
   }
@@ -2709,6 +2866,7 @@ public final class WorkstreamService {
     if (MY_ACCOUNT_AGENT_ID.equals(workstreamId)) validateMyAccountChatToolStepInput(step);
     if (USER_ADMIN_AGENT_ID.equals(workstreamId)) validateUserAdminChatToolStepInput(step);
     if (AGENT_ADMIN_AGENT_ID.equals(workstreamId)) validateAgentAdminChatToolStepInput(actor, step);
+    if (AUDIT_TRACE_AGENT_ID.equals(workstreamId)) validateAuditTraceChatToolStepInput(step);
   }
 
   private void validateAgentAdminChatToolStepInput(AuthContextResolver.ResolvedMe actor, ChatToolPlanStep step) {
@@ -2812,6 +2970,40 @@ public final class WorkstreamService {
 
   private void requireStringInput(Map<String, Object> input, String key, String code) {
     if (!(input.get(key) instanceof String value) || value.isBlank()) throw new AuthorizationException(400, code);
+  }
+
+  private void validateAuditTraceChatToolStepInput(ChatToolPlanStep step) {
+    var input = step.input() == null ? Map.<String, Object>of() : step.input();
+    var actionId = step.actionId();
+    denyAuditTraceExportOrRawEvidenceInput(input);
+    if ("action-audit-trace-search".equals(actionId)) {
+      rejectUnsupportedChatToolFields(input, List.of("filter", "correlationId", "traceId", "pageSize", "tenantId", "category", "from", "to"), "CHAT_TOOL_AUDIT_TRACE_UNSUPPORTED_SEARCH_FIELD");
+    } else if ("action-audit-trace-detail".equals(actionId)) {
+      rejectUnsupportedChatToolFields(input, List.of("traceId", "correlationId"), "CHAT_TOOL_AUDIT_TRACE_UNSUPPORTED_DETAIL_FIELD");
+      requireStringInput(input, "traceId", "CHAT_TOOL_AUDIT_TRACE_VISIBLE_TRACE_ID_REQUIRED");
+    } else if ("action-audit-trace-timeline".equals(actionId)) {
+      rejectUnsupportedChatToolFields(input, List.of("correlationId", "traceId", "from", "to"), "CHAT_TOOL_AUDIT_TRACE_UNSUPPORTED_TIMELINE_FIELD");
+      if (!(input.get("correlationId") instanceof String cid && !cid.isBlank()) && !(input.get("traceId") instanceof String tid && !tid.isBlank())) throw new AuthorizationException(400, "CHAT_TOOL_AUDIT_TRACE_VISIBLE_CORRELATION_ID_REQUIRED");
+    } else if ("action-audit-trace-failure-evidence".equals(actionId)) {
+      rejectUnsupportedChatToolFields(input, List.of("failureCategory", "correlationId", "traceId"), "CHAT_TOOL_AUDIT_TRACE_UNSUPPORTED_FAILURE_FIELD");
+    } else if ("action-audit-trace-investigation-guide".equals(actionId)) {
+      rejectUnsupportedChatToolFields(input, List.of("correlationId", "traceId"), "CHAT_TOOL_AUDIT_TRACE_UNSUPPORTED_GUIDE_FIELD");
+      if (!(input.get("correlationId") instanceof String cid && !cid.isBlank()) && !(input.get("traceId") instanceof String tid && !tid.isBlank())) throw new AuthorizationException(400, "CHAT_TOOL_AUDIT_TRACE_VISIBLE_CORRELATION_ID_REQUIRED");
+    } else if ("action-audit-trace-append-investigation-note".equals(actionId)) {
+      rejectUnsupportedChatToolFields(input, List.of("traceId", "correlationId", "note"), "CHAT_TOOL_AUDIT_TRACE_UNSUPPORTED_NOTE_FIELD");
+      requireStringInput(input, "note", "CHAT_TOOL_AUDIT_TRACE_NOTE_TEXT_REQUIRED");
+    }
+  }
+
+  private void denyAuditTraceExportOrRawEvidenceInput(Map<String, Object> input) {
+    input.forEach((key, value) -> {
+      if (value instanceof String text) {
+        var normalized = " " + text.toLowerCase(Locale.ROOT) + " ";
+        if (containsAny(normalized, " export ", " raw evidence ", " unredacted ", " bearer ", " api key ", " raw jwt ", " token ")) {
+          throw new AuthorizationException(403, "CHAT_TOOL_AUDIT_TRACE_EXPORT_OR_RAW_EVIDENCE_DENIED");
+        }
+      }
+    });
   }
 
   private void validateMyAccountChatToolStepInput(ChatToolPlanStep step) {
