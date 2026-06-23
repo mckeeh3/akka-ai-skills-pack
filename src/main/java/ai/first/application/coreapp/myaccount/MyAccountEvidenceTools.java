@@ -76,7 +76,7 @@ public final class MyAccountEvidenceTools {
         .filter(membership -> membership.membershipId().equals(authContext.membershipId()))
         .findFirst()
         .orElseThrow(() -> new AuthorizationException(403, "my-account-evidence-membership-not-found"));
-    if (!selected.tenantId().equals(authContext.tenantId()) || !Objects.equals(selected.customerId(), authContext.customerId())) {
+    if (!Objects.equals(selected.tenantId(), authContext.tenantId()) || !Objects.equals(selected.customerId(), authContext.customerId())) {
       throw new AuthorizationException(403, "my-account-evidence-auth-context-mismatch");
     }
     var profile = identityRepository.profile(account.accountId());
@@ -90,7 +90,7 @@ public final class MyAccountEvidenceTools {
     var index = evidenceRequest.indexOf(marker);
     if (index < 0) return;
     var requested = evidenceRequest.substring(index + marker.length()).split("[\\s,;]")[0].trim();
-    if (!requested.isBlank() && !requested.equals(authContext.tenantId())) {
+    if (!requested.isBlank() && !Objects.equals(requested, authContext.tenantId())) {
       throw new AuthorizationException(403, "my-account-evidence-tenant-mismatch");
     }
   }
