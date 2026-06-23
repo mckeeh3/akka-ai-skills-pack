@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import ai.first.application.foundation.identity.AuthContextResolver;
+import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
 import ai.first.application.foundation.workstream.WorkstreamLogRepository;
 
 /** Akka-backed Audit/Trace repository that composes durable trace views and workstream log state. */
@@ -52,7 +53,7 @@ public final class AkkaAuditTraceRepository implements AuditTraceRepository {
     return componentClient
         .forView()
         .method(AgentRuntimeTraceView::byTenant)
-        .invoke(new AgentRuntimeTraceView.TenantTraceSearchQuery(actor.selectedContext().tenantId()))
+        .invoke(new AgentRuntimeTraceView.TenantTraceSearchQuery(viewQueryTenantId(actor.selectedContext().tenantId())))
         .traces()
         .stream()
         .map(row -> new AuditTraceService.TraceEvent(
@@ -70,6 +71,10 @@ public final class AkkaAuditTraceRepository implements AuditTraceRepository {
             row.capabilityId(),
             OMITTED_FIELDS))
         .toList();
+  }
+
+  private static String viewQueryTenantId(String tenantId) {
+    return tenantId == null || tenantId.isBlank() ? WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID : tenantId;
   }
 
   private List<AuditTraceService.TraceEvent> workstreamLogEvents(AuthContextResolver.ResolvedMe actor) {

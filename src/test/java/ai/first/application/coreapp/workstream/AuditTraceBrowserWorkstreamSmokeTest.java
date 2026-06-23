@@ -38,6 +38,7 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
   private static final String TENANT_ID = "tenant-audit-smoke";
   private static final String CUSTOMER_ID = "customer-audit-smoke";
   private static final String AUDITOR_CONTEXT_ID = "membership-audit-auditor";
+  private static final String SAAS_OWNER_CONTEXT_ID = "membership-audit-saas-owner";
   private static final String MEMBER_CONTEXT_ID = "membership-audit-member";
   private static final String CUSTOMER_CONTEXT_ID = "membership-audit-customer";
   private static final String DISABLED_CONTEXT_ID = "membership-audit-disabled";
@@ -48,6 +49,10 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
     repository.saveTenant(new Tenant(TENANT_ID, "Audit Smoke Tenant", true));
     repository.saveCustomer(new Customer(TENANT_ID, CUSTOMER_ID, "Audit Smoke Customer", true));
     seedIdentity(repository, "auditor@example.test", "Audit Reviewer", AUDITOR_CONTEXT_ID, AccountStatus.ACTIVE, ScopeType.TENANT, null, List.of(FoundationRole.TENANT_ADMIN, FoundationRole.AUDITOR));
+    repository.saveAccount(new Account("saas-owner-audit@example.test", null, "saas-owner-audit@example.test", "saas-owner-audit@example.test", AccountStatus.ACTIVE, "UNLINKED"));
+    repository.saveProfile(new UserProfile("saas-owner-audit@example.test", "saas-owner-audit@example.test", "SaaS Owner Auditor", null, null, null));
+    repository.saveSettings(new UserSettings("saas-owner-audit@example.test", UserSettings.ThemeId.AURORA_LIGHT));
+    repository.saveMembership(new Membership(SAAS_OWNER_CONTEXT_ID, "saas-owner-audit@example.test", ScopeType.SAAS_OWNER, null, null, List.of(FoundationRole.SAAS_OWNER_ADMIN, FoundationRole.AUDITOR), MembershipStatus.ACTIVE, false, null));
     seedIdentity(repository, "member-audit@example.test", "Member User", MEMBER_CONTEXT_ID, AccountStatus.ACTIVE, ScopeType.TENANT, null, List.of(FoundationRole.TENANT_EMPLOYEE));
     seedIdentity(repository, "customer-audit@example.test", "Customer Admin", CUSTOMER_CONTEXT_ID, AccountStatus.ACTIVE, ScopeType.CUSTOMER, CUSTOMER_ID, List.of(FoundationRole.CUSTOMER_ADMIN));
     seedIdentity(repository, "disabled-audit@example.test", "Disabled Auditor", DISABLED_CONTEXT_ID, AccountStatus.DISABLED, ScopeType.TENANT, null, List.of(FoundationRole.AUDITOR));
@@ -2083,6 +2088,17 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("surface-audit-trace-dashboard", customerDashboard.surfaceId());
     assertTrue(customerDashboard.toString().contains("customerId=" + CUSTOMER_ID));
     assertBrowserSafe(customerDashboard);
+
+    var saasOwnerDashboard = getSurfaceAs(
+        "surface-audit-trace-dashboard",
+        "corr-audit-dashboard-saas-owner-platform-scope",
+        "workos-audit-saas-owner",
+        "saas-owner-audit@example.test",
+        "SaaS Owner Auditor",
+        SAAS_OWNER_CONTEXT_ID);
+    assertEquals("surface-audit-trace-dashboard", saasOwnerDashboard.surfaceId());
+    assertTrue(saasOwnerDashboard.toString().contains("scopeType=saas_owner"));
+    assertBrowserSafe(saasOwnerDashboard);
 
     assertThrows(RuntimeException.class, () -> runActionAs(
         new CapabilityActionRequest(
