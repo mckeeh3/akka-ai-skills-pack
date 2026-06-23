@@ -466,7 +466,7 @@
 
 ### TASK-WCTC-11-001: Add expanded catalog regression tests
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-catalog-expansion/backlog/01-chat-tool-catalog-expansion-build-backlog.md
 - task brief: specs/workstream-chat-tool-catalog-expansion/tasks/11-regression/01-add-expanded-catalog-regression-tests.md
 - depends on:
@@ -499,6 +499,10 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: cross-workstream regression coverage for expanded human_chat_tool_plan catalog
+  - added three new backend regression tests in `WorkstreamServiceTest`: `expandedCatalogSurfaceOnlyAndBlockedActionsAreOutOfCatalogAcrossAllFiveWorkstreams` (7 denials covering My Account sign-out/digest-start, User Admin disable-member/open-status-form, Agent Admin activation-confirm, Audit/Trace summary-start, and Governance/Policy activate), `expandedCatalogCapabilityDenialBlocksChatPlanProposalForRestrictedWorkstreams` (3 cross-workstream capability/agent-visibility denials for member without AUDITOR/invite/governance capabilities), `expandedCatalogIdempotentReplayProducesNoExtraStateChangesForExpandedPaths` (My Account settings update: proposal no-mutation, confirm trace evidence, idempotent replay returns same surface without re-executing)
+  - required checks passed: `git diff --check` (clean); targeted backend tests (3 new + prior per-workstream regression suites all pass); `npm --prefix frontend test -- --run` (176 pass, 1 pre-existing unrelated failure in `workstream-surface-intent-routing` unchanged); `npm --prefix frontend run typecheck` (clean)
+  - frontend contracts unchanged; no new frontend contract tests needed
+  - commit message: `workstream-chat-catalog: add regression tests`
 
 ### TASK-WCTC-99-001: Verify Workstream Chat Tool Catalog Expansion completion
 

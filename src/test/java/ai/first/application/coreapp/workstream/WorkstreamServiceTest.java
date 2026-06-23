@@ -4862,4 +4862,293 @@ class WorkstreamServiceTest {
     assertTrue(activationInList.reasonCode().contains("CHAT_TOOL_GOVERNANCE_POLICY_ACTIVATION_OR_ROLLBACK_TEXT_DENIED"),
         "Activation text in list filter must be denied: " + activationInList.reasonCode());
   }
+
+  // ---- TASK-WCTC-11-001: Expanded catalog regression tests ----
+
+  @Test
+  void expandedCatalogSurfaceOnlyAndBlockedActionsAreOutOfCatalogAcrossAllFiveWorkstreams() {
+    // My Account surface-only: sign-out is a utility shell action and must not be a chat plan step
+    var myAccountSignOut = assertThrows(AuthorizationException.class, () ->
+        service.createChatToolPlanProposal(identity(), "membership-admin",
+            new WorkstreamService.ChatToolPlanProposalRequest(
+                "membership-admin", "my-account-agent",
+                "sign me out of the application",
+                "corr-regression-my-account-signout", "idem-regression-my-account-signout",
+                null,
+                "Surface-only My Account sign-out cannot be a chat plan step.",
+                List.of(new WorkstreamService.ChatToolPlanStep(
+                    "step-sign-out", 1, "Sign Out",
+                    "action-sign-out", "action-sign-out",
+                    "core.session.signout", "core.session.signout",
+                    null, Map.of(), List.of(), Map.of(),
+                    null, "independent-command", true, false,
+                    "redirect", "surface-signed-out", List.of())),
+                "Surface-only sign-out must be denied.")));
+    assertTrue(myAccountSignOut.reasonCode().contains("CHAT_TOOL_OUT_OF_WORKSTREAM_CATALOG"),
+        "My Account sign-out must be out-of-catalog: " + myAccountSignOut.reasonCode());
+
+    // My Account approval-gated / not in catalog: personal attention digest start
+    var myAccountDigestStart = assertThrows(AuthorizationException.class, () ->
+        service.createChatToolPlanProposal(identity(), "membership-admin",
+            new WorkstreamService.ChatToolPlanProposalRequest(
+                "membership-admin", "my-account-agent",
+                "start my personal attention digest",
+                "corr-regression-my-account-digest", "idem-regression-my-account-digest",
+                null,
+                "Approval-gated personal attention digest start is not in the chat catalog.",
+                List.of(new WorkstreamService.ChatToolPlanStep(
+                    "step-digest-start", 1, "Start personal attention digest",
+                    "action-start-personal-attention-digest", "action-start-personal-attention-digest",
+                    "my_account.personal_attention_digest.start", "my_account.personal_attention_digest.start",
+                    "schema.my-account.digest.start.v1", Map.of(), List.of(), Map.of(),
+                    "idem-regression-digest-start-step", "independent-command",
+                    true, false, "workflow-status",
+                    "surface-my-account-personal-attention-digest-progress", List.of())),
+                "Approval-gated digest start must be denied.")));
+    assertTrue(myAccountDigestStart.reasonCode().contains("CHAT_TOOL_OUT_OF_WORKSTREAM_CATALOG"),
+        "My Account digest start must be out-of-catalog: " + myAccountDigestStart.reasonCode());
+
+    // User Admin surface-only: member disable is approval-gated/surface-only and not in the chat catalog
+    var userAdminDisable = assertThrows(AuthorizationException.class, () ->
+        service.createChatToolPlanProposal(identity(), "membership-admin",
+            new WorkstreamService.ChatToolPlanProposalRequest(
+                "membership-admin", "user-admin-agent",
+                "disable member member@example.test",
+                "corr-regression-user-admin-disable", "idem-regression-user-admin-disable",
+                null,
+                "Approval-gated member disable is not in the chat catalog.",
+                List.of(new WorkstreamService.ChatToolPlanStep(
+                    "step-disable-member", 1, "Disable member member@example.test",
+                    "action-useradmin-disable-member", "action-useradmin-disable-member",
+                    "update-member-status", "user_admin.update_member_status",
+                    "schema.user-admin.member-disable.v1",
+                    Map.of("accountId", "member@example.test", "membershipId", "membership-member", "reason", "regression test"),
+                    List.of(), Map.of(),
+                    "idem-regression-disable-member-step", "independent-command",
+                    true, false, "show-inspection",
+                    "surface-user-admin-user-detail", List.of())),
+                "Surface-only member disable must be denied.")));
+    assertTrue(userAdminDisable.reasonCode().contains("CHAT_TOOL_OUT_OF_WORKSTREAM_CATALOG"),
+        "User Admin disable-member must be out-of-catalog: " + userAdminDisable.reasonCode());
+
+    // User Admin surface-only open-form: membership-status-confirmation open is surface-only and not in the chat catalog
+    var userAdminStatusForm = assertThrows(AuthorizationException.class, () ->
+        service.createChatToolPlanProposal(identity(), "membership-admin",
+            new WorkstreamService.ChatToolPlanProposalRequest(
+                "membership-admin", "user-admin-agent",
+                "open membership status confirmation for member@example.test",
+                "corr-regression-user-admin-status-form", "idem-regression-user-admin-status-form",
+                null,
+                "Surface-only status confirmation open form is not in the chat catalog.",
+                List.of(new WorkstreamService.ChatToolPlanStep(
+                    "step-open-status-form", 1, "Open membership status form",
+                    "action-open-useradmin-membership-status-confirmation",
+                    "action-open-useradmin-membership-status-confirmation",
+                    "update-member-status", "user_admin.update_member_status",
+                    null,
+                    Map.of("accountId", "member@example.test", "membershipId", "membership-member"),
+                    List.of(), Map.of(),
+                    null, "independent-read",
+                    true, false, "create-form",
+                    "surface-user-admin-membership-status-confirmation", List.of())),
+                "Surface-only open-form action must be denied.")));
+    assertTrue(userAdminStatusForm.reasonCode().contains("CHAT_TOOL_OUT_OF_WORKSTREAM_CATALOG"),
+        "User Admin open-status-form must be out-of-catalog: " + userAdminStatusForm.reasonCode());
+
+    // Agent Admin blocked: agent lifecycle activation is not in the chat catalog
+    var agentAdminActivation = assertThrows(AuthorizationException.class, () ->
+        service.createChatToolPlanProposal(identity(), "membership-admin",
+            new WorkstreamService.ChatToolPlanProposalRequest(
+                "membership-admin", "agent-admin-agent",
+                "activate the user-admin-agent managed agent",
+                "corr-regression-agent-admin-activate", "idem-regression-agent-admin-activate",
+                null,
+                "Blocked agent lifecycle activation is not in the chat catalog.",
+                List.of(new WorkstreamService.ChatToolPlanStep(
+                    "step-agent-activate", 1, "Activate user-admin-agent lifecycle",
+                    "action-agent-activation-confirm", "agent-admin.activate-agent",
+                    "agent_admin.activate_agent", "agent_admin.activate_agent",
+                    "schema.agent-admin.activation-confirm.v1",
+                    Map.of("agentDefinitionId", "user-admin-agent", "acknowledgement", "ACTIVATE"),
+                    List.of(), Map.of(),
+                    "idem-regression-activate-agent-step", "independent-command",
+                    true, false, "decision-card",
+                    "surface-agent-admin-activation-confirmation", List.of())),
+                "Blocked agent activation must be denied.")));
+    assertTrue(agentAdminActivation.reasonCode().contains("CHAT_TOOL_OUT_OF_WORKSTREAM_CATALOG"),
+        "Agent Admin activation must be out-of-catalog: " + agentAdminActivation.reasonCode());
+
+    // Audit/Trace approval-gated: summary task start is not in the chat catalog
+    var auditTraceSummaryStart = assertThrows(AuthorizationException.class, () ->
+        service.createChatToolPlanProposal(identity(), "membership-admin",
+            new WorkstreamService.ChatToolPlanProposalRequest(
+                "membership-admin", "audit-trace-agent",
+                "start audit trace summary task for this trace",
+                "corr-regression-audit-summary-start", "idem-regression-audit-summary-start",
+                null,
+                "Approval-gated audit summary start is not in the chat catalog.",
+                List.of(new WorkstreamService.ChatToolPlanStep(
+                    "step-audit-summary-start", 1, "Start audit trace summary task",
+                    "action-audit-trace-start-summary-task", "action-audit-trace-start-summary-task",
+                    "start-audit-summary-task", "audit.trace.summary.start",
+                    "schema.audit-trace.summary-start.v1",
+                    Map.of("scope", "tenant-1"),
+                    List.of(), Map.of(),
+                    "idem-regression-audit-summary-start-step", "independent-command",
+                    true, false, "workflow-status",
+                    "surface-audit-trace-summary-progress", List.of())),
+                "Approval-gated audit summary start must be denied.")));
+    assertTrue(auditTraceSummaryStart.reasonCode().contains("CHAT_TOOL_OUT_OF_WORKSTREAM_CATALOG"),
+        "Audit/Trace summary start must be out-of-catalog: " + auditTraceSummaryStart.reasonCode());
+
+    // Governance/Policy blocked: policy activation is not in the chat catalog
+    var governanceActivate = assertThrows(AuthorizationException.class, () ->
+        service.createChatToolPlanProposal(identity(), "membership-admin",
+            new WorkstreamService.ChatToolPlanProposalRequest(
+                "membership-admin", "governance-policy-agent",
+                "activate this governance policy proposal now",
+                "corr-regression-governance-activate", "idem-regression-governance-activate",
+                null,
+                "Blocked governance policy activation is not in the chat catalog.",
+                List.of(new WorkstreamService.ChatToolPlanStep(
+                    "step-governance-activate", 1, "Activate governance policy",
+                    "action-governance-policy-activate", "action-governance-policy-activate",
+                    "activate-governance-policy", "governance.policy.activate",
+                    "schema.governance-policy.activation.v1",
+                    Map.of("proposalId", "proposal-123", "acknowledgement", "ACTIVATE"),
+                    List.of(), Map.of(),
+                    "idem-regression-governance-activate-step", "independent-command",
+                    true, false, "decision-card",
+                    "surface-governance-policy-activation", List.of())),
+                "Blocked governance policy activation must be denied.")));
+    assertTrue(governanceActivate.reasonCode().contains("CHAT_TOOL_OUT_OF_WORKSTREAM_CATALOG"),
+        "Governance/Policy activation must be out-of-catalog: " + governanceActivate.reasonCode());
+  }
+
+  @Test
+  void expandedCatalogCapabilityDenialBlocksChatPlanProposalForRestrictedWorkstreams() {
+    // Member (TENANT_EMPLOYEE) cannot create audit trace search chat plans — no AUDITOR capability
+    var auditTraceCapabilityDenied = assertThrows(AuthorizationException.class, () ->
+        service.createChatToolPlanProposal(memberIdentity(), "membership-member",
+            new WorkstreamService.ChatToolPlanProposalRequest(
+                "membership-member", "audit-trace-agent",
+                "search audit traces for failed provider events",
+                "corr-regression-member-audit", "idem-regression-member-audit",
+                null,
+                "Member without AUDITOR capability cannot create audit trace chat plans.",
+                List.of(new WorkstreamService.ChatToolPlanStep(
+                    "step-audit-search", 1, "Search audit traces for failed provider events",
+                    "action-audit-trace-search", "action-audit-trace-search",
+                    "search-audit-traces", "audit.trace.search",
+                    "schema.audit-trace.search.v1",
+                    Map.of("filter", "failed_provider"),
+                    List.of(), Map.of(),
+                    null, "independent-read", true, false,
+                    null, "surface-audit-trace-search", List.of())),
+                "Member without AUDITOR capability must be denied.")));
+    assertTrue(
+        List.of("CHAT_TOOL_CAPABILITY_FORBIDDEN", "FUNCTIONAL_AGENT_FORBIDDEN")
+            .stream().anyMatch(auditTraceCapabilityDenied.reasonCode()::contains),
+        "Member audit trace plan must be denied by capability or agent visibility: " + auditTraceCapabilityDenied.reasonCode());
+
+    // Member (TENANT_EMPLOYEE) cannot create user admin invitation chat plans — no invite capability
+    var userAdminCapabilityDenied = assertThrows(AuthorizationException.class, () ->
+        service.createChatToolPlanProposal(memberIdentity(), "membership-member",
+            new WorkstreamService.ChatToolPlanProposalRequest(
+                "membership-member", "user-admin-agent",
+                "invite user.chat@example.test as tenant employee",
+                "corr-regression-member-user-admin", "idem-regression-member-user-admin",
+                null,
+                "Member without TENANT_ADMIN capability cannot create user admin invitation chat plans.",
+                List.of(new WorkstreamService.ChatToolPlanStep(
+                    "step-invite-member", 1, "Invite user.chat@example.test as tenant employee",
+                    "action-submit-user-admin-invitation", "action-submit-user-admin-invitation",
+                    "create-or-resend-invitation", "user_admin.invite_user",
+                    "schema.user-admin.invitation-create.submit.v1",
+                    Map.of("email", "user.chat@example.test", "displayName", "User Chat", "roles", List.of("TENANT_EMPLOYEE"), "reason", "regression test"),
+                    List.of(), Map.of(),
+                    "idem-regression-member-invite-step", "independent-command",
+                    true, false, "show-inspection",
+                    "surface-user-admin-invitation-detail", List.of())),
+                "Member without invite capability must be denied.")));
+    assertTrue(
+        List.of("CHAT_TOOL_CAPABILITY_FORBIDDEN", "FUNCTIONAL_AGENT_FORBIDDEN")
+            .stream().anyMatch(userAdminCapabilityDenied.reasonCode()::contains),
+        "Member user admin invitation plan must be denied by capability or agent visibility: " + userAdminCapabilityDenied.reasonCode());
+
+    // Member (TENANT_EMPLOYEE) cannot create governance policy read chat plans — no governance capability
+    var governanceCapabilityDenied = assertThrows(AuthorizationException.class, () ->
+        service.createChatToolPlanProposal(memberIdentity(), "membership-member",
+            new WorkstreamService.ChatToolPlanProposalRequest(
+                "membership-member", "governance-policy-agent",
+                "list governance policies",
+                "corr-regression-member-governance", "idem-regression-member-governance",
+                null,
+                "Member without governance capability cannot create governance policy chat plans.",
+                List.of(new WorkstreamService.ChatToolPlanStep(
+                    "step-governance-list", 1, "List governance policies",
+                    "action-governance-policy-list", "action-governance-policy-list",
+                    "governance.policy.read", "governance.policy.read",
+                    "schema.governance-policy.inventory.v1",
+                    Map.of("filter", "all"),
+                    List.of(), Map.of(),
+                    null, "independent-read", true, false,
+                    null, "surface-governance-policy-inventory", List.of())),
+                "Member without governance capability must be denied.")));
+    assertTrue(List.of("CHAT_TOOL_CAPABILITY_FORBIDDEN", "FUNCTIONAL_AGENT_FORBIDDEN").stream()
+            .anyMatch(governanceCapabilityDenied.reasonCode()::contains),
+        "Member governance policy plan must be denied by capability or agent visibility: " + governanceCapabilityDenied.reasonCode());
+  }
+
+  @Test
+  void expandedCatalogIdempotentReplayProducesNoExtraStateChangesForExpandedPaths() {
+    // My Account settings update: confirm changes theme; exact replay with same idempotency key returns same surface
+    assertEquals(UserSettings.ThemeId.AURORA_LIGHT, identityRepository.settings("admin@example.test").themeId());
+    var myAccountProposal = submitRepresentativePlan(
+        identity(), "membership-admin", "my-account-agent",
+        "change my theme to Obsidian Dark",
+        "idem-regression-idempotency-settings",
+        List.of(runtimeStep("step-update-my-settings", 1,
+            "action-update-my-settings", "action-update-my-settings",
+            "my_account.update_profile_settings", "my_account.update_profile_settings",
+            "schema.my-account.settings.update.v1", false)));
+    var proposal = (WorkstreamService.ChatToolPlanProposal) myAccountProposal.surface().data().get("proposal");
+    var snapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) myAccountProposal.surface().data().get("confirmationSnapshot");
+    assertEquals(UserSettings.ThemeId.AURORA_LIGHT, identityRepository.settings("admin@example.test").themeId(),
+        "My Account proposal must not mutate settings before confirmation.");
+    assertEquals(true, myAccountProposal.surface().data().get("noMutation"),
+        "Proposal surface must carry noMutation=true.");
+    assertEquals(true, myAccountProposal.surface().data().get("noDirectMutation"));
+    assertBrowserPayloadSafe(myAccountProposal.surface());
+
+    var confirm1 = service.confirmChatToolPlan(identity(), "membership-admin",
+        new WorkstreamService.ChatToolPlanConfirmationRequest(
+            "membership-admin", proposal.planId(), proposal.planSnapshotId(),
+            "CONFIRM " + proposal.planSnapshotId(), snapshot.stepHashes(),
+            "idem-regression-idempotency-settings-confirm",
+            "corr-regression-idempotency-settings-confirm"));
+    var result1 = (WorkstreamService.ChatToolPlanExecutionResult) confirm1.surface().data().get("result");
+    assertEquals("completed", result1.status(), result1.toString());
+    assertEquals(UserSettings.ThemeId.OBSIDIAN_DARK, identityRepository.settings("admin@example.test").themeId());
+    assertFalse(confirm1.surface().traceIds().isEmpty(), "Confirmed plan must record trace IDs.");
+    assertTrue(confirm1.surface().traceIds().stream().anyMatch(trace -> trace.contains("trace-human-chat-tool-plan-confirmed")),
+        "Confirmed plan trace must include the confirmation trace ref.");
+    assertTrue(result1.traceIds().stream().anyMatch(trace -> trace.contains("trace-human-chat-tool-plan-step-started")),
+        "Completed steps must carry step-started trace refs.");
+    assertBrowserPayloadSafe(confirm1.surface());
+
+    // Replay with same idempotency key must return the same result surface without re-applying the change
+    var replay = service.confirmChatToolPlan(identity(), "membership-admin",
+        new WorkstreamService.ChatToolPlanConfirmationRequest(
+            "membership-admin", proposal.planId(), proposal.planSnapshotId(),
+            "CONFIRM " + proposal.planSnapshotId(), snapshot.stepHashes(),
+            "idem-regression-idempotency-settings-confirm",
+            "corr-regression-idempotency-settings-replay"));
+    assertEquals(confirm1.surface().surfaceId(), replay.surface().surfaceId(),
+        "Idempotent replay must return the same result surface without re-executing.");
+    assertEquals(UserSettings.ThemeId.OBSIDIAN_DARK, identityRepository.settings("admin@example.test").themeId(),
+        "Settings must remain unchanged and not be reverted after idempotent replay.");
+    assertFalse(replay.surface().traceIds().isEmpty(), "Replayed result must still carry trace IDs.");
+    assertBrowserPayloadSafe(replay.surface());
+  }
 }
