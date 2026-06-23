@@ -269,7 +269,7 @@
 
 ### TASK-FSFR-07-001: Repair runtime seam and autonomous fail-closed tests
 
-- status: pending
+- status: done
 - source: specs/full-suite-failure-remediation/failure-inventory.md after TASK-FSFR-01-001
 - task brief: specs/full-suite-failure-remediation/tasks/07-runtime-seams/01-repair-runtime-seam-and-autonomous-fail-closed-tests.md
 - depends on:
@@ -297,6 +297,9 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: runtime seam/autonomous fail-closed/browser runtime harness repair; no fake readiness allowed
+  - completed 2026-06-23: tightened the WorkstreamRuntimeAgent source-seam regression to detect fake runtime class names without treating fail-closed `noFakeSuccess` fields as fake runtime evidence; made Audit/Trace summary task start return a browser-safe `blocked_provider_or_runtime` surface when the durable task repository is unbound instead of surfacing infrastructure exceptions; converted My Account unsupported direct-action fields into validation-error result surfaces through the protected action path.
+  - validation: `mvn -Dtest=WorkstreamServiceTest#starterSourceContainsConcreteAkkaWorkstreamRuntimeAgentAndInvokerSeam+auditTraceSummaryWorkerFailsClosedUntilRealAutonomousRuntimeExists test` passed; `mvn -Dtest=MyAccountBrowserWorkstreamSmokeTest#protectedWorkstreamApiExercisesMyProfileRuntimePathAndDenials+protectedWorkstreamApiExercisesMySettingsRuntimePath test` passed; combined targeted command for both classes passed; `git diff --check` passed.
+  - commit message: `full-suite-remediation: repair runtime seam fail closed`
 
 ### TASK-FSFR-08-001: Repair remaining browser smoke failures
 

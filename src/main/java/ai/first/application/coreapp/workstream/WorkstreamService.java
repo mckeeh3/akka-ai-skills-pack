@@ -553,7 +553,11 @@ public final class WorkstreamService {
     if (actionIdempotencyKey != null && idempotentActionResults.containsKey(actionIdempotencyKey)) return idempotentActionResults.get(actionIdempotencyKey);
     if (action.disabled() != null) return new CapabilityActionResult("denied", action.disabled().message(), request.correlationId(), List.of("trace-denied-" + action.actionId()), surfaceForAction(actor, request.actionId(), request.correlationId()));
     if ("action-update-my-settings".equals(request.actionId()) || "action-update-my-profile".equals(request.actionId())) {
-      validateMyAccountDirectActionInput(request);
+      try {
+        validateMyAccountDirectActionInput(request);
+      } catch (AuthorizationException denied) {
+        return myAccountSystemMessageResult(actor, request.actionId(), denied.reasonCode(), request.correlationId());
+      }
     }
     if ("action-open-user-admin-support-access-grant".equals(request.actionId())) {
       userForTaskSurface(actor, request.input());

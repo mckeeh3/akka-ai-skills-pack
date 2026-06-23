@@ -8,6 +8,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import ai.first.application.foundation.attention.AttentionProducerService;
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
@@ -55,11 +56,7 @@ public final class AuditTraceSummaryService {
     if (command == null) throw new AuthorizationException(400, "audit-summary-command-required");
     if (blank(command.idempotencyKey())) throw new AuthorizationException(400, "idempotency-key-required");
     require(actor, START_CAPABILITY, correlationId, "audit.trace.summaryProgress.v1");
-    var duplicate = repository.findByIdempotencyKey(actor.selectedContext().tenantId(), actor.account().accountId(), command.idempotencyKey());
-    if (duplicate.isPresent()) {
-      authContextResolver.appendProtectedReadTrace(actor, START_CAPABILITY, "idempotent-audit-trace-summary-replay", correlationId);
-      return duplicate.orElseThrow();
-    }
+    Optional<AuditTraceSummaryTask> duplicate;
     var now = Instant.now(clock);
     var windowEnd = command.windowEnd() == null ? now : command.windowEnd();
     var windowStart = command.windowStart() == null ? windowEnd.minus(Duration.ofDays(7)) : command.windowStart();
@@ -68,6 +65,16 @@ public final class AuditTraceSummaryService {
     var categories = normalizedCategories(command.evidenceCategories());
     var taskId = "audit-summary-" + stableSuffix(actor.selectedContext().tenantId() + ":" + actor.account().accountId() + ":" + command.idempotencyKey());
     var traceId = "trace-audit-trace-summary-start-" + stableSuffix(correlationId + ":" + taskId);
+    try {
+      duplicate = repository.findByIdempotencyKey(actor.selectedContext().tenantId(), actor.account().accountId(), command.idempotencyKey());
+    } catch (RuntimeException unavailable) {
+      if (!isRepositoryUnavailable(unavailable)) throw unavailable;
+      return repositoryUnavailableTask(actor, command, windowStart, windowEnd, categories, taskId, traceId, now, correlationId, unavailable);
+    }
+    if (duplicate.isPresent()) {
+      authContextResolver.appendProtectedReadTrace(actor, START_CAPABILITY, "idempotent-audit-trace-summary-replay", correlationId);
+      return duplicate.orElseThrow();
+    }
     var task = new AuditTraceSummaryTask(
         taskId,
         null,
@@ -91,7 +98,12 @@ public final class AuditTraceSummaryService {
         List.of(traceId),
         now,
         now);
-    repository.save(task);
+    try {
+      repository.save(task);
+    } catch (RuntimeException unavailable) {
+      if (!isRepositoryUnavailable(unavailable)) throw unavailable;
+      return repositoryUnavailableTask(actor, command, windowStart, windowEnd, categories, taskId, traceId, now, correlationId, unavailable);
+    }
     var start = autonomousAgentRuntime.start(actor, task, correlationId);
     var startTraceIds = new java.util.ArrayList<>(task.traceIds());
     startTraceIds.addAll(start.traceIds());
@@ -207,6 +219,57 @@ public final class AuditTraceSummaryService {
       throw new AuthorizationException(403, "missing-capability:" + acceptedCapabilityIds.get(0));
     }
     authContextResolver.appendProtectedReadTrace(actor, traceCapabilityId, surfaceContract, correlationId);
+  }
+
+  private AuditTraceSummaryTask repositoryUnavailableTask(
+      AuthContextResolver.ResolvedMe actor,
+      StartAuditTraceSummaryCommand command,
+      Instant windowStart,
+      Instant windowEnd,
+      List<String> categories,
+      String taskId,
+      String startTraceId,
+      Instant now,
+      String correlationId,
+      RuntimeException unavailable) {
+    var traceId = "trace-audit-trace-summary-repository-unbound-" + stableSuffix(taskId + ":" + correlationId);
+    var blocked = new AuditTraceSummaryTask(
+        taskId,
+        null,
+        actor.selectedContext().tenantId(),
+        actor.selectedContext().customerId(),
+        actor.selectedContext().membershipId(),
+        actor.account().accountId(),
+        actor.selectedContext().membershipId(),
+        command.idempotencyKey(),
+        windowStart,
+        windowEnd,
+        categories,
+        AuditTraceSummaryTask.Status.BLOCKED_PROVIDER_OR_RUNTIME,
+        0,
+        "Audit/Trace summary AutonomousAgent task failed closed because the durable Akka task repository is not bound; no deterministic, cached, fake, or model-less audit summary success was returned. " + safe(unavailable.getMessage()),
+        "repository_unbound",
+        null,
+        null,
+        evidenceRefs(categories),
+        List.of(),
+        List.of(startTraceId, traceId),
+        now,
+        now);
+    authContextResolver.appendProtectedReadTrace(actor, START_CAPABILITY, "provider-blocked-fail-closed:repository-unbound:no fake success", correlationId);
+    publishLifecycleOrAttention(blocked, "blocked_provider_or_runtime", START_CAPABILITY, actor.account().accountId(), correlationId);
+    return blocked;
+  }
+
+  private static boolean isRepositoryUnavailable(RuntimeException failure) {
+    var message = failure.getMessage();
+    return message != null && message.contains("AuditTraceSummaryTaskRepository unavailable");
+  }
+
+  private static String safe(String value) {
+    if (value == null || value.isBlank()) return "repository unavailable";
+    var redacted = value.replaceAll("(?i)(api[_-]?key|secret|token|credential)\\s*[:=]\\s*\\S+", "$1=[REDACTED]");
+    return redacted.length() <= 280 ? redacted : redacted.substring(0, 280);
   }
 
   private static List<String> normalizedCategories(List<String> requested) {

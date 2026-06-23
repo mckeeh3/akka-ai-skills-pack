@@ -105,6 +105,7 @@ class WorkstreamServiceTest {
     trackingRuntimeInvoker = new TrackingWorkstreamAgentRuntimeTestAdapter(agentRuntimeService);
     var workstreamLogRepository = new InMemoryTestWorkstreamLogRepository();
     var notificationService = new NotificationService(new InMemoryTestNotificationRepository(), resolver, Clock.systemUTC());
+    StarterSecurityComponents.bindTestIdentityRepository(identityRepository);
     service = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService, trackingRuntimeInvoker, workstreamLogRepository, new InMemoryTestAccessReviewTaskRepository(), new InMemoryTestAuditTraceRepository(agentRuntimeService, workstreamLogRepository), new InMemoryTestGovernancePolicyRepository(), attentionService, attentionProducerService, workstreamEventPublisher, eventRepository, new FailClosedAccessReviewAutonomousAgentRuntime(), notificationService);
 
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
@@ -235,7 +236,7 @@ class WorkstreamServiceTest {
     assertTrue(agentText.contains("import akka.javasdk.agent.Agent;"), "Workstream runtime must import the Akka Agent base class");
     assertTrue(agentText.contains("extends Agent"), "Workstream runtime must be a concrete Akka Agent component");
     assertTrue(agentText.contains("@Component"), "Workstream runtime must be discoverable as an Akka component");
-    assertFalse(agentText.matches("(?is).*class\\s+.*Fake.*"), "Production workstream agent must not be a fake runtime");
+    assertFalse(agentText.matches("(?is).*class\\s+[^\\s{]*Fake[^\\s{]*\\s*(?:extends|implements|\\{).*"), "Production workstream agent must not be a fake runtime");
 
     var serviceText = Files.readString(findSource("WorkstreamService.java"));
     assertTrue(serviceText.contains("WorkstreamAgentRuntimeInvoker"), "WorkstreamService must depend on the Akka Agent runtime invoker seam");
