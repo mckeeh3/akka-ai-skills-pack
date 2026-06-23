@@ -49,7 +49,7 @@
 
 ### TASK-FSFR-01-001: Reproduce and classify current full-suite failures
 
-- status: pending
+- status: done
 - source: specs/full-suite-failure-remediation/backlog/01-full-suite-failure-remediation-build-backlog.md
 - task brief: specs/full-suite-failure-remediation/tasks/01-baseline/01-reproduce-and-classify-full-suite-failures.md
 - depends on:
@@ -81,6 +81,9 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: docs/spec baseline only; no runtime feature repaired yet
+  - completed 2026-06-23: reproduced frontend/typecheck/backend checks and wrote `specs/full-suite-failure-remediation/failure-inventory.md`.
+  - validation: `npm --prefix frontend test -- --run` failed with 176 pass / 1 pre-existing surface intent routing contract failure; `npm --prefix frontend run typecheck` passed; `mvn test` failed with 431 tests, 16 failures, 4 errors, 2 skipped; `git diff --check` passed.
+  - commit message: `full-suite-remediation: reproduce full-suite failures`
 
 ### TASK-FSFR-02-001: Repair frontend surface intent routing contract failure
 
