@@ -79,6 +79,27 @@ Global invariants for every accepted entry: deterministic surface router runs fi
 - `app-description/domains/core-starter/workstreams/audit-trace/tools/governed-tools.md`
 - `app-description/domains/core-starter/workstreams/governance-policy/tools/governed-tools.md`
 
+## Seed traceability (TASK-WCTC-10-001)
+
+The following starter-v1 seed files were updated to describe expanded catalog guidance. All seed text uses negative assertions only ("cannot grant authority", "no active behavior change", "cannot activate") and does not grant authority or bypass confirmation/approval.
+
+| Seed file | Expanded catalog guidance added |
+|---|---|
+| `my-account-system.md` | Expanded confirmed chat tool execution boundary to list `action-update-my-profile`, notification lifecycle actions, and `action-notification-update-preferences` with self-scope-only invariant |
+| `my-account-starter-guidance.md` | Expanded catalog-tool-plan note to list all new executable paths with governed tools, capabilities, schemas, and self-scope invariants |
+| `my-account-starter-scope-reference.md` | Expanded confirmed chat tool plan reference to list all My Account expanded catalog entries by classification |
+| `agent-admin-system.md` | Expanded confirmed chat tool execution boundary to describe approval-gated, simulation/test, and submit-review proposal-only paths with authority-denial invariants |
+| `agent-admin-starter-guidance.md` | Expanded catalog-tool-plan note to list all three Agent Admin catalog categories with no-authority and no-activation invariants |
+| `agent-admin-starter-scope-reference.md` | Expanded confirmed chat tool plan reference to list simulation/test and submit-review proposal-only paths by classification |
+| `audit-trace-system.md` | Expanded confirmed chat tool execution boundary to list expanded read paths (`search`, `detail`, `timeline`, `failure-evidence`, `investigation-guide`) as chat-executable-now and state export is not in catalog |
+| `audit-trace-starter-guidance.md` | Expanded catalog-tool-plan note to list both read and append categories with redaction and export-denial invariants |
+| `audit-trace-starter-scope-reference.md` | Expanded confirmed chat tool plan reference to list both classification categories with hidden-enumeration and export-authority-denial invariants |
+| `governance-policy-system.md` | Expanded confirmed chat tool execution boundary to list `list`/`read` as chat-executable-now, proposal-only paths, and approval-gated `start-impact-analysis` |
+| `governance-policy-starter-guidance.md` | Expanded catalog-tool-plan note to list all three Governance/Policy catalog categories with no-approval and no-activation invariants |
+| `governance-policy-starter-scope-reference.md` | Expanded confirmed chat tool plan reference to list all three classification categories with scope, authority-denial, and protected-backend-action invariants |
+
+Test added: `AgentBehaviorSeedLoaderTest#expandedCatalogSeedGuidanceDescribesNewPathsWithoutAuthorityGrant` — verifies expanded catalog markers present and no unsafe mutation claims in any of the four workstream seed bundles.
+
 ## Follow-up validation expected in later tasks
 
 Later implementation and regression tasks must add backend/API/frontend evidence for no mutation before confirmation, exact confirmation, out-of-catalog denial, selected-context/capability denial, idempotency, approval-gated behavior, partial failure/recovery, provider fail-closed behavior, redaction/secret boundaries, and durable audit/work traces across the expanded catalog.

@@ -11,4 +11,9 @@ Use this skill to answer My Account questions in the five core workstream starte
 - Include trace or correlation ids when available.
 - Do not expose raw JWTs, provider credentials, invitation tokens, hiddenPromptText, providerSecret, cross-tenant data, hidden workstreams, or hidden capabilities.
 
-Confirmed chat tool plan note: explain that deterministic surface routing opens or prefills My Account surfaces first with no mutation. The representative `human_chat_tool_plan` path may only propose `action-update-my-settings` with governed tool/capability `my_account.update_profile_settings`, schema `schema.my-account.settings.update.v1`, and a backend-valid `preferredThemeId` such as `obsidian-dark`; execution requires exact snapshot confirmation, selected AuthContext authorization, idempotency, and trace capture.
+Confirmed chat tool plan note: explain that deterministic surface routing opens or prefills My Account surfaces first with no mutation. The `human_chat_tool_plan` catalog now covers multiple bounded paths, all requiring exact snapshot confirmation, selected AuthContext authorization (self-scope only), idempotency, and trace capture before any side effect occurs:
+- `action-update-my-settings` / `my_account.update_profile_settings` / `schema.my-account.settings.update.v1` — change own theme, timezone, or display preferences;
+- `action-update-my-profile` / `my_account.update_profile_settings` / `schema.my-account.profile.update.v1` — update own display name or profile fields;
+- `action-notification-mark-read`, `action-notification-dismiss`, `action-notification-archive`, `action-notification-snooze` / notification governed tools / `notification.manage_own_state` — lifecycle changes for own visible notifications only, no source task mutation;
+- `action-notification-update-preferences` / `notification.update_preferences` / `notification.update_own_preferences` — update own in-app notification category preferences.
+All expanded catalog actions are self-scoped; role, membership, cross-account, or cross-tenant mutation is not permitted through any of these paths. Blocked or unsupported fields must be denied with a safe system message.

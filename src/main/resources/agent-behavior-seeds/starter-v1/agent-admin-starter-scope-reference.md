@@ -25,4 +25,10 @@ Deferred to later full-core follow-up:
 
 Security boundary: provider secrets and raw model credentials must never appear in prompt text, traces, frontend payloads, starter core templates, or agentAdminEvidence.read output.
 
-Confirmed chat tool plan reference: Agent Admin now has a representative chat plan path for `action-agent-prompt-risk-review-start` / `agent_admin.start_behavior_review_task` / `schema.agent-admin.prompt-risk-review.start.v1`. The path remains approval-gated after exact plan snapshot confirmation and cannot change, approve, activate, roll back, or reseed behavior artifacts by itself.
+Confirmed chat tool plan reference: Agent Admin now has an expanded chat plan catalog with three classification categories:
+
+- Approval-gated: `action-agent-prompt-risk-review-start` / `agent_admin.start_behavior_review_task` / `schema.agent-admin.prompt-risk-review.start.v1`. Exact plan snapshot confirmation leaves the step approval-gated; it cannot change, approve, activate, roll back, or reseed behavior artifacts.
+
+- Chat-proposal-only simulation and test (no side effects): `action-agent-detail-run-test`, `action-agent-prompt-governance-simulate`, `action-agent-skill-manifest-simulate`, `action-agent-tool-boundary-simulate`, `action-agent-model-refs-run-test`. Provider missing returns a blocked result; no fake successful normal output is produced. No activation-without-approval guardrail applies to all paths.
+
+- Chat-proposal-only submit-review (no authority): `action-agent-prompt-governance-submit-review`, `action-agent-skill-manifest-submit-review`, `action-agent-tool-boundary-submit-review`, `action-agent-model-refs-submit-review`, `action-propose-prompt-diff`, `action-submit-behavior-change`, `action-agent-behavior-proposal-submit`. Text in proposal input cannot grant authority; visible agent definition must exist; no active behavior change until a separate approval and activation command completes.

@@ -148,6 +148,50 @@ class AgentBehaviorSeedLoaderTest {
     }
   }
 
+  @Test
+  void expandedCatalogSeedGuidanceDescribesNewPathsWithoutAuthorityGrant() {
+    loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-1");
+
+    // My Account: expanded profile and notification paths must be described
+    var myAccountCombined = combinedSeedMaterial(AgentBehaviorSeedLoader.MY_ACCOUNT_AGENT_ID);
+    assertTrue(myAccountCombined.contains("action-update-my-profile"), "my-account seed missing action-update-my-profile");
+    assertTrue(myAccountCombined.contains("schema.my-account.profile.update.v1"), "my-account seed missing profile update schema");
+    assertTrue(myAccountCombined.contains("action-notification-mark-read"), "my-account seed missing action-notification-mark-read");
+    assertTrue(myAccountCombined.contains("action-notification-update-preferences"), "my-account seed missing action-notification-update-preferences");
+    assertTrue(myAccountCombined.contains("notification.manage_own_state") || myAccountCombined.contains("notification.update_own_preferences"), "my-account seed missing notification capability ids");
+    assertFalse(myAccountCombined.toLowerCase().contains("unrestricted mutation authority"), "my-account seed must not claim unrestricted mutation authority");
+
+    // Agent Admin: expanded simulation, test, and submit-review proposal paths must be described
+    var agentAdminCombined = combinedSeedMaterial(AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID);
+    assertTrue(agentAdminCombined.contains("action-agent-prompt-governance-simulate"), "agent-admin seed missing simulation path");
+    assertTrue(agentAdminCombined.contains("action-agent-skill-manifest-simulate"), "agent-admin seed missing skill-manifest simulate path");
+    assertTrue(agentAdminCombined.contains("action-agent-prompt-governance-submit-review"), "agent-admin seed missing submit-review path");
+    assertTrue(agentAdminCombined.contains("action-propose-prompt-diff") || agentAdminCombined.contains("action-submit-behavior-change"), "agent-admin seed missing proposal path");
+    assertTrue(agentAdminCombined.toLowerCase().contains("cannot grant authority"), "agent-admin seed must state proposal text cannot grant authority");
+    assertTrue(agentAdminCombined.toLowerCase().contains("no active behavior change"), "agent-admin seed must state no active behavior change until approval");
+    assertFalse(agentAdminCombined.toLowerCase().contains("unrestricted mutation authority"), "agent-admin seed must not claim unrestricted mutation authority");
+
+    // Audit/Trace: expanded search, detail, timeline, failure-evidence, and guide paths must be described
+    var auditTraceCombined = combinedSeedMaterial(AgentBehaviorSeedLoader.AUDIT_TRACE_AGENT_ID);
+    assertTrue(auditTraceCombined.contains("action-audit-trace-search"), "audit-trace seed missing search path");
+    assertTrue(auditTraceCombined.contains("action-audit-trace-detail"), "audit-trace seed missing detail path");
+    assertTrue(auditTraceCombined.contains("action-audit-trace-timeline"), "audit-trace seed missing timeline path");
+    assertTrue(auditTraceCombined.contains("action-audit-trace-failure-evidence"), "audit-trace seed missing failure-evidence path");
+    assertTrue(auditTraceCombined.contains("action-audit-trace-investigation-guide"), "audit-trace seed missing investigation-guide path");
+    assertTrue(auditTraceCombined.toLowerCase().contains("not in the chat tool catalog") || auditTraceCombined.toLowerCase().contains("cannot be executed through chat"), "audit-trace seed must state export is not in chat catalog");
+    assertFalse(auditTraceCombined.toLowerCase().contains("unrestricted mutation authority"), "audit-trace seed must not claim unrestricted mutation authority");
+
+    // Governance/Policy: expanded list/read executable paths and proposal paths must be described
+    var govPolicyCombined = combinedSeedMaterial(AgentBehaviorSeedLoader.GOVERNANCE_POLICY_AGENT_ID);
+    assertTrue(govPolicyCombined.contains("action-governance-policy-list"), "governance-policy seed missing list path");
+    assertTrue(govPolicyCombined.contains("action-governance-policy-read"), "governance-policy seed missing read path");
+    assertTrue(govPolicyCombined.contains("action-governance-policy-submit-proposal"), "governance-policy seed missing submit-proposal path");
+    assertTrue(govPolicyCombined.contains("action-governance-policy-simulate"), "governance-policy seed missing simulate path");
+    assertTrue(govPolicyCombined.contains("action-governance-policy-start-impact-analysis"), "governance-policy seed missing start-impact-analysis path");
+    assertTrue(govPolicyCombined.toLowerCase().contains("cannot approve") || govPolicyCombined.toLowerCase().contains("cannot activate"), "governance-policy seed must state chat cannot approve or activate policy");
+    assertFalse(govPolicyCombined.toLowerCase().contains("unrestricted mutation authority"), "governance-policy seed must not claim unrestricted mutation authority");
+  }
+
   private String combinedSeedMaterial(String agentId) {
     var agent = repository.agentDefinition("tenant-1", agentId).orElseThrow();
     var prompt = repository.promptDocument("tenant-1", agent.promptDocumentId()).orElseThrow().contentBody();

@@ -421,7 +421,7 @@
 
 ### TASK-WCTC-10-001: Update expanded catalog seeds and traceability
 
-- status: pending
+- status: done
 - source: specs/workstream-chat-tool-catalog-expansion/backlog/01-chat-tool-catalog-expansion-build-backlog.md
 - task brief: specs/workstream-chat-tool-catalog-expansion/tasks/10-seeds-traceability/01-update-expanded-catalog-seeds-and-traceability.md
 - depends on:
@@ -456,6 +456,13 @@
   - changes and queue update are committed
 - notes:
   - vertical contract: managed-agent seed/traceability update; no new runtime behavior beyond prior tasks
+  - updated seed prompt/skill/reference files for My Account, Agent Admin, Audit/Trace, and Governance/Policy to describe expanded catalog classifications; all expansions use negative-authority assertions only ("cannot grant authority", "no active behavior change", "cannot activate")
+  - `manifest.properties` not modified: it only tracks user-admin seed checksums which were not changed; no checksum entries exist for the four updated workstream agent seed files
+  - traceability section added to `specs/workstream-chat-tool-catalog-expansion/catalog-coverage-map.md`
+  - new test `AgentBehaviorSeedLoaderTest#expandedCatalogSeedGuidanceDescribesNewPathsWithoutAuthorityGrant` verifies expanded catalog markers and absence of unsafe phrases; all 9 seed loader tests pass
+  - required checks passed: `git diff --check` (clean); `mvn -Dtest=ai.first.application.foundation.agent.AgentBehaviorSeedLoaderTest test` (9/9 pass); targeted search confirmed no seed file contains unrestricted mutation authority or bypass phrases
+  - static frontend build assets in `src/main/resources/static-resources/**` were pre-existing dirty from earlier tasks and were not touched
+  - commit message: `workstream-chat-catalog: update seeds traceability`
 
 ### TASK-WCTC-11-001: Add expanded catalog regression tests
 
