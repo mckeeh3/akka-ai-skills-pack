@@ -2,6 +2,7 @@ import type { WorkstreamItem as WorkstreamItemContract } from '../types';
 import { ActionFeedbackItem } from './ActionFeedbackItem';
 import { StreamStatusItem } from './StreamStatusItem';
 import { TraceLinkList } from './TraceLinkList';
+import { hasWorkstreamText, renderWorkstreamText } from './renderWorkstreamText';
 
 type WorkstreamItemCardProps = {
   item: WorkstreamItemContract;
@@ -9,13 +10,16 @@ type WorkstreamItemCardProps = {
 };
 
 export function WorkstreamItemCard({ item, onOpenSurface }: WorkstreamItemCardProps) {
+  const title = renderWorkstreamText(item.title);
+  const body = renderWorkstreamText(item.body);
+
   if (item.kind === 'user-request' || item.kind === 'user-message') {
     const isWorking = item.status === 'working';
     return (
       <div className="workstream-user-request-row">
         {isWorking && <span className="workstream-request-spinner" aria-label="Model-backed agent working" />}
         <article id={item.itemId} className="ds-card workstream-item user-request prompt-input-surface" tabIndex={-1} aria-label="Request received" aria-busy={isWorking || undefined}>
-          <p>{item.body ?? item.title ?? ''}</p>
+          <p>{body || title}</p>
         </article>
       </div>
     );
@@ -29,7 +33,7 @@ export function WorkstreamItemCard({ item, onOpenSurface }: WorkstreamItemCardPr
     const requestVariant = item.itemId.startsWith('surface-action-request-') ? 'action-request-surface' : 'surface-request-surface';
     return (
       <article id={item.itemId} className={`ds-card workstream-item surface-request request-surface ${requestVariant}`} tabIndex={-1} aria-label={requestVariant === 'action-request-surface' ? 'Action request received' : 'View request received'}>
-        <p>{item.title ?? ''}</p>
+        <p>{title}</p>
       </article>
     );
   }
@@ -41,8 +45,8 @@ export function WorkstreamItemCard({ item, onOpenSurface }: WorkstreamItemCardPr
   return (
     <article id={item.itemId} className={`ds-card workstream-item ${item.kind}`} aria-labelledby={`${item.itemId}-title`} tabIndex={-1}>
       <p className="eyebrow">{item.kind.replace(/-/g, ' ')}</p>
-      <h3 id={`${item.itemId}-title`}>{item.title ?? item.itemId}</h3>
-      {item.body && <p>{item.body}</p>}
+      <h3 id={`${item.itemId}-title`}>{title || item.itemId}</h3>
+      {hasWorkstreamText(item.body) && <p>{body}</p>}
       {item.status && <span className="status-pill info">{item.status.replace(/-/g, ' ')}</span>}
       {item.surfaceId && (
         <button type="button" className="link-button" onClick={() => onOpenSurface?.(item.surfaceId!)}>

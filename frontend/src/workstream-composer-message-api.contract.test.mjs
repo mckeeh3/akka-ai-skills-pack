@@ -135,7 +135,8 @@ test('successful prompt and model response surfaces render only prompt and respo
   assert.match(itemCard, /item\.kind === 'user-request' \|\| item\.kind === 'user-message'/);
   assert.match(itemCard, /prompt-input-surface/);
   assert.match(itemCard, /aria-label="Request received"/);
-  assert.match(itemCard, /\{item\.body \?\? item\.title \?\? ''\}/);
+  assert.match(itemCard, /renderWorkstreamText\(item\.body\)/);
+  assert.match(itemCard, /<p>\{body \|\| title\}<\/p>/);
   assert.match(itemCard, /return <ActionFeedbackItem/);
   assert.match(markdownSurface, /markdown-response-only/);
   assert.doesNotMatch(markdownSurface, /Trace links:|\/ui\?traceId=|surface-summary|SurfaceActionBar/);
@@ -156,7 +157,8 @@ test('surface and action request acknowledgement surfaces match compact request 
   assert.match(itemCard, /action-request-surface/);
   assert.match(itemCard, /View request received/);
   assert.match(itemCard, /Action request received/);
-  assert.match(itemCard, /<p>\{item\.title \?\? ''\}<\/p>/);
+  assert.match(itemCard, /renderWorkstreamText\(item\.title\)/);
+  assert.match(itemCard, /<p>\{title\}<\/p>/);
   assert.doesNotMatch(itemCard, /item\.body && item\.body !== item\.title/);
   assert.match(componentStyles, /\.workstream-item\.surface-request\.request-surface/);
   assert.match(componentStyles, /max-width: min\(46rem, 62%\)/);

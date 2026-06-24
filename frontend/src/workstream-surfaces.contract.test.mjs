@@ -8,6 +8,7 @@ const stream = read('./workstream/stream/WorkstreamStream.tsx');
 const item = read('./workstream/stream/WorkstreamItem.tsx');
 const feedback = read('./workstream/stream/ActionFeedbackItem.tsx');
 const traceLinks = read('./workstream/stream/TraceLinkList.tsx');
+const renderText = read('./workstream/stream/renderWorkstreamText.ts');
 const streamState = read('./workstream/stream/streamState.ts');
 const renderer = read('./workstream/surfaces/SurfaceRenderer.tsx');
 const actionBar = read('./workstream/surfaces/SurfaceActionBar.tsx');
@@ -112,6 +113,17 @@ test('system_message surfaces render provider-blocked recovery, trace links, and
   assert.match(item, /item\.kind === 'system_message'/);
   assert.match(surfaceStyles, /\.workstream-item\.system_message/);
   assert.match(surfaceStyles, /\.system-message-surface/);
+});
+
+test('workstream item text fields render object payloads as safe text instead of React object children', () => {
+  assert.match(renderText, /export function renderWorkstreamText\(value: unknown\): string/);
+  assert.match(renderText, /Object\.entries\(value as Record<string, unknown>\)/);
+  assert.match(item, /renderWorkstreamText\(item\.body\)/);
+  assert.match(item, /renderWorkstreamText\(item\.title\)/);
+  assert.match(feedback, /renderWorkstreamText\(item\.body\)/);
+  assert.match(stream, /WorkstreamItemCard/);
+  assert.doesNotMatch(item, /<p>\{item\.body/);
+  assert.doesNotMatch(feedback, /<p>\{item\.body/);
 });
 
 test('browser-safe redaction metadata renders as text instead of a React object child', () => {
