@@ -454,7 +454,7 @@
 
 ### AADE-09-001: Re-run full-stack closure verification
 
-- status: pending
+- status: done
 - source: terminal verification loop after `AADE-08-001`
 - task brief: `specs/agent-admin-doc-editing-realization/tasks/09-validation/01-reverify-fullstack-closure.md`
 - depends on: [AADE-08-001]
@@ -482,4 +482,9 @@
 - done criteria:
   - mini-project done state is either achieved and recorded closed, or remaining material gaps are converted into a further bounded follow-up loop
   - changes are committed
-- notes: []
+- notes:
+  - completed terminal verification pass; mini-project closed because full `mvn test`, frontend test/typecheck/build, evidence validators, and `git diff --check` passed.
+  - `AgentAdminBrowserWorkstreamSmokeTest` passed inside the full Maven suite, confirming the `AADE-08-001` full-suite/order-dependent empty filtered-row repair held.
+  - no further follow-up tasks were appended.
+  - verification notes: `specs/agent-admin-doc-editing-realization/verification-notes.md`
+  - commit message: `Close Agent Admin doc editing realization`
