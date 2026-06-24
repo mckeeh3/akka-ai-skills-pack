@@ -7,9 +7,9 @@ description: Add automatic expiry to Akka Java SDK KeyValueEntity code using exp
 
 Use this skill when a key value entity should expire automatically after a period without further writes.
 
-## Generated SaaS input contract
+## Compile contract gate
 
-Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
+Use this skill only for a compile-ready slice under `../docs/app-description-to-code-compile-contract.md`, except for explicitly scoped doc/example maintenance. Before changing generated runtime code, confirm the accepted graph names the responsible worker/harness/actor adapter from `../docs/app-worker-tool-model.md`, the governed-tool and capability contract from `../docs/capability-first-backend-architecture.md`, and this Akka component's role as implementation evidence. If AuthContext, tenant/customer scope, validation, idempotency, denial, audit/trace, side-effect, exposure, or test obligations are missing, repair the brief or block instead of guessing.
 
 ## Required reading
 
@@ -48,15 +48,9 @@ Use `KeyValueEntityTestKit` and assert:
 Repository example:
 - `DurableNotificationRepositoryEntityTest`
 
-## Generated SaaS checks
+## Generated SaaS compile review
 
-When this feature supports a generated SaaS capability, verify:
-- capability reason and target tenant/customer scope are explicit;
-- expired, stale, replicated, deleted, or notification-only states have safe denial/no-op behavior;
-- surface/API/tool/realtime consumers receive scoped, redacted DTOs only;
-- idempotency and retry behavior are tested;
-- audit/work-trace requirements are recorded or explicitly delegated to the caller capability.
-
+For generated SaaS runtime work, apply the canonical compile contract, worker/tool model, and capability-first backend docs rather than duplicating shared validation, scope, idempotency, audit, and exposure rules here. In this component-specific review, verify the Akka mechanics above preserve the accepted governed-tool context, caller/scope fields, idempotent or no-op behavior, denial/retry semantics, and required tests/traces for the selected exposure path.
 
 ## Anti-patterns
 

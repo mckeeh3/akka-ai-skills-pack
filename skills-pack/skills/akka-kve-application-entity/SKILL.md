@@ -9,6 +9,10 @@ Use this skill for the `application` package entity class itself.
 
 Use it after the entity's named capability contract is known: command/read purpose, AuthContext and tenant/customer scope, idempotency, audit/trace requirements, approval rules, and selected exposure surfaces.
 
+## Compile contract gate
+
+Use this skill only for a compile-ready slice under `../docs/app-description-to-code-compile-contract.md`, except for explicitly scoped doc/example maintenance. Before changing generated runtime code, confirm the accepted graph names the responsible worker/harness/actor adapter from `../docs/app-worker-tool-model.md`, the governed-tool and capability contract from `../docs/capability-first-backend-architecture.md`, and this Akka component's role as implementation evidence. If AuthContext, tenant/customer scope, validation, idempotency, denial, audit/trace, side-effect, exposure, or test obligations are missing, repair the brief or block instead of guessing.
+
 ## Required reading
 
 Read these first if present:

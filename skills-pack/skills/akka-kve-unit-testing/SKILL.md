@@ -7,9 +7,9 @@ description: Write unit tests for Akka Java SDK KeyValueEntity components using 
 
 Use this skill for unit tests of key value entities.
 
-## Generated SaaS input contract
+## Compile contract gate
 
-Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
+Use this skill only for a compile-ready slice under `../docs/app-description-to-code-compile-contract.md`, except for explicitly scoped doc/example maintenance. Before changing generated runtime code, confirm the accepted graph names the responsible worker/harness/actor adapter from `../docs/app-worker-tool-model.md`, the governed-tool and capability contract from `../docs/capability-first-backend-architecture.md`, and this Akka component's role as implementation evidence. If AuthContext, tenant/customer scope, validation, idempotency, denial, audit/trace, side-effect, exposure, or test obligations are missing, repair the brief or block instead of guessing.
 
 ## Required reading
 
@@ -71,16 +71,9 @@ Use these `KeyValueEntityTestKit` capabilities:
 - `DurableNotificationRepositoryEntityTest`
   - asserts `Optional.of(Duration.ofDays(30))` from `getExpireAfter()`
 
-## Generated SaaS test set
+## Generated SaaS compile review
 
-For generated SaaS entity work, derive tests from the capability contract, not only from entity mechanics:
-- authorized success with tenant/customer scoped identifiers or state;
-- validation failure and safe reply shape;
-- no-op/idempotent duplicate command behavior;
-- forbidden or cross-tenant attempts when the entity method is directly exposed or called by endpoints/tools/workflows;
-- audit/work-trace expectations for consequential commands, denials, and data access;
-- exposure parity for HTTP/gRPC/MCP/tool/surface flows when the entity backs those surfaces.
-
+For generated SaaS runtime work, apply the canonical compile contract, worker/tool model, and capability-first backend docs rather than duplicating shared validation, scope, idempotency, audit, and exposure rules here. In this component-specific review, verify the Akka mechanics above preserve the accepted governed-tool context, caller/scope fields, idempotent or no-op behavior, denial/retry semantics, and required tests/traces for the selected exposure path.
 
 ## Anti-patterns
 

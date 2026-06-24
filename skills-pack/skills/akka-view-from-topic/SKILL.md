@@ -9,9 +9,9 @@ Use this skill when the source of the view is a topic.
 
 Capability-first framing: use topic-backed Views for read/evidence capabilities built from event streams, external signals, trace enrichment, integration reports, or cross-service summaries. The View should curate and scope evidence for callers; side effects from topic messages belong in Consumers, not Views.
 
-## Generated SaaS input contract
+## Compile contract gate
 
-Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
+Use this skill only for a compile-ready slice under `../docs/app-description-to-code-compile-contract.md`, except for explicitly scoped doc/example maintenance. Before changing generated runtime code, confirm the accepted graph names the responsible worker/harness/actor adapter from `../docs/app-worker-tool-model.md`, the governed-tool and capability contract from `../docs/capability-first-backend-architecture.md`, and this Akka component's role as implementation evidence. If AuthContext, tenant/customer scope, validation, idempotency, denial, audit/trace, side-effect, exposure, or test obligations are missing, repair the brief or block instead of guessing.
 
 ## Required reading
 
@@ -45,15 +45,9 @@ For topic-backed view tests:
 - query the view through `componentClient.forView()`
 - assert eventual consistency with `Awaitility`
 
-## Generated SaaS view contract
+## Generated SaaS compile review
 
-For generated SaaS read/evidence capabilities, require:
-- tenant/customer scoped row keys and query filters aligned with the selected `AuthContext`;
-- redacted DTO rows for the chosen UI/API/MCP/agent-tool consumers, not raw state dumps;
-- stable surface payload or evidence-bundle mapping when used by structured surfaces;
-- data-access audit/work-trace requirements at the query or endpoint boundary;
-- tests for authorized query, forbidden/cross-tenant query, redaction, projection update/delete behavior, and surface/API/tool consumers where exposed.
-
+For generated SaaS runtime work, apply the canonical compile contract, worker/tool model, and capability-first backend docs rather than duplicating shared validation, scope, idempotency, audit, and exposure rules here. In this component-specific review, verify the Akka mechanics above preserve the accepted governed-tool context, caller/scope fields, idempotent or no-op behavior, denial/retry semantics, and required tests/traces for the selected exposure path.
 
 ## Review checklist
 
