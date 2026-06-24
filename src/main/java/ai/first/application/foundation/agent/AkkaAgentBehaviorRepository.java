@@ -14,6 +14,7 @@ import ai.first.domain.foundation.agent.ReferenceVersion;
 import ai.first.domain.foundation.agent.SkillDocument;
 import ai.first.domain.foundation.agent.SkillVersion;
 import ai.first.domain.foundation.agent.ToolPermissionBoundary;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,14 +58,23 @@ public final class AkkaAgentBehaviorRepository implements AgentBehaviorRepositor
 
   @Override
   public List<AgentDefinition> agentDefinitions(String tenantId) {
-    return componentClient
+    var definitions = new LinkedHashMap<String, AgentDefinition>();
+    componentClient
         .forView()
         .method(AgentDefinitionView::agentCatalog)
         .invoke(new AgentDefinitionView.AgentCatalogQuery(tenantId))
         .agents()
         .stream()
         .map(AkkaAgentBehaviorRepository::toAgentDefinition)
-        .toList();
+        .forEach(definition -> definitions.put(definition.agentDefinitionId(), definition));
+
+    // Agent Admin lists run immediately after starter behavior seeding during local/TestKit startup.
+    // The catalog view is eventually consistent, so merge the known starter agents from their
+    // authoritative event-sourced entities to make read-after-seed workstream smokes deterministic.
+    for (var agentId : AgentBehaviorSeedLoader.CORE_V0_AGENT_IDS) {
+      agentDefinition(tenantId, agentId).ifPresent(definition -> definitions.put(definition.agentDefinitionId(), definition));
+    }
+    return List.copyOf(definitions.values());
   }
 
   @Override

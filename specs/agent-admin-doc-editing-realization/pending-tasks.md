@@ -419,7 +419,7 @@
 
 ### AADE-08-001: Repair Agent Admin full-suite smoke isolation
 
-- status: pending
+- status: done
 - source: `AADE-07-001` terminal verification gap
 - task brief: `specs/agent-admin-doc-editing-realization/tasks/08-follow-up/01-repair-agent-admin-full-suite-isolation.md`
 - depends on: [AADE-07-001]
@@ -446,7 +446,11 @@
   - isolated and full-suite Agent Admin protected workstream smoke pass
   - SaaS-admin-only Agent Admin authorization and current doc-editing API coverage are preserved
   - changes and queue update are committed
-- notes: []
+- notes:
+  - completed in this commit with message: `Repair Agent Admin full-suite smoke isolation`
+  - Agent Admin catalog reads now merge starter core agent definitions from authoritative entities with the eventually consistent catalog view, making the `User Admin` filtered protected workstream smoke deterministic after full-suite/TestKit startup.
+  - verification passed for isolated `AgentAdminBrowserWorkstreamSmokeTest`, full `mvn test`, frontend tests/typecheck/build, and `git diff --check`.
+  - next runnable task after completion: `AADE-09-001` (`pending`, depends on `AADE-08-001`)
 
 ### AADE-09-001: Re-run full-stack closure verification
 
