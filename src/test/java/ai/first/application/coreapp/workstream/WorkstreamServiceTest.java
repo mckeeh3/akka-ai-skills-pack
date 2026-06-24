@@ -1242,108 +1242,74 @@ class WorkstreamServiceTest {
   }
 
   @Test
-  void agentAdminCatalogDetailAndArtifactReadsAreBackendAuthoritativeAndRedacted() {
-    var catalog = service.surface(identity(), "membership-admin", "surface-agent-admin-catalog", "corr-agent-catalog");
-    var detail = service.surface(identity(), "membership-admin", "surface-agent-admin-detail", "corr-agent-detail");
-    var prompt = service.surface(identity(), "membership-admin", "surface-agent-prompt-governance", "corr-agent-prompt");
-    var skill = service.surface(identity(), "membership-admin", "surface-agent-skill-version", "corr-agent-skill");
-    var manifest = service.surface(identity(), "membership-admin", "surface-agent-skill-manifest-diff", "corr-agent-manifest");
-    var boundary = service.surface(identity(), "membership-admin", "surface-agent-tool-boundary-diff", "corr-agent-boundary");
-    var model = service.surface(identity(), "membership-admin", "surface-agent-model-refs", "corr-agent-model");
-    var seed = service.surface(identity(), "membership-admin", "surface-agent-seed-material", "corr-agent-seed-read");
+  void saasOwnerAgentAdminDocEditingSurfacesAreBackendAuthoritativeAndBrowserSafe() {
+    var blank = service.surface(ownerIdentity(), "membership-owner", "surface-agent-admin-blank", "corr-agent-admin-blank-service");
+    assertEquals("surface-agent-admin-blank", blank.surfaceId());
+    assertEquals("agent_admin.blank.v1", blank.data().get("surfaceContract"));
+    assertTrue(blank.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-admin-show-dashboard")));
+    assertTrue(blank.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-admin-show-agents")));
 
-    assertEquals("agent_admin.catalog.v1", catalog.data().get("surfaceContract"));
-    assertEquals("agent-admin-agent", catalog.ownerFunctionalAgentId());
-    assertTrue(catalog.toString().contains("agent_admin.list_definitions"));
-    assertTrue(catalog.toString().contains("providerReadiness"));
-    assertTrue(catalog.toString().contains("seedMaterial"));
-    assertEquals("show-inspection", detail.surfaceType());
-    assertEquals("agent_admin.detail.v1", detail.data().get("surfaceContract"));
-    assertEquals("AgentDefinition", detail.data().get("recordKind"));
-    assertTrue(detail.toString().contains("detailSummary"));
-    assertTrue(detail.toString().contains("scopeSummary"));
-    assertTrue(detail.toString().contains("readinessNarrative"));
-    assertTrue(detail.toString().contains("behaviorArtifactCards"));
-    assertTrue(detail.toString().contains("taskEntryPoints"));
-    assertTrue(detail.toString().contains("safeRedactionSummary"));
-    assertTrue(detail.toString().contains("authorizedActions"));
-    assertTrue(detail.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-detail-refresh") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-detail")));
-    assertTrue(detail.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-detail-open-model-refs") && action.resultSurface().updateSurfaceId().equals("surface-agent-model-refs")));
-    assertTrue(detail.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-detail-open-trace") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-trace")));
-    assertEquals(true, detail.data().get("noDirectMutation"));
-    assertEquals("agent_admin.prompt_governance.v1", prompt.data().get("surfaceContract"));
-    assertEquals("governance-diff", prompt.surfaceType());
-    assertTrue(prompt.toString().contains("governanceSummary"));
-    assertTrue(prompt.toString().contains("scopeSummary"));
-    assertTrue(prompt.toString().contains("redactedPromptDiff"));
-    assertTrue(prompt.toString().contains("impactSummary"));
-    assertTrue(prompt.toString().contains("riskAndEvidence"));
-    assertTrue(prompt.toString().contains("reviewState"));
-    assertTrue(prompt.toString().contains("safeRedactionSummary"));
-    assertTrue(prompt.toString().contains("authorizedActions"));
-    assertTrue(prompt.toString().contains("beforeSummary"));
-    assertTrue(prompt.toString().contains("afterSummary"));
-    assertTrue(prompt.toString().contains("changes"));
-    assertTrue(prompt.toString().contains("action-agent-prompt-governance-refresh"));
-    assertTrue(prompt.toString().contains("action-agent-prompt-governance-submit-review"));
-    assertTrue(prompt.toString().contains("action-agent-prompt-governance-open-risk-review"));
-    assertEquals(true, prompt.data().get("noDirectMutation"));
-    assertEquals(true, prompt.data().get("noDirectActivation"));
-    assertEquals("agent_admin.skill_version.v1", skill.data().get("surfaceContract"));
-    assertTrue(skill.toString().contains("readSkill"));
-    assertTrue(skill.toString().contains("changes"));
-    assertEquals("surface-agent-skill-manifest-diff", manifest.surfaceId());
-    assertEquals("governance-diff", manifest.surfaceType());
-    assertEquals("agent_admin.skill_manifest_diff.v1", manifest.data().get("surfaceContract"));
-    assertTrue(((List<?>) manifest.data().get("surfaceContractAliases")).contains("agent_admin.manifest.v1"));
-    assertTrue(manifest.toString().contains("skillManifest"));
-    assertTrue(manifest.toString().contains("referenceManifest"));
-    assertTrue(manifest.toString().contains("redactedManifestDiff"));
-    assertTrue(manifest.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-skill-manifest-refresh") && action.resultSurface().updateSurfaceId().equals("surface-agent-skill-manifest-diff")));
-    assertTrue(manifest.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-skill-manifest-back-to-detail") && action.resultSurface().updateSurfaceId().equals("surface-agent-admin-detail")));
-    assertEquals("surface-agent-tool-boundary-diff", boundary.surfaceId());
-    assertEquals("governance-diff", boundary.surfaceType());
-    assertEquals("agent_admin.tool_boundary_diff.v1", boundary.data().get("surfaceContract"));
-    assertTrue(((List<?>) boundary.data().get("surfaceContractAliases")).contains("agent_admin.tool_boundary.v1"));
-    assertTrue(boundary.toString().contains("ToolPermissionBoundary"));
-    assertTrue(boundary.actions().stream().anyMatch(action -> action.actionId().equals("action-agent-tool-boundary-refresh") && action.resultSurface().updateSurfaceId().equals("surface-agent-tool-boundary-diff")));
-    assertEquals("surface-agent-model-refs", model.surfaceId());
-    assertEquals("governance-diff", model.surfaceType());
-    assertEquals("agent_admin.model_refs.v1", model.data().get("surfaceContract"));
-    assertTrue(((List<?>) model.data().get("surfaceContractAliases")).contains("agent_admin.model_ref.v1"));
-    assertTrue(model.toString().contains("[REDACTED]"));
-    assertEquals("agent_admin.seed_material.v1", seed.data().get("surfaceContract"));
-    assertTrue(catalog.toString().contains("catalogSummary"));
-    assertTrue(catalog.toString().contains("scopeSummary"));
-    assertTrue(catalog.toString().contains("action-agent-admin-refresh-catalog"));
-    assertTrue(catalog.toString().contains("action-agent-admin-search-catalog"));
-    assertTrue(catalog.toString().contains("action-agent-admin-reset-catalog-filters"));
-    assertTrue(catalog.toString().contains("action-agent-admin-catalog-open-trace"));
-    assertFalse(catalog.actions().stream().anyMatch(action -> action.actionId().equals("action-activate-agent-definition") || action.actionId().equals("action-deactivate-agent-definition") || action.actionId().equals("action-import-agent-seed-defaults")));
+    var dashboard = service.surface(ownerIdentity(), "membership-owner", "surface-agent-admin-dashboard", "corr-agent-admin-dashboard-service");
+    assertEquals("surface-agent-admin-dashboard", dashboard.surfaceId());
+    assertEquals("agent_admin.dashboard.v1", dashboard.data().get("surfaceContract"));
+    assertTrue(dashboard.toString().contains("thingsYouCanDo"));
+    assertFalse(dashboard.toString().contains("prompt-risk"));
+    assertFalse(dashboard.toString().contains("tool-boundary"));
+    assertFalse(dashboard.toString().contains("model-ref"));
+    assertFalse(dashboard.toString().contains("seed-material"));
 
-    var searchCatalog = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-agent-admin-search-catalog", "action-agent-admin-search-catalog", "agent_admin.list_definitions", "agent_admin.list_definitions", Map.of("query", "User Admin"), null, "membership-admin", "surface-agent-admin-catalog", "corr-agent-catalog-search"));
-    assertEquals("accepted", searchCatalog.status());
-    assertEquals("surface-agent-admin-catalog", searchCatalog.resultSurface().surfaceId());
-    assertTrue(searchCatalog.resultSurface().toString().contains("User Admin Agent"));
-    assertFalse(searchCatalog.resultSurface().toString().contains("tenant:tenant-2"));
+    var list = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
+        "action-agent-admin-show-agents", "action-agent-admin-show-agents", "list-agent-doc-agents", "agent_admin.list_definitions", Map.of("nameContains", "User Admin"), null, "membership-owner", dashboard.surfaceId(), "corr-agent-admin-list-service"));
+    assertEquals("accepted", list.status());
+    assertEquals("surface-agent-admin-agent-list", list.resultSurface().surfaceId());
+    assertEquals("agent_admin.agent_list.v1", list.resultSurface().data().get("surfaceContract"));
+    var rows = (List<?>) list.resultSurface().data().get("rows");
+    assertFalse(rows.isEmpty(), "SaaS Owner Agent Admin list should show current doc-editing agent rows.");
+    var firstRow = (Map<?, ?>) rows.get(0);
+    var agentId = String.valueOf(firstRow.get("agentDefinitionId"));
+    assertTrue(String.valueOf(firstRow.get("agentName")).contains("User Admin"));
+    assertFalse(list.resultSurface().toString().contains("tenant:tenant-2"));
 
-    var openSelectedDetail = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-open-agent-detail", "action-open-agent-detail", "agent_admin.get_definition", "agent_admin.get_definition", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID), null, "membership-admin", "surface-agent-admin-catalog", "corr-agent-catalog-open-row"));
-    assertEquals("accepted", openSelectedDetail.status());
-    assertEquals(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, openSelectedDetail.resultSurface().data().get("recordId"));
-    assertTrue(boundary.toString().contains("TOOL_BOUNDARY_DENIED"));
-    assertTrue(seed.toString().contains("agent_admin.seed_material.v1"));
-    for (var surface : List.of(catalog, detail, prompt, skill, manifest, boundary, model, seed)) {
-      assertTrue(surface.traceIds().stream().anyMatch(trace -> trace.contains("trace-surface-agent")));
-      assertFalse(surface.toString().toLowerCase().contains("api_key="));
-      assertFalse(surface.toString().contains("sk-secret"));
-      assertFalse(surface.toString().contains("rawProviderCredential="));
+    var detail = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
+        "action-agent-admin-open-agent-detail", "action-agent-admin-open-agent-detail", "read-agent-doc-agent", "agent_admin.get_definition", Map.of("agentDefinitionId", agentId), null, "membership-owner", list.resultSurface().surfaceId(), "corr-agent-admin-detail-service"));
+    assertEquals("accepted", detail.status());
+    assertEquals("surface-agent-admin-agent-detail", detail.resultSurface().surfaceId());
+    assertEquals("agent_admin.agent_detail.v1", detail.resultSurface().data().get("surfaceContract"));
+    assertTrue(detail.resultSurface().data().containsKey("prompt"));
+    assertTrue(detail.resultSurface().data().containsKey("skills"));
+    assertTrue(detail.resultSurface().data().containsKey("referenceDocs"));
+    assertFalse(detail.resultSurface().actions().stream().anyMatch(action -> action.actionId().equals("action-activate-agent-definition") || action.actionId().equals("action-deactivate-agent-definition") || action.actionId().equals("action-import-agent-seed-defaults")));
+
+    var prompt = (Map<?, ?>) detail.resultSurface().data().get("prompt");
+    var promptDocumentId = String.valueOf(prompt.get("documentId"));
+    var promptDoc = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
+        "action-agent-admin-open-prompt-doc", "action-agent-admin-open-prompt-doc", "read-agent-prompt-doc", "agent_admin.get_prompt_version", Map.of("agentDefinitionId", agentId, "kind", "PROMPT", "documentId", promptDocumentId), null, "membership-owner", detail.resultSurface().surfaceId(), "corr-agent-admin-prompt-service"));
+    assertEquals("accepted", promptDoc.status());
+    assertEquals("surface-agent-admin-prompt-doc", promptDoc.resultSurface().surfaceId());
+    assertEquals("agent_admin.prompt_doc.v1", promptDoc.resultSurface().data().get("surfaceContract"));
+    assertEquals(true, promptDoc.resultSurface().data().get("editInputEnabled"));
+    assertTrue(promptDoc.resultSurface().toString().contains("contentBody"));
+
+    var history = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
+        "action-agent-doc-version-history", "action-agent-doc-version-history", "read-agent-doc-version-history", "agent_admin.get_prompt_version", Map.of("agentDefinitionId", agentId, "kind", "PROMPT", "documentId", promptDocumentId, "version", 1), null, "membership-owner", promptDoc.resultSurface().surfaceId(), "corr-agent-admin-history-service"));
+    assertEquals("accepted", history.status());
+    assertEquals("surface-agent-admin-version-history", history.resultSurface().surfaceId());
+    assertEquals("agent_admin.version_history.v1", history.resultSurface().data().get("surfaceContract"));
+
+    var traces = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
+        "action-agent-admin-open-runtime-traces", "action-agent-admin-open-runtime-traces", "read-agent-doc-runtime-traces", "agent_admin.get_definition", Map.of("agentDefinitionId", agentId), null, "membership-owner", detail.resultSurface().surfaceId(), "corr-agent-admin-traces-service"));
+    assertEquals("accepted", traces.status());
+    assertEquals("surface-agent-admin-runtime-traces", traces.resultSurface().surfaceId());
+    assertEquals("agent_admin.runtime_traces.v1", traces.resultSurface().data().get("surfaceContract"));
+    assertFalse(traces.resultSurface().toString().contains("contentBody=#"));
+
+    for (var surface : List.of(blank, dashboard, list.resultSurface(), detail.resultSurface(), promptDoc.resultSurface(), history.resultSurface(), traces.resultSurface())) {
+      assertBrowserPayloadSafe(surface);
     }
   }
 
   @Test
-  void agentAdminSeedMaterialRuntimeImplementationIsBackendOwnedAndRedacted() {
+  void legacyAgentAdminSeedMaterialSurfaceIsInternalGovernanceSubstrateAndRedacted() {
     var seed = service.surface(identity(), "membership-admin", "surface-agent-seed-material", "corr-agent-seed-implementation");
 
     assertEquals("surface-agent-seed-material", seed.surfaceId());
@@ -1393,93 +1359,27 @@ class WorkstreamServiceTest {
   }
 
   @Test
-  void agentAdminDefinitionLifecycleAndSeedImportActionsAreGovernedAndIdempotent() {
-    var deactivate = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-deactivate-agent-definition", "action-deactivate-agent-definition", "agent.definitions.manage", "agent.definitions.manage", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), "idem-deactivate", "membership-admin", "surface-agent-admin-detail", "corr-agent-deactivate"));
+  void currentAgentAdminDoesNotExposeLegacyLifecycleActivationOrSeedImportActions() {
+    var detail = service.surface(ownerIdentity(), "membership-owner", "surface-agent-admin-detail", "corr-agent-admin-no-legacy-detail");
+    assertEquals("surface-agent-admin-agent-detail", detail.surfaceId());
+    assertEquals("agent_admin.agent_detail.v1", detail.data().get("surfaceContract"));
+    assertFalse(detail.actions().stream().anyMatch(action -> action.actionId().equals("action-activate-agent-definition")
+        || action.actionId().equals("action-deactivate-agent-definition")
+        || action.actionId().equals("action-import-agent-seed-defaults")
+        || action.actionId().equals("action-agent-activation-confirm")
+        || action.actionId().equals("action-agent-deactivation-confirm")));
+    assertFalse(detail.toString().contains("agent_admin.activation_confirmation.v1"));
+    assertFalse(detail.toString().contains("agent_admin.seed_material.v1"));
+    assertBrowserPayloadSafe(detail);
 
-    assertEquals("approval-required", deactivate.status());
-    assertEquals("surface-agent-deactivation-confirmation", deactivate.resultSurface().surfaceId());
-    assertEquals(AgentLifecycleStatus.ACTIVE, agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
-
-    var duplicateDeactivate = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-deactivate-agent-definition", "action-deactivate-agent-definition", "agent.definitions.manage", "agent.definitions.manage", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), "idem-deactivate-2", "membership-admin", "surface-agent-admin-detail", "corr-agent-deactivate-again"));
-    assertEquals("approval-required", duplicateDeactivate.status());
-
-    var activate = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-activate-agent-definition", "action-activate-agent-definition", "agent.definitions.manage", "agent.definitions.manage", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), "idem-activate", "membership-admin", "surface-agent-admin-detail", "corr-agent-activate"));
-    assertEquals("approval-required", activate.status());
-    assertEquals("surface-agent-activation-confirmation", activate.resultSurface().surfaceId());
-    assertTrue(activate.resultSurface().toString().contains("agent_admin.activation_confirmation.v1"));
-    assertTrue(activate.resultSurface().toString().contains("activationSummary"));
-    assertTrue(activate.resultSurface().toString().contains("action-agent-activation-confirm"));
-    assertTrue(activate.resultSurface().toString().contains("provider-fail-closed"));
-    assertTrue(activate.resultSurface().toString().contains("noFakeSuccess=true"));
-    assertEquals(AgentLifecycleStatus.ACTIVE, agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
-
-    var activationValidation = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-agent-activation-confirm", "action-agent-activation-confirm", "agent_admin.activate_behavior_change", "agent_admin.activate_behavior_change", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), "idem-activation-missing-ack", "membership-admin", "surface-agent-activation-confirmation", "corr-agent-activation-missing-ack"));
-    assertEquals("validation-error", activationValidation.status());
-    assertEquals("surface-agent-activation-confirmation", activationValidation.resultSurface().surfaceId());
-    assertEquals(AgentLifecycleStatus.ACTIVE, agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
-
-    var activationBlocked = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-agent-activation-confirm", "action-agent-activation-confirm", "agent_admin.activate_behavior_change", "agent_admin.activate_behavior_change", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "acknowledgement", "ACTIVATE"), "idem-activation-confirm", "membership-admin", "surface-agent-activation-confirmation", "corr-agent-activation-confirm"));
-    assertEquals("approval-required", activationBlocked.status());
-    assertTrue(activationBlocked.message().contains("failed closed"));
-    assertEquals("surface-agent-activation-confirmation", activationBlocked.resultSurface().surfaceId());
-    assertEquals(AgentLifecycleStatus.ACTIVE, agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
-
-    var activationCancel = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-agent-activation-cancel", "action-agent-activation-cancel", "agent.definitions.manage", "agent.definitions.manage", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), "idem-activation-cancel", "membership-admin", "surface-agent-activation-confirmation", "corr-agent-activation-cancel"));
-    assertEquals("accepted", activationCancel.status());
-    assertEquals("surface-agent-admin-detail", activationCancel.resultSurface().surfaceId());
-
-    var seedImport = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-import-agent-seed-defaults", "action-import-agent-seed-defaults", "agent_admin.reseed_missing_defaults", "agent_admin.reseed_missing_defaults", null, "idem-seed-import", "membership-admin", "surface-agent-seed-material", "corr-agent-seed-import"));
-    assertEquals("no-op", seedImport.status());
-    assertTrue(seedImport.message().contains("skipped governed records"));
-    assertEquals("surface-agent-seed-import-confirmation", seedImport.resultSurface().surfaceId());
-
-    var deactivationRefresh = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-agent-deactivation-refresh", "action-agent-deactivation-refresh", "agent.definitions.manage", "agent.definitions.manage", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), "idem-deactivation-refresh", "membership-admin", "surface-agent-deactivation-confirmation", "corr-agent-deactivation-refresh"));
-    assertEquals("no-op", deactivationRefresh.status());
-    assertEquals("surface-agent-deactivation-confirmation", deactivationRefresh.resultSurface().surfaceId());
-    assertTrue(deactivationRefresh.resultSurface().toString().contains("deactivationSummary"));
-    assertTrue(deactivationRefresh.resultSurface().toString().contains("policyAndApprovalSummary"));
-    assertTrue(deactivationRefresh.resultSurface().toString().contains("action-agent-deactivation-confirm"));
-    assertTrue(deactivationRefresh.resultSurface().toString().contains("DEACTIVATE"));
-
-    var deactivationValidation = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-agent-deactivation-confirm", "action-agent-deactivation-confirm", "agent.definitions.manage", "agent.definitions.manage", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), "idem-deactivation-missing-ack", "membership-admin", "surface-agent-deactivation-confirmation", "corr-agent-deactivation-missing-ack"));
-    assertEquals("validation-error", deactivationValidation.status());
-    assertEquals("surface-agent-deactivation-confirmation", deactivationValidation.resultSurface().surfaceId());
-    assertEquals(AgentLifecycleStatus.ACTIVE, agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
-
-    var deactivationMissingReason = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-agent-deactivation-confirm", "action-agent-deactivation-confirm", "agent.definitions.manage", "agent.definitions.manage", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "acknowledgement", "DEACTIVATE"), "idem-deactivation-missing-reason", "membership-admin", "surface-agent-deactivation-confirmation", "corr-agent-deactivation-missing-reason"));
-    assertEquals("validation-error", deactivationMissingReason.status());
-    assertEquals("surface-agent-deactivation-confirmation", deactivationMissingReason.resultSurface().surfaceId());
-    assertEquals(AgentLifecycleStatus.ACTIVE, agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
-
-    var deactivationCancel = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-agent-deactivation-cancel", "action-agent-deactivation-cancel", "agent.definitions.manage", "agent.definitions.manage", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID), "idem-deactivation-cancel", "membership-admin", "surface-agent-deactivation-confirmation", "corr-agent-deactivation-cancel"));
-    assertEquals("accepted", deactivationCancel.status());
-    assertEquals("surface-agent-admin-detail", deactivationCancel.resultSurface().surfaceId());
-    assertEquals(AgentLifecycleStatus.ACTIVE, agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
-
-    var deactivationConfirmed = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-agent-deactivation-confirm", "action-agent-deactivation-confirm", "agent.definitions.manage", "agent.definitions.manage", Map.of("agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, "acknowledgement", "DEACTIVATE", "reason", "Retire unsafe behavior"), "idem-deactivation-confirm", "membership-admin", "surface-agent-deactivation-confirmation", "corr-agent-deactivation-confirm"));
-    assertEquals("accepted", deactivationConfirmed.status());
-    assertTrue(deactivationConfirmed.message().contains("no prompt, skill, reference, provider, or tenant override artifacts were deleted"));
-    assertEquals("surface-agent-admin-detail", deactivationConfirmed.resultSurface().surfaceId());
-    assertEquals(AgentLifecycleStatus.DISABLED, agentRepository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
+    assertEquals(AgentLifecycleStatus.ACTIVE, agentRepository.agentDefinition(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow().status());
   }
 
   @Test
-  void agentAdminReadSurfacesDenyMissingCapabilityBeforeArtifactLeakage() {
-    var denied = assertThrows(AuthorizationException.class, () -> service.surface(memberIdentity(), "membership-member", "surface-agent-prompt-governance", "corr-member-agent-prompt"));
+  void currentAgentAdminReadSurfacesDenyNonSaasAdminBeforeArtifactLeakage() {
+    var denied = assertThrows(AuthorizationException.class, () -> service.surface(memberIdentity(), "membership-member", "surface-agent-admin-dashboard", "corr-member-agent-admin-dashboard"));
 
-    assertEquals("agent-admin-requires-tenant-admin", denied.reasonCode());
+    assertEquals("agent-admin-requires-saas-owner-admin", denied.reasonCode());
   }
 
   @Test
@@ -1496,8 +1396,8 @@ class WorkstreamServiceTest {
     assertTrue(bootstrap.me().visibleCapabilityIds().stream().noneMatch(capability -> capability.equals("agent.behavior.manage")));
     assertTrue(bootstrap.functionalAgents().stream().noneMatch(agent -> agent.functionalAgentId().equals("agent-admin-agent") && agent.availability().equals("visible")));
 
-    var deniedSurface = assertThrows(AuthorizationException.class, () -> service.surface(customerIdentity, "membership-customer-admin", "surface-agent-admin-catalog", "corr-customer-agent-admin-catalog"));
-    assertEquals("agent-admin-requires-tenant-admin", deniedSurface.reasonCode());
+    var deniedSurface = assertThrows(AuthorizationException.class, () -> service.surface(customerIdentity, "membership-customer-admin", "surface-agent-admin-dashboard", "corr-customer-agent-admin-dashboard"));
+    assertEquals("agent-admin-requires-saas-owner-admin", deniedSurface.reasonCode());
 
     var deniedAction = assertThrows(AuthorizationException.class, () -> service.runAction(customerIdentity, "membership-customer-admin", new WorkstreamService.CapabilityActionRequest(
         "action-propose-prompt-diff", "action-propose-prompt-diff", "agent_admin.draft_behavior_change", "agent_admin.draft_behavior_change", null, "idem-customer-agent-admin", "membership-customer-admin", "surface-agent-prompt-governance", "corr-customer-agent-admin-action")));
@@ -1505,14 +1405,20 @@ class WorkstreamServiceTest {
   }
 
   @Test
-  void agentAdminCatalogIsTenantScoped() {
+  void agentAdminListIsPlatformWideForSaasOwnersAndDeniedForTenantAdmins() {
     new AgentBehaviorSeedLoader(agentRepository, Clock.systemUTC()).importStarterDefaults("tenant-2", "bootstrap", "corr-agent-seed-tenant-2");
 
-    var catalog = service.surface(identity(), "membership-admin", "surface-agent-admin-catalog", "corr-agent-tenant-scope");
+    var list = service.surface(ownerIdentity(), "membership-owner", "surface-agent-admin-agent-list", "corr-agent-platform-scope");
 
-    assertTrue(catalog.toString().contains("tenant:tenant-1"));
-    assertFalse(catalog.toString().contains("tenant:tenant-2"));
-    assertFalse(catalog.toString().contains("corr-agent-seed-tenant-2"));
+    assertEquals("surface-agent-admin-agent-list", list.surfaceId());
+    assertEquals("agent_admin.agent_list.v1", list.data().get("surfaceContract"));
+    assertFalse(((List<?>) list.data().get("rows")).isEmpty());
+    assertFalse(list.toString().contains("tenant:tenant-1"));
+    assertFalse(list.toString().contains("tenant:tenant-2"));
+    assertFalse(list.toString().contains("corr-agent-seed-tenant-2"));
+
+    var tenantDenied = assertThrows(AuthorizationException.class, () -> service.surface(identity(), "membership-admin", "surface-agent-admin-agent-list", "corr-agent-tenant-denied"));
+    assertEquals("agent-admin-requires-saas-owner-admin", tenantDenied.reasonCode());
   }
 
   @Test
@@ -3037,8 +2943,8 @@ class WorkstreamServiceTest {
     assertEquals("Core Route Org", ((Map<?, ?>) userAdmin.surface().data().get("prefill")).get("organizationName"));
     assertEquals(tenantCountBeforeRoute, identityRepository.tenantRows().size(), "Core User Admin route must open the create surface without creating an Organization");
 
-    var agentAdmin = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
-        "membership-admin", "agent-admin-agent", "show agents", "corr-route-core-agent-admin", "idem-route-core-agent-admin"), "corr-header");
+    var agentAdmin = service.submitMessage(ownerIdentity(), "membership-owner", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-owner", "agent-admin-agent", "show agents", "corr-route-core-agent-admin", "idem-route-core-agent-admin"), "corr-header");
     assertEquals("surface_intent_route", agentAdmin.agentItem().kind());
     assertEquals("surface-agent-admin-agent-list", agentAdmin.surface().surfaceId());
     assertEquals("agent_admin.agent_list.v1", agentAdmin.surface().data().get("surfaceContract"));
@@ -3317,13 +3223,14 @@ class WorkstreamServiceTest {
   }
 
   @Test
-  void myAccountOpenWorkstreamActionReturnsBackendResolvedSurface() {
-    var result = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
-        "action-open-agent-admin", "action-open-agent-admin", "my_account.open_authorized_workstream", "my_account.open_authorized_workstream", Map.of(), null, "membership-admin", "surface-my-account-dashboard", "corr-open-agent-admin"));
+  void myAccountOpenWorkstreamActionReturnsBackendResolvedSurfaceForSaasOwner() {
+    var result = service.runAction(ownerIdentity(), "membership-owner", new WorkstreamService.CapabilityActionRequest(
+        "action-open-agent-admin", "action-open-agent-admin", "my_account.open_authorized_workstream", "my_account.open_authorized_workstream", Map.of(), null, "membership-owner", "surface-my-account-dashboard", "corr-open-agent-admin"));
 
     assertEquals("accepted", result.status());
     assertEquals("surface-agent-admin-dashboard", result.resultSurface().surfaceId());
     assertEquals("agent-admin-agent", result.resultSurface().ownerFunctionalAgentId());
+    assertEquals("agent_admin.dashboard.v1", result.resultSurface().data().get("surfaceContract"));
     assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("MY_ACCOUNT_OPEN_AUTHORIZED_WORKSTREAM") && event.correlationId().equals("corr-open-agent-admin")));
   }
 
@@ -3359,10 +3266,11 @@ class WorkstreamServiceTest {
     assertEquals("accepted", refresh.status());
     assertEquals("surface-user-admin-tenant-dashboard", refresh.resultSurface().surfaceId());
 
-    var openAttention = service.runShellRequest(identity(), "membership-admin", new WorkstreamService.WorkstreamShellRequest(
-        "open_attention_item", "my_account_panel", "Open Agent Admin readiness", null, "agent-admin-agent", "surface-agent-admin-catalog", "attention-agent-admin-readiness", "my-account-agent", "surface-my-account-dashboard", "action-open-agent-admin", "authorized_cross_workstream", "corr-shell-attention", "membership-admin"));
+    var openAttention = service.runShellRequest(ownerIdentity(), "membership-owner", new WorkstreamService.WorkstreamShellRequest(
+        "open_attention_item", "my_account_panel", "Open Agent Admin readiness", null, "agent-admin-agent", "surface-agent-admin-agent-list", "attention-agent-admin-readiness", "my-account-agent", "surface-my-account-dashboard", "action-open-agent-admin", "authorized_cross_workstream", "corr-shell-attention", "membership-owner"));
     assertEquals("accepted", openAttention.status());
     assertEquals("agent-admin-agent", openAttention.resultSurface().ownerFunctionalAgentId());
+    assertEquals("surface-agent-admin-agent-list", openAttention.resultSurface().surfaceId());
 
     var users = service.runShellRequest(identity(), "membership-admin", new WorkstreamService.WorkstreamShellRequest(
         "show_surface", "user_prompt", "show users", null, "user-admin-agent", null, null, "user-admin-agent", null, null, "current_workstream", "corr-shell-users", "membership-admin"));
@@ -3380,10 +3288,10 @@ class WorkstreamServiceTest {
     assertEquals("accepted", auditTimeline.status());
     assertEquals("surface-audit-trace-timeline", auditTimeline.resultSurface().surfaceId());
 
-    var agentCatalog = service.runShellRequest(identity(), "membership-admin", new WorkstreamService.WorkstreamShellRequest(
-        "show_surface", "user_prompt", "show agent catalog", null, "agent-admin-agent", null, null, "agent-admin-agent", null, null, "current_workstream", "corr-shell-agent-catalog", "membership-admin"));
+    var agentCatalog = service.runShellRequest(ownerIdentity(), "membership-owner", new WorkstreamService.WorkstreamShellRequest(
+        "show_surface", "user_prompt", "show agent catalog", null, "agent-admin-agent", null, null, "agent-admin-agent", null, null, "current_workstream", "corr-shell-agent-catalog", "membership-owner"));
     assertEquals("accepted", agentCatalog.status());
-    assertEquals("surface-agent-admin-catalog", agentCatalog.resultSurface().surfaceId());
+    assertEquals("surface-agent-admin-agent-list", agentCatalog.resultSurface().surfaceId());
 
     var governancePolicies = service.runShellRequest(identity(), "membership-admin", new WorkstreamService.WorkstreamShellRequest(
         "show_surface", "user_prompt", "show governance policies", null, "governance-policy-agent", null, null, "governance-policy-agent", null, null, "current_workstream", "corr-shell-governance-policies", "membership-admin"));

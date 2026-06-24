@@ -320,7 +320,7 @@
 
 ### AADE-06-001: Repair Agent Admin workstream smoke and stale backend test drift
 
-- status: pending
+- status: done
 - source: `AADE-05-001` terminal verification gaps
 - task brief: `specs/agent-admin-doc-editing-realization/tasks/06-follow-up/01-repair-agent-admin-workstream-smoke-and-stale-tests.md`
 - depends on: [AADE-05-001]
@@ -345,7 +345,11 @@
   - Agent Admin backend/API smoke proves current SaaS-admin doc-editing surfaces at the implemented scope
   - stale tenant-scoped/governance-console Agent Admin assertions no longer block current validation
   - changes and queue update are committed
-- notes: []
+- notes:
+  - completed in this commit with message: `Repair Agent Admin workstream smoke and stale tests`
+  - backend/API smoke now exercises SaaS Owner/Admin current doc-editing list/detail/prompt/history/trace surfaces; non-SaaS-admin denial remains `agent-admin-requires-saas-owner-admin`
+  - stale tenant-scoped/governance-console assertions were reconciled as non-current/internal substrate or replaced with current Agent Admin doc-editing assertions
+  - next runnable task after completion: `AADE-06-002` (`pending`, depends on `AADE-06-001`)
 
 ### AADE-06-002: Repair collateral full-suite authorization smoke blockers
 
