@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import type { AgentAdminDocumentDetail, AgentAdminReferenceDocSummary, AgentAdminSkillDocSummary, AgentAdminSurfaceData, SurfaceAction, SurfaceEnvelope } from '../types';
+import type { AgentAdminDocumentDetail, AgentAdminReferenceDocSummary, AgentAdminRuntimeTraceRow, AgentAdminSkillDocSummary, AgentAdminSurfaceData, SurfaceAction, SurfaceEnvelope } from '../types';
 import { SurfaceActionBar } from './SurfaceActionBar';
 import { SurfaceStateFrame } from './SurfaceStateFrame';
 
@@ -28,7 +28,32 @@ type VersionRow = {
   label?: string;
 };
 
-const readSurfaceContracts = new Set([
+type EditSessionInstruction = {
+  actorAccountId?: string;
+  instructions?: string;
+  createdAt?: string;
+};
+
+type EditSessionView = {
+  sessionId?: string;
+  agentDefinitionId?: string;
+  kind?: string;
+  documentId?: string;
+  baseVersion?: number;
+  status?: string;
+  instructions?: EditSessionInstruction[];
+  proposedContent?: string;
+  changeSummary?: string;
+  clarifyingQuestion?: string | null;
+  warnings?: string[];
+  startedAt?: string;
+  endedAt?: string | null;
+};
+
+type FieldError = { field: string; message: string };
+type FormError = { message: string; fields: FieldError[] };
+
+const agentAdminDocEditingContracts = new Set([
   'agent_admin.blank.v1',
   'agent_admin.dashboard.v1',
   'agent_admin.agent_list.v1',
@@ -36,8 +61,15 @@ const readSurfaceContracts = new Set([
   'agent_admin.prompt_doc.v1',
   'agent_admin.skill_doc.v1',
   'agent_admin.skill_reference_doc.v1',
+  'agent_admin.edit_session.v1',
   'agent_admin.version_history.v1',
-  'agent_admin.version_diff.v1'
+  'agent_admin.version_diff.v1',
+  'agent_admin.create_skill.v1',
+  'agent_admin.delete_skill_confirmation.v1',
+  'agent_admin.create_reference_doc.v1',
+  'agent_admin.delete_reference_doc_confirmation.v1',
+  'agent_admin.runtime_traces.v1',
+  'agent_admin.system_message.v1'
 ]);
 
 export function AgentAdminDocEditingSurface({ envelope, onAction }: Props) {
@@ -55,10 +87,22 @@ export function AgentAdminDocEditingSurface({ envelope, onAction }: Props) {
     case 'agent_admin.skill_doc.v1':
     case 'agent_admin.skill_reference_doc.v1':
       return <AgentAdminDocumentSurface envelope={envelope} onAction={onAction} />;
+    case 'agent_admin.edit_session.v1':
+      return <AgentAdminEditSessionSurface envelope={envelope} onAction={onAction} />;
     case 'agent_admin.version_history.v1':
       return <AgentAdminVersionHistorySurface envelope={envelope} onAction={onAction} />;
     case 'agent_admin.version_diff.v1':
       return <AgentAdminVersionDiffSurface envelope={envelope} onAction={onAction} />;
+    case 'agent_admin.create_skill.v1':
+      return <AgentAdminCreateSkillSurface envelope={envelope} onAction={onAction} />;
+    case 'agent_admin.delete_skill_confirmation.v1':
+      return <AgentAdminDeleteSkillSurface envelope={envelope} onAction={onAction} />;
+    case 'agent_admin.create_reference_doc.v1':
+      return <AgentAdminCreateReferenceDocSurface envelope={envelope} onAction={onAction} />;
+    case 'agent_admin.delete_reference_doc_confirmation.v1':
+      return <AgentAdminDeleteReferenceDocSurface envelope={envelope} onAction={onAction} />;
+    case 'agent_admin.runtime_traces.v1':
+      return <AgentAdminRuntimeTracesSurface envelope={envelope} onAction={onAction} />;
     default:
       return null;
   }
@@ -66,7 +110,7 @@ export function AgentAdminDocEditingSurface({ envelope, onAction }: Props) {
 
 export function isAgentAdminDocEditingSurface(envelope: SurfaceEnvelope<unknown>) {
   const contract = (envelope.data as { surfaceContract?: string } | undefined)?.surfaceContract;
-  return Boolean(contract && readSurfaceContracts.has(contract));
+  return Boolean(contract && agentAdminDocEditingContracts.has(contract));
 }
 
 function AgentAdminBlankSurface({ envelope, onAction }: Props) {
@@ -86,7 +130,7 @@ function AgentAdminBlankSurface({ envelope, onAction }: Props) {
 }
 
 function AgentAdminDashboardSurface({ envelope, onAction }: Props) {
-  const actionById = actionMap(envelope.actions);
+  const actions = actionMap(envelope.actions);
   const cards = envelope.data.thingsYouCanDo ?? [];
   const recentAgents = (envelope.data.recentlyChangedAgents ?? []).slice(0, 5).map(asAgentRow);
   return (
@@ -101,7 +145,7 @@ function AgentAdminDashboardSurface({ envelope, onAction }: Props) {
         </div>
         <div className="surface-dashboard-grid my-account-workstream-grid" aria-label="Agent Admin actions">
           {cards.map((card) => {
-            const action = actionById.get(card.actionId);
+            const action = actions.get(card.actionId);
             const body = <><p>{card.label}</p><strong>{card.count}</strong><span>Open {card.targetSurfaceId.replace('surface-agent-admin-', '').replace(/-/g, ' ')}</span></>;
             return action ? (
               <button key={card.cardId} type="button" className="ds-card dashboard-card clickable info" disabled={Boolean(action.disabled)} onClick={() => !action.disabled && onAction?.(action, envelope.surfaceId, stringRecord({ targetSurfaceId: card.targetSurfaceId, cardId: card.cardId }))} aria-label={`Open ${card.label}: ${card.count} agents`}>
@@ -198,7 +242,7 @@ function AgentAdminAgentDetailSurface({ envelope, onAction }: Props) {
           </div>
         </section>
         {runtimeAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(runtimeAction, envelope.surfaceId, stringRecord({ agentDefinitionId: agent?.agentDefinitionId }))}>Runtime reads</button>}
-        <SurfaceActionBar actions={envelope.actions.filter((action) => !['action-agent-admin-save-agent-profile', 'action-agent-admin-open-prompt-doc', 'action-agent-admin-open-skill-doc', 'action-agent-admin-open-reference-doc', 'action-agent-admin-open-runtime-traces'].includes(action.actionId))} surfaceId={envelope.surfaceId} onAction={onAction} />
+        <SurfaceActionBar actions={envelope.actions.filter((action) => !['action-agent-admin-save-agent-profile', 'action-agent-admin-open-prompt-doc', 'action-agent-admin-open-skill-doc', 'action-agent-admin-open-reference-doc', 'action-agent-admin-open-create-reference-doc', 'action-agent-admin-open-delete-reference-doc', 'action-agent-admin-open-delete-skill', 'action-agent-admin-open-runtime-traces'].includes(action.actionId))} surfaceId={envelope.surfaceId} onAction={onAction} />
       </section>
     </SurfaceStateFrame>
   );
@@ -215,6 +259,10 @@ function AgentAdminDocumentSurface({ envelope, onAction }: Props) {
   const historyAction = actionById(envelope.actions, 'action-agent-doc-version-history');
   const diffAction = actionById(envelope.actions, 'action-agent-doc-version-diff');
   const restoreAction = !doc.currentVersion ? actionById(envelope.actions, 'action-agent-doc-version-restore') : undefined;
+  const runtimeAction = actionById(envelope.actions, 'action-agent-admin-open-runtime-traces');
+  const deleteSkillAction = doc.kind === 'skill' ? actionById(envelope.actions, 'action-agent-admin-open-delete-skill') : undefined;
+  const deleteReferenceAction = doc.kind === 'reference' ? actionById(envelope.actions, 'action-agent-admin-open-delete-reference-doc') : undefined;
+  const createReferenceAction = doc.kind === 'skill' ? actionById(envelope.actions, 'action-agent-admin-open-create-reference-doc') : undefined;
   return (
     <SurfaceStateFrame envelope={envelope}>
       <article className="agent-admin-doc-surface agent-admin-document" aria-labelledby={`${envelope.surfaceId}-doc-heading`}>
@@ -224,7 +272,7 @@ function AgentAdminDocumentSurface({ envelope, onAction }: Props) {
           <p>{doc.description}</p>
         </div>
         <DocMetadata doc={doc} />
-        {envelope.data.referenceDocs && envelope.data.referenceDocs.length > 0 && <ReferenceDocLinks referenceDocs={envelope.data.referenceDocs} actions={envelope.actions} agentDefinitionId={doc.agentDefinitionId} surfaceId={envelope.surfaceId} onAction={onAction} />}
+        {envelope.data.referenceDocs && envelope.data.referenceDocs.length > 0 && <ReferenceDocLinks referenceDocs={envelope.data.referenceDocs} actions={envelope.actions} agentDefinitionId={doc.agentDefinitionId} skillDocumentId={doc.documentId} surfaceId={envelope.surfaceId} onAction={onAction} />}
         <section className="agent-admin-markdown-document" aria-labelledby={`${envelope.surfaceId}-content-heading`}>
           <h5 id={`${envelope.surfaceId}-content-heading`}>Current Markdown content</h5>
           <div className="markdown-response-content"><ReactMarkdown remarkPlugins={[remarkGfm]} skipHtml>{doc.contentBody}</ReactMarkdown></div>
@@ -233,6 +281,10 @@ function AgentAdminDocumentSurface({ envelope, onAction }: Props) {
           <div className="surface-action-bar">
             {historyAction && <button type="button" onClick={() => onAction?.(historyAction, envelope.surfaceId, documentInput(doc))}>{historyAction.label}</button>}
             {diffAction && <button type="button" onClick={() => onAction?.(diffAction, envelope.surfaceId, documentInput(doc))}>{diffAction.label}</button>}
+            {runtimeAction && <button type="button" onClick={() => onAction?.(runtimeAction, envelope.surfaceId, documentInput(doc))}>{runtimeAction.label}</button>}
+            {createReferenceAction && <button type="button" onClick={() => onAction?.(createReferenceAction, envelope.surfaceId, stringRecord({ agentDefinitionId: doc.agentDefinitionId, skillDocumentId: doc.documentId }))}>{createReferenceAction.label}</button>}
+            {deleteSkillAction && <button type="button" onClick={() => onAction?.(deleteSkillAction, envelope.surfaceId, stringRecord({ agentDefinitionId: doc.agentDefinitionId, skillDocumentId: doc.documentId }))}>{deleteSkillAction.label}</button>}
+            {deleteReferenceAction && <button type="button" onClick={() => onAction?.(deleteReferenceAction, envelope.surfaceId, stringRecord({ agentDefinitionId: doc.agentDefinitionId, referenceDocumentId: doc.documentId, documentId: doc.documentId }))}>{deleteReferenceAction.label}</button>}
             {restoreAction && <button type="button" onClick={() => onAction?.(restoreAction, envelope.surfaceId, documentInput(doc))}>{restoreAction.label}{restoreAction.requiresConfirmation ? ' · confirm' : ''}</button>}
           </div>
         </section>
@@ -252,6 +304,77 @@ function AgentAdminDocumentSurface({ envelope, onAction }: Props) {
           )}
         </section>
       </article>
+    </SurfaceStateFrame>
+  );
+}
+
+function AgentAdminEditSessionSurface({ envelope, onAction }: Props) {
+  const session = (envelope.data.session ?? {}) as EditSessionView;
+  const target = envelope.data.target;
+  const [refinementInstructions, setRefinementInstructions] = useState('');
+  const [showDiff, setShowDiff] = useState(false);
+  const reviseAction = actionById(envelope.actions, 'action-agent-doc-edit-revise');
+  const saveAction = actionById(envelope.actions, 'action-agent-doc-edit-save');
+  const cancelAction = actionById(envelope.actions, 'action-agent-doc-edit-cancel');
+  const diffAction = actionById(envelope.actions, 'action-agent-doc-version-diff');
+  const sessionInput = stringRecord({
+    sessionId: session.sessionId,
+    agentDefinitionId: session.agentDefinitionId ?? target?.agentDefinitionId,
+    kind: session.kind ?? target?.kind,
+    documentId: session.documentId ?? target?.documentId,
+    baseVersion: session.baseVersion ?? target?.baseVersion
+  });
+  const warnings = session.warnings ?? [];
+  return (
+    <SurfaceStateFrame envelope={envelope}>
+      <section className="agent-admin-doc-surface agent-admin-edit-session" aria-labelledby={`${envelope.surfaceId}-edit-heading`}>
+        <div className="surface-section-heading">
+          <div><p className="eyebrow">Agent Admin · editing session</p><h4 id={`${envelope.surfaceId}-edit-heading`}>Review proposed document</h4></div>
+          <p>Target {session.kind ?? target?.kind ?? 'document'} {session.documentId ?? target?.documentId ?? ''} from base version {session.baseVersion ?? target?.baseVersion ?? 'current'}.</p>
+        </div>
+        <dl className="authority-summary-grid" aria-label="Edit session metadata">
+          <div><dt>Status</dt><dd>{session.status ?? envelope.data.state ?? 'proposed'}</dd></div>
+          <div><dt>Session</dt><dd>{session.sessionId ?? 'pending'}</dd></div>
+          <div><dt>Started</dt><dd>{session.startedAt ?? envelope.generatedAt}</dd></div>
+          <div><dt>Save behavior</dt><dd>{envelope.data.saveCreatesNewCurrentVersion ? 'Save creates a new current version immediately.' : 'Save behavior unavailable.'}</dd></div>
+        </dl>
+        <section className="agent-admin-edit-transcript" aria-labelledby={`${envelope.surfaceId}-transcript-heading`}>
+          <h5 id={`${envelope.surfaceId}-transcript-heading`}>User instruction transcript</h5>
+          {(session.instructions ?? []).length === 0 ? <p className="surface-empty-copy">No instructions are recorded yet.</p> : (
+            <ol className="surface-section-list">
+              {(session.instructions ?? []).map((entry, index) => <li key={`${entry.actorAccountId ?? 'actor'}-${index}`}><strong>{entry.actorAccountId ?? 'SaaS admin'}:</strong> {entry.instructions ?? ''}</li>)}
+            </ol>
+          )}
+        </section>
+        {session.clarifyingQuestion && <p className="surface-state-inline" role="status">Clarifying question: {session.clarifyingQuestion}</p>}
+        <section className="agent-admin-markdown-document" aria-labelledby={`${envelope.surfaceId}-proposal-heading`}>
+          <h5 id={`${envelope.surfaceId}-proposal-heading`}>Full proposed Markdown document</h5>
+          <div className="markdown-response-content"><ReactMarkdown remarkPlugins={[remarkGfm]} skipHtml>{session.proposedContent ?? 'No proposed content is available.'}</ReactMarkdown></div>
+        </section>
+        <section className="agent-admin-edit-summary" aria-labelledby={`${envelope.surfaceId}-summary-heading`}>
+          <h5 id={`${envelope.surfaceId}-summary-heading`}>Summary and advisory warnings</h5>
+          <p>{session.changeSummary ?? 'No change summary is available.'}</p>
+          {warnings.length > 0 && <ul className="surface-section-list" aria-label="Advisory warnings and risks">{warnings.map((warning) => <li key={warning}>{warning}</li>)}</ul>}
+          {envelope.data.warningsAdvisoryOnly && <p className="surface-state-inline no-op" role="status">Warnings are advisory only and do not block an authorized Save.</p>}
+        </section>
+        <div className="surface-action-bar" aria-label="Proposal diff actions">
+          <button type="button" onClick={() => setShowDiff((value) => !value)}>Show diff</button>
+          {diffAction && <button type="button" onClick={() => onAction?.(diffAction, envelope.surfaceId, sessionInput)}>{diffAction.label} in backend</button>}
+        </div>
+        {showDiff && <pre className="agent-admin-unified-diff" aria-label="Proposed document diff preview">Base version {session.baseVersion ?? target?.baseVersion ?? 'current'} → proposed document\n\n{session.changeSummary ?? 'Diff preview requested. Use the backend Show diff action for authoritative comparison.'}</pre>}
+        <form className="surface-detail-edit-form" onSubmit={(event) => { event.preventDefault(); if (reviseAction) onAction?.(reviseAction, envelope.surfaceId, { ...sessionInput, instructions: refinementInstructions }); }}>
+          <div className="surface-detail-field">
+            <label htmlFor={`${envelope.surfaceId}-refinement`}>Additional refinement instructions</label>
+            <textarea className="designed-control surface-detail-control" id={`${envelope.surfaceId}-refinement`} name="refinementInstructions" value={refinementInstructions} onChange={(event) => setRefinementInstructions(event.currentTarget.value)} />
+            <p className="field-helper">More input refines the proposal; it does not save the document.</p>
+          </div>
+          <button type="submit" className="surface-action-link secondary" disabled={!reviseAction || Boolean(reviseAction.disabled)}>{reviseAction?.label ?? 'Revise proposal'}</button>
+        </form>
+        <div className="surface-action-bar" aria-label="Edit session save or cancel">
+          {saveAction && <button type="button" className="surface-action-link primary" onClick={() => onAction?.(saveAction, envelope.surfaceId, sessionInput)} disabled={Boolean(saveAction.disabled)}>{saveAction.label}{saveAction.requiresConfirmation ? ' · confirm' : ''}</button>}
+          {cancelAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(cancelAction, envelope.surfaceId, sessionInput)} disabled={Boolean(cancelAction.disabled)}>{cancelAction.label}</button>}
+        </div>
+      </section>
     </SurfaceStateFrame>
   );
 }
@@ -304,6 +427,136 @@ function AgentAdminVersionDiffSurface({ envelope, onAction }: Props) {
   );
 }
 
+function AgentAdminCreateSkillSurface({ envelope, onAction }: Props) {
+  const createAction = actionById(envelope.actions, 'action-agent-admin-create-skill');
+  const cancelAction = actionById(envelope.actions, 'action-agent-admin-open-agent-detail');
+  return <AgentAdminCreateDocForm envelope={envelope} action={createAction} cancelAction={cancelAction} fields={[['skillName', 'Skill name'], ['purpose', 'Purpose/description'], ['initialContentRequest', 'Free-form initial content request']]} heading="Create skill" helper="The editing agent drafts the first Markdown version from your request." onAction={onAction} />;
+}
+
+function AgentAdminCreateReferenceDocSurface({ envelope, onAction }: Props) {
+  const createAction = actionById(envelope.actions, 'action-agent-admin-create-reference-doc');
+  const cancelAction = actionById(envelope.actions, 'action-agent-admin-open-skill-doc');
+  return <AgentAdminCreateDocForm envelope={envelope} action={createAction} cancelAction={cancelAction} fields={[['referenceDocName', 'Reference doc name'], ['description', 'Short description'], ['initialContentRequest', 'Free-form initial content request']]} heading="Create reference doc" helper="The short description helps the model decide whether to read this reference doc at runtime." onAction={onAction} />;
+}
+
+function AgentAdminCreateDocForm({ envelope, action, cancelAction, fields, heading, helper, onAction }: Props & { action?: SurfaceAction; cancelAction?: SurfaceAction; fields: Array<[string, string]>; heading: string; helper: string }) {
+  const [values, setValues] = useState<Record<string, string>>({});
+  const [formError, setFormError] = useState<FormError | null>(null);
+  const firstFieldRef = useRef<HTMLInputElement | null>(null);
+  const validate = () => {
+    const errors = fields.filter(([field]) => !values[field]?.trim()).map(([field, label]) => ({ field, message: `${label} is required.` }));
+    return errors.length > 0 ? { message: 'Please complete the required fields.', fields: errors } : null;
+  };
+  const submit = () => {
+    const error = validate();
+    setFormError(error);
+    if (error) {
+      firstFieldRef.current?.focus();
+      return;
+    }
+    if (action) onAction?.(action, envelope.surfaceId, stringRecord({ agentDefinitionId: envelope.data.agentDefinitionId, skillDocumentId: envelope.data.skillDocumentId, ...values }));
+  };
+  return (
+    <SurfaceStateFrame envelope={envelope}>
+      <section className="agent-admin-doc-surface agent-admin-create-doc" aria-labelledby={`${envelope.surfaceId}-heading`}>
+        <div className="surface-section-heading"><div><p className="eyebrow">Agent Admin · create</p><h4 id={`${envelope.surfaceId}-heading`}>{heading}</h4></div><p>{helper}</p></div>
+        {formError && <div className="surface-state-inline forbidden" role="alert">{formError.message}</div>}
+        <form className="surface-detail-edit-form" onSubmit={(event) => { event.preventDefault(); submit(); }} noValidate>
+          {fields.map(([field, label], index) => {
+            const fieldError = formError?.fields.find((candidate) => candidate.field === field);
+            const controlId = `${envelope.surfaceId}-${field}`;
+            const errorId = `${controlId}-error`;
+            const isTextarea = field === 'initialContentRequest' || field === 'description' || field === 'purpose';
+            return (
+              <div className="surface-detail-field" key={field}>
+                <label htmlFor={controlId}>{label}</label>
+                {isTextarea ? <textarea className="designed-control surface-detail-control" id={controlId} name={field} value={values[field] ?? ''} aria-describedby={fieldError ? errorId : undefined} aria-invalid={Boolean(fieldError)} onChange={(event) => setValues((current) => ({ ...current, [field]: event.currentTarget.value }))} /> : <input ref={index === 0 ? firstFieldRef : undefined} className="designed-control surface-detail-control" id={controlId} name={field} value={values[field] ?? ''} aria-describedby={fieldError ? errorId : undefined} aria-invalid={Boolean(fieldError)} onChange={(event) => setValues((current) => ({ ...current, [field]: event.currentTarget.value }))} />}
+                {fieldError && <p className="field-helper error" id={errorId}>{fieldError.message}</p>}
+              </div>
+            );
+          })}
+          <div className="surface-action-bar">
+            <button type="submit" className="surface-action-link primary" disabled={!action || Boolean(action.disabled)}>{action?.label ?? heading}{action?.requiresConfirmation ? ' · confirm' : ''}</button>
+            {cancelAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(cancelAction, envelope.surfaceId, stringRecord({ agentDefinitionId: envelope.data.agentDefinitionId, skillDocumentId: envelope.data.skillDocumentId, kind: 'skill', documentId: envelope.data.skillDocumentId }))}>Cancel</button>}
+          </div>
+        </form>
+      </section>
+    </SurfaceStateFrame>
+  );
+}
+
+function AgentAdminDeleteSkillSurface({ envelope, onAction }: Props) {
+  const deleteAction = actionById(envelope.actions, 'action-agent-admin-delete-skill');
+  const cancelAction = actionById(envelope.actions, 'action-agent-admin-open-agent-detail');
+  const referenceDocs = envelope.data.referenceDocs ?? [];
+  return (
+    <SurfaceStateFrame envelope={envelope}>
+      <section className="agent-admin-doc-surface agent-admin-delete-skill" aria-labelledby={`${envelope.surfaceId}-heading`}>
+        <div className="surface-section-heading"><div><p className="eyebrow">Agent Admin · permanent delete</p><h4 id={`${envelope.surfaceId}-heading`}>Delete skill {envelope.data.skillName}</h4></div><p>{envelope.data.permanentDeletionWarning}</p></div>
+        <p className="surface-state-inline forbidden" role="alert">This delete is permanent. Deleted skills and reference docs cannot be restored.</p>
+        <section className="agent-admin-reference-list" aria-label="Reference docs that will also be deleted">
+          <h5>Reference docs affected: {envelope.data.referenceDocCount ?? referenceDocs.length}</h5>
+          {referenceDocs.length === 0 ? <p className="surface-empty-copy">No reference doc list was provided.</p> : referenceDocs.map((reference) => <p key={reference.documentId} className="user-admin-clean-row"><strong>{reference.name}</strong><span>{reference.description}</span></p>)}
+        </section>
+        <div className="surface-action-bar">
+          {deleteAction && <button type="button" className="surface-action-link danger" onClick={() => onAction?.(deleteAction, envelope.surfaceId, stringRecord({ agentDefinitionId: envelope.data.agentDefinitionId, skillDocumentId: envelope.data.skillDocumentId }))} disabled={Boolean(deleteAction.disabled)}>{deleteAction.label}{deleteAction.requiresConfirmation ? ' · confirm' : ''}</button>}
+          {cancelAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(cancelAction, envelope.surfaceId, stringRecord({ agentDefinitionId: envelope.data.agentDefinitionId }))}>Cancel</button>}
+        </div>
+      </section>
+    </SurfaceStateFrame>
+  );
+}
+
+function AgentAdminDeleteReferenceDocSurface({ envelope, onAction }: Props) {
+  const deleteAction = actionById(envelope.actions, 'action-agent-admin-delete-reference-doc');
+  const cancelAction = actionById(envelope.actions, 'action-agent-admin-open-agent-detail');
+  return (
+    <SurfaceStateFrame envelope={envelope}>
+      <section className="agent-admin-doc-surface agent-admin-delete-reference" aria-labelledby={`${envelope.surfaceId}-heading`}>
+        <div className="surface-section-heading"><div><p className="eyebrow">Agent Admin · permanent delete</p><h4 id={`${envelope.surfaceId}-heading`}>Delete reference doc {envelope.data.referenceDocName}</h4></div><p>{envelope.data.permanentDeletionWarning}</p></div>
+        <p className="surface-state-inline forbidden" role="alert">This delete is permanent. Deleted reference docs cannot be restored.</p>
+        <div className="surface-action-bar">
+          {deleteAction && <button type="button" className="surface-action-link danger" onClick={() => onAction?.(deleteAction, envelope.surfaceId, stringRecord({ agentDefinitionId: envelope.data.agentDefinitionId, referenceDocumentId: envelope.data.referenceDocumentId, documentId: envelope.data.referenceDocumentId }))} disabled={Boolean(deleteAction.disabled)}>{deleteAction.label}{deleteAction.requiresConfirmation ? ' · confirm' : ''}</button>}
+          {cancelAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(cancelAction, envelope.surfaceId, stringRecord({ agentDefinitionId: envelope.data.agentDefinitionId }))}>Cancel</button>}
+        </div>
+      </section>
+    </SurfaceStateFrame>
+  );
+}
+
+function AgentAdminRuntimeTracesSurface({ envelope, onAction }: Props) {
+  const rows = (envelope.data.rows ?? []) as AgentAdminRuntimeTraceRow[];
+  const initialFilters = envelope.data.filters ?? {};
+  const [agentDefinitionId, setAgentDefinitionId] = useState(String(initialFilters.agentDefinitionId ?? ''));
+  const [documentIdOrStableId, setDocumentIdOrStableId] = useState(String(initialFilters.documentIdOrStableId ?? ''));
+  const [occurredAtFrom, setOccurredAtFrom] = useState(String(initialFilters.occurredAtFrom ?? ''));
+  const [occurredAtTo, setOccurredAtTo] = useState(String(initialFilters.occurredAtTo ?? ''));
+  const traceAction = actionById(envelope.actions, 'action-agent-admin-open-runtime-traces');
+  return (
+    <SurfaceStateFrame envelope={envelope}>
+      <section className="agent-admin-doc-surface agent-admin-runtime-traces" aria-labelledby={`${envelope.surfaceId}-heading`}>
+        <div className="surface-section-heading"><div><p className="eyebrow">Agent Admin · runtime reads</p><h4 id={`${envelope.surfaceId}-heading`}>Runtime skill/reference read traces</h4></div><p>{envelope.data.contentRedaction ?? 'Trace rows show metadata only; full document content is not shown.'}</p></div>
+        <form className="surface-search-form user-admin-clean-search agent-admin-trace-filter-form" role="search" onSubmit={(event) => { event.preventDefault(); if (traceAction) onAction?.(traceAction, envelope.surfaceId, stringRecord({ agentDefinitionId, documentIdOrStableId, occurredAtFrom, occurredAtTo })); }}>
+          <label htmlFor={`${envelope.surfaceId}-agent-filter`}>Agent</label>
+          <input className="designed-control surface-search-control" id={`${envelope.surfaceId}-agent-filter`} name="agentDefinitionId" value={agentDefinitionId} onChange={(event) => setAgentDefinitionId(event.currentTarget.value)} />
+          <label htmlFor={`${envelope.surfaceId}-doc-filter`}>Skill or reference doc</label>
+          <input className="designed-control surface-search-control" id={`${envelope.surfaceId}-doc-filter`} name="documentIdOrStableId" value={documentIdOrStableId} onChange={(event) => setDocumentIdOrStableId(event.currentTarget.value)} />
+          <label htmlFor={`${envelope.surfaceId}-from-filter`}>From time</label>
+          <input className="designed-control surface-search-control" id={`${envelope.surfaceId}-from-filter`} name="occurredAtFrom" value={occurredAtFrom} onChange={(event) => setOccurredAtFrom(event.currentTarget.value)} />
+          <label htmlFor={`${envelope.surfaceId}-to-filter`}>To time</label>
+          <input className="designed-control surface-search-control" id={`${envelope.surfaceId}-to-filter`} name="occurredAtTo" value={occurredAtTo} onChange={(event) => setOccurredAtTo(event.currentTarget.value)} />
+          <button type="submit" className="surface-action-link secondary" disabled={!traceAction}>Apply trace filters</button>
+        </form>
+        {rows.length === 0 ? <p className="surface-empty-copy">No runtime read traces match the selected filters.</p> : (
+          <div className="user-admin-clean-list agent-admin-trace-list" role="list" aria-label="Runtime read trace rows">
+            {rows.map((row) => <article key={row.traceId} className="user-admin-clean-row agent-admin-trace-row" role="listitem"><span className="user-admin-person"><strong>{row.agentName}</strong><small>{row.documentRead} · {row.documentName}</small></span><span className="user-admin-role">{row.timestamp}</span><span className="status-pill info">{row.requestSessionId}</span><small>{row.userCustomerContext} · {row.decision} · {row.safeSummary}</small></article>)}
+          </div>
+        )}
+      </section>
+    </SurfaceStateFrame>
+  );
+}
+
 function AgentRowButton({ agent, actions, surfaceId, onAction }: { agent: AgentRow; actions: SurfaceAction[]; surfaceId: string; onAction?: Props['onAction'] }) {
   const action = actions.find((candidate) => candidate.actionId === (agent.actionId ?? 'action-agent-admin-open-agent-detail'));
   return (
@@ -328,19 +581,26 @@ function DocumentSummaryButton({ summary, action, agentDefinitionId, surfaceId, 
 function SkillSummary({ skill, actions, agentDefinitionId, surfaceId, onAction }: { skill: AgentAdminSkillDocSummary; actions: SurfaceAction[]; agentDefinitionId?: string; surfaceId: string; onAction?: Props['onAction'] }) {
   const skillAction = actions.find((action) => action.actionId === (skill.actionId ?? 'action-agent-admin-open-skill-doc'));
   const referenceAction = actions.find((action) => action.actionId === 'action-agent-admin-open-reference-doc');
+  const createReferenceAction = actions.find((action) => action.actionId === 'action-agent-admin-open-create-reference-doc');
+  const deleteSkillAction = actions.find((action) => action.actionId === 'action-agent-admin-open-delete-skill');
+  const deleteReferenceAction = actions.find((action) => action.actionId === 'action-agent-admin-open-delete-reference-doc');
   return (
     <section className="agent-admin-skill-group" role="listitem" aria-labelledby={`${surfaceId}-${skill.documentId}-heading`}>
       <DocumentSummaryButton summary={{ kind: 'skill', documentId: skill.documentId, title: skill.name, description: skill.purpose, currentVersion: skill.currentVersion }} action={skillAction} agentDefinitionId={agentDefinitionId} surfaceId={surfaceId} onAction={onAction} />
+      <div className="surface-action-bar" aria-label={`Actions for ${skill.name}`}>
+        {createReferenceAction && <button type="button" onClick={() => onAction?.(createReferenceAction, surfaceId, stringRecord({ agentDefinitionId, skillDocumentId: skill.documentId }))}>{createReferenceAction.label}</button>}
+        {deleteSkillAction && <button type="button" onClick={() => onAction?.(deleteSkillAction, surfaceId, stringRecord({ agentDefinitionId, skillDocumentId: skill.documentId }))}>{deleteSkillAction.label}</button>}
+      </div>
       {skill.referenceDocs.length > 0 && <div className="agent-admin-reference-list" role="list" aria-label={`Reference docs for ${skill.name}`}>
-        {skill.referenceDocs.map((reference) => <ReferenceSummaryButton key={reference.documentId} reference={reference} action={referenceAction} agentDefinitionId={agentDefinitionId} skillDocumentId={skill.documentId} surfaceId={surfaceId} onAction={onAction} />)}
+        {skill.referenceDocs.map((reference) => <div key={reference.documentId} className="agent-admin-reference-row-group"><ReferenceSummaryButton reference={reference} action={referenceAction} agentDefinitionId={agentDefinitionId} skillDocumentId={skill.documentId} surfaceId={surfaceId} onAction={onAction} />{deleteReferenceAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(deleteReferenceAction, surfaceId, stringRecord({ agentDefinitionId, skillDocumentId: skill.documentId, referenceDocumentId: reference.documentId, documentId: reference.documentId }))}>{deleteReferenceAction.label}</button>}</div>)}
       </div>}
     </section>
   );
 }
 
-function ReferenceDocLinks({ referenceDocs, actions, agentDefinitionId, surfaceId, onAction }: { referenceDocs: AgentAdminReferenceDocSummary[]; actions: SurfaceAction[]; agentDefinitionId?: string; surfaceId: string; onAction?: Props['onAction'] }) {
+function ReferenceDocLinks({ referenceDocs, actions, agentDefinitionId, skillDocumentId, surfaceId, onAction }: { referenceDocs: AgentAdminReferenceDocSummary[]; actions: SurfaceAction[]; agentDefinitionId?: string; skillDocumentId?: string; surfaceId: string; onAction?: Props['onAction'] }) {
   const action = actions.find((candidate) => candidate.actionId === 'action-agent-admin-open-reference-doc');
-  return <section className="agent-admin-reference-list" role="list" aria-label="Reference docs">{referenceDocs.map((reference) => <ReferenceSummaryButton key={reference.documentId} reference={reference} action={action} agentDefinitionId={agentDefinitionId} surfaceId={surfaceId} onAction={onAction} />)}</section>;
+  return <section className="agent-admin-reference-list" role="list" aria-label="Reference docs">{referenceDocs.map((reference) => <ReferenceSummaryButton key={reference.documentId} reference={reference} action={action} agentDefinitionId={agentDefinitionId} skillDocumentId={skillDocumentId} surfaceId={surfaceId} onAction={onAction} />)}</section>;
 }
 
 function ReferenceSummaryButton({ reference, action, agentDefinitionId, skillDocumentId, surfaceId, onAction }: { reference: AgentAdminReferenceDocSummary; action?: SurfaceAction; agentDefinitionId?: string; skillDocumentId?: string; surfaceId: string; onAction?: Props['onAction'] }) {

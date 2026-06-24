@@ -254,7 +254,7 @@
 
 ### AADE-04-003: Frontend edit, create/delete, trace flows, and stale governance cleanup
 
-- status: pending
+- status: done
 - source: `backlog/03-api-frontend-build-backlog.md`
 - task brief: `specs/agent-admin-doc-editing-realization/tasks/04-frontend/03-frontend-edit-create-delete-trace-flows.md`
 - depends on: [AADE-04-002]
@@ -280,7 +280,9 @@
   - interactive frontend flows match app-description
   - current tests no longer assert stale governance-console Agent Admin behavior
   - changes and queue update are committed
-- notes: []
+- notes:
+  - completed in this commit with message: `Implement Agent Admin frontend edit flows`
+  - next runnable task after completion: `AADE-05-001` (`pending`, depends on `AADE-04-003`)
 
 ### AADE-05-001: Full-stack validation and terminal verification
 

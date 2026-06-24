@@ -35,9 +35,6 @@ test('Agent Admin fixture rail is doc-editing oriented and SaaS-admin capability
     'agent_admin.get_skill_version',
     'agent_admin.get_reference_version',
     'agent_admin.draft_behavior_change',
-    'agent_admin.activate_behavior_change',
-    'agent_admin.cancel_behavior_change',
-    'agent_admin.rollback_behavior_change',
     'saas_owner.admin.manage',
     'audit.trace.read'
   ]) {
@@ -140,7 +137,7 @@ test('Agent Admin fixtures model document editing, versions, permanence, traces,
   assert.match(surfaces, /inputs: \['reference doc name', 'short description', 'free-form initial content request'\]/);
 });
 
-test('Agent Admin read browsing surfaces are routed to purpose-built renderers', () => {
+test('Agent Admin interactive doc-editing surfaces are routed to purpose-built renderers', () => {
   assert.match(renderer, /isAgentAdminDocEditingSurface\(selectedEnvelope\)/);
   assert.match(renderer, /<AgentAdminDocEditingSurface envelope=\{selectedEnvelope as never\} onAction=\{onAction\}/);
   for (const marker of [
@@ -149,11 +146,23 @@ test('Agent Admin read browsing surfaces are routed to purpose-built renderers',
     'AgentAdminAgentListSurface',
     'AgentAdminAgentDetailSurface',
     'AgentAdminDocumentSurface',
+    'AgentAdminEditSessionSurface',
+    'AgentAdminCreateSkillSurface',
+    'AgentAdminDeleteSkillSurface',
+    'AgentAdminCreateReferenceDocSurface',
+    'AgentAdminDeleteReferenceDocSurface',
+    'AgentAdminRuntimeTracesSurface',
     'AgentAdminVersionHistorySurface',
     'AgentAdminVersionDiffSurface',
+    'agentAdminDocEditingContracts',
     'editInputEnabled === true',
     '!doc.currentVersion ? actionById',
     'Edit input disabled: selected version',
+    'User instruction transcript',
+    'Full proposed Markdown document',
+    'warningsAdvisoryOnly',
+    'permanentDeletionWarning',
+    'Apply trace filters',
     'role="listitem"',
     'aria-label="Document versions"'
   ]) assert.match(agentAdminDocEditingSurface, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));

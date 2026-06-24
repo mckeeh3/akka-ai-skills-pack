@@ -3038,11 +3038,11 @@ class WorkstreamServiceTest {
     assertEquals(tenantCountBeforeRoute, identityRepository.tenantRows().size(), "Core User Admin route must open the create surface without creating an Organization");
 
     var agentAdmin = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
-        "membership-admin", "agent-admin-agent", "show agent catalog", "corr-route-core-agent-admin", "idem-route-core-agent-admin"), "corr-header");
+        "membership-admin", "agent-admin-agent", "show agents", "corr-route-core-agent-admin", "idem-route-core-agent-admin"), "corr-header");
     assertEquals("surface_intent_route", agentAdmin.agentItem().kind());
-    assertEquals("surface-agent-admin-catalog", agentAdmin.surface().surfaceId());
-    assertEquals("agent_admin.catalog.v1", agentAdmin.surface().data().get("surfaceContract"));
-    assertEquals("route-agent-admin-catalog-open-v1", ((Map<?, ?>) ((Map<?, ?>) agentAdmin.surface().data().get("surfaceIntentRoute")).get("metadata")).get("routeId"));
+    assertEquals("surface-agent-admin-agent-list", agentAdmin.surface().surfaceId());
+    assertEquals("agent_admin.agent_list.v1", agentAdmin.surface().data().get("surfaceContract"));
+    assertEquals("route-agent-admin-agent-list-open-v1", ((Map<?, ?>) ((Map<?, ?>) agentAdmin.surface().data().get("surfaceIntentRoute")).get("metadata")).get("routeId"));
 
     var auditTrace = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
         "membership-admin", "audit-trace-agent", "open audit trace", "corr-route-core-audit", "idem-route-core-audit"), "corr-header");

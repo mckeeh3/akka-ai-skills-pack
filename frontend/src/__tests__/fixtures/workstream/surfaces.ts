@@ -3957,7 +3957,7 @@ export const agentAdminDocEditingDeleteSkillSurface = envelope(
   'confirmation',
   'Delete skill',
   'agent-admin-agent',
-  { surfaceContract: 'agent_admin.delete_skill_confirmation.v1', agentDefinitionId: agentAdminDocAgent.agentDefinitionId, skillDocumentId: agentAdminSkillDoc.documentId, skillName: agentAdminSkillDoc.name, permanentDeletionWarning: 'Deleting a skill permanently deletes its reference docs. There is no restore.', referenceDocCount: 1, availableTaskActions: agentAdminAvailableActions(agentAdminSurfaceActions.deleteSkill, agentAdminSurfaceActions.openAgentDetailDoc), authorizedActions: ['action-agent-admin-delete-skill', 'action-agent-admin-open-agent-detail'], systemStates: ['ready', 'confirmed', 'forbidden', 'failure'] },
+  { surfaceContract: 'agent_admin.delete_skill_confirmation.v1', agentDefinitionId: agentAdminDocAgent.agentDefinitionId, skillDocumentId: agentAdminSkillDoc.documentId, skillName: agentAdminSkillDoc.name, permanentDeletionWarning: 'Deleting a skill permanently deletes its reference docs. There is no restore.', referenceDocCount: 1, referenceDocs: [agentAdminReferenceDoc], availableTaskActions: agentAdminAvailableActions(agentAdminSurfaceActions.deleteSkill, agentAdminSurfaceActions.openAgentDetailDoc), authorizedActions: ['action-agent-admin-delete-skill', 'action-agent-admin-open-agent-detail'], systemStates: ['ready', 'confirmed', 'forbidden', 'failure'] },
   [agentAdminSurfaceActions.deleteSkill, agentAdminSurfaceActions.openAgentDetailDoc]
 );
 

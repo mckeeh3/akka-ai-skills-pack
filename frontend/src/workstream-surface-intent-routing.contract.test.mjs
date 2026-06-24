@@ -13,7 +13,7 @@ test('surface intent router has representative no-mutation routes for all five c
   for (const marker of [
     'route-my-account-dashboard-open-v1',
     'route-user-admin-organization-create-v1',
-    'route-agent-admin-catalog-open-v1',
+    'route-agent-admin-agent-list-open-v1',
     'route-audit-trace-dashboard-open-v1',
     'route-governance-policy-dashboard-open-v1'
   ]) {

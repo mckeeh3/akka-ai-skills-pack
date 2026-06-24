@@ -111,13 +111,13 @@ final class DefaultSurfaceIntentRouter implements SurfaceIntentRouter {
           "surface_open",
           AGENT_ADMIN_LIST_DEFINITIONS));
     }
-    if (isAgentAdminCatalogOpen(normalized) && hasCapability(request, AGENT_ADMIN_LIST_DEFINITIONS)) {
+    if (isAgentAdminAgentListOpen(normalized) && hasCapability(request, AGENT_ADMIN_LIST_DEFINITIONS)) {
       return Optional.of(routeResult(
           request,
-          "surface-agent-admin-catalog",
-          "show agent catalog",
+          "surface-agent-admin-agent-list",
+          "show agents",
           Map.of(),
-          "route-agent-admin-catalog-open-v1",
+          "route-agent-admin-agent-list-open-v1",
           "surface_open",
           AGENT_ADMIN_LIST_DEFINITIONS));
     }
@@ -249,10 +249,12 @@ final class DefaultSurfaceIntentRouter implements SurfaceIntentRouter {
         "agent readiness").contains(normalized);
   }
 
-  private static boolean isAgentAdminCatalogOpen(String normalized) {
+  private static boolean isAgentAdminAgentListOpen(String normalized) {
     return List.of(
-        "show agent catalog",
-        "open agent catalog",
+        "show agents",
+        "open agents",
+        "show agent list",
+        "open agent list",
         "list agents",
         "find agent user admin").contains(normalized);
   }
