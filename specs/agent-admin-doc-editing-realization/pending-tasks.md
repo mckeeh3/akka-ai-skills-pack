@@ -39,7 +39,7 @@
 
 ### AADE-01-001: Backend contract and service slice
 
-- status: pending
+- status: done
 - source: `backlog/01-backend-doc-admin-build-backlog.md`
 - task brief: `specs/agent-admin-doc-editing-realization/tasks/01-backend-core/01-backend-contract-service-slice.md`
 - depends on: [AADE-00-001]
@@ -63,7 +63,9 @@
   - service boundary supports list/detail/doc-read/edit-session/version/diff/restore contracts
   - SaaS-admin-only access decisions are tested
   - changes and queue update are committed
-- notes: []
+- notes:
+  - completed in commit message: `Implement Agent Admin doc service contract slice`
+  - next runnable task after completion: `AADE-01-002` (`pending`, depends on `AADE-01-001`)
 
 ### AADE-01-002: Durable document version and lifecycle behavior
 
