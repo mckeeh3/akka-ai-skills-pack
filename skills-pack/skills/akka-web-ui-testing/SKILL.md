@@ -8,12 +8,19 @@ description: Test Akka-hosted full web apps, including standard frontend project
 Use this skill when adding or reviewing tests for Akka-hosted browser apps.
 
 
+## Lifecycle and compile boundary
+
+Testing work belongs to the build/compile phase unless the selected task is explicitly runtime verification or manual-test reconciliation. Use this skill to prove the component-specific mechanics and the declared worker/harness/actor-adapter/governed-tool/capability path; do not widen a component-testing task into unrelated planning, product repair, or manual-failure triage. For feature-bearing generated SaaS work, passing component tests can support `manual-ready`; `runtime-ready` still requires the real local API/UI/agent path, provider/fail-closed evidence where relevant, and reconciliation of manual findings through `../docs/manual-test-reconciliation.md`.
+
 ## Generated SaaS input contract
 
 Use `../references/generated-saas-input-contract.md`, `../docs/app-worker-tool-model.md`, and `../docs/app-description-to-code-compile-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the responsible worker, execution harness, actor adapter, governed tool, capability, AuthContext/scope, DTO, side-effect/idempotency policy, trace/result surface, selected implementation path, and tests are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-description-to-code-compile-contract.md`
+- `../docs/manual-test-reconciliation.md` when tests are part of a manual/runtime readiness claim or remediation loop
 - `../docs/web-ui-quality-checklist.md`
 - `../docs/web-ui-style-guide.md`
 - `../akka-http-endpoint-testing/SKILL.md`

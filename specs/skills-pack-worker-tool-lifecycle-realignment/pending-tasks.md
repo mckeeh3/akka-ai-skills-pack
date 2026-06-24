@@ -340,7 +340,7 @@
 
 ### TASK-014: Migrate planning, testing, and verification families
 
-- status: pending
+- status: done
 - source: specs/skills-pack-worker-tool-lifecycle-realignment/migration-strategy.md
 - task brief: specs/skills-pack-worker-tool-lifecycle-realignment/tasks/014-migrate-planning-testing-verification-family.md
 - depends on: [TASK-013]

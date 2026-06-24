@@ -12,7 +12,7 @@ This is a narrower follow-on planning skill than `akka-prd-to-specs-backlog`.
 ## Goal
 
 Create or update a single backlog file that is tightly aligned with one existing slice or sprint spec and the current intent graph nodes it realizes, and is detailed enough to drive focused coding sessions.
-The backlog should end in bounded harness-sized task items, not just class lists and prose.
+The backlog should end in bounded harness-sized task items, not just class lists and prose. Each runnable item must carry the lifecycle/readiness target and compile-contract chain from the source graph, or be marked blocked/non-runtime with a reason.
 For generated secure AI-first SaaS, each backlog item must preserve the vertical workstream graph chain from the source increment: workstream → role-specific dashboard attention → human surface graph node/action or workstream event → deterministic surface intent route/prefill behavior for composer-enabled surfaces → internal workstream agent graph delegation/result when applicable → governed-tool id/class inside capability and surface/action maps → selected Akka substrate/exposure channel → request-based workstream Agent or durable AutonomousAgent task candidate → notification/projection → audit/work trace.
 Also create or update matching entries in `specs/pending-tasks.md` so follow-on implementation can proceed one task per fresh context.
 
@@ -45,6 +45,10 @@ This skill should be used after:
 
 Read these first if present:
 - `../README.md`
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-to-code-compile-contract.md`
+- `../docs/manual-test-reconciliation.md` when the slice/sprint requires manual runtime validation or failure reconciliation
 - `../akka-prd-to-specs-backlog/SKILL.md`
 - `../docs/intent-compiler.md`
 - `../docs/current-intent-model.md`
@@ -73,6 +77,8 @@ If a matching backlog file already exists:
 - preserve numbering and naming consistency
 
 ## What this skill must produce
+
+Use `../docs/app-description-to-code-compile-contract.md` for the implementation-ready task-brief/queue checklist and `../docs/app-development-lifecycle.md` for readiness vocabulary. For feature-bearing generated SaaS work, each backlog task should name the manual runtime scenario or explicitly state why runtime evidence is not applicable.
 
 Use `../docs/intent-compiler-skill-contracts.md` and `../docs/intent-to-realization-flow.md` for the detailed backlog and queue output contract. Preserve generated-SaaS/SaaS Foundation App context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
 
@@ -141,6 +147,7 @@ Before finishing, verify:
 - the backlog filename matches the slice filename by number and stem, or the sprint filename by number and stem after dropping `-sprint`
 - the backlog references the right prerequisite specs and current-intent graph nodes
 - every generated task preserves or inherits current-intent provenance
+- every runnable backlog/queue item carries the worker/harness/adapter/governed-tool/capability compile contract or an explicit internal/foundation/cross-cutting/docs-only exemption
 - the class list fits the slice or sprint scope
 - the endpoint list fits the slice or sprint scope
 - UI tasks include the selected style guide in required reads, or are blocked by the style-selection question

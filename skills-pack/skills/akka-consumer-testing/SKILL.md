@@ -7,6 +7,10 @@ description: Write Akka Java SDK Consumer integration tests using TestKitSupport
 
 Use this skill when testing Consumer behavior.
 
+## Lifecycle and compile boundary
+
+Testing work belongs to the build/compile phase unless the selected task is explicitly runtime verification or manual-test reconciliation. Use this skill to prove the component-specific mechanics and the declared worker/harness/actor-adapter/governed-tool/capability path; do not widen a component-testing task into unrelated planning, product repair, or manual-failure triage. For feature-bearing generated SaaS work, passing component tests can support `manual-ready`; `runtime-ready` still requires the real local API/UI/agent path, provider/fail-closed evidence where relevant, and reconciliation of manual findings through `../docs/manual-test-reconciliation.md`.
+
 ## Capability-first test role
 
 Consumer tests should verify reactive capability behavior, not only that a handler runs. Cover authority/provenance, tenant/customer scope, idempotent duplicate delivery, retry versus terminal denial/no-op semantics, scoped publication, and audit/work-trace effects for protected or consequential reactions.
@@ -18,6 +22,9 @@ Use this skill only for a compile-ready slice under `../docs/app-description-to-
 ## Required reading
 
 Read these first if present:
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-description-to-code-compile-contract.md`
+- `../docs/manual-test-reconciliation.md` when tests are part of a manual/runtime readiness claim or remediation loop
 - `akka-context/sdk/consuming-producing.html.md`
 
 ## Test modes

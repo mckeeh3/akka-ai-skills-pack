@@ -8,6 +8,10 @@ description: Write Akka Java SDK gRPC endpoint integration tests using TestKitSu
 Use this skill for gRPC endpoint integration tests.
 
 
+## Lifecycle and compile boundary
+
+Testing work belongs to the build/compile phase unless the selected task is explicitly runtime verification or manual-test reconciliation. Use this skill to prove the component-specific mechanics and the declared worker/harness/actor-adapter/governed-tool/capability path; do not widen a component-testing task into unrelated planning, product repair, or manual-failure triage. For feature-bearing generated SaaS work, passing component tests can support `manual-ready`; `runtime-ready` still requires the real local API/UI/agent path, provider/fail-closed evidence where relevant, and reconciliation of manual findings through `../docs/manual-test-reconciliation.md`.
+
 ## Capability-first exposure rule
 
 Treat every gRPC method as an `api_call`, service, or `internal_call` actor adapter for a named governed tool inside a backend capability, not as the governed tool or capability itself. Before adding or changing a method, identify the responsible worker/harness, actor adapter, governed tool id, capability id, allowed actors/callers, `AuthContext`, tenant/customer scope, protobuf input/output schema, side effects, idempotency, approval policy, audit/trace obligations, selected Akka implementation path, and tests.
@@ -19,6 +23,9 @@ When the same capability is also exposed through UI, HTTP, agent tools, workflow
 ## Required reading
 
 Read these first if present:
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-description-to-code-compile-contract.md`
+- `../docs/manual-test-reconciliation.md` when tests are part of a manual/runtime readiness claim or remediation loop
 - `akka-context/sdk/grpc-endpoints.html.md`
 
 ## Test harness rules

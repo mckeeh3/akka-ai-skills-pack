@@ -55,6 +55,7 @@ Read first when present/relevant:
 - `../docs/app-development-lifecycle.md` for interview/build/manual readiness vocabulary;
 - `../docs/app-worker-tool-model.md` for the worker/harness/adapter/governed-tool/capability/Akka separation;
 - `../docs/app-description-to-code-compile-contract.md` before treating any task as implementation-ready;
+- `../docs/manual-test-reconciliation.md` when the plan includes manual/browser runtime validation or tester feedback loops;
 - `../core-saas-foundation/SKILL.md` for mandatory secure SaaS scope;
 - `../docs/intent-compiler.md`, `../docs/current-intent-model.md`, and `../docs/intent-to-realization-flow.md` when input needs current-intent provenance or workstream binding before component selection;
 - `../docs/full-core-foundation-readiness.md` for canonical SaaS Foundation App inventory; summarize it, do not paste it;
@@ -90,10 +91,11 @@ Before coding, produce a component plan with these sections. Keep each concise; 
 15. Capability-to-component mapping
 16. Chosen components and why each exists
 17. Compile contract inherited by the implementation task: graph nodes, workers, harnesses, adapters, governed tools, capabilities, traces, selected substrates, checks, and manual scenario or non-runtime exemption
-18. Skill routing for implementation and tests
-19. Open questions/assumptions
-20. Vertical implementation order
-21. Required tests
+18. Manual/runtime validation and reconciliation path: readiness target, smoke scenario, evidence expected, and how findings route back to app-description/spec/task updates
+19. Skill routing for implementation and tests
+20. Open questions/assumptions
+21. Vertical implementation order
+22. Required tests
 
 A plan is incomplete if it names components without saying which current-intent graph nodes, functional agent, workstream, surface, capability, authority boundary, trace, and tests each increment belongs to.
 
@@ -213,7 +215,7 @@ Before handoff, verify:
 - scope label is explicit;
 - fixed package `ai.first` is recorded;
 - secure SaaS foundation obligations are included or explicitly out of scope;
-- lifecycle/readiness target and compile contract are explicit;
+- lifecycle/readiness target, compile contract, and manual/runtime reconciliation path are explicit;
 - workstreams/surfaces/capabilities/governed-tool catalogs and actor adapters precede component choices;
 - every chosen component has a reason and focused skill route;
 - authority, confirmation/approval, idempotency, transaction boundary, side effects, partial-failure/result surfaces, traces, and tests are explicit;

@@ -7,6 +7,10 @@ description: Test Akka Autonomous Agents with TestKitSupport, TestModelProvider.
 
 Use this skill when validating Autonomous Agent components, task lifecycles, task rules, tool calls, delegation, handoff, teams, moderation, notifications, or generated-app governance around autonomous tasks.
 
+## Lifecycle and compile boundary
+
+Testing work belongs to the build/compile phase unless the selected task is explicitly runtime verification or manual-test reconciliation. Use this skill to prove the component-specific mechanics and the declared worker/harness/actor-adapter/governed-tool/capability path; do not widen a component-testing task into unrelated planning, product repair, or manual-failure triage. For feature-bearing generated SaaS work, passing component tests can support `manual-ready`; `runtime-ready` still requires the real local API/UI/agent path, provider/fail-closed evidence where relevant, and reconciliation of manual findings through `../docs/manual-test-reconciliation.md`.
+
 ## Worker/tool/capability alignment
 
 For generated AI-first SaaS app work, treat the agent runtime, autonomous task loop, or governed artifact in scope as a software-worker harness concern, not as the product operation or authorization boundary. Keep the chain explicit:
@@ -24,6 +28,11 @@ Human surface availability, prompt/skill/reference text, model output, task inst
 
 
 ## Required reading
+
+Read these lifecycle docs first:
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-description-to-code-compile-contract.md`
+- `../docs/manual-test-reconciliation.md` when tests are part of a manual/runtime readiness claim or remediation loop
 
 Read before validating generated-app worker tasks:
 - `../docs/autonomous-agent-worker-runtime-pattern.md`

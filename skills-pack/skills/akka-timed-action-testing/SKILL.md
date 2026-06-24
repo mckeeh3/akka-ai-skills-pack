@@ -7,6 +7,10 @@ description: Test Akka timer-backed flows with TimedActionTestkit for unit behav
 
 Use this skill when validating a timed action component or a full timer-backed flow.
 
+## Lifecycle and compile boundary
+
+Testing work belongs to the build/compile phase unless the selected task is explicitly runtime verification or manual-test reconciliation. Use this skill to prove the component-specific mechanics and the declared worker/harness/actor-adapter/governed-tool/capability path; do not widen a component-testing task into unrelated planning, product repair, or manual-failure triage. For feature-bearing generated SaaS work, passing component tests can support `manual-ready`; `runtime-ready` still requires the real local API/UI/agent path, provider/fail-closed evidence where relevant, and reconciliation of manual findings through `../docs/manual-test-reconciliation.md`.
+
 ## Capability-first test role
 
 Timed action tests should verify scheduled capability behavior, not only timer mechanics. Cover scheduler authority, system/service principal, tenant/customer scope, approval/policy reference, idempotent duplicate execution, stale/forbidden no-op semantics, retry behavior, and audit/work-trace effects for protected or consequential scheduled work.
@@ -17,6 +21,9 @@ Use this skill only for a compile-ready slice under `../docs/app-description-to-
 
 ## Read first
 
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-description-to-code-compile-contract.md`
+- `../docs/manual-test-reconciliation.md` when tests are part of a manual/runtime readiness claim or remediation loop
 - `akka-context/sdk/ai-coding-assistant-guidelines.html.md`
 
 ## Test modes

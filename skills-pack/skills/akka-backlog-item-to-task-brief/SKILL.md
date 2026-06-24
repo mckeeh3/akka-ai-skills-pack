@@ -13,6 +13,7 @@ This is the **leaf planning skill** below `akka-prd-to-specs-backlog` and `akka-
 
 Create or update one small task brief under `specs/tasks/` that:
 - maps to exactly one slice, one backlog item, and the current-intent graph node(s) being realized
+- records lifecycle phase/readiness target and the compile-contract chain for one focused implementation run
 - narrows scope to one focused implementation run
 - names the smallest required reads
 - makes non-goals explicit
@@ -51,6 +52,10 @@ This skill should normally be used after:
 
 Read these first if present:
 - `../README.md`
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-to-code-compile-contract.md`
+- `../docs/manual-test-reconciliation.md` when the brief covers manual/runtime validation or remediation
 - `../akka-prd-to-specs-backlog/SKILL.md`
 - `../akka-slice-spec-to-backlog/SKILL.md`
 - `../docs/intent-compiler.md`
@@ -77,6 +82,8 @@ If a matching task brief already exists:
 - preserve numbering and naming consistency within the slice task directory
 
 ## What this skill must produce
+
+Use `../docs/app-description-to-code-compile-contract.md` as the minimum task-brief checklist. A feature-bearing brief must name the responsible worker, harness, actor adapter, governed-tool id, capability id, AuthContext/scope, selected substrates, trace obligations, required checks, and manual runtime scenario; otherwise mark the queue entry blocked for graph repair instead of making it runnable.
 
 Use `../docs/intent-compiler-skill-contracts.md` and `../docs/intent-to-realization-flow.md` for the detailed task-brief and queue output contract. Preserve generated-SaaS/SaaS Foundation App context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
 
@@ -134,6 +141,7 @@ Avoid:
 
 Before finishing, verify:
 - the task brief points to the correct slice, backlog, and current-intent graph node(s)
+- lifecycle phase/readiness target and compile-contract fields are present or explicitly non-runtime/docs-only
 - the scope is smaller than the backlog item, not larger
 - the reads are the minimum needed
 - non-goals are explicit

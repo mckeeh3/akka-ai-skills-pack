@@ -26,6 +26,7 @@ This is a drift-repair skill. It should diagnose and update planning/spec/queue 
 Read these first when present:
 
 - `../README.md`
+- `../docs/app-development-lifecycle.md`
 - `../references/generated-saas-runtime-completion.md`
 - `../docs/intent-to-realization-flow.md`
 - `../docs/app-worker-tool-model.md`

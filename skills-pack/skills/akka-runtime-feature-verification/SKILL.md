@@ -28,6 +28,7 @@ This is a validator/reviewer and drift-repair skill. It may update specs/queue e
 Read these first when present:
 
 - `../README.md`
+- `../docs/app-development-lifecycle.md`
 - `../references/generated-saas-runtime-completion.md`
 - `../docs/intent-to-realization-flow.md`
 - `../docs/app-worker-tool-model.md`
