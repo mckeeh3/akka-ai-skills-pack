@@ -4,6 +4,7 @@ Use this contract when PRD/spec planning creates follow-on implementation work t
 
 Purpose:
 - persist follow-on work after decomposition, backlog creation, task-brief creation, and resolution or deferral of blocking questions
+- preserve lifecycle phase/readiness targets and the compile contract needed for one bounded build/compile run
 - preserve full-stack secure AI-first SaaS operating-model constraints in implementation tasks, including governance, supervision UI, audit, and outcomes
 - make the next runnable task obvious
 - keep each implementation run bounded to one task
@@ -111,6 +112,7 @@ Use this structure. For SaaS app queues, the first runnable tasks must cover the
   - <observable completion criterion>
 - notes:
   - <optional assumptions, constraints, provenance, or links>
+  - lifecycle/readiness: <build/compile phase target such as compile-ready -> manual-ready, runtime-ready for feature-bearing smoke, or docs-only/non-runtime exemption>
   - source requirement ids: <optional stable requirement IDs when available>
   - source capability ids: <optional app-description capability IDs when available>
   - vertical contract: <workstreamId/functional agent or internal/foundation scope; attention category or non-attention reason; role-specific dashboard id/purpose; human surface graph node/state/action edge or non-UI trigger; workstream tool catalog context; governed-tool id/type/exposure and actor adapter/source (surface_action/browser-tool, human_chat_tool_plan, agent_tool_call/agent-tool, internal-tool, workflow/timer/consumer/MCP-tool, API); capability id/class; confirmation/approval behavior; idempotency/transaction boundary; result/partial-failure surface; API/exposure channel; selected Akka substrate; internal workstream agent graph delegation/result surface when relevant; events/notifications/projections; audit/work trace; tests/local validation>
@@ -132,6 +134,7 @@ Use this section in task briefs:
 ```md
 ## Vertical workstream contract
 
+- Lifecycle / readiness target: <build/compile, manual-ready/runtime-ready target, or explicit docs-only/non-runtime exemption>
 - Workstream / functional agent: <workstream id and backing functional/context-area agent, or explicit internal-only/foundation/cross-cutting scope>
 - Attention category or non-attention reason: <approval/decision/exception/blocked/etc. or why no attention item applies>
 - Role-specific dashboard / surface: <dashboard or surface id/purpose and target role/AuthContext>

@@ -11,14 +11,25 @@ Use this as the top-level starting skill when the task begins from accepted curr
 
 ## Goal
 
-Produce a compact implementation contract that:
+Produce a compact implementation contract that compiles accepted intent through the canonical chain:
 
-- interprets product intent through the secure AI-first SaaS operating model when generated-app scope is in play;
-- derives governed backend capabilities before selecting Akka components or exposure channels;
-- maps capabilities and governed workstream tools to the smallest component set that preserves durability, authority, orchestration, query, timing, integration, AI, actor-adapter exposure, and edge semantics;
-- labels readiness scope before planning implementation;
-- routes to the smallest relevant skill set for code and tests;
-- gives vertical implementation order, not just a component list.
+```text
+worker
+→ execution harness
+→ actor adapter
+→ governed tool
+→ capability
+→ Akka implementation
+```
+
+The plan must:
+
+- interpret product intent through the secure AI-first SaaS operating model when generated-app scope is in play;
+- derive governed backend capabilities before selecting Akka components or exposure channels;
+- map capabilities and governed workstream tools to the smallest component set that preserves durability, authority, orchestration, query, timing, integration, AI, actor-adapter exposure, and edge semantics;
+- label lifecycle/readiness scope before planning implementation;
+- route to the smallest relevant skill set for code and tests;
+- give vertical implementation order, not just a component list.
 
 ## Supported inputs
 
@@ -41,6 +52,10 @@ Read first when present/relevant:
 
 - target project path: AGENTS.md for authoritative project rules and coding constraints;
 - `../README.md` for current skill routing;
+- `../docs/app-development-lifecycle.md` for interview/build/manual readiness vocabulary;
+- `../docs/app-worker-tool-model.md` for the worker/harness/adapter/governed-tool/capability/Akka separation;
+- `../docs/app-description-to-code-compile-contract.md` before treating any task as implementation-ready;
+- `../docs/manual-test-reconciliation.md` when the plan includes manual/browser runtime validation or tester feedback loops;
 - `../core-saas-foundation/SKILL.md` for mandatory secure SaaS scope;
 - `../docs/intent-compiler.md`, `../docs/current-intent-model.md`, and `../docs/intent-to-realization-flow.md` when input needs current-intent provenance or workstream binding before component selection;
 - `../docs/full-core-foundation-readiness.md` for canonical SaaS Foundation App inventory; summarize it, do not paste it;
@@ -57,28 +72,14 @@ Read first when present/relevant:
 
 ## Output: component plan sections
 
-Before coding, produce a component plan with these sections. Keep each concise; link canonical references instead of duplicating checklists.
+Before coding, produce a compact component plan; link canonical references instead of duplicating checklists. Include:
 
-1. Inputs
-2. Java base package: fixed `ai.first`
-3. Scope label: `SaaS Foundation App maintenance/extension`, `business-domain extension`, `app-specific feature`, or another explicit narrower scope
-4. AI-first interpretation
-5. Core secure SaaS foundation obligations
-6. Workstream decomposition decision
-7. Agent workstream model and retained human authority
-8. Workforce decomposition: human, functional-agent, internal/autonomous/evaluator agent, and system workers
-9. Attention/dashboard model
-10. Human surface graph and surface actions
-11. Surface/action-to-capability and governed-tool mapping, including actor adapters/exposure channels (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/workflow/timer/consumer/MCP/internal), confirmation/approval behavior, idempotency/transaction boundary, result/partial-failure surface, and trace source
-12. Internal agent/autonomous-task candidates
-13. Workstream expertise plan
-14. Capability and governed-tool inventory
-15. Capability-to-component mapping
-16. Chosen components and why each exists
-17. Skill routing for implementation and tests
-18. Open questions/assumptions
-19. Vertical implementation order
-20. Required tests
+- inputs, fixed Java package `ai.first`, explicit scope label, and lifecycle/readiness target;
+- AI-first, secure foundation, workstream, workforce, attention/dashboard, surface graph, internal-agent, and workstream-expertise decisions;
+- capability/governed-tool inventory with actor adapters or exposure channels, confirmation/approval, idempotency/transaction boundary, result/partial-failure surface, and trace source;
+- capability-to-component mapping, chosen components with reasons, implementation skill routing, vertical order, and required tests;
+- inherited compile contract: graph nodes, workers, harnesses, adapters, governed tools, capabilities, traces, selected substrates, checks, and manual scenario or non-runtime exemption;
+- open questions only where implementation would otherwise guess authority, scope, risk, evidence, or runtime behavior.
 
 A plan is incomplete if it names components without saying which current-intent graph nodes, functional agent, workstream, surface, capability, authority boundary, trace, and tests each increment belongs to.
 
@@ -101,16 +102,7 @@ Route complete invitation onboarding to `akka-saas-invitation-onboarding`; reusa
 
 ### 3. Interpret AI-first operating model
 
-Before CRUD or component decomposition, extract:
-
-- human objective, owner, success criteria, constraints, definition of done;
-- delegated work vs retained human authority;
-- goals, plans, tasks, policies, decisions, approvals, exceptions, traces, outcomes;
-- worker roster: human workers, functional-agent workers, internal/autonomous/evaluator agent workers, and system workers;
-- agent/team responsibilities, tools, permissions, thresholds, escalation rules;
-- supervision, decision, governance, digest, audit, and outcome UI needs.
-
-If the product is clearly non-agentic, say so and continue with secure foundation-first Akka decomposition. Do not force optional AI-first patterns beyond the mandatory generated-app foundation.
+Before CRUD or component decomposition, summarize the objective, retained human authority, worker roster, delegated work, policies, decisions, traces, outcomes, and supervision/governance UI needs. If the product is clearly non-agentic, say so and continue with secure foundation-first Akka decomposition. Do not force optional AI-first patterns beyond the mandatory generated-app foundation.
 
 ### 4. Model workstreams and surfaces before backend components
 
@@ -120,18 +112,9 @@ If this inventory is absent, stop and add it or record a blocking gap.
 
 ### 5. Derive capabilities and governed tools
 
-For each operation/query/action/event/tool, capture:
+For each operation/query/action/event/tool, capture the responsible worker and execution harness, stable capability and governed-tool ids, class, allowed actors/callers, AuthContext and scope, schemas, validation/redaction, confirmation/approval, idempotency/transaction boundary, side effects, exposure channels, audit/work-trace obligations, and success/forbidden/tenant-isolation/idempotency/approval/audit/UI tests.
 
-- stable capability id/name and governed-tool id when executable;
-- class: read/evidence, command, proposal, approval, workflow, policy/governance, trace/audit, scheduled, reactive, task lifecycle, projection read, integration;
-- actors/callers, actor adapter/exposure channel (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/workflow/timer/consumer/MCP/internal), AuthContext, tenant/customer scope, roles/capabilities, denial shape;
-- input/output schemas, validation, redaction, confirmation binding, approval policy, idempotency, transaction boundary, correlation;
-- data reads/writes, side effects, external calls, topics, timers, emails, notifications;
-- policy/approval/escalation, audit/work-trace obligations, exposure channels;
-- browser UI, agent/tool, workflow/timer/consumer/MCP implications;
-- required success/forbidden/tenant-isolation/idempotency/approval/audit/UI tests.
-
-Only after this should the plan choose Akka components.
+Only after this should the plan choose Akka components. If the task names only a page, route, endpoint, component method, or `@FunctionTool`, repair the compile inputs or block instead of inventing the worker/tool/capability contract.
 
 ### 6. Select Akka substrates by capability shape
 
@@ -197,6 +180,7 @@ Before handoff, verify:
 - scope label is explicit;
 - fixed package `ai.first` is recorded;
 - secure SaaS foundation obligations are included or explicitly out of scope;
+- lifecycle/readiness target, compile contract, and manual/runtime reconciliation path are explicit;
 - workstreams/surfaces/capabilities/governed-tool catalogs and actor adapters precede component choices;
 - every chosen component has a reason and focused skill route;
 - authority, confirmation/approval, idempotency, transaction boundary, side effects, partial-failure/result surfaces, traces, and tests are explicit;

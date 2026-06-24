@@ -14,6 +14,7 @@ Use this skill when the user wants a PRD, high-level requirements document, or b
 Create or update a repo-ready planning package that lets later harness sessions implement one bounded task at a time. Treat the PRD or requirements file as source intent: compile it into the current intent graph first, then materialize specs, backlogs, questions, and tasks from that current-state model. The package must:
 
 - cite current-intent graph provenance in solution plans, specs, backlogs, task briefs, pending questions, and pending tasks;
+- record lifecycle phase/readiness targets and compile-contract provenance for generated task briefs and pending tasks;
 - interpret product intent through the secure AI-first SaaS operating model when generated-app scope is in play;
 - derive workstreams, attention/dashboard contracts, surface graph, deterministic surface intent routing, governed workstream tool catalogs, actor adapters/exposure channels, and backend capabilities before Akka substrates;
 - produce a master solution plan with fixed Java base package `ai.first`;
@@ -59,6 +60,10 @@ If the target project already contains app-description/specs/source/frontend art
 Read first when present/relevant:
 
 - `../README.md`
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-to-code-compile-contract.md`
+- `../docs/manual-test-reconciliation.md` when planning manual/browser runtime validation or remediation loops
 - `../akka-solution-decomposition/SKILL.md`
 - `../core-saas-foundation/SKILL.md`
 - `../docs/intent-compiler.md`
@@ -116,6 +121,10 @@ When updating existing queues:
 - do not duplicate tasks with new ids when updating the same work;
 - update indexes and backlinks together.
 
+## Task brief and queue compile contract
+
+Every generated backlog item, task brief, and pending task that could drive implementation must inherit enough build/compile context for a fresh worker to proceed without guessing. Include the lifecycle phase and readiness target, current-intent/app-description graph nodes or explicit cross-cutting/docs-only scope, responsible workers, harnesses, actor adapters, governed-tool ids, capability ids, AuthContext/scope, confirmation/approval, idempotency/transaction, result/partial-failure surfaces, audit/work trace expectations, selected Akka/frontend/API substrates, required checks, and a manual runtime scenario or explicit non-runtime exemption. If a PRD can only produce page/component/CRUD tasks without that chain, block the affected task for app-description/spec repair instead of materializing it as runnable.
+
 ## Runtime completion and validation
 
 For generated-app implementation tasks, link `../references/generated-saas-runtime-completion.md`. Plans/backlogs must require validation through the intended local Akka/API/UI path for the selected scope. Fixture-only, mock-only, deterministic/model-less normal runtime behavior cannot satisfy named runtime features. Backlogs and pending tasks must distinguish readiness levels (`described`, `surface-ready`, `backend-ready`, `frontend-rendered`, `api-smoked`, `browser-smoked`, `manual-ready`, `runtime-ready`) and require runtime evidence before a feature-bearing task can be marked `done` as `runtime-ready`.
@@ -137,6 +146,7 @@ Before finishing, verify:
 - requested scope is explicit and honestly named;
 - fixed package `ai.first` is recorded;
 - current-intent graph provenance is recorded for generated specs, backlogs, questions, and tasks;
+- lifecycle phase/readiness target and compile-contract fields are present in generated task briefs and pending tasks, or the item is blocked/non-runtime with a reason;
 - existing app-description/specs/source constraints were preserved;
 - foundation obligations are included or explicitly out of scope;
 - workstreams, surfaces, deterministic surface intent routes, capabilities, governed tool ids, actor adapters/exposure channels, confirmation/approval behavior, transaction/idempotency semantics, traces, and Akka components are linked;

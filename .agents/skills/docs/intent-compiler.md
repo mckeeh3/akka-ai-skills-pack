@@ -47,5 +47,7 @@ Use these documents as the active source of truth for intent-processing skills:
 - [Incremental intent processing](incremental-intent-processing.md)
 - [Intent to realization flow](intent-to-realization-flow.md)
 - [Intent compiler skill contracts](intent-compiler-skill-contracts.md)
+- [App-description component graph](app-description-component-graph.md)
+- [App-description to code compile contract](app-description-to-code-compile-contract.md)
 
 Legacy description-first or PRD-first documents may contain historical detail, but active skills should prefer this compiler model unless a focused implementation skill explicitly requires another reference.

@@ -7,6 +7,14 @@ description: Realize the current app description as generated code, tests, and r
 
 Use this skill when the authoritative app-description/spec artifacts are ready to become runnable application changes. In this repository and downstream forks, realization means extending the root SaaS Foundation App workspace, not creating a parallel duplicate app from installed `.agents` assets.
 
+## Lifecycle classification
+
+- Phase: build-compile.
+- Kind: realizer.
+- Family: app-description.
+- Living-graph contract: realize a bounded slice of the app-description current-intent graph and preserve worker, execution-harness, actor-adapter, governed-tool, capability, security, trace, test, and realization provenance in the generated repository changes.
+- Compile contract: follow `../docs/app-description-to-code-compile-contract.md` before editing, during implementation routing, and when reporting validation or reconciliation; do not treat code, UI, endpoints, or agent tools as product authority outside the graph contract.
+
 ## Required reading
 
 - `../docs/intent-compiler.md`

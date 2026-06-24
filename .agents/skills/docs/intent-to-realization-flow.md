@@ -1,6 +1,6 @@
 # Intent to Realization Flow
 
-Intent realization maps the current intent graph to specs, task queues, generated code, tests, and runtime validation evidence. It should not realize stale historical intent or isolated component work without a traceable reason.
+Intent realization maps the current intent graph to specs, task queues, generated code, tests, and runtime validation evidence. It should not realize stale historical intent or isolated component work without a traceable reason. Use [App-description component graph](app-description-component-graph.md) for canonical graph node families and links, [App worker and governed-tool model](app-worker-tool-model.md) for the worker, execution harness, actor adapter, governed tool, capability, and Akka implementation chain, and [App-description to code compile contract](app-description-to-code-compile-contract.md) for bounded build/compile slices.
 
 ## Realization chain
 
@@ -18,6 +18,34 @@ current intent graph
 ```
 
 Each downstream artifact should cite the upstream current-intent node or accepted spec that justifies it.
+
+## Phase-aware routing
+
+Use the lifecycle phase to decide which skill family owns the next step:
+
+| Phase | Routing purpose | Typical outputs |
+|---|---|---|
+| `interview` | Convert user/business input, review findings, or manual-test observations into current-intent graph changes or blockers. | normalized input, app-description deltas, pending questions, description-ready task scope |
+| `build-compile` | Compile description-ready graph nodes or one selected queued task into maintained artifacts. | specs, task briefs, docs, code, tests, configuration, automated-check evidence, manual-ready path |
+| `manual-test` | Prove or falsify the real runtime/API/UI/agent path and feed findings back into the request stream. | runtime evidence, reconciliation findings, app-description/spec/task/code/test repairs, blockers |
+| `cross-phase` | Route broad architecture, foundation, pack-maintenance, or review work without replacing the focused phase skills. | route decision, impact map, readiness summary, doctrine/metadata updates |
+
+The standard routing metadata fields are `phase`, `kind`, `family`, `consumes`, `produces`, and `routes-to`; see [Intent compiler skill contracts](intent-compiler-skill-contracts.md). These fields are descriptive contracts for humans and harnesses, not permission to skip required reads or task-specific checks.
+
+## Worker/tool/capability routing chain
+
+Feature-bearing realization should preserve this route before implementation mechanics are chosen:
+
+```text
+worker
+  -> execution harness
+    -> actor adapter
+      -> governed tool
+        -> capability
+          -> Akka implementation
+```
+
+Interview skills should discover or repair missing workers, harnesses, adapters, tools, capabilities, policies, traces, and tests. Build/compile skills should inherit the chain and implement only the selected adapters and substrates. Manual-test skills should verify the same chain through the real path and classify any break at the exact layer that failed.
 
 ## Workstream vertical contract
 
@@ -87,4 +115,4 @@ When code, tests, or runtime behavior drift from current intent, choose one of t
 
 Do not silently let implementation details become de facto product intent.
 
-See also [Intent Compiler](intent-compiler.md) and [Current intent model](current-intent-model.md).
+See also [Intent Compiler](intent-compiler.md), [Current intent model](current-intent-model.md), [App-description component graph](app-description-component-graph.md), and [App-description to code compile contract](app-description-to-code-compile-contract.md).

@@ -7,7 +7,13 @@ description: Interpret high-level product intent as an AI-first SaaS operating m
 
 Use this as the top-level interpretation skill when a product, PRD, feature request, or architecture prompt involves delegated operational work, autonomous or semi-autonomous decisions, agent teams, human supervision, policy controls, approvals, exceptions, audit traces, or outcome accountability.
 
-This is a routing and framing skill. It does not replace `core-saas-foundation`, `agent-workstream-apps`, app-description skills, Akka solution decomposition, web UI skills, or focused component implementation skills. Treat broad product input as an incremental source intent for the intent compiler: preserve only the accepted current intent, bind reusable global artifacts into concrete workstreams, then route to description, specs/backlogs, decomposition, or implementation. For every generated SaaS app, preserve this handoff order: secure AI-first SaaS interpretation → `agent-workstream-apps` for functional agents, workstreams, and structured surfaces → `ai-first-saas-worker-decomposition` when human/agent/system responsibilities are not already explicit → `core-saas-foundation` for mandatory foundation verticals inside that workstream model → `capability-first-backend` for governed operation/query contracts → the selected app-description/current-intent, decomposition, specs/backlog, or focused implementation path.
+This is an Interview-phase routing and framing skill. It does not replace `core-saas-foundation`, `agent-workstream-apps`, app-description skills, Akka solution decomposition, web UI skills, or focused component implementation skills. Treat broad product input as an incremental source intent for the living app-description graph: preserve only the accepted current intent, bind reusable global artifacts into concrete workstreams, and route toward a description-ready or compile-ready handoff. For every generated SaaS app, preserve this handoff order: secure AI-first SaaS interpretation → `agent-workstream-apps` for functional agents, workstreams, and structured surfaces → `ai-first-saas-worker-decomposition` when human/AI/system worker responsibilities are not already explicit → `core-saas-foundation` for mandatory foundation verticals inside that workstream model → `capability-first-backend` for governed-tool and capability contracts → the selected app-description/current-intent, decomposition, specs/backlog, or focused implementation path.
+
+## Lifecycle classification
+
+- Phase role: Interview-phase intent interpretation and routing; outputs description-ready or compile-ready handoffs, not implementation proof.
+- Graph layer: app/current-intent operating model with workstream, worker, surface, governed-tool, capability, policy, trace, and outcome implications.
+- Canonical chain: `worker → execution harness → actor adapter → governed tool → capability → Akka implementation`.
 
 ## Goal
 
@@ -18,17 +24,17 @@ human objective
 → secure SaaS foundation
 → functional/context-area agents
 → continuous workstreams
-→ structured surfaces and surface actions as human tool adapters
-→ confirmed human chat tool plans as natural-language tool adapters
-→ governed backend capabilities
-→ horizontal Akka components
-→ bounded agent or agent-team execution
+→ structured surfaces and `surface_action` actor adapters
+→ optional `human_chat_tool_plan` actor adapters with explicit confirmation
+→ governed tools inside backend capabilities
+→ selected Akka implementation substrates
+→ bounded AI worker or agent-team execution
 → policy, permission, evidence, and approval controls
 → human supervision and exception handling
 → traceable outcomes and learning loops
 ```
 
-Then choose the smallest downstream path that can implement or maintain that model. For generated full-stack SaaS, the default handoff is `agent-workstream-apps` before capability inventory, Akka decomposition, or component implementation.
+Then choose the smallest downstream path that can implement or maintain that model. Keep the canonical compile chain explicit: `worker → execution harness → actor adapter → governed tool → capability → Akka implementation`. For generated full-stack SaaS, the default handoff is `agent-workstream-apps` before capability inventory, Akka decomposition, or component implementation.
 
 ## Required reading
 
@@ -39,6 +45,10 @@ Read these first when using this skill:
 - `../agent-workstream-apps/SKILL.md` for generated full-stack SaaS app routing
 - `../docs/intent-compiler.md`
 - `../docs/current-intent-model.md`
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-component-graph.md`
+- `../docs/app-description-to-code-compile-contract.md`
 - `../docs/incremental-intent-processing.md` when interpreting a revision, correction, PRD, or feature request as a current-intent delta
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/agent-workstream-application-architecture.md` for generated full-stack SaaS app routing
@@ -77,9 +87,9 @@ Even when this skill is used, apply only the AI-first patterns justified by the 
 
 Do not treat an AI-first app as a chatbot bolted onto CRUD.
 
-Conversation can collect intent or explain status, and it may initiate a governed human chat tool-plan flow. Consequential chat-mediated work must still resolve into a proposed plan, explicit human confirmation bound to that plan, individually authorized governed-tool invocations, durable result/partial-failure surfaces, and inspectable objects such as goals, plans, tasks, policies, decisions, approvals, traces, and outcomes.
+Conversation can collect intent or explain status, and it may initiate a governed human chat tool-plan flow. Consequential chat-mediated work must still resolve into a proposed plan, explicit human confirmation bound to that plan, individually authorized governed-tool invocations through a declared actor adapter, durable result/partial-failure surfaces, and inspectable objects such as goals, plans, tasks, policies, decisions, approvals, traces, and outcomes.
 
-When the user asks for a “minimum AI-first app,” “SaaS Foundation App,” “basic app,” “basic chatbot,” “smallest useful app,” or initial chatbot-like generated SaaS, load `../docs/minimum-ai-first-saas-app.md` and route to a bootstrap-authorized **SaaS Foundation App domain** shell: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy, each with the `markdown_response` structured surface. Do not start with a generic public chatbot, unauthenticated assistant, or page-first CRUD console unless the user explicitly asks for non-SaaS reference material. Preserve capability-first backend modeling before choosing Akka components or exposing browser actions/agent tools.
+When the user asks for a “minimum AI-first app,” “SaaS Foundation App,” “basic app,” “basic chatbot,” “smallest useful app,” or initial chatbot-like generated SaaS, load `../docs/minimum-ai-first-saas-app.md` and route to a bootstrap-authorized **SaaS Foundation App domain** shell: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy, each with the `markdown_response` structured surface. Do not start with a generic public chatbot, unauthenticated assistant, or page-first CRUD console unless the user explicitly asks for non-SaaS reference material. Preserve capability-first backend modeling before choosing Akka components or exposing browser `surface_action` adapters, `agent_tool_call` adapters, or other actor adapters.
 
 ## Interpretation workflow
 
@@ -103,7 +113,7 @@ Before selecting surfaces, capabilities, agent teams, or Akka components, identi
 - evaluator/reviewer agents that judge quality, risk, policy fit, or outcomes;
 - deterministic system workers such as workflows, timers, consumers, projections, or integrations.
 
-For each worker, capture responsibility, non-responsibilities, authority level, selected AuthContext/scope, evidence needs, allowed tools/capabilities, surfaces used or produced, handoffs/escalations, audit/work traces, and failure behavior. Route to `ai-first-saas-worker-decomposition` when this is not already explicit.
+For each worker, capture responsibility, non-responsibilities, authority level, selected AuthContext/scope, evidence needs, allowed governed tools and capabilities, surfaces used or produced, handoffs/escalations, audit/work traces, and failure behavior. Route to `ai-first-saas-worker-decomposition` when this is not already explicit.
 
 ### 3. Identify durable substrate objects
 
@@ -121,7 +131,7 @@ Do not create all categories by default. Select only objects needed for behavior
 
 For each agent or agent team, define:
 - responsibility and non-responsibility
-- tools and data it may use
+- governed tools, actor adapters, and data it may use
 - decisions it may make autonomously
 - decisions requiring approval or escalation
 - confidence, risk, or impact thresholds
@@ -142,10 +152,10 @@ Prefer mechanically enforced permissions and versioned policy records over promp
 
 ### 6. Choose the downstream operating path
 
-For generated full-stack SaaS apps, load or apply `agent-workstream-apps` before downstream description, decomposition, PRD/backlog, capability, or implementation work so the handoff contains an explicit inventory of functional agents, any internal agents, initial workstreams, structured surfaces, surface action-to-capability candidates, and downstream skills to load. Load `core-saas-foundation` alongside that model to ensure Account/Profile/Settings/Membership/Tenant/Customer/admin/audit baseline work is represented as mandatory foundation verticals rather than as optional object lists. For SaaS Foundation App, basic app, starter, or chatbot-like generated SaaS requests, that inventory starts with the SaaS Foundation App domain—My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy—with bounded authority, structured surfaces, durable workstream log, audit/work trace substrate, and explicit extension seams. When core user administration is in scope for a generated SaaS app, load `ai-first-saas-admin-agents` so AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, decision cards, and approval boundaries are planned before domain work. Then route based on what the user is asking for:
+For generated full-stack SaaS apps, load or apply `agent-workstream-apps` before downstream description, decomposition, PRD/backlog, capability, or implementation work so the handoff contains an explicit inventory of functional agents, any internal agents, initial workstreams, structured surfaces, surface action-to-governed-tool/capability candidates, and downstream skills to load. Load `core-saas-foundation` alongside that model to ensure Account/Profile/Settings/Membership/Tenant/Customer/admin/audit baseline work is represented as mandatory foundation verticals rather than as optional object lists. For SaaS Foundation App, basic app, starter, or chatbot-like generated SaaS requests, that inventory starts with the SaaS Foundation App domain—My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy—with bounded authority, structured surfaces, durable workstream log, audit/work trace substrate, and explicit extension seams. When core user administration is in scope for a generated SaaS app, load `ai-first-saas-admin-agents` so AccessReviewAgent, AdminRiskAgent, InvitationDraftAgent, RoleRecommendationAgent, SupportAccessReviewAgent, AdminAuditSummaryAgent, decision cards, and approval boundaries are planned before domain work. Then route based on what the user is asking for:
 
 - Use `app-descriptions` when the user wants to describe, review, revise, or maintain the authoritative app-description/current-intent graph before generation, preserving global definitions, workstream bindings, functional agents, surfaces, capabilities, and horizontal Akka implementation notes.
-- Use `capability-first-backend` when surface actions, governed-tools, agent-tools, browser-tools, workflow steps, APIs, timers, consumers, or internal operations need governed backend contracts.
+- Use `capability-first-backend` when surface actions, governed tools, `agent_tool_call` adapters, browser/API adapters, workflow steps, APIs, timers, consumers, or internal operations need governed backend contracts.
 - Use `akka-solution-decomposition` when the user wants a direct Akka solution shape from the accepted workstream/capability model and the component set is not yet known.
 - Use `akka-prd-to-specs-backlog` when the user wants repo-ready specs, backlogs, and pending-task artifacts that preserve the functional-agent/workstream/surface/capability structure.
 - Use focused Stage 3 component skills only when the secure foundation, AI-first operating model, workstream model, capability contracts, and component scope are already clear enough to implement.
@@ -170,7 +180,7 @@ When this skill is the entry point, produce or feed downstream work with:
 - AI-first interpretation: objective, delegated work, retained human authority, and outcome loop
 - worker inventory: human workers, functional-agent workers, internal/autonomous/evaluator agent workers, system workers, responsibility/authority boundaries, handoffs, traces, and failure behavior
 - selected durable objects and why each is needed
-- generated SaaS handoff: functional agents, worker roster, role-specific dashboards, human surface graph nodes/actions, internal workstream agent graph nodes/delegations/results when applicable, initial workstreams, structured surfaces, governed-tools, surface action-to-capability mappings, and any confirmed human chat tool-plan adapters that share those governed-tool ids
+- generated SaaS handoff: functional agents, worker roster, role-specific dashboards, human surface graph nodes/actions, internal workstream agent graph nodes/delegations/results when applicable, initial workstreams, structured surfaces, governed tools, surface action-to-governed-tool/capability mappings, and any confirmed human chat tool-plan adapters that share those governed-tool ids
 - agent/team responsibilities and authority boundaries, including mandatory foundation admin agents, any app-specific agents, internal worker agents, and the governed-tool exposure labels they may use
 - policy, approval, exception, audit, and outcome implications
 - recommended downstream path and exact skills to load next, always including `core-saas-foundation` and normally `agent-workstream-apps` before capability or Akka component routing for generated SaaS apps
@@ -184,6 +194,6 @@ Before moving to code, verify:
 - agent authority is explicit and bounded
 - policy and permission controls are enforceable, not only suggested in prompts
 - approval and exception flows include evidence, risk, confidence, impact, and alternatives when consequential
-- traces connect surface actions, confirmed human chat tool plans, AI agent-tool calls, decisions, goals, policies, tools, data access, approvals, and outcomes
+- traces connect surface actions, confirmed human chat tool plans, AI `agent_tool_call` adapters, decisions, goals, policies, governed tools, data access, approvals, and outcomes
 - UI surfaces prioritize supervision, decisions, governance, digests, and audit where those needs exist
 - the selected Akka component set is the minimal substrate for the requested scope

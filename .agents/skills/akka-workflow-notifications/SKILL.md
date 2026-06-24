@@ -7,9 +7,9 @@ description: Add live notification streams to Akka Java SDK Workflows using Noti
 
 Use this skill when a workflow should push progress updates to subscribers.
 
-## Generated SaaS input contract
+## Compile contract gate
 
-Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
+Use this skill only for a compile-ready slice under `../docs/app-description-to-code-compile-contract.md`, except for explicitly scoped doc/example maintenance. Before changing generated runtime code, confirm the accepted graph names the responsible worker/harness/actor adapter from `../docs/app-worker-tool-model.md`, the governed-tool and capability contract from `../docs/capability-first-backend-architecture.md`, and this Akka component's role as implementation evidence. If AuthContext, tenant/customer scope, validation, idempotency, denial, audit/trace, side-effect, exposure, or test obligations are missing, repair the brief or block instead of guessing.
 
 ## Required reading
 
@@ -48,15 +48,9 @@ Use notifications as a selected exposure surface for workflow capability progres
 
 Notifications are for user experience, supervision, and observability, not business correctness or authorization. They do not replace the authoritative workflow state from `get()`, audit/work-trace records, or backend checks on the subscriber route.
 
-## Generated SaaS checks
+## Generated SaaS compile review
 
-For generated SaaS workflows, preserve the accepted capability contract:
-- compensation, notification, approval, and escalation steps carry `AuthContext` or system-principal authority basis;
-- downstream side effects are idempotent and retry safe;
-- structured-surface/workstream events include surface id/version, event id, correlation id, trace ids, and stale/progress semantics;
-- audit/work traces cover approval, denial, compensation, retry exhaustion, and side effects;
-- tests cover authorized success, forbidden/cross-tenant, idempotency/no-op, surface/realtime updates, and audit/trace emission where exposed.
-
+For generated SaaS runtime work, apply the canonical compile contract, worker/tool model, and capability-first backend docs rather than duplicating shared validation, scope, idempotency, audit, and exposure rules here. In this component-specific review, verify the Akka mechanics above preserve the accepted governed-tool context, caller/scope fields, idempotent or no-op behavior, denial/retry semantics, and required tests/traces for the selected exposure path.
 
 ## Review checklist
 

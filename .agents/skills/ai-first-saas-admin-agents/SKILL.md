@@ -9,12 +9,26 @@ Use this focused foundation skill whenever a generated SaaS app includes the man
 
 AI-assisted admin offload is mandatory foundation behavior for initial generated AI-first SaaS apps. It must reduce human admin toil while keeping high-risk access changes under explicit human supervision and backend authorization.
 
+## Lifecycle classification
+
+- Phase role: Interview-phase foundation admin worker modeling with Build/compile handoff constraints for admin governed tools, decisions, surfaces, and traces.
+- Graph layer: admin human workers, functional-agent workers, internal/evaluator agent workers, system workers, execution harnesses, actor adapters, governed tools, capabilities, decision cards, and audit traces.
+- Canonical chain: `worker → execution harness → actor adapter → governed tool → capability → Akka implementation`.
+
 ## Required reading
 
 Read first:
 - `../docs/intent-compiler.md`
 - `../docs/current-intent-model.md`
 - `../docs/intent-to-realization-flow.md`
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-component-graph.md`
+- `../docs/app-description-to-code-compile-contract.md`
+- `../docs/workforce-decomposition.md`
+- `../docs/agent-workstream-application-architecture.md`
+- `../docs/structured-surface-contracts.md`
+- `../docs/capability-first-backend-architecture.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/core-ai-first-saas-foundation.md`
 - `../docs/core-saas-identity-tenancy-admin.md`
@@ -94,11 +108,11 @@ Decision cards must include:
 - approve, deny, modify, defer, escalate, or request-evidence actions;
 - audit and work-trace links.
 
-## Tool and data boundaries
+## Worker, actor-adapter, governed-tool, and data boundaries
 
-Admin agents may use only scoped tools that enforce authorization before data access or side effects.
+Admin agent workers may use only scoped governed tools through explicit actor adapters such as `agent_tool_call`, `workflow_step`, `surface_action`, or confirmed `human_chat_tool_plan`. Each adapter must enforce authorization before data access or side effects and must not inherit human surface authority implicitly.
 
-Required tool rules:
+Required governed-tool rules:
 - accept or resolve `AuthContext` and selected membership context;
 - filter by authorized SaaS Owner, Tenant, or Customer scope;
 - redact fields outside caller authority;
@@ -109,11 +123,13 @@ Required tool rules:
 ## Workstream handoff requirements
 
 For generated full-stack SaaS work, admin-agent planning must hand off implementation-ready workstream contracts before component selection:
-- owning functional agent or reusable placement, normally User Admin, My Account, Agent Admin, Support Access, Audit/Trace, and Governance/Policy for admin-risk or policy-proposal flows;
+- owning functional-agent workstream or reusable placement, normally User Admin, My Account, Agent Admin, Support Access, Audit/Trace, and Governance/Policy for admin-risk or policy-proposal flows;
+- worker roster for each flow: human admin/reviewer, functional-agent worker, internal/evaluator admin agent worker, workflow/timer/consumer system worker where applicable;
+- execution harnesses and actor adapters for each operation, such as `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, `workflow_step`, or `internal_call`;
 - structured surface id/type for each user-facing result, such as access-review queue, invitation draft, role recommendation card, support-access review, admin audit summary, decision card, or admin digest;
-- surface action list mapped to capability ids/classes, including draft invite, recommend role, create decision card, approve/deny risky change, request evidence, revoke support access, or open audit trace;
+- surface action and chat/agent adapter list mapped to governed-tool ids and capability ids/classes, including draft invite, recommend role, create decision card, approve/deny risky change, request evidence, revoke support access, or open audit trace;
 - `AuthContext`, tenant/customer scope, role/capability rules, approval gates for risky side effects, audit/work-trace fields, redaction rules, and denial behavior;
-- downstream Akka, frontend, realtime, agent, and test skills needed for agent tools, workflows, views, protected endpoints, structured surface rendering, and tenant-isolation/security checks.
+- downstream Akka, frontend, realtime, agent, and test skills needed for `agent_tool_call` adapters, workflows, views, protected endpoints, structured surface rendering, and tenant-isolation/security checks.
 
 ## Akka substrate routing
 
@@ -145,5 +161,5 @@ A generated SaaS foundation is incomplete if it has user administration but no A
 - all mandatory admin offload responsibilities are planned and mapped either to one governed `UserAdminAgent` with an `AgentSkillManifest` or to equivalent bounded specialized agents using the generalized one-agent vs agent-team decision guide;
 - autonomous actions and approval-required actions are explicit;
 - high-risk recommendations route to decision cards;
-- agent tools enforce AuthContext, scope, redaction, and audit mechanically;
+- `agent_tool_call` adapters and the governed tools behind them enforce AuthContext, scope, redaction, and audit mechanically;
 - tests cover recommendations, denials, approval gates, audit traces, and forbidden autonomous changes.

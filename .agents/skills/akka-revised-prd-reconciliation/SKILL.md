@@ -23,6 +23,7 @@ Reconcile a revised PRD with the current project plan by identifying:
 - pending tasks that remain valid
 - pending tasks that must be updated, blocked, deferred, or superseded
 - new queue tasks to append
+- lifecycle/readiness and compile/manual-test contract changes needed by affected task briefs and queue entries
 
 The output should preserve useful planning history and produce a trustworthy next implementation queue. For generated secure AI-first SaaS, reconciliation must preserve the existing workstream graph instead of starting a fresh parallel app plan: workstreams → role-specific dashboard attention contracts → human surface graph nodes and actions → internal workstream agent graph delegations/results → governed-tools inside capabilities and surface/action maps → Akka substrate/exposure channels → request-based workstream Agent turns or durable AutonomousAgent task candidates → notifications/projections → audit/work traces.
 
@@ -45,6 +46,10 @@ Use this skill as a reconciliation layer, not as a fresh planning generator: pre
 
 Read these first if present:
 - `../README.md`
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-to-code-compile-contract.md`
+- `../docs/manual-test-reconciliation.md` when reconciling tester/runtime findings in the revised requirements
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/intent-compiler.md`
 - `../docs/current-intent-model.md`
@@ -99,6 +104,7 @@ Before finishing, verify:
 - AI-first delegation, authority, governance, audit, UI supervision, and outcome implications were compared against the current baseline
 - workstream expertise implications were compared against the current baseline, including expert bundles, governed prompts/skills/references, compact manifests, loader authorization, `ToolPermissionBoundary`, traces, UI/governance surfaces, default-content generation assets, and tests
 - affected app-description/spec/backlog/task files were updated
+- affected task briefs and queue entries preserve or repair lifecycle/readiness, compile-contract, and manual/runtime validation fields
 - queue history was preserved
 - obsolete non-done tasks were superseded, not deleted
 - completed affected work has follow-up tasks

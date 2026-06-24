@@ -4,7 +4,7 @@ Use this as the shared substrate reference for managed Akka workstream agents. F
 
 ## Core records
 
-A managed model-backed workstream agent is not just a Java `Agent` class. It is the combination of tenant/customer-scoped durable records and runtime assembly:
+A managed model-backed workstream agent is not just a Java `Agent` class, and it is not itself the business operation it helps perform. It is the combination of a software worker, an Akka execution harness, actor-adapter exposure rules, tenant/customer-scoped durable records, and runtime assembly:
 
 - `AgentDefinition` for identity, lifecycle, owner/steward, authority level, workstream placement, and model policy references;
 - `PromptDocument` / `PromptVersion` for reviewed prompt text and activation state;
@@ -16,7 +16,18 @@ A managed model-backed workstream agent is not just a Java `Agent` class. It is 
 
 ## Runtime assembly
 
-Before invoking a model-backed functional agent, resolve the active `AgentDefinition`, model policy, prompt, manifests, tool boundary, AuthContext, and selected workstream/capability scope. Assemble compact prompt context and expose only authorized loader tools such as `readSkill(skillId)` and `readReferenceDoc(referenceId)`.
+Before invoking a model-backed functional agent, keep the worker/tool/capability chain explicit:
+
+```text
+software worker
+→ Akka Agent/AutonomousAgent harness
+→ actor adapter (`agent_tool_call`, confirmed `human_chat_tool_plan`, workflow/timer/consumer/API/MCP/internal adapter as applicable)
+→ governed tool
+→ backend capability
+→ Akka/frontend implementation
+```
+
+Resolve the active `AgentDefinition`, model policy, prompt, manifests, tool boundary, AuthContext, and selected workstream/capability scope. Assemble compact prompt context and expose only authorized loader tools such as `readSkill(skillId)` and `readReferenceDoc(referenceId)`.
 
 Prompt/skill/reference content is behavior guidance only. It must not grant authority, expand data scope, enable tools, bypass approval, or change provider secret access. Tool and data authority comes from backend authorization plus `ToolPermissionBoundary` enforcement.
 

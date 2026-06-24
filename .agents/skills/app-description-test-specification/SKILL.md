@@ -9,6 +9,14 @@ Use this skill when intended behavior needs to be made more precise through test
 
 This skill treats tests as part of the **authoritative application description**, not as a post-implementation afterthought.
 
+## Lifecycle classification
+
+- Phase: interview.
+- Kind: focused current-intent capture/editor and verification-spec authoring.
+- Family: app-description.
+- Living-graph contract: test nodes are part of the app-description current-intent graph and should link scenarios to workers, execution harnesses, actor adapters, governed tools, capabilities, AuthContext, traces, and realization paths.
+- Build/compile handoff: when tests become executable code or validation tasks, hand off through `../docs/app-description-to-code-compile-contract.md` so verification compiles from graph intent rather than implementation guesses.
+
 ## Goal
 
 Create or update `domains/<domain>/workstreams/<workstream>/tests/**` and linked domain/global verification expectations so that behavior becomes more unambiguous through explicit verification expectations.

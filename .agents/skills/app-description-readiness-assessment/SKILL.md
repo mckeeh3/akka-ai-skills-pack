@@ -10,6 +10,14 @@ Use this skill when the harness needs to decide whether the current app descript
 This skill does not primarily change the app description.
 It evaluates the current description state and determines whether generation would be responsible, premature, or acceptable with assumptions.
 
+## Lifecycle classification
+
+- Phase: interview.
+- Kind: readiness assessor.
+- Family: app-description.
+- Living-graph contract: readiness evaluates the app-description current-intent graph for semantic sufficiency across workers, execution harnesses, actor adapters, governed tools, capabilities, behavior, tests, security, observability, UI, and realization links.
+- Build/compile handoff: only route to generation or implementation when the graph can safely proceed through `../docs/app-description-to-code-compile-contract.md`; otherwise return to focused description skills.
+
 ## Goal
 
 Assess whether the current application description is sufficiently complete to support reliable:

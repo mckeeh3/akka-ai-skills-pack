@@ -7,7 +7,13 @@ description: Design bounded AI-first SaaS agent teams with explicit coordinator/
 
 Use this companion after `ai-first-saas` and `agent-workstream-apps` when a product or feature needs one or more agents to perform delegated operational work under human and policy control.
 
-This is an operating-model and routing skill. It assumes workforce decomposition has identified the relevant human workers, functional-agent workers, internal/autonomous/evaluator agent workers, system workers, authority boundaries, and handoffs. It distinguishes user-facing functional/context-area agents from internal agents before selecting one-agent, team, workflow, tool, or Akka implementation patterns. It does not replace `akka-agents`, `akka-agent-orchestration`, or `akka-workflows` implementation guidance.
+This is an operating-model and routing skill. It assumes workforce decomposition has identified the relevant human workers, functional-agent workers, internal/autonomous/evaluator agent workers, system workers, authority boundaries, and handoffs. It distinguishes user-facing functional/context-area agent workers from internal agent workers before selecting one-agent, team, workflow, governed-tool, or Akka implementation patterns. It does not replace `akka-agents`, `akka-agent-orchestration`, or `akka-workflows` implementation guidance.
+
+## Lifecycle classification
+
+- Phase role: Interview-phase agent-worker/team modeling with Build/compile handoff constraints for governed tools, workflows, surfaces, and traces.
+- Graph layer: functional/internal/autonomous/evaluator agent workers, human supervisors, system workers, execution harnesses, actor adapters, governed tools, capabilities, approval gates, and traces.
+- Canonical chain: `worker → execution harness → actor adapter → governed tool → capability → Akka implementation`.
 
 ## Required reading
 
@@ -15,6 +21,10 @@ Read first:
 - `../docs/intent-compiler.md`
 - `../docs/current-intent-model.md`
 - `../docs/intent-to-realization-flow.md`
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-component-graph.md`
+- `../docs/app-description-to-code-compile-contract.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/agent-workstream-application-architecture.md`
 - `../docs/workforce-decomposition.md`
@@ -59,7 +69,7 @@ Before naming agent classes or tools, verify the worker roster:
 - evaluator/reviewer agent workers when independent quality, risk, or policy judgment is needed;
 - deterministic system workers such as workflows, timers, consumers, projections, and integrations.
 
-For each agent worker, preserve the workforce contract: responsibility, non-responsibilities, supervising human, authority level, evidence, allowed capabilities/governed-tools, approval policy, handoffs/escalations, traces, and fail-closed behavior. If this is missing, route first to `ai-first-saas-worker-decomposition`.
+For each agent worker, preserve the workforce contract: responsibility, non-responsibilities, supervising human, authority level, evidence, allowed governed tools and capabilities, actor adapters, approval policy, handoffs/escalations, traces, and fail-closed behavior. If this is missing, route first to `ai-first-saas-worker-decomposition`.
 
 ## Functional agent vs internal agent placement
 
@@ -192,8 +202,9 @@ Single responsibility:
 Non-responsibilities:
 Inputs:
 Output type: plain text | structured | streamed
-Allowed tools/data:
-Forbidden tools/data:
+Allowed governed tools/data:
+Allowed actor adapters:
+Forbidden tools/data/adapters:
 Autonomous decisions allowed:
 Requires approval when:
 Escalates when:
@@ -210,9 +221,10 @@ Implementation routing:
 
 - Agents may recommend, draft, classify, summarize, evaluate, or execute only within explicit product authority.
 - Tool permissions must be mechanically enforced; do not rely only on prompt instructions.
-- Agent tools are capability exposure surfaces, not root design objects; define the governed capability contract before granting tool access.
+- Agent tools are `agent_tool_call` actor adapters for governed tools, not root design objects; define the governed-tool and capability contract before granting adapter access.
+- Human surface availability does not grant agent-worker authority; an agent may call a governed tool only when its tool boundary, AuthContext/service authority, autonomy policy, approval gates, and trace requirements explicitly allow that adapter.
 - Policy-changing, permission-expanding, high-impact, or uncertain actions need human governance unless the product explicitly defines a safe autonomous boundary.
-- Record when an agent used data, invoked a tool, cited a policy, made a recommendation, or triggered escalation.
+- Record when an agent worker used data, invoked a governed tool, cited a policy, made a recommendation, or triggered escalation, including the actor adapter and trace source.
 
 ## Akka substrate routing
 
@@ -237,7 +249,7 @@ Produce a concise team design with:
 - agent contracts for each agent
 - coordinator/workflow responsibilities versus specialist responsibilities
 - human approval and exception points
-- tools as capability exposure surfaces, plus data access, memory, guardrail, and evaluation needs
+- governed tools, actor adapters, and capabilities, plus data access, memory, guardrail, and evaluation needs
 - structured surfaces for functional agents when user-facing work is in scope
 - trace and audit requirements
 - downstream Akka skills to load next
@@ -249,7 +261,7 @@ Before implementation, verify:
 - each agent has one responsibility, explicit non-responsibilities, and clear functional/internal placement
 - functional/context-area agents have workstream and structured-surface responsibilities; internal agents do not masquerade as navigation units
 - every autonomous action has a bounded authority rule
-- tools and data permissions are explicit, capability-backed, and enforceable
+- governed-tool, actor-adapter, and data permissions are explicit, capability-backed, and enforceable
 - workflow orchestration is used for durable multi-agent progress instead of fragile agent-to-agent chaining
 - human approvals and exceptions are represented as durable states when consequential
 - tests can replace real model calls with deterministic model providers

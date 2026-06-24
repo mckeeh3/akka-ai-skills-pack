@@ -11,6 +11,14 @@ This skill maintains `domains/<domain>/workstreams/<workstream>/behavior.md` and
 It does not generate code.
 It turns input into authoritative behavioral meaning that downstream generation can later realize.
 
+## Lifecycle classification
+
+- Phase: interview.
+- Kind: focused current-intent capture/editor.
+- Family: app-description.
+- Living-graph contract: behavior nodes are part of the app-description current-intent graph and must preserve the chain from responsible workers through execution harnesses, actor adapters, governed tools, capabilities, traces, tests, and realization links when behavior changes imply them.
+- Build/compile handoff: when behavior intent becomes implementation, planning, code, tests, or validation work, hand off through `../docs/app-description-to-code-compile-contract.md` instead of selecting components or endpoints here.
+
 ## Goal
 
 Create or update behavior-oriented app-description artifacts that:

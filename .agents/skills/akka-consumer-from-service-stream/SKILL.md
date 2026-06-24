@@ -7,9 +7,9 @@ description: Implement Akka Java SDK Consumers that subscribe to service-to-serv
 
 Use this skill when a Consumer subscribes to a stream published by another Akka service in the same Akka project.
 
-## Generated SaaS input contract
+## Compile contract gate
 
-Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
+Use this skill only for a compile-ready slice under `../docs/app-description-to-code-compile-contract.md`, except for explicitly scoped doc/example maintenance. Before changing generated runtime code, confirm the accepted graph names the responsible worker/harness/actor adapter from `../docs/app-worker-tool-model.md`, the governed-tool and capability contract from `../docs/capability-first-backend-architecture.md`, and this Akka component's role as implementation evidence. If AuthContext, tenant/customer scope, validation, idempotency, denial, audit/trace, side-effect, exposure, or test obligations are missing, repair the brief or block instead of guessing.
 
 ## Required reading
 
@@ -51,17 +51,9 @@ Read these first if present:
 - `../docs/consumer-reference.md`
   - short consumer overview linking to the dedicated reference
 
-## Generated SaaS consumer contract
+## Generated SaaS compile review
 
-For generated SaaS reactive capabilities, require:
-- reactive capability id, event provenance, correlation id, and tenant/customer scope;
-- system-principal or service-authority basis for downstream calls;
-- idempotency key/dedupe strategy for at-least-once delivery;
-- retry, poison, obsolete, forbidden, and no-op behavior;
-- scoped/redacted publication when producing topics or service streams;
-- audit/work-trace records for side effects, denials, retries, and emitted public events;
-- tests for duplicate delivery, cross-tenant/forbidden input, idempotent downstream effects, audit/trace, and surface/realtime/API outcomes where exposed.
-
+For generated SaaS runtime work, apply the canonical compile contract, worker/tool model, and capability-first backend docs rather than duplicating shared validation, scope, idempotency, audit, and exposure rules here. In this component-specific review, verify the Akka mechanics above preserve the accepted governed-tool context, caller/scope fields, idempotent or no-op behavior, denial/retry semantics, and required tests/traces for the selected exposure path.
 
 ## Review checklist
 

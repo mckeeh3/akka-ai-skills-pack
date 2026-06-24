@@ -9,12 +9,26 @@ Use this companion after `ai-first-saas` when delegated work, agent decisions, p
 
 This is an outcome-loop and routing skill. It does not replace entity, workflow, view, consumer, timed action, agent, endpoint, or web UI implementation guidance.
 
+## Lifecycle classification
+
+- Phase role: Interview-phase outcome-loop modeling with Build/compile handoff constraints for metrics, feedback, governed tools, surfaces, traces, and tests.
+- Graph layer: goal/outcome, worker, execution harness, actor adapter, governed tool, capability, decision, policy, feedback, metric, trace, and realization nodes.
+- Canonical chain: `worker → execution harness → actor adapter → governed tool → capability → Akka implementation`.
+
 ## Required reading
 
 Read first:
 - `../docs/intent-compiler.md`
 - `../docs/current-intent-model.md`
 - `../docs/intent-to-realization-flow.md`
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-component-graph.md`
+- `../docs/app-description-to-code-compile-contract.md`
+- `../docs/workforce-decomposition.md`
+- `../docs/agent-workstream-application-architecture.md`
+- `../docs/structured-surface-contracts.md`
+- `../docs/capability-first-backend-architecture.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../ai-first-saas/SKILL.md`
 
@@ -38,6 +52,7 @@ Goal / objective:
 Success criteria:
 Baseline or expected result:
 Decision / action / policy version link:
+Worker / actor adapter / governed tool / capability link:
 Outcome metric name and type:
 Measurement source:
 Measurement window:
@@ -122,9 +137,10 @@ Use when human teaching should improve future behavior through governed change.
 ## Workstream handoff requirements
 
 For generated full-stack SaaS work, every outcomes/metrics output must hand off an implementation-ready workstream contract before component selection:
-- owning or reusable functional agent, such as Outcome Metrics, Governance/Policy, Audit/Trace, Executive Briefing, or a domain performance agent;
+- owning or reusable functional-agent workstream, such as Outcome Metrics, Governance/Policy, Audit/Trace, Executive Briefing, or a domain performance agent;
+- responsible human reviewer, functional/internal/evaluator agent worker, and measurement system worker where applicable;
 - structured surface id/type where user-facing, such as outcome dashboard, metric panel, post-decision review, policy-impact report, replay result, or executive digest;
-- surface action list mapped to capability ids/classes, including review outcome, link decision, record feedback, request replay, create policy proposal, acknowledge negative outcome, or export report;
+- actor-adapter list mapped to governed-tool ids and capability ids/classes, including review outcome, link decision, record feedback, request replay, create policy proposal, acknowledge negative outcome, or export report;
 - `AuthContext`, tenant/customer scope, reviewer role/capability rules, attribution confidence, privacy/redaction, approval gates, audit/work-trace fields, and denial behavior;
 - downstream Akka, frontend, scheduled/realtime, agent, and test skills needed for measurement, aggregation, review, feedback, and rendering.
 

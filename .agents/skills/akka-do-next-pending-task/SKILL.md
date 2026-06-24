@@ -30,6 +30,7 @@ The skill must:
 - keep the task scope bounded
 - prefer fresh-context execution
 - load only the task's required reads and listed skills
+- confirm the task is in the build/compile phase, respects the readiness target, and has the compile-contract inputs needed to proceed or block it before coding
 - preserve current-intent graph provenance and any AI-first operating-model, governance, approval, audit, supervision UI, or outcome constraints named by the task without broadening scope
 - preserve any workstream-expertise/reference-governance constraints named by the task: model binding, governed prompt/skill/reference docs, compact manifests, `readSkill`/`readReferenceDoc`, loader authorization, tool boundaries, load traces, expertise surfaces, default-content governance, and tests
 - require or inherit the generated-SaaS vertical contract before coding: workstream/functional agent or internal/foundation scope, attention category, role-specific dashboard, human surface graph node/action edge, deterministic surface intent route/no-route context when applicable, governed-tool id and qualified exposure, capability id/API exposure, selected Akka substrate, internal workstream agent graph delegation/result mapping when applicable, autonomous task/result/notification mapping when applicable, auth, traces, and tests
@@ -44,6 +45,10 @@ The skill must:
 
 Read these first if present:
 - `../README.md`
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-to-code-compile-contract.md`
+- `../docs/manual-test-reconciliation.md` when the selected task is manual-test remediation or runtime verification repair
 - `../docs/ai-first-saas-application-architecture.md` when the selected task or its listed skills include AI-first SaaS concerns
 - `../docs/workstream-expertise-model.md` when the selected task includes LLM-backed functional-agent expertise, reference governance, `readReferenceDoc`, model binding, manifests, loader authorization, tool boundaries, load traces, or expertise surfaces
 - `../docs/pending-question-queue.md`
@@ -100,6 +105,7 @@ Block instead of guessing when:
 - the task has unsatisfied dependencies
 - required architecture choices or blocking pending questions are unresolved
 - AI-first authority boundaries, approval gates, policies, evidence/risk thresholds, trace obligations, UI style, or outcome metrics are required for implementation but absent
+- the selected task lacks a lifecycle/readiness target, compile-contract provenance, required checks, or manual runtime scenario/non-runtime exemption needed to finish safely
 - a generated full-stack SaaS task is component-only, CRUD-only, page-only, or dashboard-only and lacks a vertical contract naming or inheriting workstream, attention category, role-specific dashboard, human surface graph node/action edge, deterministic surface intent route/no-route context when applicable, governed-tool id/exposure, capability id, API/exposure channel, selected Akka substrate, internal workstream agent graph result handling when relevant, AuthContext, audit/work trace, and local validation path
 - an LLM-backed functional-agent task lacks or fails to inherit the workstream expert bundle, approved model binding, governed prompt/skill/reference documents, compact manifests, authorized `readSkill`/`readReferenceDoc` loader behavior, ToolPermissionBoundary, load/work traces, expertise surfaces, default-content governance, or required tests
 - an AutonomousAgent or autonomous task is in scope but start/query/result/lifecycle capabilities, progress/result surfaces, task notifications, failure/cancellation attention behavior, and lifecycle tests are missing
@@ -137,6 +143,7 @@ Before finishing, verify:
 - the queue status was updated
 - only the selected task's scope was implemented
 - required reads and skills were loaded narrowly
+- lifecycle/readiness target and compile contract were honored, or the task was blocked before product/runtime assumptions were invented
 - current-intent provenance was preserved or the task had a valid docs-only/internal/foundation/cross-cutting exemption
 - any AI-first constraints in the task were preserved or explicitly blocked rather than guessed
 - checks were run or explicitly reported as not run

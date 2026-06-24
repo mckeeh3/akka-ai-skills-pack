@@ -11,6 +11,14 @@ This skill maintains reusable trace definitions under `app-description/global/tr
 It does not generate code.
 It defines what operational evidence and visibility the realized app must provide.
 
+## Lifecycle classification
+
+- Phase: interview.
+- Kind: focused current-intent capture/editor.
+- Family: app-description.
+- Living-graph contract: observability nodes are part of the app-description current-intent graph and must attach evidence requirements to the responsible workers, execution harnesses, actor adapters, governed tools, capabilities, traces, tests, and realization paths.
+- Build/compile handoff: when observability intent becomes implementation, planning, code, tests, or validation work, hand off through `../docs/app-description-to-code-compile-contract.md` so traces and audit evidence are compiled with the feature slice.
+
 ## Goal
 
 Create or update observability-oriented app-description artifacts that:

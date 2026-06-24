@@ -7,6 +7,10 @@ description: Generate focused documentation snippets for Akka Java SDK KeyValueE
 
 Use this skill when the task is to write documentation examples for key value entities rather than full production-style reference code.
 
+## Compile contract gate
+
+Use this skill for explicitly scoped doc/example maintenance, or for snippets that document a compile-ready Akka component slice. When a snippet is presented as generated-app runtime guidance rather than isolated teaching material, tie it back to the accepted graph context from `../docs/app-description-to-code-compile-contract.md`, `../docs/app-worker-tool-model.md`, and `../docs/capability-first-backend-architecture.md` instead of implying that the component API is the product contract.
+
 ## Required reading
 
 Read these first if present:

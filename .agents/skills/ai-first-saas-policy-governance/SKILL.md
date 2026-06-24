@@ -9,12 +9,26 @@ Use this companion after `ai-first-saas` when agentic behavior depends on polici
 
 This is a governance modeling and routing skill. It does not replace security, entity, workflow, agent, or testing implementation skills.
 
+## Lifecycle classification
+
+- Phase role: Interview-phase governance model with Build/compile handoff constraints for policy capabilities, governed tools, approvals, surfaces, traces, and tests.
+- Graph layer: policy, prompt/skill/reference, permission, worker, execution harness, actor adapter, governed tool, capability, proposal, simulation, commit, and trace nodes.
+- Canonical chain: `worker → execution harness → actor adapter → governed tool → capability → Akka implementation`.
+
 ## Required reading
 
 Read first:
 - `../docs/intent-compiler.md`
 - `../docs/current-intent-model.md`
 - `../docs/intent-to-realization-flow.md`
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-component-graph.md`
+- `../docs/app-description-to-code-compile-contract.md`
+- `../docs/workforce-decomposition.md`
+- `../docs/agent-workstream-application-architecture.md`
+- `../docs/structured-surface-contracts.md`
+- `../docs/capability-first-backend-architecture.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../ai-first-saas/SKILL.md`
 
@@ -37,7 +51,7 @@ Select only objects needed for enforceable behavior and audit:
 - `PolicyDocument` / `PolicyClause`: versioned rules agents or workflows must cite.
 - `PromptDocument` / `SkillDocument` / `EvaluationRubric` / `ReferenceExample`: governed behavior-shaping documents when prompt, skill, rubric, or example changes affect runtime behavior.
 - `Guardrail` / `Threshold`: mechanical limits for autonomy, risk, confidence, impact, or data access.
-- `PermissionGrant`: who or what may use a tool, dataset, action, or authority scope.
+- `PermissionGrant`: which worker or service identity may use a governed tool through a declared actor adapter, dataset, action, or authority scope.
 - `ReferenceExample` / `Precedent`: human-approved examples that guide future behavior.
 - `PolicyProposal`: drafted change not yet active.
 - `SimulationResult` / `ReplayResult`: evidence before activating impactful changes.
@@ -68,11 +82,12 @@ Select only objects needed for enforceable behavior and audit:
 ## Workstream handoff requirements
 
 For generated full-stack SaaS work, every policy-governance output must hand off an implementation-ready workstream contract before component selection:
-- owning or reusable functional agent, such as Governance/Policy, Agent Admin, User Admin, Audit/Trace, or a domain agent;
+- owning or reusable functional-agent workstream, such as Governance/Policy, Agent Admin, User Admin, Audit/Trace, or a domain agent;
+- responsible human governor/approver, drafting/evaluator agent worker, and workflow/timer/system worker where applicable;
 - structured surface id/type where user-facing, such as policy catalog, proposal queue, approval card, diff review, simulation result, or governance dashboard;
-- surface action list mapped to capability ids/classes, including propose policy, simulate change, request approval, approve/deny commit, rollback, or view audit evidence;
+- actor-adapter list mapped to governed-tool ids and capability ids/classes, including propose policy, simulate change, request approval, approve/deny commit, rollback, or view audit evidence;
 - `AuthContext`, tenant/customer scope, role/capability rules, approval gates, audit/work-trace fields, and denial behavior;
-- downstream Akka, frontend, and test skills needed for the selected exposure channels.
+- downstream Akka, frontend, and test skills needed for the selected actor adapters and exposure channels.
 
 ## Output expectations
 

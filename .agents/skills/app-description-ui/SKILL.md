@@ -11,6 +11,14 @@ This skill keeps UI requirements authoritative before realization so generated A
 
 High-visibility guardrail: UI realization files must not create application meaning that is not already owned by `domains/<domain>/workstreams/<workstream>/**` functional agents, workstreams, role-specific dashboard/attention contracts, workstream icon descriptors, human surface graph nodes/edges, structured surfaces, surface actions, bounded workstream tool catalogs, autonomous task/result surfaces, internal workstream agent graph effects, and `domains/<domain>/capabilities/**` governed contracts. UI changes that create or alter user-facing work areas, attention indicators, workstream icon assignments, surfaces, surface graph edges, browser-tool actions, confirmed human chat tool-plan review/confirmation/result surfaces, agent-tool availability indicators, or governed-tool exposure must first update or verify the workstream and capability nodes; UI realization artifacts may then add browser rendering, routes/deep links, frontend API, state/realtime, accessibility, responsive, and style details.
 
+## Lifecycle classification
+
+- Phase: interview.
+- Kind: focused current-intent capture/editor for UI realization semantics.
+- Family: app-description.
+- Living-graph contract: UI description maintains frontend realization nodes as projections of the app-description current-intent graph and must preserve workstream worker, surface harness, actor-adapter, governed-tool, capability, trace, test, and route/API links.
+- Build/compile handoff: browser implementation, frontend API work, tests, or validation must compile through `../docs/app-description-to-code-compile-contract.md` after workstream, surface, and capability meaning is already modeled.
+
 ## Required reading
 
 - `../docs/intent-compiler.md`

@@ -9,6 +9,10 @@ Use this skill when the main problem is streaming view query results.
 
 Capability-first framing: a streaming View query is a live read/evidence capability surface. Define who may subscribe, the AuthContext and tenant/customer scope, reconnect/cancellation behavior, row redaction, audit/data-access trace expectations, and whether the stream is browser SSE, gRPC, MCP/resource-like, agent evidence, or internal.
 
+## Compile contract gate
+
+Use this skill only for a compile-ready slice under `../docs/app-description-to-code-compile-contract.md`, except for explicitly scoped doc/example maintenance. Before changing generated runtime code, confirm the accepted graph names the responsible worker/harness/actor adapter from `../docs/app-worker-tool-model.md`, the governed-tool and capability contract from `../docs/capability-first-backend-architecture.md`, and this Akka component's role as implementation evidence. If AuthContext, tenant/customer scope, validation, idempotency, denial, audit/trace, side-effect, exposure, or test obligations are missing, repair the brief or block instead of guessing.
+
 ## Required reading
 
 Read these first if present:
