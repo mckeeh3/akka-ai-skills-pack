@@ -19,7 +19,7 @@ Durable personal notification, workstream attention, dashboard-count, and source
 
 ## Source ownership
 
-Source workstreams own the canonical lifecycle of the source object: User Admin owns invitations/access reviews/identity exceptions, Agent Admin owns behavior proposals/risk reviews/seed imports, Governance/Policy owns policy proposals/impact analyses, Audit/Trace owns trace investigations/exports/summary tasks, and My Account owns personal digest/export tasks. Notification and attention state stores only browser-safe routing metadata, source refs, redaction summaries, lifecycle projection state, and personal read/dismiss/snooze/archive state.
+Source workstreams own the canonical lifecycle of the source object: User Admin owns invitations/access reviews/identity exceptions, Agent Admin owns AI-assisted edit sessions, saved document versions, permanent skill/reference deletions, restore actions, and runtime skill/reference read trace surfaces, Governance/Policy owns policy proposals/impact analyses, Audit/Trace owns trace investigations/exports/summary tasks, and My Account owns personal digest/export tasks. Notification and attention state stores only browser-safe routing metadata, source refs, redaction summaries, lifecycle projection state, and personal read/dismiss/snooze/archive state.
 
 ## Retention and traces
 

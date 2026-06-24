@@ -2,16 +2,27 @@
 
 ## Responsibility
 
-Tenant-scoped `AgentDefinition`, `PromptDocument`, `SkillDocument`, `ReferenceDocument`, manifests, tool permission boundaries, model config references, seed import provenance, runtime assembly records, and agent runtime traces.
+Platform-wide managed-agent records, versioned prompt documents, versioned skill documents, versioned skill reference documents, AI-assisted edit sessions, runtime document loading records, and runtime skill/reference read traces.
 
 ## Lifecycle and invariants
 
-- Default behavior records for the five foundation workstream agents are created as governed records with provenance, checksums, active versions, idempotency, and upgrade behavior that preserves tenant customizations; the core starter begins with these default managed agents active rather than awaiting initial manual activation.
-- Draft/proposed changes require review and approval before activation when they affect behavior, policy, model, or tool authority.
-- Prompt/skill/reference content cannot grant backend authority.
-- Loader tools return full text only after manifest, scope, version, redaction, and tool-boundary authorization.
-- Model-backed workstream behavior uses the configured provider boundary or fails closed. Missing model provider configuration is a serious runtime issue: agent turns, advisory tasks, and model-backed readiness surfaces must show blocked/fail-closed recovery and trace evidence rather than hiding the problem or returning model-less success.
+- Agent docs are initially created by the skills pack.
+- Every agent has exactly one prompt doc.
+- Every agent may have zero or more skills.
+- Every skill may have zero or more reference docs.
+- Prompt, skill, and reference docs support Markdown.
+- SaaS admins may edit agent names and purposes, update prompt docs, create/update/delete skills, and create/update/delete skill reference docs.
+- Whole agents are not created or deleted in Agent Admin.
+- Each Save creates a new immutable current version immediately used at runtime.
+- Historical versions are read-only; restore creates a new current version copied from the selected historical version.
+- Version diffs compare selected version `N` only to `N-1`.
+- Skill deletion is permanent and deletes all reference docs under the skill; deleted skills/reference docs cannot be restored.
+- Prompt/skill/reference content cannot grant backend authority outside normal service authorization.
+
+## Runtime loading
+
+Each agent request loads the current prompt and appends the agent's skill names/descriptions. All agents have `readSkill` and `readReferenceDoc`. Loaded skills include reference doc names/descriptions so the model can decide which reference docs to read. Agents only know about skills listed for themselves.
 
 ## Retention and traces
 
-Prompt assembly, skill/reference loads, tool invocations, model calls, denials, provider failures, proposals, approvals, activations, and rollbacks are traceable through durable work/audit traces.
+Versions retain created time, actor, content, and the editing-session transcript/summary. Edit sessions are audited with user input, editing-agent proposed output, Save/Cancel outcome, timestamps, actor, and saved content where applicable. Runtime `readSkill` and `readReferenceDoc` calls are traced with agent name, document read, timestamp, request/session id, and user/customer context.

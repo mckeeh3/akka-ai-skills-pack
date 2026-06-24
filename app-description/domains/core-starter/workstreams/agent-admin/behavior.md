@@ -2,20 +2,38 @@
 
 ## Current-state behavior
 
-Govern managed-agent definitions, prompts, skills, references, manifests, tool boundaries, model refs, seed imports, behavior proposals, activation, rollback, and runtime traces. The core starter ships with active default managed agents for the five foundation workstreams, tracked as governed records with provenance and active versions. The workstream starts from a role-specific dashboard, accepts contextual composer requests, returns structured surfaces, and maps consequential actions to governed backend tools.
+Agent Admin supports AI-assisted editing of versioned agent documents for all agents. Agent docs include each agent's required prompt, zero or more skills, and zero or more reference docs under each skill.
 
-## Agent behavior
+## Entry behavior
 
-`agent-admin-agent` may explain, summarize, draft, recommend, and prepare proposals only within authorized capabilities. It cannot grant permissions through prompt text, bypass approval gates, or act outside its tool boundary. Model-backed turns use governed runtime configuration or fail closed.
+The workstream persists previous surfaces. There is no forced default surface. A first-time or cleared workstream may be blank. Users can use explicit controls such as Show dashboard, Show agents, and Clear workstream.
 
-## Lifecycle and command behavior
+## Agent list and detail behavior
 
-Managed-agent behavior changes follow the canonical state machine in `../../capabilities/managed-agent-governance.md`. Draft prompt, skill, reference, manifest, tool-boundary, model-ref, seed-import, and behavior-profile changes are inert until submitted, reviewed, approved, and explicitly activated through backend capability checks. Approval records evidence and reviewer intent only; activation, rollback, and deactivation are separate commands that revalidate active scope, current version, provider/runtime readiness, tool-boundary compatibility, model policy, approval freshness, idempotency, and trace obligations.
+The agent list may be filtered by agent name and workstream/domain. Each row shows agent name, short purpose, and last edit time. Opening an agent shows agent name, editable purpose, a link to view/edit the prompt, and a clickable list of skills. Each skill shows its name/description and clickable reference docs.
 
-Prompt-risk review and seed-import work are durable advisory task paths. Starting, reading, cancelling, accepting, or rejecting their results updates task/result disposition and evidence links only. These tasks cannot directly activate behavior, expand tools, weaken policy, load unassigned skills/references, or bypass approval. Model/provider/security/tool-boundary misconfiguration is a serious runtime issue and produces blocked task or system-message states with recovery and trace evidence rather than hidden controls or model-less acceptable results.
+Agent names and purposes are editable. Whole agents cannot be created or deleted in Agent Admin.
 
-Seed imports preserve tenant customizations by default: imported defaults carry provenance/checksum metadata, conflict summaries, proposed version diffs, rollback references, and human confirmation before activation. Loader tools (`readSkill`, `readReferenceDoc`) may return full content only after active-agent assignment, manifest version, scope, redaction, token, and ToolPermissionBoundary checks pass; denied loads are traced and surfaced as recoverable denials, not silent omissions or prompt-granted authority.
+## Editing behavior
 
-## Edge cases
+Editing is mediated by one editing agent with doc-type-specific skills for prompt editing, skill editing, and reference-doc editing. Users provide free-form instructions. The editing agent reads the current doc and relevant context from the same agent, preserves Markdown and existing structure unless asked to reorganize, and returns proposed full document content, a summary of changes, and advisory warnings/risks.
 
-Repeated commands must be idempotent where side-effecting; stale data returns a stale/reconnect or conflict state; provider/security misconfiguration returns actionable denial/failure feedback; unsupported business-domain requests are routed to extension guidance rather than silently added.
+The editing agent may ask clarifying questions before proposing changes. If a request is unsafe or outside scope, it should explain the refusal and propose a safer alternative. Warnings/risks are advisory only and do not block Save for authorized SaaS admins.
+
+The user may continue giving instructions to refine the proposed content. The editing session ends with Save or Cancel. Save creates a new current version immediately. Cancel discards the proposal and returns to the current version. Cancelled edit sessions are audited but are not retained in user-facing version history.
+
+## Version behavior
+
+Versions use simple integer numbers. Each saved version records created time, actor, content, and the whole editing-session transcript/summary including all user instructions. Version history rows show version number. Historical version views show content, metadata, edit request/transcript summary, optional diff to the immediate predecessor, and a read-only banner.
+
+Edit input is enabled only on the current/latest version. Historical versions are read-only. Restore this version immediately creates a new current version copied from the historical content and records `Restored from version N` as the edit request. Restore-created versions appear in history.
+
+## Skill/reference lifecycle
+
+SaaS admins may create, update, and permanently delete skills. Create skill captures skill name, editable purpose/description, and a free-form request for initial content drafted by the editing agent. Delete skill requires confirmation naming the skill, stating deletion is permanent, and listing/counting reference docs that will also be deleted. Deleted skills cannot be restored.
+
+SaaS admins may create, update, and permanently delete skill reference docs. Create reference doc captures name, short description used by models for read-selection, and free-form content request handled by the editing agent. Delete reference doc is permanent with a simple confirmation. Deleting a skill deletes all of its reference docs.
+
+## Runtime behavior
+
+Saving immediately updates the current doc used at runtime. Each agent request retrieves the current prompt and appends the list of skill names/descriptions. The model chooses whether to call `readSkill`. Loaded skills include reference doc names/descriptions. All agents have `readSkill` and `readReferenceDoc`; agents only know about skills listed for themselves. Runtime skill/reference reads are traced.

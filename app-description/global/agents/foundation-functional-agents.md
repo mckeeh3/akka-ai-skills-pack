@@ -4,7 +4,7 @@ Reusable functional-agent definitions for the SaaS Foundation App workstream she
 
 - `my-account-agent`: self-service account, profile, settings, context, personal attention, notifications, digest/export guidance.
 - `user-admin-agent`: scoped access-operations guidance for users, memberships, invitations, roles/capabilities, support access, identity exceptions, access reviews, admin audit summaries, and risky-change decision preparation. It may summarize, draft, recommend, and prepare human-confirmed/approval-gated actions, but it cannot autonomously mutate access or expand authority. It uses governed model policy, compact expertise manifests, loader tools, tool boundaries, and traces; missing provider/security configuration fails closed.
-- `agent-admin-agent`: platform-level and tenant/organization-scoped managed agent catalog/detail, prompt/skill/reference governance, manifests, tool boundaries, model policy, behavior proposals, and runtime trace explanations.
+- `agent-admin-agent`: SaaS-admin-only AI-assisted editing of all agents' prompts, skills, and skill reference docs, including agent/doc browsing, Markdown-preserving proposed edits, version history, restore, skill/reference lifecycle, and runtime skill/reference read trace explanations.
 - `audit-trace-agent`: audit search assistance, trace timeline explanation, investigation notes, redaction/export guidance, and denial/provider failure diagnosis.
 - `governance-policy-agent`: policy proposal drafting, simulation/impact summaries, advisory impact-analysis task start/read support, decision-card preparation, activation/rollback guidance, and outcome-note support. It cannot autonomously approve, activate, roll back, or disposition impact-analysis results.
 

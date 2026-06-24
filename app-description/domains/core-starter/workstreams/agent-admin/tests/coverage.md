@@ -2,33 +2,42 @@
 
 ## Acceptance
 
-- Given an authorized caller with selected `AuthContext`, when they open Agent Admin, then the dashboard and allowed surfaces render only scoped data and expose only authorized actions.
-- Given an allowed action, when it is submitted with valid input, then capability `managed-agent-governance` returns the expected structured result and emits required traces.
-- Behavior proposal coverage includes draft, submit, approve, reject with reason, defer with reason/follow-up, cancel, ready-for-activation, activation confirmation, rollback confirmation, deactivation confirmation, stale version conflict, provider/runtime blocked, tool-boundary blocked, approval-required, and idempotent repeat/no-op paths.
-- Prompt-risk review coverage includes start/read/cancel, provider/model/runtime/tool-boundary fail-closed, completed real model-backed advisory result, accept/reject into proposal evidence, and denial of blocked/deferred/fixture-only/model-less review acceptance.
-- Seed material coverage includes search/filter/reset, provenance open, prepare import, start import, cancel import, conflict/customization-preservation blockers, provider/runtime blockers, open target agent detail, and redacted trace opens.
+- Given a SaaS Owner/Admin, when they open Agent Admin with no persisted surface, then a blank workstream renders with Show dashboard, Show agents, and composer affordances.
+- Given a SaaS Owner/Admin, when they open the dashboard, then it shows a clickable total-agent count and top five most recently changed agents, with no required needs-attention section.
+- Given a SaaS Owner/Admin, when they filter the agent list by agent name or workstream/domain, then rows show agent name, short purpose, and last edit time and open agent detail.
+- Given an agent detail, then it shows editable agent name/purpose, prompt link, skill list, nested reference docs, create/delete skill/reference actions, and trace entry points; it does not expose whole-agent create/delete.
+- Given a prompt, skill, or reference doc current version, then edit input is enabled and accepts free-form instructions.
+- Given a historical version, then content, metadata, edit request/transcript summary, optional diff, and restore action are visible, edit input is disabled, and a read-only banner is shown.
+- Given version `N`, when Show diff is requested, then the diff compares only `N` to `N-1`; version 1 has no-prior-version behavior.
+- Given a free-form edit request, when the editing agent proposes a change, then the surface shows full proposed Markdown content, summary, advisory warnings/risks, additional input, Save, Cancel, and Show diff.
+- Given further user instructions, when the editing agent revises the proposal, then the transcript retains all user instructions.
+- Given Save, then a new current immutable version is created immediately and runtime reads use it.
+- Given Cancel, then no version is created and the current version is shown.
+- Given Restore this version, then a new current version is immediately created with content copied from the historical version and edit request `Restored from version N`.
+- Given create skill, then skill name, purpose/description, and editing-agent-drafted content create the skill and first version.
+- Given delete skill, then confirmation names the skill, states deletion is permanent, lists/counts reference docs, and confirm permanently deletes skill plus reference docs with no restore.
+- Given create reference doc, then name, short description, and editing-agent-drafted content create the reference doc and first version.
+- Given delete reference doc, then confirmation permanently deletes it with no restore.
 
 ## Security and negative
 
-- Disabled users, inactive memberships, Customer Admin selected contexts, role/capability denials, and cross-tenant/customer requests are denied without protected-data leakage.
-- Customer Admins cannot see Agent Admin catalog/dashboard surfaces, submit AgentAdminAgent turns, read prompt/skill/reference/manifest/model/tool-boundary/seed material, start prompt-risk review tasks, or draft/approve/activate/roll back behavior changes.
-- Agent/tool calls cannot exceed the governed tool boundary or approval policy.
-- Browser payloads never expose provider secrets or hidden authority state.
+- Non-SaaS-admin callers, tenant/org admins, customer admins, tenant employees, customer users, disabled users, inactive users, and unauthenticated callers are denied.
+- Agent Admin does not create/delete whole agents, manage model settings, manage tool permissions, or require separate activation/publish flows.
+- Unsafe or out-of-scope edit requests produce an explanation and safer alternative; warnings/risks are advisory and do not block Save for authorized SaaS admins.
+- Historical versions cannot be directly edited.
+- Stale current-version saves are rejected or recovered by backend consistency checks.
 
-## Idempotency and observability
+## Runtime and observability
 
-- Repeated proposal decisions, lifecycle confirmations, prompt-risk review decisions, and seed-import starts/cancellations do not duplicate effects and retain correlation/trace evidence.
-- Denials, approval-required outcomes, provider fail-closed states, tool-boundary denials, stale/conflict outcomes, hidden/not-found results, and trace emissions are verifiable through local Akka/API/UI tests or readiness evidence.
+- Each agent request loads the current prompt and skill names/descriptions.
+- Agents can call `readSkill` and `readReferenceDoc`; runtime skill/reference reads are traced.
+- Agent Admin trace surfaces show agent name, skill/reference doc read, timestamp, request/session id, and user/customer context, filterable by agent, doc, and time range.
+- Trace rows do not show full skill/reference content.
+- Every edit session audit includes user input, editing-agent proposed output, saved version content for Save, Save/Cancel outcome, timestamps, and actor.
 
+## UX and formatting
 
-## `human_chat_tool_plan` coverage
-
-- Given deterministic surface routing can safely open or prefill a surface, when a high-confidence no-mutation prompt is submitted, then the router returns that surface first and `human_chat_tool_plan` is not used.
-- Given the representative prompt **start prompt risk review for the Agent Admin prompt proposal** and an authorized selected `AuthContext`, when the chat request is classified as `human_chat_tool_plan`, then the response is a no-mutation plan proposal surface that lists actions `action-agent-prompt-risk-review-start`, governed tools `agent_admin.start_behavior_review_task`, capabilities `agent_admin.start_behavior_review_task`, validated input schema `schema.agent-admin.prompt-risk-review.start.v1` with visible `agentDefinitionId`, `proposalId`, redacted `artifactDeltas`, reason, and idempotency key, side effects, approval gates, idempotency, result surfaces `surface-agent-admin-prompt-risk-review`, and trace refs.
-- Given a proposed plan has not been explicitly confirmed, when the request completes, then no surface action, governed tool, external provider side effect, state mutation, invitation/email/outbox send, policy/agent lifecycle change, trace note append, or settings update has occurred.
-- Given the human confirms the exact `planId` and `planSnapshotId`, when backend authorization, lifecycle, tool-boundary, validation, approval, tenant/customer ownership, and idempotency checks pass for every step, then each step executes as an independent transaction boundary and returns the declared result or recovery surface.
-- Given a modified, stale, expired, cross-context, cross-tenant/customer, missing-confirmation, out-of-catalog, unsupported-field, hidden-target, provider/runtime/tool-boundary blocked, or unauthorized plan is confirmed, then execution is denied with `chat_tool_plan.system_message.v1`, `noDirectMutation=true`, safe recovery, no hidden-target enumeration, and trace refs.
-- Given the same proposal or confirmed step is replayed with the same idempotency key, then the backend returns the existing proposal/result and does not duplicate side effects, traces, notifications, provider calls, or attention items.
-- Given a later dependent step fails after an earlier step commits, then the plan result reports completed, failed, skipped, and recovery steps without rolling back committed work unless a cataloged compensating action exists.
-- Given provider/model/runtime configuration is missing for model-backed proposal generation, then the workstream returns a typed plan-unavailable/system-message state and trace evidence instead of fake/model-less planning success.
-- Given any agent, prompt, skill, reference, frontend state, route, or visible rail item suggests broader authority than the catalog grants, then the backend rejects the plan or step and records a denial trace.
+- Prompt, skill, and reference doc content supports Markdown.
+- The editing agent preserves existing Markdown and structure unless the user requests reorganization.
+- Users may Save without opening the diff.
+- No live-update behavior is required for concurrent edit sessions; backend consistency is authoritative.

@@ -1,28 +1,34 @@
 # Realization: API contracts for Agent Admin
 
-Capability: `managed-agent-governance`.
+Capability: `agent-doc-administration`.
 
-## Browser/API evidence
+## Browser/API intent
 
-| Tool / action | Exposure | API evidence | Contract obligations |
-|---|---|---|---|
-| `list-agent-catalog` | `browser-tool`, `agent-tool` | `src/main/java/ai/first/api/coreapp/admin/AdminEndpoint.java`, `WorkstreamEndpoint.java`, `AgentDefinitionView.java`; frontend API clients | Scoped catalog with status, owner/steward, authority profile, and redaction. |
-| `read-agent-behavior-detail` | `browser-tool`, `agent-tool` | foundation agent document/entity/view classes; `AgentAdminService.java` | Reads active/draft versions, manifests, boundaries, model refs, and trace links without exposing secrets. |
-| `draft-agent-behavior-proposal` | `browser-tool`, `agent-tool` proposal | `AgentAdminService.java`, `AgentMarketplaceGovernanceService.java`, prompt risk review service | Creates reviewable drafts/diffs; authority expansion becomes denial or approval-required proposal. |
-| Proposal decision tools (`submit-agent-behavior-proposal`, `approve-agent-behavior-proposal`, `reject-agent-behavior-proposal`, `defer-agent-behavior-proposal`, `cancel-agent-behavior-proposal`) | `browser-tool`; agent prepares only | `AdminEndpoint.java`, behavior repository/entities/services | Human/backend-policy governed proposal state transitions with reason/acknowledgement validation, idempotency, stale-version handling, audit, and trace evidence; approval does not activate behavior. |
-| Lifecycle confirmation tools (`activate-agent-behavior-version`, `rollback-agent-behavior-version`, `deactivate-agent-behavior-version`) | `browser-tool` approval | `AdminEndpoint.java`, behavior repository/entities/services | Explicit activation/rollback/deactivation from legal backend states only, with version, provider/runtime, tool-boundary, policy, idempotency, audit, and trace checks. |
-| Prompt-risk review tools (`start-agent-prompt-risk-review`, `read-agent-prompt-risk-review`, `accept-agent-prompt-risk-review`, `reject-agent-prompt-risk-review`, `cancel-agent-prompt-risk-review`) | `browser-tool`, `agent-tool` read/prepare, `internal-tool` worker | prompt risk review service and task state | Real model-backed review lifecycle; blocked/deferred/fixture-only/model-less results cannot be accepted as evidence. |
-| Seed-import tools (`prepare-agent-seed-import`, `start-agent-seed-import`, `cancel-agent-seed-import`) | `browser-tool`; agent prepares only | seed material/import services and provenance state | Customization-preserving import planning/execution with conflict, provenance, provider/runtime, idempotency, and trace handling. |
-| `readSkill`, `readReferenceDoc` | `agent-tool` loaders | `AgentRuntimeLoaderTools.java`, manifests, boundary entities/views | Manifest- and boundary-authorized loading only; denied loads are traced. |
-| Workstream messages/actions/events | `browser-tool` | `WorkstreamEndpoint.java`, `frontend/src/api/HttpWorkstreamApiClient.ts` | Typed surfaces/action results with correlation ids and work traces. |
+Agent Admin APIs should expose SaaS-admin-only agent document browsing, AI-assisted editing sessions, immutable versioning, skill/reference lifecycle, runtime doc loading, and read trace visibility.
 
-## Validation evidence
+## Required API contract areas
 
-- `src/test/java/ai/first/application/foundation/agent/AgentRuntimeToolResolverTest.java`
-- `src/test/java/ai/first/application/foundation/agent/AgentRuntimeTraceSinkTest.java`
-- `src/test/java/ai/first/application/coreapp/agentadmin/AgentAdminPromptRiskReviewServiceTest.java`
-- `frontend/src/workstream-agent-admin-vertical.contract.test.mjs`
+| Contract area | Obligations |
+|---|---|
+| Agent list | List/filter all agents by agent name and workstream/domain; return agent name, short purpose, last edit time. |
+| Agent detail | Read/update agent name and purpose; list prompt, skills, reference docs, version summaries, and trace links. |
+| Prompt docs | Read current/historical prompt versions; start/revise/cancel/save AI-assisted prompt edit sessions; restore historical versions. |
+| Skill docs | Create/read/update/delete skills; read current/historical skill versions; start/revise/cancel/save AI-assisted skill edit sessions; restore historical versions. |
+| Skill reference docs | Create/read/update/delete reference docs under a skill; read current/historical reference versions; start/revise/cancel/save AI-assisted reference edit sessions; restore historical versions. |
+| Edit sessions | Maintain transcript of all user instructions, editing-agent proposed output, summary, warnings/risks, base current version, and Save/Cancel outcome. |
+| Version history | Store simple integer versions; row listing can show version number only; version detail includes content, created time, actor, edit request/transcript summary. |
+| Diffs | Diff selected version `N` only against `N-1`; version 1 returns no-prior-version. Proposed edit diff compares proposal to current base version. |
+| Runtime loading | Each agent request loads current prompt and skill names/descriptions; `readSkill` returns skill plus reference doc names/descriptions; `readReferenceDoc` reads a selected reference doc. |
+| Runtime traces | Trace every `readSkill` / `readReferenceDoc`; expose Agent Admin trace metadata: agent name, skill/reference doc read, timestamp, request/session id, user/customer context. |
 
-## Gaps / caveats
+## Authorization obligations
 
-- Provider secrets are never browser DTOs; live model-provider proof is external-configuration dependent.
+All Agent Admin APIs require SaaS Owner/Admin authorization. Tenant/org/customer-scoped Agent Admin access is removed. Authorized SaaS admins can view full doc content. Trace rows do not include full read content.
+
+## Consistency obligations
+
+Edit input and save apply only to the current/latest version. Backend consistency checks handle stale current versions. Historical versions are read-only. Restore creates a new current version. Save immediately updates runtime behavior; there is no separate activation/publish API.
+
+## Out-of-scope API areas
+
+Agent Admin no longer owns model settings, tool permission administration, tenant/org scoped governance, separate activation/rollback lifecycles, prompt-risk approval blockers, seed import workflows, or whole-agent creation/deletion.

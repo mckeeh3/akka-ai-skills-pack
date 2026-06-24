@@ -6,15 +6,40 @@ Global traces: `../../../../../global/traces/foundation-trace-patterns.md`.
 
 ## Required evidence
 
-prompt-assembly-trace, skill-reference-load-trace, agent-work-trace, admin-audit-event, policy-decision-trace.
+Agent Admin trace records include actor, SaaS admin authorization decision, target agent, target doc type, target doc id/name, version number, correlation id, action id, outcome, timestamp, and error/denial category when applicable.
 
-Trace records include actor, selected `AuthContext`, tenant/customer ids, role/capability basis, correlation id, capability/tool id, policy decision, redaction decisions, denial/failure status, and linked surface/workstream item.
+## Edit-session audit
 
+Every edit session is audited. Audit includes:
 
-## `human_chat_tool_plan` trace evidence
+- actor;
+- timestamps;
+- target agent and doc;
+- base current version;
+- all user instructions;
+- editing-agent proposed output;
+- summary/warnings/risks;
+- Save or Cancel outcome;
+- saved version content when Save occurs.
 
-Agent Admin must emit durable work/audit trace facts for the `human_chat_tool_plan` adapter in addition to existing surface-action traces. Required event types are `human_chat_tool_plan.proposed`, `human_chat_tool_plan.confirmed`, `human_chat_tool_plan.step_started`, `human_chat_tool_plan.step_completed`, `human_chat_tool_plan.step_failed`, `human_chat_tool_plan.step_skipped`, `human_chat_tool_plan.denied`, and `human_chat_tool_plan.provider_blocked`.
+Cancelled edit sessions are not part of user-facing version history but are retained in audit.
 
-Minimum fields: trace/work trace id, correlation id, causation/parent event id, selected `AuthContext`, tenant/customer scope where applicable, functional agent `agent-admin-agent`, requestedBy, confirmedBy for execution, action ids `action-agent-prompt-risk-review-start`, governed tool ids `agent_admin.start_behavior_review_task`, capability ids `agent_admin.start_behavior_review_task`, input schema ref, plan id, plan snapshot id, step id/sequence/dependencies, idempotency key or redacted hash, authorization decision and basis summary, policy/approval refs, prompt/skill/reference/model/tool-boundary refs for proposal generation, result surface ids `surface-agent-admin-prompt-risk-review`, status, safe error code, redaction classification, and browser-safe input/output summaries.
+## Version traces
 
-Trace summaries must distinguish direct surface actions from `human_chat_tool_plan`, preserve no-mutation proposal evidence, record confirmation and per-step transaction outcomes, and omit raw provider secrets, JWTs, invitation tokens, raw email bodies, raw prompts/model payloads, hidden tenant/customer ids, raw tool payloads, and unredacted evidence from browser-visible views.
+Saved versions record created time, actor, saved content, and the whole editing-session transcript/summary. Restore operations create a normal new version with edit request `Restored from version N`.
+
+## Runtime skill/reference read traces
+
+All runtime `readSkill` and `readReferenceDoc` calls are traced. Agent Admin shows trace metadata directly and may also link to Audit/Trace.
+
+Visible Agent Admin trace fields:
+
+- agent name;
+- skill/reference doc read;
+- timestamp;
+- request/session id;
+- user/customer context.
+
+Trace filters: agent, skill/reference doc, time range.
+
+Trace rows do not show the full skill/reference content that was read. Authorized SaaS admins can open the current doc from Agent Admin when they need to inspect content.

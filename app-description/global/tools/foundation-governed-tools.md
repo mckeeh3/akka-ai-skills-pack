@@ -31,27 +31,26 @@ Reusable governed-tool ids used by core starter capability and workstream bindin
 - `grant-or-revoke-support-access`
 - `run-access-review`
 
-## Agent/Admin behavior governance
+## Agent Admin doc editing
 
-- `list-agent-catalog`
-- `read-agent-behavior-detail`
-- `draft-agent-behavior-proposal`
-- `submit-agent-behavior-proposal`
-- `approve-agent-behavior-proposal`
-- `reject-agent-behavior-proposal`
-- `defer-agent-behavior-proposal`
-- `cancel-agent-behavior-proposal`
-- `activate-agent-behavior-version`
-- `rollback-agent-behavior-version`
-- `deactivate-agent-behavior-version`
-- `start-agent-prompt-risk-review`
-- `read-agent-prompt-risk-review`
-- `accept-agent-prompt-risk-review`
-- `reject-agent-prompt-risk-review`
-- `cancel-agent-prompt-risk-review`
-- `prepare-agent-seed-import`
-- `start-agent-seed-import`
-- `cancel-agent-seed-import`
+- `list-agent-doc-agents`
+- `read-agent-doc-agent`
+- `update-agent-name-purpose`
+- `read-agent-prompt-doc`
+- `read-agent-skill-doc`
+- `read-agent-skill-reference-doc`
+- `draft-agent-doc-edit`
+- `revise-agent-doc-edit`
+- `save-agent-doc-edit`
+- `cancel-agent-doc-edit`
+- `read-agent-doc-version-history`
+- `read-agent-doc-version-diff`
+- `restore-agent-doc-version`
+- `create-agent-skill`
+- `delete-agent-skill`
+- `create-agent-skill-reference-doc`
+- `delete-agent-skill-reference-doc`
+- `read-agent-doc-runtime-traces`
 - `readSkill`
 - `readReferenceDoc`
 

@@ -6,52 +6,30 @@ Global definition: `../../../../../global/agents/foundation-functional-agents.md
 
 ## Authority
 
-The agent operates only for SaaS Owner/App Admin platform-governance contexts and tenant/organization administrator selected contexts through capability `managed-agent-governance` and governed tools `list-agent-catalog`, `read-agent-behavior-detail`, `draft-agent-behavior-proposal`, behavior proposal decision tools (`submit`, `approve`, `reject`, `defer`, `cancel`), lifecycle confirmation tools (`activate`, `rollback`, `deactivate`), prompt-risk review tools (`start`, `read`, `accept`, `reject`, `cancel`), seed-import tools (`prepare`, `start`, `cancel`), `readSkill`, and `readReferenceDoc`. The agent may explain, draft, prepare, and route proposals or confirmations, but human/backend-policy approvals remain authoritative and approval does not imply activation. SaaS Owner/App Admin contexts may govern platform-level managed agents, seed/default behavior, and app-owner managed agents; selected `TENANT_ADMIN` / `tenant-admin` contexts may govern tenant/organization-scoped managed agents. Backend authorization, tool-boundary checks, approval gates, selected governance scope, lifecycle state, and durable traces are mandatory. Customer-scoped admins are denied before prompt, skill, reference, or tool-boundary evidence is loaded.
+`agent-admin-agent` operates only for SaaS Owner/Admin users through capability `agent-doc-administration`. It may help list agents, open agent docs, interpret edit requests, draft proposed prompt/skill/reference-doc content, ask clarifying questions, summarize changes, provide advisory warnings/risks, restore a historical version, create/update/delete skills, create/update/delete skill reference docs, and explain runtime skill/reference read traces.
+
+The agent cannot create or delete whole agents, manage model settings, manage tool permissions, require a separate activation step, or grant non-SaaS-admin access. Tenant/organization/customer scoped Agent Admin behavior is out of scope.
 
 ## Model and expertise binding
 
-LLM-backed turns use inherited governed default model binding unless a tenant-approved override is activated for `agent-admin-agent`:
+LLM-backed editing uses the governed editing-agent runtime configuration and fails closed if no provider/runtime configuration is available. The editing agent has doc-type-specific skills for:
 
-- `ModelConfigRef`: `foundation-agent-admin-default-model`.
-- `ModelPolicy`: `foundation-agent-admin-model-policy`.
-- No implicit fallback; approved fallback requires policy and trace.
-- Provider secrets never appear in prompts, manifests, traces, browser payloads, or responses.
+- editing agent prompts;
+- editing agent skills;
+- editing skill reference docs.
 
-Prompt assembly includes only compact governed expertise manifest entries. Full skill/reference text loads only through authorized `readSkill(skillId)` or `readReferenceDoc(referenceId)` after active-agent assignment, governance scope, status/version, token/redaction, and `ToolPermissionBoundary` checks. Expertise can explain governance and draft proposals but cannot grant tools, data scope, model access, or approval authority.
-
-Assigned procedural skill intents:
-
-- `aa.agent-catalog-triage.v1` — catalog lifecycle, steward/owner, readiness, and attention triage.
-- `aa.behavior-proposal-drafting.v1` — prompt/skill/reference/manifest/tool-boundary proposal drafting with diff and risk evidence.
-- `aa.prompt-risk-review.v1` — prompt-risk review interpretation, provider/runtime blockers, and decision-card preparation.
-- `aa.tool-boundary-review.v1` — least-authority tool-boundary analysis and authority-expansion denial rationale.
-- `aa.activation-rollback-guidance.v1` — activation prerequisites, rollback readiness, freshness, and trace review.
-- `aa.runtime-trace-explanation.v1` — explain model/tool/load traces without raw prompts, provider payloads, or hidden scope leakage.
-
-Assigned reference intents:
-
-- `aa.managed-agent-lifecycle-policy.v1`.
-- `aa.prompt-governance-policy.v1`.
-- `aa.skill-reference-manifest-guide.v1`.
-- `aa.tool-permission-boundary-guide.v1`.
-- `aa.model-policy-guide.v1`.
-- `aa.seed-import-provenance-guide.v1`.
+It may read the current target doc and relevant same-agent context, including the agent prompt, skill names/descriptions, skill contents, and reference doc names/descriptions/content as needed for the edit. Authorized SaaS admins and the editing agent may see full doc text.
 
 ## Prompt intent
 
-Guide authorized users through governing platform-level or tenant/organization-scoped managed-agent definitions, prompts, skills, references, manifests, tool boundaries, model refs, seed imports, behavior proposals, activation, rollback, and runtime traces. Prefer structured surfaces and decision cards over free-text-only outcomes.
+Help SaaS admins improve managed-agent behavior through AI-assisted document editing. Preserve Markdown, preserve existing structure by default, make the smallest useful change that satisfies the user's request, and explain the proposed change in plain language.
+
+The default interaction is iterative: accept free-form input, ask clarifying questions when needed, propose full replacement document content, summarize changes and advisory risks, accept further refinement instructions, then let the user Save or Cancel through protected backend actions.
 
 ## Required denials and recovery
 
-The agent must safely recover from Customer-scoped actors, missing platform/tenant governance context, missing `agent_admin.*` capability, inactive or superseded behavior artifacts, prompt-only authority expansion, unapproved tool/model/data scope expansion, missing model/provider config, missing tool-boundary grant, denied skill/reference loads, raw secret/provider/prompt/model-response requests, stale proposal/version conflicts, and unauthorized activation or rollback. Safe recovery names the visible denial category, selected governance scope if safe, suggested non-sensitive next step, and trace/correlation id when available.
+The agent must recover safely from missing SaaS admin authority, unavailable provider/runtime configuration, missing target agent/doc, stale current version, deleted skill/reference doc, and unsupported requests such as creating/deleting whole agents or changing out-of-scope model/tool settings. For unsafe or out-of-scope edit requests, it should refuse with an explanation and propose a safer alternative. Advisory warnings do not block Save for authorized SaaS admins.
 
 ## Tests and traces
 
 See `../tests/coverage.md` and `../traces/work-traces.md`.
-
-
-## `human_chat_tool_plan` behavior boundary
-
-`agent-admin-agent` may participate in `human_chat_tool_plan` only as a plan proposer for catalog-bound, backend-visible work in this workstream. It may summarize the request, ask clarifying questions, draft safe inputs, and propose steps using the representative shared governed tool ids `agent_admin.start_behavior_review_task` for actions `action-agent-prompt-risk-review-start`. The proposal surface must state required capabilities `agent_admin.start_behavior_review_task`, side effects, validation needs, approval gates, idempotency, transaction boundaries, result surfaces, and trace expectations.
-
-The functional agent cannot authorize or execute the plan, cannot call side-effecting tools during proposal, cannot use prompt/skill/reference text to expand authority, and cannot bypass deterministic surface routing, selected `AuthContext`, backend authorization, approval policy, provider/model fail-closed behavior, or durable traces. Confirmed execution is a backend capability path performed only after explicit human confirmation and per-step reauthorization.

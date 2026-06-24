@@ -1,31 +1,26 @@
 # Realization: Akka components for Agent Admin
 
-Capability: `managed-agent-governance`.
+Capability: `agent-doc-administration`.
 
-This map is docs-only. It points to current implementation evidence and does not change runtime behavior.
+This map is docs-only. It describes the intended component responsibilities after the Agent Admin intent shift to AI-assisted agent-document editing.
 
-## Component and service evidence
+## Component responsibilities
 
-| Intent binding | Akka / Java evidence | Notes |
-|---|---|---|
-| Managed agent definitions and behavior repository | `src/main/java/ai/first/application/foundation/agent/AgentDefinitionEntity.java`, `DurableAgentBehaviorRepositoryEntity.java`, `AgentBehaviorRepository.java`, `AgentDefinitionView.java` | Tenant-scoped managed-agent state is durable and governed. |
-| Governed prompt/skill/reference documents and manifests | `PromptDocumentEntity.java`, `SkillDocumentEntity.java`, `ReferenceDocumentEntity.java`, `AgentSkillManifestEntity.java`, `AgentReferenceManifestEntity.java`, matching views | Loader access is manifest/boundary-scoped; prompt text cannot expand authority. |
-| Tool permission boundaries and registry | `ToolPermissionBoundaryEntity.java`, `ToolBoundaryGrantView.java`, `ToolRegistry.java`, `AgentRuntimeToolResolver.java` | Tool exposure must match governed-tool ids and be denied/traced when outside scope. |
-| Workstream runtime agent and loader tools | `WorkstreamRuntimeAgent.java`, `AgentRuntimeLoaderTools.java`, `DefaultWorkstreamAgentRuntimeInvoker.java`, `FailClosedWorkstreamAgentRuntimeInvoker.java` | Model-backed workstream agents must use active configuration or fail closed. |
-| Runtime trace capture | `AgentRuntimeTraceEntity.java`, `AgentRuntimeTraceView.java`, `AgentRuntimeTraceSink.java`, `AkkaAgentRuntimeTraceSink.java` | Prompt/skill/reference/model/tool/data/policy events require durable traces. |
-| Agent Admin services and prompt risk worker | `AgentAdminService.java`, `AgentMarketplaceGovernanceService.java`, `AgentAdminPromptRiskReviewService.java`, `AgentAdminPromptRiskAutonomousAgent.java`, `DurablePromptRiskReviewTaskRepositoryEntity.java` | Behavior proposals and risk reviews support human-governed activation/rollback. |
-| Seed content import | `src/main/resources/agent-behavior-seeds/starter-v1/**`, `AgentBehaviorSeedLoader.java` | Seed provenance should preserve customization and upgrade safety. |
+| Intent binding | Akka / Java responsibility |
+|---|---|
+| Agent registry | Durable/read model for existing agents, names, purposes, workstream/domain grouping, and last edit time. Agent Admin can update name/purpose but not create/delete whole agents. |
+| Agent prompt docs | Durable versioned document state for each agent's required prompt. Supports current/historical reads, save new version, restore historical version, and version-to-previous diff. |
+| Agent skill docs | Durable skill collection under each agent. Supports create, read, update through editing sessions, permanent delete, version history, restore, and reference doc containment. |
+| Skill reference docs | Durable reference docs under a skill. Supports create, read, update through editing sessions, permanent delete, version history, restore, and short description for model read selection. |
+| Editing agent | Model-backed agent that reads current doc plus relevant same-agent context, preserves Markdown/structure, asks clarifying questions, drafts proposed full content, summaries, and advisory warnings/risks. |
+| Edit-session state | Durable or request-correlated state for transcript, base version, proposed output, summary, risks, Save/Cancel outcome, actor, and timestamps. |
+| Runtime doc loader | Loads current prompt plus skill names/descriptions for every agent request; provides `readSkill` and `readReferenceDoc` tools to all agents. |
+| Runtime read trace sink | Records `readSkill` and `readReferenceDoc` metadata and exposes it to Agent Admin trace surfaces. |
 
-## Validation evidence
+## Existing implementation caveat
 
-- `src/test/java/ai/first/application/foundation/agent/AgentDefinitionEntityTest.java`
-- `src/test/java/ai/first/application/foundation/agent/GovernedDocumentEntityTest.java`
-- `src/test/java/ai/first/application/foundation/agent/ManifestBoundaryEntityTest.java`
-- `src/test/java/ai/first/application/foundation/agent/AgentRuntimeServiceTest.java`
-- `src/test/java/ai/first/application/foundation/agent/WorkstreamRuntimeAgentTest.java`
-- `src/test/java/ai/first/application/coreapp/agentadmin/AgentAdminPromptRiskAutonomousAgentTest.java`
-- `frontend/src/workstream-agent-admin-vertical.contract.test.mjs`
+Existing governed prompt/skill/reference entities, runtime loader tools, and trace entities may provide useful substrate. Existing behavior proposal, prompt-risk review, model settings, tool-boundary, seed import, activation, and rollback implementation paths are no longer the primary Agent Admin intent and should not drive the user-facing workstream unless reintroduced explicitly.
 
-## Gaps / caveats
+## Validation evidence to update
 
-- Fake model providers and local demo repositories are test-only. Normal runtime must use governed provider configuration or fail closed.
+Backend tests should prove SaaS-admin-only access, current-version-only editing, immutable versions, restore semantics, version-to-previous diffs, Markdown-preserving editing-agent proposals, Save/Cancel, skill/reference permanent deletion, runtime current-doc loading, and runtime skill/reference read traces.

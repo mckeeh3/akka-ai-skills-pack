@@ -1,25 +1,31 @@
 # Realization: Frontend routes and surfaces for Agent Admin
 
-Capability: `managed-agent-governance`.
+Capability: `agent-doc-administration`.
 
-## Frontend evidence
+## Frontend intent
 
-| Surface / route concern | Frontend evidence | Notes |
-|---|---|---|
-| Agent Admin command center | `frontend/src/workstream/surfaces/DashboardSurface.tsx` (`AgentAdminCommandCenter`) | Default workstream surface is `surface-agent-admin-dashboard`; attention counters precede authorized task entry points and each card opens a governed result surface. |
-| Managed agent catalog and inspection | `frontend/src/workstream/surfaces/ListSearchSurface.tsx` (`AgentAdminCatalogView`), `DetailEditSurface.tsx` (`AgentAdminInspectionDetail`) | Catalog rows are keyboard-operable collection selections; detail is read-only inspection with dedicated task surfaces for behavior/lifecycle changes. |
-| Prompt/skill/reference/version diffs, behavior proposals, and lifecycle confirmations | `GovernanceDiffSurface.tsx`, `DecisionSurface.tsx`, `WorkflowStatusSurface.tsx`, `AgentAdminTaskSurface.tsx` | Human review, activation, deactivation, and rollback remain backend-policy governed and use separate confirmation surfaces. |
-| Runtime trace explanation and loader/tool denials | `AuditTimelineSurface.tsx`, `TraceLinkList.tsx`, `SystemMessageSurface.tsx` | Trace links connect behavior/admin changes to runtime evidence. |
-| Functional-agent rail and composer | `frontend/src/workstream/rail/**`, `frontend/src/workstream/composer/**` | Agent guidance cannot add authority beyond backend governed tools. |
-| Typed browser API client | `frontend/src/api/HttpWorkstreamApiClient.ts`, `WorkstreamApiClient.ts`, `types.ts` | Error mapping must distinguish unauthorized, forbidden, validation, and provider-fail-closed states. |
+Agent Admin frontend realization should prioritize AI-assisted document editing over governance-console workflows.
 
-## Validation evidence
+## Surface / route concerns
 
-- `frontend/src/workstream-agent-admin-vertical.contract.test.mjs`
-- `frontend/src/workstream-surfaces.contract.test.mjs`
-- `frontend/src/workstream-actions.contract.test.mjs`
+| Surface / route concern | Expected frontend realization |
+|---|---|
+| Blank workstream | Persisted workstream surface area can be blank; controls expose Show dashboard, Show agents, Clear workstream, and composer. |
+| Optional dashboard | Shows clickable total-agent count and top five recently changed agents. No default needs-attention queue. |
+| Agent list | Filter by agent name and workstream/domain; rows show name, short purpose, last edit time; row opens agent detail. |
+| Agent detail | Editable name/purpose, prompt link, skill list, nested reference docs, create/delete skill/reference actions, runtime trace entry points. |
+| Prompt doc editor | Current Markdown content, version metadata, version history, edit request input only on current version, historical read-only view, restore. |
+| Skill doc editor | Skill name/purpose, Markdown content, reference docs, version/history/diff, current-only edit input, restore. |
+| Skill reference doc editor | Name, short description, Markdown content, version/history/diff, current-only edit input, restore. |
+| Editing session | Free-form instructions, editing-agent proposed full document, summary, advisory warnings/risks, Show diff toggle, refinement input, Save, Cancel. |
+| Create/delete skill | Create uses name, purpose/description, editing-agent drafted content. Delete confirmation is permanent and lists reference docs affected. |
+| Create/delete reference doc | Create uses name, short description, editing-agent drafted content. Delete confirmation is permanent. |
+| Runtime traces | Trace metadata filterable by agent, doc, time range; visible from agent detail, doc pages, and separate trace surface. |
 
-## Gaps / caveats
+## Removed/de-emphasized frontend concerns
 
-- Future UX changes must continue to hide provider secrets and represent denied loader/tool access as first-class recoverable states.
-- Agent Admin dashboard rendering is attention-first: actionable attention queues precede general work-area summaries, and non-actionable metrics are omitted or represented as denied/unavailable states returned by the backend.
+The Agent Admin default UX should not center model settings, tool permission editing, seed import, prompt-risk approval gates, behavior proposal queues, activation/deactivation/rollback confirmations, or tenant/org governance scopes. If old components remain, they are not authoritative for current Agent Admin intent unless reintroduced by a later accepted app-description change.
+
+## Validation evidence to update
+
+Existing frontend contract tests for Agent Admin should be reconciled to cover the new surface inventory, current-version-only edit input, simple integer version history, version-to-previous diff behavior, restore-created versions, editing-session Save/Cancel, skill/reference permanent deletion, SaaS-admin-only access, and runtime read trace metadata.

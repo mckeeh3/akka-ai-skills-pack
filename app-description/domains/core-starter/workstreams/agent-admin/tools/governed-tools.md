@@ -6,39 +6,34 @@ Global tool inventory: `../../../../../global/tools/foundation-governed-tools.md
 
 ## Workstream exposure
 
-Allowed governed tools: list-agent-catalog, read-agent-behavior-detail, draft-agent-behavior-proposal, submit-agent-behavior-proposal, approve-agent-behavior-proposal, reject-agent-behavior-proposal, defer-agent-behavior-proposal, cancel-agent-behavior-proposal, activate-agent-behavior-version, rollback-agent-behavior-version, deactivate-agent-behavior-version, start-agent-prompt-risk-review, read-agent-prompt-risk-review, accept-agent-prompt-risk-review, reject-agent-prompt-risk-review, cancel-agent-prompt-risk-review, prepare-agent-seed-import, start-agent-seed-import, cancel-agent-seed-import, readSkill, readReferenceDoc.
+Agent Admin exposes governed tools for SaaS-admin-only agent document editing:
 
-Tools are exposed as browser, agent, or internal tools only as stated by the linked capability. Side-effecting or high-impact tools require idempotency, correlation, authorization, approval policy, and audit/work traces. Denied tool calls are traced and return safe feedback.
+- `list-agent-doc-agents`: list/filter all agents by name and workstream/domain; returns agent name, short purpose, and last edit time.
+- `read-agent-doc-agent`: read one agent's name, purpose, prompt link, skills, reference doc links, and trace entry points.
+- `update-agent-name-purpose`: update agent name and purpose for an existing agent.
+- `read-agent-prompt-doc`: read current or historical prompt doc version.
+- `read-agent-skill-doc`: read current or historical skill doc version.
+- `read-agent-skill-reference-doc`: read current or historical skill reference doc version.
+- `draft-agent-doc-edit`: invoke the editing agent against the current version using free-form user instructions and relevant same-agent context.
+- `revise-agent-doc-edit`: send additional user instructions during the current editing session and return an updated proposed document.
+- `save-agent-doc-edit`: save the proposed prompt/skill/reference-doc content as the new current version.
+- `cancel-agent-doc-edit`: discard the current proposed edit and return to the current version.
+- `read-agent-doc-version-history`: list version numbers for a prompt, skill, or reference doc.
+- `read-agent-doc-version-diff`: show version `N` diffed only against version `N-1`.
+- `restore-agent-doc-version`: immediately create a new current version copied from historical version `N` with edit request `Restored from version N`.
+- `create-agent-skill`: create a skill for an existing agent using name, purpose/description, and editing-agent-drafted initial content.
+- `delete-agent-skill`: permanently delete a skill and all of its reference docs after confirmation.
+- `create-agent-skill-reference-doc`: create a reference doc under a skill using name, short description, and editing-agent-drafted initial content.
+- `delete-agent-skill-reference-doc`: permanently delete a reference doc after confirmation.
+- `read-agent-doc-runtime-traces`: read runtime `readSkill` / `readReferenceDoc` trace metadata.
+- Runtime tools available to all agents: `readSkill` and `readReferenceDoc`.
 
+## Tool boundaries
 
-## `human_chat_tool_plan` expanded current-intent catalog
+All Agent Admin browser and agent tools require SaaS Owner/Admin authorization. Browser controls are advisory; backend authorization, current-version consistency, delete confirmation, version creation, and trace emission are authoritative.
 
-This catalog records current intent for later runtime expansion. It reuses the same governed tool ids as browser surface actions and does not by itself change runtime behavior. Exposure channel `human_chat_tool_plan` remains proposal-and-confirmation only: deterministic no-mutation surface routing runs first, the initial execution-oriented chat request may only return a no-mutation plan proposal, and no state changes until exact human plan-snapshot confirmation and backend authorization succeed.
+There is no Agent Admin tool for tenant/org scoped governance, model settings, tool permission administration, prompt-risk approval gates, activation, rollback as a separate lifecycle, or whole-agent creation/deletion.
 
-Allowed expanded entries:
+## `human_chat_tool_plan` posture
 
-| Classification | Representative prompts | Surface action ids | Shared governed tool ids | Capability ids | Input schema and validation | Result surface(s) |
-|---|---|---|---|---|---|---|
-| `approval-gated` | `start prompt risk review for this prompt proposal` | `action-agent-prompt-risk-review-start` | `agent_admin.start_behavior_review_task` | `agent_admin.start_behavior_review_task` | `schema.agent-admin.prompt-risk-review.start.v1`; require visible `agentDefinitionId`, proposal id, redacted artifact deltas, reason, provider/runtime/tool-boundary fail-closed evidence, and idempotency key | `surface-agent-admin-prompt-risk-review` |
-| `chat-proposal-only` | `run a no-side-effect test for this agent`; `simulate prompt governance`; `simulate skill manifest`; `simulate tool boundary`; `run model reference readiness test` | `action-agent-detail-run-test`; `action-agent-prompt-governance-simulate`; `action-agent-skill-manifest-simulate`; `action-agent-tool-boundary-simulate`; `action-agent-model-refs-run-test` | agent-admin simulation/test governed tools | `agent_admin.start_behavior_review_task` or specific simulation capabilities | Simulation/run-test schemas under `schema.agent-admin.*`; require visible agent/artifact ids, no-side-effect tool boundary, provider/runtime fail-closed state, redacted outputs, and idempotency key | Test console, governance simulation, model refs, or safe system-message surfaces |
-| `chat-proposal-only` | `submit this prompt governance change for review`; `submit skill manifest review`; `submit tool boundary review`; `submit model references for review` | `action-agent-prompt-governance-submit-review`; `action-agent-skill-manifest-submit-review`; `action-agent-tool-boundary-submit-review`; `action-agent-model-refs-submit-review`; `action-propose-prompt-diff`; `action-submit-behavior-change`; `action-agent-behavior-proposal-submit` | `draft-agent-behavior-proposal`; `submit-agent-behavior-proposal` | `agent_admin.draft_behavior_change`; `agent_admin.submit_behavior_change_for_review` | Submit-review schemas under `schema.agent-admin.*submit-review*`; require visible draft/proposal ids, redacted diff summaries, authority-expansion denial, no activation, and idempotency key | `surface-agent-behavior-proposal`; artifact review surfaces |
-
-Expanded classification and blocked/surface-only rationale:
-
-| Classification | Action groups | Rationale and boundary |
-|---|---|---|
-| `router-only` | Dashboard/catalog/search/filter/detail opens and refreshes | Structured surfaces preserve target visibility and redaction; chat plans must not enumerate hidden agents or raw artifacts. |
-| `surface-only` | Target-specific artifact reads, seed material prepare/read, prompt-risk read/source/trace opens, trace drill-ins | The browser surface owns redacted evidence review, target binding, and diagnostics. |
-| `chat-proposal-only` | No-side-effect tests/simulations and behavior/prompt/skill/tool/model submit-review paths | These may create advisory evidence or proposal artifacts only; active managed-agent behavior remains unchanged. |
-| `approval-gated` | Prompt-risk review start; proposal approve/reject/defer/cancel; prompt/skill/tool/model review decisions; seed import start/cancel; lifecycle activation/deactivation/rollback | These require visible proposal state, provider/tool-boundary readiness, human governance decisions, and lifecycle prerequisites beyond chat confirmation. |
-| `blocked-pending-design` | Direct activation/rollback/deactivation without approved proposal metadata; trace export/escalation from Agent Admin; customization-overwriting seed import | High-impact authority or evidence export needs separate approval/redaction/recovery design. |
-| `internal-only` | Skill/reference loaders, provider readiness probes, import diff builders, task workers, audit projection consumers | Governed service/model/provider paths are available only through assigned boundaries and not direct chat steps. |
-| `out-of-scope` | Business-domain managed agents and non-foundation agent teams | Outside the five foundation workstreams for this catalog expansion. |
-
-Execution requirements for every accepted Agent Admin entry:
-
-- proposal step validation rejects out-of-catalog action/tool/capability combinations, hidden targets, unsafe output bindings, missing provider/runtime/tool-boundary readiness, unsupported input fields, and any prompt/skill/model text that attempts to grant authority;
-- confirmation must bind `planId`, `planSnapshotId`, selected `AuthContext`, requestedBy, confirmedBy, step hashes, idempotency root, correlation id, and visible side-effect/approval acknowledgements;
-- every confirmed step recomputes backend authorization and approval policy, uses its own idempotency key and transaction boundary, emits trace evidence, and returns the declared typed result surface or safe system message;
-- provider/model/runtime unavailable states are `provider_blocked`/`noFakeSuccess` outcomes, not successful analysis;
-- no workstream agent, prompt, frontend route, disabled/visible control, or tool description grants autonomous mutation authority.
+The composer may route requests to available Agent Admin tools when the workstream agent can safely identify the target and action. Otherwise it should ask a clarifying question or return a system message. Consequential mutations still execute through protected backend tools such as Save, Restore, Create Skill, Delete Skill, Create Reference Doc, and Delete Reference Doc.
