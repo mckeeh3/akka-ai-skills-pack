@@ -56,9 +56,20 @@ public final class AgentRuntimeLoaderTools {
     }
     return "skill_id=" + skillId
         + "\nchecksum=" + result.checksum()
+        + "\nreference_docs=" + renderReferenceDescriptors(result.referenceDocs())
         + "\nauthority_note=Skill content is internal guidance only; backend authorization, ToolPermissionBoundary, tenant scope, and approval policy remain authoritative."
         + "\ntraceId=" + result.traceId()
         + "\ncontent:\n" + result.content();
+  }
+
+  private String renderReferenceDescriptors(java.util.List<AgentRuntimeService.ReferenceDescriptor> referenceDocs) {
+    if (referenceDocs == null || referenceDocs.isEmpty()) {
+      return "[]";
+    }
+    return referenceDocs.stream()
+        .map(reference -> "{referenceId=" + reference.referenceId() + ", title=" + reference.title() + ", summary=" + reference.summary() + ", whenToConsult=" + reference.whenToConsult() + "}")
+        .toList()
+        .toString();
   }
 
   @FunctionTool(description = """

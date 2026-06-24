@@ -382,6 +382,76 @@ public final class AgentAdminDocAdministrationService {
     return new ReferenceLifecycleResult(agent.agentDefinitionId(), null, reference.referenceDocumentId(), 0, List.of(traceId("reference-delete", reference.referenceDocumentId(), correlationId)));
   }
 
+  public RuntimeDocReadTraceResponse runtimeDocReadTraces(AuthContextResolver.ResolvedMe actor, RuntimeDocReadTraceQuery query, String correlationId) {
+    requireSaasAdmin(actor, READ_AGENT_CAPABILITY, "agent_admin.runtime_doc_reads.trace_rows.v1", correlationId);
+    var safeQuery = query == null ? new RuntimeDocReadTraceQuery(null, null, null, null) : query;
+    var rows = traceSink.traces().stream()
+        .filter(this::isRuntimeDocReadTrace)
+        .filter(trace -> isBlank(safeQuery.agentDefinitionId()) || safeQuery.agentDefinitionId().equals(trace.agentDefinitionId()))
+        .filter(trace -> isBlank(safeQuery.documentIdOrStableId()) || safeQuery.documentIdOrStableId().equals(trace.targetId()) || documentName(trace).contains(safeQuery.documentIdOrStableId()))
+        .filter(trace -> safeQuery.occurredAtFrom() == null || !trace.occurredAt().isBefore(safeQuery.occurredAtFrom()))
+        .filter(trace -> safeQuery.occurredAtTo() == null || !trace.occurredAt().isAfter(safeQuery.occurredAtTo()))
+        .sorted(Comparator.comparing(AgentRuntimeTrace::occurredAt).reversed())
+        .map(this::runtimeDocReadTraceRow)
+        .toList();
+    return new RuntimeDocReadTraceResponse(rows, List.of(traceId("runtime-doc-read-trace-rows", firstNonBlank(safeQuery.agentDefinitionId(), "all"), correlationId)));
+  }
+
+  private boolean isRuntimeDocReadTrace(AgentRuntimeTrace trace) {
+    return trace != null && ("SKILL_LOAD".equals(trace.traceType()) || "REFERENCE_LOAD".equals(trace.traceType()));
+  }
+
+  private RuntimeDocReadTraceRow runtimeDocReadTraceRow(AgentRuntimeTrace trace) {
+    var agent = repository.agentDefinition(platformScopeId(), trace.agentDefinitionId()).orElse(null);
+    var agentName = agent == null ? trace.agentDefinitionId() : agent.displayName();
+    var docType = "SKILL_LOAD".equals(trace.traceType()) ? "skill" : "reference";
+    var docName = documentName(trace);
+    return new RuntimeDocReadTraceRow(
+        trace.traceId(),
+        trace.occurredAt(),
+        trace.agentDefinitionId(),
+        agentName,
+        docType,
+        trace.targetId(),
+        docName,
+        docType + ": " + docName,
+        trace.correlationId(),
+        trace.actorId(),
+        userCustomerContext(trace),
+        trace.decision().name(),
+        trace.safeSummary());
+  }
+
+  private String documentName(AgentRuntimeTrace trace) {
+    if (trace == null) return "";
+    if ("SKILL_LOAD".equals(trace.traceType())) {
+      return repository.skillDocuments(platformScopeId()).stream()
+          .filter(skill -> trace.targetId().equals(skill.stableSkillId()) || trace.targetId().equals(skill.skillDocumentId()))
+          .map(SkillDocument::title)
+          .findFirst()
+          .orElse(trace.targetId());
+    }
+    if ("REFERENCE_LOAD".equals(trace.traceType())) {
+      return repository.referenceDocuments(platformScopeId()).stream()
+          .filter(reference -> trace.targetId().equals(reference.stableReferenceId()) || trace.targetId().equals(reference.referenceDocumentId()))
+          .map(ReferenceDocument::title)
+          .findFirst()
+          .orElse(trace.targetId());
+    }
+    return trace.targetId();
+  }
+
+  private String userCustomerContext(AgentRuntimeTrace trace) {
+    var summary = trace.safeSummary() == null ? "" : trace.safeSummary();
+    var marker = "userContext=";
+    var index = summary.indexOf(marker);
+    if (index >= 0) {
+      var end = summary.indexOf(";", index);
+      return end >= 0 ? summary.substring(index + marker.length(), end) : summary.substring(index + marker.length());
+    }
+    return "accountId=" + safe(trace.actorId());
+  }
+
   private EditSessionRecord invokeEditingAgent(AuthContextResolver.ResolvedMe actor, EditSessionRecord session, DocumentSnapshot base, String priorProposal, String correlationId) {
     var agent = agent(session.agentDefinitionId());
     var result = editingRuntime.proposeEdit(new AgentAdminDocEditingRuntime.EditProposalRequest(
@@ -933,6 +1003,30 @@ public final class AgentAdminDocAdministrationService {
       traceLinks = List.copyOf(traceLinks == null ? List.of() : traceLinks);
     }
   }
+
+  public record RuntimeDocReadTraceQuery(String agentDefinitionId, String documentIdOrStableId, Instant occurredAtFrom, Instant occurredAtTo) {}
+
+  public record RuntimeDocReadTraceResponse(List<RuntimeDocReadTraceRow> rows, List<String> traceLinks) {
+    public RuntimeDocReadTraceResponse {
+      rows = List.copyOf(rows == null ? List.of() : rows);
+      traceLinks = List.copyOf(traceLinks == null ? List.of() : traceLinks);
+    }
+  }
+
+  public record RuntimeDocReadTraceRow(
+      String traceId,
+      Instant occurredAt,
+      String agentDefinitionId,
+      String agentName,
+      String documentType,
+      String documentIdOrStableId,
+      String documentName,
+      String documentRead,
+      String requestSessionId,
+      String actorAccountId,
+      String userCustomerContext,
+      String decision,
+      String safeSummary) {}
 
   private static final class NoopAgentRuntimeTraceSink implements AgentRuntimeTraceSink {
     @Override

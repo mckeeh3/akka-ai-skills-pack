@@ -22,6 +22,7 @@ import ai.first.domain.foundation.agent.BehaviorChangeProposal;
 import ai.first.domain.foundation.agent.ModelConfigRef;
 import ai.first.domain.foundation.agent.ModelPolicy;
 import ai.first.domain.foundation.agent.ReferenceDocument;
+import ai.first.domain.foundation.agent.SkillDocument;
 import ai.first.domain.foundation.agent.ToolPermissionBoundary;
 import ai.first.domain.foundation.identity.AuthContext;
 import ai.first.domain.foundation.identity.FoundationRole;
@@ -424,6 +425,8 @@ class AgentRuntimeServiceTest {
     var deniedReference = tools.readReferenceDoc("unassigned-reference");
 
     assertTrue(allowedSkill.contains("skill_id=ua.access-review-triage.v1"));
+    assertTrue(allowedSkill.contains("reference_docs="));
+    assertTrue(allowedSkill.contains("ua.access-review-policy.v1"));
     assertTrue(allowedSkill.contains("authority_note=Skill content is internal guidance only"));
     assertTrue(deniedSkill.startsWith("skill_unavailable:"));
     assertFalse(deniedSkill.contains("unassigned-skill"));
@@ -443,10 +446,52 @@ class AgentRuntimeServiceTest {
     assertEquals(AgentRuntimeTrace.Decision.ALLOWED, allowed.decision());
     assertNotNull(allowed.content());
     assertTrue(allowed.content().contains("access"));
+    assertFalse(allowed.referenceDocs().isEmpty());
+    assertTrue(allowed.referenceDocs().stream().anyMatch(reference -> reference.referenceId().equals("ua.access-review-policy.v1")));
     assertEquals(AgentRuntimeTrace.Decision.DENIED, denied.decision());
     assertNull(denied.content());
     assertEquals("Skill is not available in this governed runtime context.", denied.safeDenialReason());
     assertEquals(2, service.traces().stream().filter(trace -> trace.traceType().equals("SKILL_LOAD")).count());
+  }
+
+  @Test
+  void runtimeReadsUseCurrentSkillContentWithoutCrossAgentDiscovery() {
+    var existing = repository.skillDocument("tenant-1", AgentBehaviorSeedLoader.ACCESS_REVIEW_SKILL_DOC_ID).orElseThrow();
+    var updatedBody = existing.contentBody() + "\n\nRuntime current-version marker.";
+    repository.saveSkillDocument(new SkillDocument(existing.tenantId(), existing.skillDocumentId(), existing.stableSkillId(), existing.title(), existing.purpose(), existing.whenToUse(), existing.tags(), existing.status(), existing.activeVersion() + 1, updatedBody, AgentRuntimeService.checksum(updatedBody), existing.seedProvenance(), existing.createdAt(), existing.updatedAt()));
+
+    var current = service.readSkill(new SkillReadRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, "corr-skill-current", "ua.access-review-triage.v1"));
+    var crossAgent = service.readSkill(new SkillReadRequest("tenant-1", AgentBehaviorSeedLoader.MY_ACCOUNT_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.MY_ACCOUNT_INVOKE_CAPABILITY, "corr-skill-cross-agent", "ua.access-review-triage.v1"));
+
+    assertEquals(AgentRuntimeTrace.Decision.ALLOWED, current.decision());
+    assertTrue(current.content().contains("Runtime current-version marker."));
+    assertEquals(AgentRuntimeTrace.Decision.DENIED, crossAgent.decision());
+    assertNull(crossAgent.content());
+    assertTrue(service.traces().stream().anyMatch(trace -> trace.traceType().equals("SKILL_LOAD") && trace.correlationId().equals("corr-skill-cross-agent") && trace.safeSummary().contains("skill-not-available")));
+  }
+
+  @Test
+  void runtimeReadTracesCarryAgentAdminVisibleMetadataWithoutReadContent() {
+    var skill = service.readSkill(new SkillReadRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, "corr-skill-metadata", "ua.access-review-triage.v1"));
+    var reference = service.readReferenceDoc(new ReferenceReadRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, "corr-ref-metadata", "ua.access-review-policy.v1", "consult"));
+
+    assertEquals(AgentRuntimeTrace.Decision.ALLOWED, skill.decision());
+    assertEquals(AgentRuntimeTrace.Decision.ALLOWED, reference.decision());
+    var skillTrace = service.traces().stream().filter(trace -> trace.traceType().equals("SKILL_LOAD") && trace.correlationId().equals("corr-skill-metadata")).findFirst().orElseThrow();
+    var referenceTrace = service.traces().stream().filter(trace -> trace.traceType().equals("REFERENCE_LOAD") && trace.correlationId().equals("corr-ref-metadata")).findFirst().orElseThrow();
+
+    assertEquals(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, skillTrace.agentDefinitionId());
+    assertTrue(skillTrace.safeSummary().contains("agentName=User Admin Agent"));
+    assertTrue(skillTrace.safeSummary().contains("docType=skill"));
+    assertTrue(skillTrace.safeSummary().contains("requestSessionId=corr-skill-metadata"));
+    assertTrue(skillTrace.safeSummary().contains("accountId=admin-1"));
+    assertTrue(skillTrace.safeSummary().contains("customerId="));
+    assertTrue(skillTrace.safeSummary().contains("content=omitted"));
+    assertFalse(skillTrace.safeSummary().contains("Before recommending access changes"));
+    assertTrue(referenceTrace.safeSummary().contains("docType=reference"));
+    assertTrue(referenceTrace.safeSummary().contains("docName=Access Review Policy"));
+    assertTrue(referenceTrace.safeSummary().contains("requestSessionId=corr-ref-metadata"));
+    assertFalse(referenceTrace.safeSummary().contains(reference.content()));
   }
 
   @Test
@@ -462,7 +507,7 @@ class AgentRuntimeServiceTest {
     assertEquals(AgentRuntimeTrace.Decision.DENIED, denied.decision());
     assertNull(denied.content());
     assertEquals("Reference is not available in this governed runtime context.", denied.safeDenialReason());
-    assertTrue(service.traces().stream().anyMatch(trace -> trace.traceType().equals("REFERENCE_LOAD") && trace.decision() == AgentRuntimeTrace.Decision.ALLOWED && trace.correlationId().equals("corr-ref-1") && trace.targetId().equals("ua.access-review-policy.v1") && trace.safeSummary().contains("loaded assigned active reference")));
+    assertTrue(service.traces().stream().anyMatch(trace -> trace.traceType().equals("REFERENCE_LOAD") && trace.decision() == AgentRuntimeTrace.Decision.ALLOWED && trace.correlationId().equals("corr-ref-1") && trace.targetId().equals("ua.access-review-policy.v1") && trace.safeSummary().contains("loaded assigned active current reference")));
     assertTrue(service.traces().stream().anyMatch(trace -> trace.traceType().equals("REFERENCE_LOAD") && trace.decision() == AgentRuntimeTrace.Decision.DENIED && trace.correlationId().equals("corr-ref-2") && trace.targetId().equals("unassigned-reference") && trace.safeSummary().contains("reference-not-available")));
     assertEquals(2, service.traces().stream().filter(trace -> trace.traceType().equals("REFERENCE_LOAD")).count());
   }

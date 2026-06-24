@@ -128,7 +128,7 @@
 
 ### AADE-02-002: Runtime doc loading and read traces
 
-- status: pending
+- status: done
 - source: `backlog/02-agent-runtime-build-backlog.md`
 - task brief: `specs/agent-admin-doc-editing-realization/tasks/02-runtime/02-runtime-doc-loading-and-traces.md`
 - depends on: [AADE-02-001]
@@ -154,7 +154,9 @@
   - no cross-agent skill discovery path exists
   - read traces are tested
   - changes and queue update are committed
-- notes: []
+- notes:
+  - completed in commit message: `Implement runtime doc loading and read traces`
+  - next runnable task after completion: `AADE-03-001` (`pending`, depends on `AADE-02-002`)
 
 ### AADE-03-001: Workstream/API action wiring
 

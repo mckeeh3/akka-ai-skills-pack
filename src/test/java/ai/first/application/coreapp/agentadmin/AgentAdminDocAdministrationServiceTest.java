@@ -18,11 +18,15 @@ import ai.first.application.coreapp.agentadmin.AgentAdminDocAdministrationServic
 import ai.first.application.coreapp.agentadmin.AgentAdminDocAdministrationService.ReviseEditSessionRequest;
 import ai.first.application.coreapp.agentadmin.AgentAdminDocAdministrationService.StartEditSessionRequest;
 import ai.first.application.foundation.agent.AgentBehaviorSeedLoader;
+import ai.first.application.foundation.agent.AgentRuntimeService;
 import ai.first.application.foundation.agent.InMemoryTestAgentBehaviorRepository;
+import ai.first.application.foundation.agent.InMemoryTestAgentRuntimeTraceSink;
+import ai.first.application.foundation.agent.OpenAiModelProviderClient;
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
 import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
+import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import ai.first.domain.foundation.agent.ReferenceDocument;
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AccountStatus;
@@ -100,6 +104,45 @@ class AgentAdminDocAdministrationServiceTest {
 
     var diff = service.adjacentDiff(owner, new DocumentVersionRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentDocKind.PROMPT, detail.prompt().documentId(), 1), "corr-diff");
     assertEquals(AgentAdminDocAdministrationService.DiffStatus.NO_PRIOR_VERSION, diff.status());
+  }
+
+  @Test
+  void runtimeDocReadTraceRowsExposeMetadataWithoutFullContent() {
+    var owner = actor("owner@example.test", "membership-owner");
+    var traceSink = new InMemoryTestAgentRuntimeTraceSink();
+    var runtimeService = new AgentRuntimeService(agentRepository, resolver, CLOCK, new OpenAiModelProviderClient(), traceSink);
+    var traceService = new AgentAdminDocAdministrationService(agentRepository, resolver, CLOCK, new FailClosedAgentAdminDocEditingRuntime(), traceSink);
+
+    var skillRead = runtimeService.readSkill(new AgentRuntimeService.SkillReadRequest(
+        WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID,
+        AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID,
+        owner.selectedContext(),
+        "runtime",
+        "saas_owner.admin.manage",
+        "corr-runtime-skill-read",
+        "ua.access-review-triage.v1"));
+    var referenceRead = runtimeService.readReferenceDoc(new AgentRuntimeService.ReferenceReadRequest(
+        WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID,
+        AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID,
+        owner.selectedContext(),
+        "runtime",
+        "saas_owner.admin.manage",
+        "corr-runtime-reference-read",
+        "ua.access-review-policy.v1",
+        "consult"));
+
+    assertEquals(AgentRuntimeTrace.Decision.ALLOWED, skillRead.decision());
+    assertEquals(AgentRuntimeTrace.Decision.ALLOWED, referenceRead.decision());
+    var allRows = traceService.runtimeDocReadTraces(owner, new AgentAdminDocAdministrationService.RuntimeDocReadTraceQuery(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, null, null, null), "corr-trace-query");
+    assertEquals(2, allRows.rows().size());
+    assertTrue(allRows.rows().stream().anyMatch(row -> row.agentName().equals("User Admin Agent") && row.documentType().equals("skill") && row.documentName().equals("Access Review Triage") && row.requestSessionId().equals("corr-runtime-skill-read") && row.userCustomerContext().contains("accountId=owner@example.test")));
+    assertTrue(allRows.rows().stream().anyMatch(row -> row.documentType().equals("reference") && row.documentName().equals("Access Review Policy") && row.requestSessionId().equals("corr-runtime-reference-read")));
+    assertFalse(allRows.rows().toString().contains(skillRead.content()));
+    assertFalse(allRows.rows().toString().contains(referenceRead.content()));
+
+    var filtered = traceService.runtimeDocReadTraces(owner, new AgentAdminDocAdministrationService.RuntimeDocReadTraceQuery(null, "Access Review Policy", null, null), "corr-trace-filter");
+    assertEquals(1, filtered.rows().size());
+    assertEquals("reference", filtered.rows().get(0).documentType());
   }
 
   @Test
