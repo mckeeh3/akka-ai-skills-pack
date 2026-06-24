@@ -496,7 +496,7 @@
 
 ### TASK-020: Replacement terminal verification after optional-security repair
 
-- status: pending
+- status: done
 - source: specs/skills-pack-worker-tool-lifecycle-realignment/verification-notes.md
 - task brief: specs/skills-pack-worker-tool-lifecycle-realignment/tasks/020-terminal-verification-retry.md
 - depends on: [TASK-019]
@@ -518,3 +518,4 @@
   - scope: skills-pack maintenance, replacement terminal verification
   - vertical contract: cross-cutting pack verification; no runtime feature
   - runtime evidence: not applicable; pack-maintenance task
+  - terminal verification result: mini-project closed; README done state re-checked after TASK-017 and TASK-019 follow-ups, required checks passed, and no follow-up tasks were appended.

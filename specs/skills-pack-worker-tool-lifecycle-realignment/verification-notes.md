@@ -161,3 +161,39 @@ Queue decision:
 - No newly revealed unrelated blocker was found by the maintainer verification script.
 - The mini-project remains ready for replacement terminal verification in TASK-020.
 - Next runnable task: TASK-020.
+
+## TASK-020 replacement terminal verification notes
+
+Date: 2026-06-24
+
+### Conclusion
+
+The mini-project is **closed**. The README done state was re-checked against the target architecture, migration strategy, TASK-017 app-description repair, and TASK-019 optional-security wording repair. No material blockers remain after the required pack checks passed.
+
+### Done-state comparison after TASK-019
+
+| Done-state item | Result | Evidence |
+|---|---|---|
+| Canonical doctrine exists for lifecycle, worker/tool model, app-description graph, compile contract, and manual-test reconciliation | Pass | Prior terminal verification evidence remains valid for the canonical docs under `skills-pack/docs/**`. |
+| Routing and skill metadata contract are present and representative skills use the lifecycle/worker/tool/capability model | Pass | Prior TASK-015/TASK-016 evidence remains valid; install validation passed against the current source pack. |
+| Pilot and major skill families have been migrated or explicitly resolved | Pass | TASK-006 through TASK-015 are done, with no remaining family-migration follow-up tasks in this mini-project queue. |
+| TASK-016 governed-agent app-description blocker is resolved | Pass | TASK-017 added the missing governed runtime agent foundation app-description coverage; maintainer verification passes the app-description checks. |
+| TASK-018 optional-security wording blocker is resolved | Pass | TASK-019 replaced the forbidden optional-security wording; maintainer verification passes the forbidden optional-security phrasing check. |
+| Pack validation checks pass | Pass | `git diff --check`, install dry-run, final install check, and maintainer verification passed. |
+
+### Commands run
+
+| Command | Exit code | Result | Summary |
+|---|---:|---|---|
+| `git diff --check` | 0 | Passed | No whitespace/diff errors before terminal checks. |
+| `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --dry-run` | 0 | Passed | Installer dry-run completed without writing files. |
+| `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --check` | 1 | Retried after temp-target sync | The existing `/tmp/akka-skills-install-check` install was stale after TASK-019 and differed in `docs`; this was treated as local verification-target setup, not a source blocker. |
+| `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --prune` | 0 | Prep passed | Refreshed the temporary verification install target from current source. No repository files were changed. |
+| `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --check` | 0 | Passed | Installed skill references and source/installed content check passed after refreshing the temp target. |
+| `bash skills-pack/pack/maintainer/tools/verify-opinionated-ai-first-saas-pack.sh` | 0 | Passed | Maintainer verification passed, including governed runtime agent foundation app-description assets and forbidden optional-security phrasing. |
+
+### Queue decision
+
+- TASK-020 closes the replacement terminal verification after TASK-019.
+- No follow-up tasks were appended because no material blockers remain.
+- Next runnable task: none; all tasks in this mini-project queue are complete.
