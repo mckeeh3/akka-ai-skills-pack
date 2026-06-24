@@ -367,7 +367,7 @@
 
 ### TASK-015: Compression, cleanup, manifest, and install validation
 
-- status: pending
+- status: done
 - source: specs/skills-pack-worker-tool-lifecycle-realignment/migration-strategy.md
 - task brief: specs/skills-pack-worker-tool-lifecycle-realignment/tasks/015-compression-cleanup-and-install-validation.md
 - depends on: [TASK-014]

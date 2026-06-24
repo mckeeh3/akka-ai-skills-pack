@@ -6,12 +6,13 @@ metadata:
   version: 0.3.0
   sourceRepo: https://github.com/mckeeh3/akka-ai-skills-pack
   description: >-
-    Versioned Akka AI skills library for AI-first SaaS interpretation,
-    description-first application maintenance and realization, intent-driven Akka
-    application design, decomposition, and code generation. Users clone or fork
-    this repository for the runnable full-stack app; the harness install copies
-    skills plus referenced pack docs, examples, templates, tools, and shared skill
-    references into the target skills directory.
+    Versioned lifecycle-routed Akka AI skills library for AI-first SaaS
+    interpretation, description-first application maintenance and realization,
+    intent-driven Akka application design, decomposition, manual verification,
+    and code generation. Users clone or fork this repository for the runnable
+    full-stack app; the harness install copies skills plus referenced pack docs,
+    examples, templates, tools, and shared skill references into the target skills
+    directory.
   compatibleAkkaSdk: '3.6.x'
 
 install:

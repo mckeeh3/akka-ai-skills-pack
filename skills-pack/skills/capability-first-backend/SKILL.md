@@ -61,40 +61,15 @@ Do not use this skill as a substitute for:
 
 ## Core rule
 
-For generated full-stack SaaS apps, capabilities sit **below** the agent workstream application model and **above** Akka implementation:
+For generated full-stack SaaS apps, capabilities sit below the agent workstream application model and above Akka implementation:
 
 ```text
-secure SaaS foundation
-→ functional/context-area agents
-→ durable workstreams
-→ workforce roster and worker responsibility/authority/handoff map
-→ typed structured surfaces and actions
-→ governed tools as executable semantic operations/queries
-→ backend capabilities as product-level groupings
-→ selected actor adapters and exposure channels
-→ Akka implementation substrates
+secure foundation → functional agents/workstreams/workforce → structured surfaces/actions → governed tools → capabilities → actor adapters/exposure channels → Akka substrates
 ```
 
-Functional agents, workstreams, and structured surfaces define the user-facing application model. Capabilities define product-level backend abilities or groupings. Governed tools are the executable semantic operations or queries inside those capabilities and carry the authority/behavior contract behind every `surface_action`, confirmed `human_chat_tool_plan`, `agent_tool_call`, browser/API adapter, `workflow_step`, `timer_invocation`, `consumer_reaction`, or internal call. Deterministic surface intent routes that open or prepopulate protected surfaces must still resolve selected AuthContext and capability authorization in the backend and remain no-mutation by themselves. That router safety rule does not forbid a separately modeled `human_chat_tool_plan` exposure with explicit plan confirmation, per-tool idempotency/transaction semantics, backend authorization, traces, and result/partial-failure surfaces. Do not use capability-first modeling to bypass functional-agent and surface modeling for generated SaaS apps.
+Functional agents, workstreams, and structured surfaces define the user-facing application model. Capabilities group product-level backend abilities. Governed tools are the executable semantic operations or queries inside those capabilities and carry the shared authority/behavior contract behind every `surface_action`, confirmed `human_chat_tool_plan`, `agent_tool_call`, browser/API adapter, `workflow_step`, `timer_invocation`, `consumer_reaction`, or internal call. Deterministic surface intent routes that open or prepopulate protected surfaces must still resolve selected AuthContext and capability authorization in the backend and remain no-mutation by themselves. Do not use capability-first modeling to bypass functional-agent and surface modeling for generated SaaS apps.
 
-A backend capability groups one or more governed tools:
-
-```text
-capability = product ability or grouping
-  → governed-tool = executable operation/query
-    + actors/callers
-    + AuthContext and scope
-    + typed inputs/outputs
-    + data access and redaction
-    + side effects
-    + idempotency
-    + policy/approval rules
-    + audit/trace obligations
-    + selected actor adapters and qualified exposure channels
-    + tests
-```
-
-`agent_tool_call` adapters, browser `surface_action` adapters, HTTP/gRPC/MCP endpoints, workflow steps, timer invocations, consumer reactions, view queries, and internal component methods are actor adapters, exposure channels, or realization choices for governed tools. They are not the backend design root.
+For each governed tool, record actors/callers, AuthContext and scope, typed inputs/outputs, data access and redaction, side effects, idempotency, policy/approval rules, audit/trace obligations, selected actor adapters or exposure channels, and tests. `agent_tool_call` adapters, browser `surface_action` adapters, HTTP/gRPC/MCP endpoints, workflow steps, timer invocations, consumer reactions, view queries, and internal component methods are actor adapters, exposure channels, or realization choices for governed tools. They are not the backend design root.
 
 ## Interpretation workflow
 
@@ -119,20 +94,7 @@ If this context is missing for a generated full-stack SaaS request, route throug
 
 ### 3. Inventory capabilities
 
-For each workstream operation, structured `surface_action`, confirmed `human_chat_tool_plan` adapter, payload-producing query, governed tool, `agent_tool_call`, browser/API adapter, `workflow_step`, API, `timer_invocation`, `consumer_reaction`, or internal operation, define:
-- stable capability id/name in product language for the product ability or grouping;
-- stable governed-tool id/name for each executable operation/query inside the capability;
-- purpose and business outcome;
-- allowed actors/callers: humans, agents, workflows, services, timers, consumers, support roles;
-- AuthContext, tenant/customer scope, roles, permissions, and named capability grants;
-- input schema, validation, idempotency key, correlation id, and safe defaults;
-- output schema, redaction, safe error and denial shapes;
-- data reads/writes and tenant/customer filters;
-- side effects: state changes, external calls, topics, timers, emails, notifications, workflow starts;
-- policy, approval, escalation, risk/confidence/impact thresholds, and autonomy level;
-- audit/work-trace fields and retention/redaction expectations;
-- selected actor adapters and qualified governed-tool exposure channels or explicit non-exposure;
-- success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and surface-specific tests.
+For each workstream operation, structured `surface_action`, confirmed `human_chat_tool_plan` adapter, payload-producing query, governed tool, `agent_tool_call`, browser/API adapter, `workflow_step`, API, `timer_invocation`, `consumer_reaction`, or internal operation, define the stable capability/governed-tool ids, purpose, allowed actors/callers, AuthContext and scope, schemas, validation/redaction, idempotency/correlation, data access, side effects, policy/approval/escalation, audit/work-trace fields, selected actor adapters or explicit non-exposure, and required tests.
 
 ### 4. Classify capability shape
 
@@ -192,18 +154,12 @@ Load focused component skills only after the capability contract says why the co
 ## Output expectations
 
 When this skill is used directly, produce or hand off:
-- upstream functional-agent/workstream/surface context, or an explicit statement that the task is non-SaaS/repository-maintenance-only;
-- worker-to-capability context: responsible human/AI/system worker, execution harness, actor adapter, governed tool, authority level, handoff/escalation, and trace source;
-- surface/action-to-capability mapping for generated SaaS apps;
-- capability inventory with ids and classes;
-- actors/callers and AuthContext rules;
-- input/output schemas and validation notes;
-- side effects, idempotency, policy/approval, audit/trace obligations;
-- selected actor adapters/exposure channels and explicit non-exposures, using qualified terms such as `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, `internal_call`, `workflow_step`, `timer_invocation`, `consumer_reaction`, `api_call`, and `mcp_tool_call`;
-- capability-to-governed-tool-to-Akka substrate/component mapping;
-- downstream skill routing;
-- tests required per capability, structured surface, actor adapter, and exposure channel;
-- open questions only where implementation would otherwise guess workstream ownership, authority, risk, approval, audit, or scope.
+- upstream functional-agent/workstream/surface context, or an explicit non-SaaS/repository-maintenance-only statement;
+- worker-to-capability context: worker, execution harness, actor adapter, governed tool, authority, handoff/escalation, and trace source;
+- generated-SaaS surface/action-to-capability mapping and capability inventory with ids/classes;
+- actors/callers, AuthContext, schemas, validation, side effects, idempotency, policy/approval, audit/trace obligations, and explicit non-exposures;
+- selected actor adapters/exposure channels using qualified terms such as `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, `internal_call`, `workflow_step`, `timer_invocation`, `consumer_reaction`, `api_call`, and `mcp_tool_call`;
+- capability-to-governed-tool-to-Akka mapping, downstream skill routing, required tests, and blocking open questions.
 
 ## Anti-patterns
 
