@@ -262,7 +262,7 @@
 
 ### TASK-011: Migrate agent and governed-agent family
 
-- status: pending
+- status: done
 - source: specs/skills-pack-worker-tool-lifecycle-realignment/migration-strategy.md
 - task brief: specs/skills-pack-worker-tool-lifecycle-realignment/tasks/011-migrate-agent-governance-family.md
 - depends on: [TASK-010]
