@@ -4,6 +4,36 @@ Intent-processing skills should declare which compiler role they perform and pro
 
 This document defines shared semantics, not a required JSON schema. A task-specific skill may use prose, Markdown tables, or structured blocks when the same information is clear.
 
+## Standard skill classification fields
+
+Use these fields in task briefs, skill front matter, routing notes, or manifest metadata when precise routing is needed. Existing public skill names and the current manifest `category` field remain valid; bulk manifest schema migration is deferred until a later validation task can update installer checks and all entries consistently.
+
+| Field | Required meaning | Typical values |
+|---|---|---|
+| `phase` | Lifecycle phase where the skill primarily operates. Use `cross-phase` only when a skill intentionally routes or spans phases. | `interview`, `build-compile`, `manual-test`, `cross-phase` |
+| `kind` | The skill's routing shape or responsibility style. | `orchestrator`, `focused`, `planning`, `testing`, `verification`, `docs` |
+| `family` | The domain of concern used for smallest-safe-skill selection. | `app-description`, `worker`, `tool`, `capability`, `agent`, `web-ui`, `akka-component`, `endpoint`, `queue`, `verification`, `foundation`, `business-intake` |
+| `consumes` | Artifact, graph, runtime, or evidence inputs the skill expects before acting. | user request, current-intent graph nodes, worker roster, governed-tool contract, capability contract, task brief, code, runtime evidence |
+| `produces` | Durable outputs the skill is responsible for creating or updating. | app-description delta, normalized input, spec/backlog, task brief, code/tests, validation notes, reconciliation findings |
+| `routes-to` | Focused next skills or families that should receive the output when more work remains. | skill ids or family names |
+
+### Phase fit
+
+- **Interview** skills capture, normalize, and reconcile current intent until the app-description can represent the requested change.
+- **Build/compile** skills compile description-ready intent or a selected queued task into repository artifacts, checks, and manual-ready evidence.
+- **Manual-test** skills run or interpret the real local/API/UI/agent path and reconcile failures into intent, specs, tasks, code, tests, or blockers.
+- **Cross-phase** skills route across phases, preserve doctrine, or coordinate architecture/foundation decisions without replacing focused skills.
+
+### Worker/tool/capability route
+
+When a skill handles feature-bearing generated-app behavior, its `consumes`, `produces`, and `routes-to` fields should preserve this chain:
+
+```text
+worker -> execution harness -> actor adapter -> governed tool -> capability -> Akka implementation
+```
+
+A skill may focus on one link, but it should not erase adjacent links. For example, a web UI skill consumes a surface and `surface_action` adapter and routes to the shared governed tool/capability path; an agent-tool skill consumes an explicit `agent_tool_call` adapter and tool-boundary grant; an Akka component skill consumes the capability shape and produces implementation evidence rather than product authority.
+
 ## Skill role taxonomy
 
 Each intent-facing skill should be one or more of:

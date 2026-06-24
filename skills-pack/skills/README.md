@@ -37,6 +37,32 @@ For this repository's runnable SaaS Foundation App and downstream forks that kee
 
 Do not place new product-specific Java code in legacy top-level `security`, `agentfoundation`, `admin`, or `workstream` packages when extending the SaaS Foundation App. Users extend the root app workspace with business-specific domains, workstreams, surfaces, agents, Akka components, frontend extensions, app-description extensions, specs, docs, and tests. Do not regenerate a parallel fresh app, replace existing foundation files, or use `.agents/` resources as writable project source unless explicitly requested.
 
+## Lifecycle-first skill routing
+
+Route every request through the smallest lifecycle phase that can make safe progress:
+
+1. **Interview phase** (`interview`): capture, normalize, or reconcile user/business intent until the app-description can represent the requested change. Typical skills: `business-intent-interview`, `business-intent-to-app-input`, `app-description-input-normalization`, `app-description-intake-router`, and focused app-description editors.
+2. **Build/compile phase** (`build-compile`): compile description-ready current intent or a selected queued task into docs, specs, code, tests, configuration, and validation evidence. Typical skills: app-description planning/generation skills, `akka-prd-to-specs-backlog`, `akka-solution-decomposition`, component/endpoint/web UI implementation skills, and queue execution skills.
+3. **Manual runtime test phase** (`manual-test`): exercise the real local/API/UI/agent path, classify failures, and reconcile findings into intent, tasks, code, or blockers. Typical skills: `akka-runtime-feature-verification` and `akka-manual-failure-reconciliation`.
+4. **Cross-phase** (`cross-phase`): broad routing, architecture, foundation, and maintenance skills that intentionally span phases. Typical skills: `ai-first-saas`, `agent-workstream-apps`, `core-saas-foundation`, `capability-first-backend`, `app-descriptions`, and pack-maintenance planning skills.
+
+Skill contracts use these classification fields when a task, skill header, spec, or manifest entry needs routing metadata: `phase`, `kind`, `family`, `consumes`, `produces`, and `routes-to`. The canonical semantics live in `docs/intent-compiler-skill-contracts.md`; the manifest remains backward compatible and may continue to use the existing `category` field until a later manifest migration validates any schema change.
+
+## Worker/tool/capability routing
+
+For feature-bearing generated-app work, route through the product chain before selecting Akka components or UI controls:
+
+```text
+worker
+  -> execution harness
+    -> actor adapter
+      -> governed tool
+        -> capability
+          -> Akka implementation
+```
+
+Use `docs/app-worker-tool-model.md` for the chain, `docs/app-description-component-graph.md` for graph nodes and links, and `docs/app-description-to-code-compile-contract.md` for build/compile task sufficiency. A surface action, confirmed human chat tool plan, AI agent tool call, workflow step, timer, consumer, API, MCP, or internal call is an actor adapter to a governed tool; it is not a separate business operation by default.
+
 ## AI-first SaaS entry routing
 
 For high-level product input, treat the target as a secure AI-first SaaS **agent workstream application** unless the user explicitly asks for repository-maintenance-only or non-SaaS reference material.
@@ -56,6 +82,11 @@ Scope control: load only the smallest companion set needed for the current user 
 
 Canonical doctrine:
 
+- `docs/app-development-lifecycle.md`
+- `docs/app-worker-tool-model.md`
+- `docs/app-description-component-graph.md`
+- `docs/app-description-to-code-compile-contract.md`
+- `docs/manual-test-reconciliation.md`
 - `docs/intent-compiler.md`
 - `docs/business-intent-interview-process.md`
 - `docs/business-extension-requirements-guidance.md`

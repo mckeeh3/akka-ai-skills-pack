@@ -106,7 +106,7 @@
 
 ### TASK-005: Update routing map and skill metadata contract
 
-- status: pending
+- status: done
 - source: specs/skills-pack-worker-tool-lifecycle-realignment/migration-strategy.md
 - task brief: specs/skills-pack-worker-tool-lifecycle-realignment/tasks/005-routing-and-skill-metadata-contract.md
 - depends on: [TASK-001, TASK-002, TASK-003, TASK-004]
