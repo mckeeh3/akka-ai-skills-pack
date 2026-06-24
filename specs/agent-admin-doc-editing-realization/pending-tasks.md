@@ -353,7 +353,7 @@
 
 ### AADE-06-002: Repair collateral full-suite authorization smoke blockers
 
-- status: pending
+- status: done
 - source: `AADE-05-001` full-suite validation gaps outside direct Agent Admin product behavior
 - task brief: `specs/agent-admin-doc-editing-realization/tasks/06-follow-up/02-repair-collateral-full-suite-authorization-smokes.md`
 - depends on: [AADE-06-001]
@@ -374,7 +374,11 @@
   - named collateral full-suite failures from `AADE-05-001` pass
   - shared authorization behavior remains fail-closed and browser-safe
   - changes and queue update are committed
-- notes: []
+- notes:
+  - completed in this commit with message: `Repair collateral authorization smokes`
+  - Audit/Trace SaaS Owner dashboard now exposes browser-safe SaaS-owner scope evidence.
+  - My Account open-workstream action now denies non-SaaS-owner Agent Admin opens with a browser-safe redacted system message while SaaS Owner/Admin opens still resolve the Agent Admin dashboard.
+  - next runnable task after completion: `AADE-07-001` (`pending`, depends on `AADE-06-001` and `AADE-06-002`)
 
 ### AADE-07-001: Re-run full-stack closure verification
 

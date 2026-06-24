@@ -3879,7 +3879,7 @@ public final class WorkstreamService {
             "disabledReason", isActionCapabilityVisible(actor, action.capabilityId()) ? "" : "Recovery action is not authorized in the selected context.",
             "correlationBehavior", "uses request correlation id and backend authorization"))
         .toList();
-    return envelope("surface-my-account-open-denied", "system_message", "Workstream unavailable", actor, correlationId,
+    var surface = envelope("surface-my-account-open-denied", "system_message", "Workstream unavailable", actor, correlationId,
         mapOf(
             "surfaceContract", "my_account.open_denied.v1",
             "status", "not_found_or_redacted",
@@ -3906,6 +3906,26 @@ public final class WorkstreamService {
             "safety", mapOf("sanitized", true, "redactionNote", "No raw JWTs, provider secrets, hidden target names, missing roles, stack traces, or fixture target data are rendered."),
             "trace", mapOf("correlationId", correlationId, "traceIds", traceIds)),
         actions);
+    return new SurfaceEnvelope(
+        surface.surfaceId(),
+        surface.surfaceType(),
+        surface.surfaceVersion(),
+        surface.title(),
+        surface.ownerFunctionalAgentId(),
+        surface.reusableByFunctionalAgentIds(),
+        mapOf(
+            "tenantId", actor.selectedContext().tenantId(),
+            "customerId", actor.selectedContext().customerId(),
+            "selectedContextId", actor.selectedContext().membershipId(),
+            "visibleCapabilityIds", List.of("redacted-for-denial-surface")),
+        surface.correlationId(),
+        surface.traceIds(),
+        surface.generatedAt(),
+        surface.stale(),
+        surface.redaction(),
+        surface.data(),
+        surface.actions(),
+        surface.links());
   }
 
   private CapabilityActionResult personalAttentionDigestActionResult(MyAccountPersonalAttentionDigestTask task, String status, String message, String correlationId, AuthContextResolver.ResolvedMe actor) {

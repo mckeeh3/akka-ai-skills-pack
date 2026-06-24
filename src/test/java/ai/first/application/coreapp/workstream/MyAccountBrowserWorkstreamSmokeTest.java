@@ -48,6 +48,7 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
   private static final String CUSTOMER_ID = "customer-starter";
   private static final String ADMIN_CONTEXT_ID = "membership-admin";
   private static final String ADMIN_CUSTOMER_CONTEXT_ID = "membership-admin-customer";
+  private static final String SAAS_OWNER_CONTEXT_ID = "membership-saas-owner";
   private static final String MEMBER_CONTEXT_ID = "membership-member";
 
   @BeforeEach
@@ -57,6 +58,7 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     repository.saveCustomer(new Customer(TENANT_ID, CUSTOMER_ID, "Starter Customer", true));
     seedIdentity(repository, "admin@example.test", "Tenant Admin", ADMIN_CONTEXT_ID, List.of(FoundationRole.TENANT_ADMIN, FoundationRole.AUDITOR));
     repository.saveMembership(new Membership(ADMIN_CUSTOMER_CONTEXT_ID, "admin@example.test", ScopeType.CUSTOMER, TENANT_ID, CUSTOMER_ID, List.of(FoundationRole.CUSTOMER_ADMIN), MembershipStatus.ACTIVE, false, null));
+    seedSaasOwner(repository, "saas-owner@example.test", "SaaS Owner", SAAS_OWNER_CONTEXT_ID);
     seedIdentity(repository, "member@example.test", "Member User", MEMBER_CONTEXT_ID, List.of(FoundationRole.TENANT_EMPLOYEE));
   }
 
@@ -121,7 +123,7 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertFalse(digest.resultSurface().toString().contains("test-fake-model"));
     assertBrowserSafe(digest.resultSurface());
 
-    var openedAgentAdmin = runAction(new CapabilityActionRequest(
+    var tenantDeniedAgentAdmin = runAction(new CapabilityActionRequest(
         "action-open-agent-admin",
         "action-open-agent-admin",
         "my_account.open_authorized_workstream",
@@ -130,7 +132,24 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
         null,
         ADMIN_CONTEXT_ID,
         dashboard.surfaceId(),
-        "corr-my-account-browser-open-agent-admin"), ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+        "corr-my-account-browser-open-agent-admin-tenant-denied"), ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("denied", tenantDeniedAgentAdmin.status());
+    assertEquals("surface-my-account-open-denied", tenantDeniedAgentAdmin.resultSurface().surfaceId());
+    assertEquals("not_found_or_redacted", tenantDeniedAgentAdmin.resultSurface().data().get("decision"));
+    assertTrue(tenantDeniedAgentAdmin.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-my-account-open")));
+    assertOpenDeniedBrowserSafe(tenantDeniedAgentAdmin.resultSurface());
+
+    var ownerDashboard = getSurface("surface-my-account-dashboard", SAAS_OWNER_CONTEXT_ID, "saas-owner@example.test", "SaaS Owner", "corr-my-account-browser-owner-dashboard");
+    var openedAgentAdmin = runAction(new CapabilityActionRequest(
+        "action-open-agent-admin",
+        "action-open-agent-admin",
+        "my_account.open_authorized_workstream",
+        "my_account.open_authorized_workstream",
+        Map.of(),
+        null,
+        SAAS_OWNER_CONTEXT_ID,
+        ownerDashboard.surfaceId(),
+        "corr-my-account-browser-open-agent-admin-saas-owner"), SAAS_OWNER_CONTEXT_ID, "saas-owner@example.test", "SaaS Owner");
     assertEquals("accepted", openedAgentAdmin.status());
     assertEquals("surface-agent-admin-dashboard", openedAgentAdmin.resultSurface().surfaceId());
     assertEquals("agent-admin-agent", openedAgentAdmin.resultSurface().ownerFunctionalAgentId());
@@ -1013,6 +1032,13 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     repository.saveProfile(new UserProfile(email, email, displayName, null, null, null));
     repository.saveSettings(new UserSettings(email, UserSettings.ThemeId.AURORA_LIGHT));
     repository.saveMembership(new Membership(membershipId, email, ScopeType.TENANT, TENANT_ID, null, roles, MembershipStatus.ACTIVE, false, null));
+  }
+
+  private void seedSaasOwner(AkkaIdentityRepository repository, String email, String displayName, String membershipId) {
+    repository.saveAccount(new Account(email, null, email, email, AccountStatus.ACTIVE, "UNLINKED"));
+    repository.saveProfile(new UserProfile(email, email, displayName, null, null, null));
+    repository.saveSettings(new UserSettings(email, UserSettings.ThemeId.AURORA_LIGHT));
+    repository.saveMembership(new Membership(membershipId, email, ScopeType.SAAS_OWNER, null, null, List.of(FoundationRole.SAAS_OWNER_ADMIN), MembershipStatus.ACTIVE, false, null));
   }
 
   private String subjectFor(String email) {

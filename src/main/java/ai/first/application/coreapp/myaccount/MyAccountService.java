@@ -2,6 +2,7 @@ package ai.first.application.coreapp.myaccount;
 
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AuthContext;
+import ai.first.domain.foundation.identity.FoundationRole;
 import ai.first.domain.foundation.attention.AttentionCategory;
 import ai.first.domain.foundation.attention.AttentionItem;
 import ai.first.domain.foundation.attention.AttentionItemStatus;
@@ -82,6 +83,10 @@ public final class MyAccountService {
       authContextResolver.appendDeniedTrace(actor, "MY_ACCOUNT_OPEN_AUTHORIZED_WORKSTREAM", "target-not-found-or-redacted", correlationId);
       return OpenWorkstreamDecision.denied("not_found_or_redacted", "The requested workstream is unavailable or redacted for this context.", correlationId);
     }
+    if ("action-open-agent-admin".equals(actionId) && !isSaasOwnerAdmin(actor)) {
+      authContextResolver.appendDeniedTrace(actor, "MY_ACCOUNT_OPEN_AUTHORIZED_WORKSTREAM", "not_found_or_redacted", correlationId);
+      return OpenWorkstreamDecision.denied("not_found_or_redacted", "That workstream cannot be opened from this selected context. It may be unavailable or redacted.", correlationId);
+    }
     var allowed = target.requiredCapabilityIds().stream().anyMatch(actor.selectedContext().capabilities()::contains);
     if (!allowed) {
       authContextResolver.appendDeniedTrace(actor, "MY_ACCOUNT_OPEN_AUTHORIZED_WORKSTREAM", "not_found_or_redacted", correlationId);
@@ -90,6 +95,11 @@ public final class MyAccountService {
     authContextResolver.appendProtectedReadTrace(actor, "MY_ACCOUNT_OPEN_AUTHORIZED_WORKSTREAM", target.functionalAgentId(), correlationId);
     var grantedCapability = target.requiredCapabilityIds().stream().filter(actor.selectedContext().capabilities()::contains).findFirst().orElse(target.requiredCapabilityIds().get(0));
     return new OpenWorkstreamDecision("accepted", "Opened authorized workstream through backend authority checks.", target.surfaceId(), target.functionalAgentId(), target.label(), grantedCapability, correlationId, List.of("trace-my-account-open-" + target.functionalAgentId()), null);
+  }
+
+  private boolean isSaasOwnerAdmin(AuthContextResolver.ResolvedMe actor) {
+    return actor.selectedContext().scopeType() == ScopeType.SAAS_OWNER
+        && actor.selectedContext().roles().contains(FoundationRole.SAAS_OWNER_ADMIN);
   }
 
   public DashboardData dashboardData(AuthContextResolver.ResolvedMe actor, String correlationId) {

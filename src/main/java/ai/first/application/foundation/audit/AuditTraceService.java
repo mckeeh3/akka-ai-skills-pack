@@ -42,7 +42,7 @@ public final class AuditTraceService {
     var denialCount = events.stream().filter(event -> containsIgnoreCase(event.status(), "denied") || containsIgnoreCase(event.summary(), "denied")).count();
     return new SurfaceData("surface-audit-trace-dashboard", "dashboard", "Audit/Trace dashboard", List.of("trace-audit-dashboard-" + stableSuffix(correlationId)), mapOf(
         "surfaceContract", "audit.trace.dashboard.v1",
-        "selectedScope", mapOf("tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "scopeKind", actor.selectedContext().customerId() == null ? "tenant" : "customer", "supportAccess", "selected AuthContext"),
+        "selectedScope", mapOf("tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "scopeType", actor.selectedContext().scopeType().name().toLowerCase(java.util.Locale.ROOT), "scopeKind", actor.selectedContext().scopeType().name().toLowerCase(java.util.Locale.ROOT), "supportAccess", "selected AuthContext"),
         "authContextSummary", mapOf("selectedContextId", actor.selectedContext().membershipId(), "visibleCapabilityCount", actor.selectedContext().capabilities().size(), "roleLabels", actor.selectedContext().roles().stream().map(Enum::name).toList()),
         "cards", List.of(
             mapOf("cardId", "card-runtime-traces", "label", "Runtime traces", "value", events.size(), "severity", events.isEmpty() ? "info" : "warning", "actionId", "action-audit-trace-search", "targetSurfaceId", "surface-audit-trace-search", "capabilityId", SEARCH_CAPABILITY, "emptyBehavior", "open authorized empty trace search"),
