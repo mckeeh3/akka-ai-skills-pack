@@ -7,6 +7,18 @@ description: Verify that generated SaaS or SaaS Foundation App features marked c
 
 Use this skill when a feature, slice, sprint, workstream, or pending-task group is claimed complete or nearly complete and needs a hard runtime-readiness gate before more feature work proceeds.
 
+Verify the compiled path, not just the visible screen or component test:
+
+```text
+worker
+→ execution harness
+→ actor adapter
+→ governed tool
+→ capability
+→ API/Akka implementation
+→ trace/view/result surface
+```
+
 When manual runtime testing is part of the readiness claim, apply `../docs/manual-test-reconciliation.md` so tester findings become classified reconciliation outputs before more feature work proceeds.
 
 This is a validator/reviewer and drift-repair skill. It may update specs/queue evidence and append remediation tasks, but it should not implement unrelated product code.
@@ -18,6 +30,8 @@ Read these first when present:
 - `../README.md`
 - `../references/generated-saas-runtime-completion.md`
 - `../docs/intent-to-realization-flow.md`
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-to-code-compile-contract.md`
 - `../docs/manual-test-reconciliation.md` when manual/browser runtime smoke evidence or tester findings are in scope
 - `../docs/pending-task-queue.md`
 - `../docs/structured-surface-contracts.md` when surfaces are in scope
@@ -49,16 +63,17 @@ For each claimed feature or task group, build a small evidence matrix:
 
 | Claim | Intent source | Runtime path | Evidence | Level | Gap |
 |---|---|---|---|---|---|
-| `<feature/action>` | `<app-description/spec/task>` | `<browser surface/action -> API/endpoint -> Akka component/service -> trace/view>` | `<tests/commands/manual notes>` | `<level>` | `<none or gap>` |
+| `<feature/action>` | `<app-description/spec/task>` | `<worker -> harness -> actor adapter -> governed tool -> capability -> API/endpoint -> Akka component/service -> trace/view/result surface>` | `<tests/commands/manual notes>` | `<level>` | `<none or gap>` |
 
 A feature-bearing claim may be `runtime-ready` only when evidence covers, as applicable:
 
+- responsible worker type, execution harness, actor adapter, governed tool id, capability id, and selected Akka implementation path from the compile contract;
 - canonical user role, `AuthContext`, tenant/customer/organization context, and denial case;
-- visible browser surface/action or explicit non-UI trigger;
-- protected API/workstream endpoint/client path used by the browser, not fixture-only data;
-- Akka component/service/substrate path used by the API/action;
+- visible browser surface/action, confirmed `human_chat_tool_plan`, AI `agent_tool_call`, workflow/timer/consumer/API/MCP/internal trigger, or explicit non-UI trigger;
+- protected API/workstream endpoint/client path used by the browser or adapter, not fixture-only data;
+- Akka component/service/substrate path used by the governed tool/capability;
 - success, validation error, forbidden/hidden/not-found, stale/conflict/idempotency, and provider-unconfigured behavior where relevant;
-- audit/work trace, correlation id, and browser-safe trace/status copy;
+- audit/work trace, correlation id, actor-adapter trace source, and browser-safe trace/status copy;
 - local commands and/or manual/browser/API smoke notes with pass/fail result;
 - no frontend secret exposure and no provider secrets in browser payloads;
 - explicit external-provider status: configured and smoked, or missing and fail-closed with actionable errors.
@@ -68,8 +83,9 @@ A feature-bearing claim may be `runtime-ready` only when evidence covers, as app
 Keep or move the relevant task to `blocked` instead of `done`, or keep the verification scope below `runtime-ready`, when:
 
 - only unit/service/contract/typecheck evidence exists for a user-visible feature;
+- the worker/harness/adapter/governed-tool/capability chain is missing or contradicted by the implementation;
 - the browser uses fixture/frontend-only data for a required production action;
-- API route tests are missing for the path used by the browser;
+- API route tests are missing for the path used by the browser or declared actor adapter;
 - provider-backed behavior is counted as implemented through a mock/default bypass;
 - auth/tenant isolation/authorization denial is not exercised;
 - trace/audit evidence is not recorded or not browser-safe;
@@ -99,6 +115,14 @@ bash skills-pack/tools/validate-pending-task-workstream-contract.sh specs/pendin
 ## Scope
 - ...
 
+## Compile contract checked
+- worker(s): ...
+- harness/actor adapter(s): ...
+- governed tool(s): ...
+- capability/capabilities: ...
+- API/Akka path(s): ...
+- trace/result surface(s): ...
+
 ## Evidence matrix
 | Claim | Intent source | Runtime path | Evidence | Level | Gap |
 |---|---|---|---|---|---|
@@ -126,6 +150,7 @@ bash skills-pack/tools/validate-pending-task-workstream-contract.sh specs/pendin
 Avoid:
 
 - equating `surface-ready`, `backend-ready`, or frontend contract tests with `runtime-ready`;
+- verifying only a screen, route, agent tool, or component method without the worker/adapter/governed-tool/capability chain;
 - accepting fixture-only, mock-only, or frontend-only action paths as user-facing implementation;
 - adding broad new features while runtime verification for the current feature group is failing;
 - marking provider-backed features done because the provider is missing but a mock passed;

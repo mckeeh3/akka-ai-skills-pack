@@ -10,6 +10,8 @@ Use this skill when an agent must call local or external function tools as selec
 ## Required reading
 
 Read these first if present:
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-to-code-compile-contract.md`
 - `../docs/capability-first-backend-architecture.md`
 - `akka-context/sdk/agents/extending.html.md`
 - `akka-context/sdk/agents/failures.html.md`
@@ -25,11 +27,22 @@ If the main task is not local or external tool classes, load the focused compani
 
 ## Use this pattern when
 
-In generated SaaS apps, every tool that reads protected data or performs side effects must expose a named capability contract. The tool must receive or resolve AuthContext, enforce tenant/customer scope and permission/capability checks, apply policy/approval rules, and create required audit/work-trace records before returning data or committing actions.
+In generated SaaS apps, every tool that reads protected data or performs side effects must be compiled from the current app-description contract:
+
+```text
+software worker
+→ agent runtime harness
+→ agent_tool_call actor adapter
+→ governed tool
+→ capability
+→ Akka implementation
+```
+
+The governed tool must receive or resolve AuthContext, enforce tenant/customer scope and permission/capability checks, apply policy/approval rules, and create required audit/work-trace records before returning data or committing actions.
 
 Treat local/external Akka function tools as **AI-backed agent-tool adapters** for governed workstream tools. The governed tool id and capability contract own business authority; `@FunctionTool` naming, descriptions, prompt text, and loaded skills only help the model request the operation. If the same operation is also exposed to humans through a surface action or confirmed `human_chat_tool_plan`, reuse the same governed tool id and implement adapter-specific input mediation, confirmation/approval UX, trace source, and result/partial-failure reporting.
 
-- a named capability is intentionally exposed to the agent as a local or external function tool
+- a named governed tool/capability is intentionally exposed to the agent as a local or external function tool
 - the model needs live or computed data to answer correctly
 - the model should choose between multiple helper functions
 - agent output depends on current date, lookup services, or component calls
@@ -40,29 +53,30 @@ Treat local/external Akka function tools as **AI-backed agent-tool adapters** fo
 
 ## Core pattern
 
-1. Start from the capability contract: id/name, purpose, actor/caller, AuthContext, schemas, data access, side effects, idempotency, policy/approval, audit/trace, and tests.
-2. Expose only capabilities the agent is allowed to request; do not register helper methods merely because they exist.
-3. Resolve the active workstream tool catalog and treat tool availability as the intersection of the caller's AuthContext, the selected workstream, the managed agent definition/profile, the `ToolPermissionBoundary`, and the tool's policy/approval state.
-4. For managed agents or protected tools, load `akka-agent-tool-boundaries` and enforce the active `ToolPermissionBoundary` and tool registry/catalog before tool execution.
-5. Annotate tools with `@FunctionTool`.
-6. Add `@Description` to parameters when the model needs argument hints.
-7. Register external tool classes with `.tools(instance)` or `.tools(Class)`.
-8. Agent-local `@FunctionTool` methods are automatically available.
-9. Keep tool behavior deterministic and fast.
-10. Use a non-component tool facade when one tool should hide several component calls, combine component results, enforce capability policy/scope, redact data, or return a model-friendly computed result.
-11. Handle tool failures with `.onFailure(...)` in the agent, returning safe denial/failure shapes.
-12. Use `akka-agent-component-tools` for `.tools(ComponentClass.class)`.
-13. Use `akka-agent-mcp-tools` for `.mcpTools(...)`.
-14. Use `akka-agent-harness-skills` when tools return skill-like guidance from whitelisted `src/main/resources` content.
-15. Use `akka-agent-skill-governance` when tools return tenant-managed SkillDocument/SkillVersion content through `readSkill(skillId)`; managed agents must register this as a normal Akka `@FunctionTool` so Akka injects it with the rest of the allowed tool list.
-16. Do not try to use one agent as a tool for another agent.
-17. Tool descriptions must state side effects, required permissions, tenant/customer scope, policy/approval gates, and audit behavior when consequential.
-18. Email-sending tools must route through `akka-resend-email-service`: Resend is the only supported production email service, local/dev/test uses captured outbox behavior, and sending external email is a side-effecting capability that requires `ToolPermissionBoundary`, idempotency, approval/autonomy policy, and traces.
-19. Tools must fail closed for missing AuthContext, disabled users, forbidden scopes, or cross-tenant/customer access; do not rely on prompt instructions, hidden context, or tool descriptions as authorization.
-20. Skill-loading tools must check the active agent-specific AgentSkillManifest and ToolPermissionBoundary and must not grant external tool/data permission by returning skill text.
-21. Reference-loading tools must check the active AgentReferenceManifest, tenant/customer scope, redaction/access limits, token limits, and a separate ToolPermissionBoundary grant such as `read_reference`; a `read_skill` grant must not imply reference access.
-22. For high-impact tool actions, return recommendations or approval requests unless the accepted policy grants autonomous authority.
-23. Preserve the same capability semantics if the operation is also exposed through UI, confirmed human chat tool plans, HTTP/gRPC, MCP, workflow, timer, or consumer paths.
+1. Start from the compile contract: responsible software worker, agent harness, `agent_tool_call` actor adapter, governed tool id, capability id, selected Akka implementation path, trace source, and required tests.
+2. Start from the capability contract: id/name, purpose, actor/caller, AuthContext, schemas, data access, side effects, idempotency, policy/approval, audit/trace, and tests.
+3. Expose only governed tools the agent is allowed to request; do not register helper methods or raw component methods merely because they exist.
+4. Resolve the active workstream tool catalog and treat tool availability as the intersection of the caller's AuthContext, the selected workstream, the managed agent definition/profile, the `ToolPermissionBoundary`, and the tool's policy/approval state.
+5. For managed agents or protected tools, load `akka-agent-tool-boundaries` and enforce the active `ToolPermissionBoundary` and tool registry/catalog before tool execution.
+6. Annotate tools with `@FunctionTool`.
+7. Add `@Description` to parameters when the model needs argument hints.
+8. Register external tool classes with `.tools(instance)` or `.tools(Class)`.
+9. Agent-local `@FunctionTool` methods are automatically available.
+10. Keep tool behavior deterministic and fast.
+11. Use a non-component tool facade when one governed tool should hide several component calls, combine component results, enforce capability policy/scope, redact data, or return a model-friendly computed result.
+12. Handle tool failures with `.onFailure(...)` in the agent, returning safe denial/failure shapes.
+13. Use `akka-agent-component-tools` for `.tools(ComponentClass.class)` only when a component method is intentionally exposed as the `agent_tool_call` adapter for a governed tool; the component method is still not the product contract.
+14. Use `akka-agent-mcp-tools` for `.mcpTools(...)`.
+15. Use `akka-agent-harness-skills` when tools return skill-like guidance from whitelisted `src/main/resources` content.
+16. Use `akka-agent-skill-governance` when tools return tenant-managed SkillDocument/SkillVersion content through `readSkill(skillId)`; managed agents must register this as a normal Akka `@FunctionTool` so Akka injects it with the rest of the allowed tool list.
+17. Do not try to use one agent as a tool for another agent.
+18. Tool descriptions must state side effects, required permissions, tenant/customer scope, policy/approval gates, and audit behavior when consequential.
+19. Email-sending tools must route through `akka-resend-email-service`: Resend is the only supported production email service, local/dev/test uses captured outbox behavior, and sending external email is a side-effecting capability that requires `ToolPermissionBoundary`, idempotency, approval/autonomy policy, and traces.
+20. Tools must fail closed for missing AuthContext, disabled users, forbidden scopes, or cross-tenant/customer access; do not rely on prompt instructions, hidden context, or tool descriptions as authorization.
+21. Skill-loading tools must check the active agent-specific AgentSkillManifest and ToolPermissionBoundary and must not grant external tool/data permission by returning skill text.
+22. Reference-loading tools must check the active AgentReferenceManifest, tenant/customer scope, redaction/access limits, token limits, and a separate ToolPermissionBoundary grant such as `read_reference`; a `read_skill` grant must not imply reference access.
+23. For high-impact tool actions, return recommendations or approval requests unless the accepted policy grants autonomous authority.
+24. Preserve the same capability semantics if the operation is also exposed through UI, confirmed human chat tool plans, HTTP/gRPC, MCP, workflow, timer, or consumer paths.
 
 ## Tool pattern decision matrix
 
@@ -100,9 +114,9 @@ Agent command handler
 ```
 
 Rules:
-- keep the tool class a focused capability facade, not a generic service locator;
-- annotate only the public facade methods that are safe model-selectable operations;
-- do not expose raw component ids, tool names, URLs, or internal method choices as free-form model authority;
+- keep the tool class a focused governed-tool adapter/facade, not a generic service locator;
+- annotate only the public facade methods that are safe model-selectable operations for the declared `agent_tool_call` adapter;
+- do not expose raw component ids, endpoint paths, tool names, URLs, or internal method choices as free-form model authority;
 - prefer View calls for evidence, then entity/workflow calls for scoped current state or supervised actions;
 - for side effects, derive idempotency keys/correlation ids and return `approval_required` unless policy grants bounded autonomy;
 - register the facade instance with `.tools(instance)` when it needs request-scoped context or injected Akka services;
@@ -137,6 +151,7 @@ Canonical example:
 ## Review checklist
 
 Before finishing, verify:
+- the compile chain is explicit: software worker, agent harness, `agent_tool_call` adapter, governed tool, capability, Akka implementation path, trace, and tests
 - tool descriptions clearly say what the tool does, what side effects it has, and which permissions/scopes/policies are required
 - parameters are documented when names alone are ambiguous
 - tools are explicit in the effect chain

@@ -185,7 +185,7 @@
 
 ### TASK-008: Pilot migrate implementation and verification skills
 
-- status: pending
+- status: done
 - source: specs/skills-pack-worker-tool-lifecycle-realignment/migration-strategy.md
 - task brief: specs/skills-pack-worker-tool-lifecycle-realignment/tasks/008-pilot-implementation-and-verification-skills.md
 - depends on: [TASK-007]

@@ -7,7 +7,17 @@ description: Convert manual tester failures in a generated SaaS or SaaS Foundati
 
 Use this skill when a human reports that manual testing found many features or flows not working, especially in core SaaS workstreams such as User Admin, My Account, Agent Admin, Audit/Trace, or Governance/Policy.
 
-Use `../docs/manual-test-reconciliation.md` as the lifecycle doctrine for manual runtime test sessions, worker-centric scenario evidence, finding categories, and reconciliation outputs.
+Use `../docs/manual-test-reconciliation.md` as the lifecycle doctrine for manual runtime test sessions, worker-centric scenario evidence, finding categories, and reconciliation outputs. Reconcile failures against the compiled path:
+
+```text
+worker
+→ execution harness
+→ actor adapter
+→ governed tool
+→ capability
+→ API/Akka implementation
+→ trace/view/result surface
+```
 
 This is a drift-repair skill. It should diagnose and update planning/spec/queue artifacts before implementation continues. It may append focused remediation tasks; it should not silently broaden an existing implementation task.
 
@@ -18,6 +28,8 @@ Read these first when present:
 - `../README.md`
 - `../references/generated-saas-runtime-completion.md`
 - `../docs/intent-to-realization-flow.md`
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-to-code-compile-contract.md`
 - `../docs/manual-test-reconciliation.md`
 - `../docs/pending-task-queue.md`
 - `../akka-runtime-feature-verification/SKILL.md`
@@ -34,7 +46,7 @@ Normalize every reported failure into this table before deciding what to edit:
 
 | ID | Manual flow | Role/context | Expected behavior | Actual behavior | Intent present? | Runtime path | Classification | Blocking? | Remediation |
 |---|---|---|---|---|---|---|---|---|---|
-| MF-001 | `<click/action/API>` | `<role/AuthContext/tenant>` | `<expected>` | `<actual>` | yes/no/unclear | `<browser -> API -> Akka path>` | `<gap type>` | yes/no | `<task/update>` |
+| MF-001 | `<click/action/API/agent/tool/timer>` | `<worker type, role/AuthContext/tenant>` | `<expected>` | `<actual>` | yes/no/unclear | `<worker -> harness -> adapter -> governed tool -> capability -> API/Akka -> trace/view>` | `<gap type>` | yes/no | `<task/update>` |
 
 Classification values:
 
@@ -48,9 +60,9 @@ Classification values:
 
 ## Reconciliation rules
 
-1. First decide whether the expected behavior is already in current intent.
+1. First decide whether the expected behavior and worker/adapter/governed-tool/capability path are already in current intent.
 2. If intent is missing or ambiguous, update app-description/specs before implementation tasks.
-3. If intent exists, do not expand the description; create implementation/test remediation tasks.
+3. If intent exists, do not expand the description; create implementation/test remediation tasks against the same governed-tool/capability path.
 4. If a provider/config blocker exists, require fail-closed browser-safe behavior and trace evidence; do not mark provider-backed normal behavior done through a mock.
 5. If local manual testing needs seed data, make seed/bootstrap requirements explicit rather than treating production auth/authorization as optional.
 6. For each blocking failure in a feature group claimed done, update queue/verification notes so the group is not reported as `runtime-ready` until repaired.
@@ -60,7 +72,7 @@ Classification values:
 Each remediation task must include:
 
 - the manual failure IDs it fixes;
-- canonical runtime path: browser surface/action, API/endpoint/client, Akka component/service/substrate, trace/audit path;
+- canonical runtime path: worker, execution harness, actor adapter, governed tool, backend capability, API/endpoint/client, Akka component/service/substrate, trace/audit path, and result surface where applicable;
 - role/AuthContext/tenant setup and denial scenario;
 - success and failure state expectations;
 - required automated checks and manual/browser/API smoke checklist;
@@ -76,6 +88,14 @@ Use `akka-runtime-feature-verification` after remediation to close the failure g
 ## Failure inventory
 | ID | Manual flow | Role/context | Expected behavior | Actual behavior | Intent present? | Runtime path | Classification | Blocking? | Remediation |
 |---|---|---|---|---|---|---|---|---|---|
+
+## Compile contract reconciliation
+- worker/harness gap: ...
+- actor-adapter gap: ...
+- governed-tool/capability gap: ...
+- API/Akka/trace gap: ...
+- result-surface/manual-evidence gap: ...
+
 
 ## Summary by gap type
 - app-description gaps:
@@ -108,4 +128,5 @@ Avoid:
 - assuming every manual failure is a user error without checking the accepted intent;
 - marking a feature group complete while blocking manual failures remain in its primary path;
 - creating one broad “fix user admin” task instead of failure-linked remediation tasks;
+- patching a screen, route, agent tool, or component without reconciling the worker/adapter/governed-tool/capability path;
 - treating seed/demo/manual setup gaps as permission to bypass auth, tenant scope, audit, or provider boundaries.
