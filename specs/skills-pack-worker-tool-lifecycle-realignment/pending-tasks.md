@@ -314,7 +314,7 @@
 
 ### TASK-013: Migrate endpoint and web UI families
 
-- status: pending
+- status: done
 - source: specs/skills-pack-worker-tool-lifecycle-realignment/migration-strategy.md
 - task brief: specs/skills-pack-worker-tool-lifecycle-realignment/tasks/013-migrate-endpoint-web-ui-family.md
 - depends on: [TASK-012]

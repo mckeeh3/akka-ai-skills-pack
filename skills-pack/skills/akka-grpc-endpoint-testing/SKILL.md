@@ -10,7 +10,7 @@ Use this skill for gRPC endpoint integration tests.
 
 ## Capability-first exposure rule
 
-Treat every gRPC method as a selected exposure surface for a named backend capability, not as the capability itself. Before adding or changing a method, identify the capability id, allowed actors/callers, `AuthContext`, tenant/customer scope, protobuf input/output schema, side effects, idempotency, approval policy, audit/trace obligations, and tests.
+Treat every gRPC method as an `api_call`, service, or `internal_call` actor adapter for a named governed tool inside a backend capability, not as the governed tool or capability itself. Before adding or changing a method, identify the responsible worker/harness, actor adapter, governed tool id, capability id, allowed actors/callers, `AuthContext`, tenant/customer scope, protobuf input/output schema, side effects, idempotency, approval policy, audit/trace obligations, selected Akka implementation path, and tests.
 
 For protected services, preserve the capability contract at the edge: authenticate the caller or service identity, resolve or receive the selected tenant/customer context, authorize the required role/scope/capability, validate protobuf messages, redact replies, map denials to explicit gRPC statuses such as `UNAUTHENTICATED` or `PERMISSION_DENIED`, and record required audit/work-trace events before calling components. Metadata, service names, and method names are not authorization controls.
 
@@ -49,12 +49,13 @@ The current curated SaaS Foundation App examples do not include gRPC runtime fix
 ## What to cover
 
 Prefer these categories:
-1. successful unary invocation
-2. protobuf field mapping and response shape
-3. explicit gRPC status behavior for expected failures
-4. service-only vs public ACL behavior when relevant
-5. streamed reply behavior when relevant
-6. eventual-consistency waits when a view backs the gRPC stream
+1. full worker/harness/actor-adapter/governed-tool/capability path for generated SaaS methods, including shared authorization, trace, and result semantics with any HTTP, UI, MCP, workflow, timer, consumer, or internal adapter for the same governed tool
+2. successful unary invocation
+3. protobuf field mapping and response shape
+4. explicit gRPC status behavior for expected failures
+5. service-only vs public ACL behavior when relevant
+6. streamed reply behavior when relevant
+7. eventual-consistency waits when a view backs the gRPC stream
 
 ## Anti-patterns
 

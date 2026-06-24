@@ -18,7 +18,7 @@ When the same capability is also exposed through UI, agent tools, workflows, gRP
 
 ## Generated SaaS input contract
 
-Use `../docs/app-worker-tool-model.md`, `../docs/app-description-to-code-compile-contract.md`, and `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required worker, harness, actor adapter, governed tool, capability, AuthContext/scope, DTO, side-effect, trace, selected Akka path, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
+Use `../docs/app-worker-tool-model.md`, `../docs/app-description-to-code-compile-contract.md`, and `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the responsible worker, execution harness, actor adapter, governed tool, capability, AuthContext/scope, DTO, side-effect/idempotency policy, trace/result surface, selected Akka path, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
