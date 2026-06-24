@@ -9,6 +9,7 @@ import ai.first.domain.foundation.identity.Tenant;
 import ai.first.domain.foundation.invitation.Invitation;
 import ai.first.domain.foundation.invitation.InvitationStatus;
 import ai.first.application.coreapp.agentadmin.AgentAdminService;
+import ai.first.application.coreapp.agentadmin.AgentAdminDocAdministrationService;
 import ai.first.application.coreapp.agentadmin.AgentAdminPromptRiskReviewService;
 import ai.first.application.coreapp.agentadmin.FailClosedPromptRiskAutonomousAgentRuntime;
 import ai.first.application.coreapp.agentadmin.PromptRiskAutonomousAgentRuntime;
@@ -253,6 +254,7 @@ public final class WorkstreamService {
   private final InvitationService invitationService;
   private final AgentBehaviorRepository agentBehaviorRepository;
   private final AgentAdminService agentAdminService;
+  private final AgentAdminDocAdministrationService agentAdminDocAdministrationService;
   private final AgentRuntimeService agentRuntimeService;
   private final AgentAdminPromptRiskReviewService promptRiskReviewService;
   private final AuditTraceService auditTraceService;
@@ -419,6 +421,7 @@ public final class WorkstreamService {
     this.invitationService = invitationService;
     this.agentBehaviorRepository = agentBehaviorRepository;
     this.agentAdminService = new AgentAdminService(agentBehaviorRepository, authContextResolver);
+    this.agentAdminDocAdministrationService = new AgentAdminDocAdministrationService(agentBehaviorRepository, authContextResolver, Clock.systemUTC());
     this.promptRiskReviewService = new AgentAdminPromptRiskReviewService(Objects.requireNonNull(promptRiskReviewTaskRepository), authContextResolver, Clock.systemUTC(), attentionProducerService, workstreamEventPublisher, Objects.requireNonNull(promptRiskAutonomousAgentRuntime));
     this.agentRuntimeService = agentRuntimeService;
     this.workstreamAgentRuntimeInvoker = Objects.requireNonNull(workstreamAgentRuntimeInvoker);
@@ -748,6 +751,70 @@ public final class WorkstreamService {
     } else if ("action-useradmin-complete-identity-relink".equals(request.actionId())) {
       var recovery = userAdminService.completeIdentityRelink(actor, stringInput(request.input(), "accountId", stringInput(request.input(), "recoveryId", actor.account().accountId())), stringInput(request.input(), "approvalRef", ""), request.idempotencyKey(), request.correlationId());
       result = identityRelinkActionResult(recovery, recovery.status(), recovery.message(), request.correlationId(), actor);
+    } else if ("action-agent-admin-show-blank".equals(request.actionId())) {
+      result = new CapabilityActionResult("accepted", "Agent Admin blank state loaded.", request.correlationId(), List.of("trace-agent-admin-blank-" + stableSuffix(request.correlationId())), agentAdminBlankSurface(actor, request.correlationId()));
+    } else if ("action-agent-admin-show-dashboard".equals(request.actionId()) || "action-agent-admin-refresh-dashboard".equals(request.actionId()) || "action-display-agent-admin-dashboard".equals(request.actionId())) {
+      result = new CapabilityActionResult("accepted", "Agent Admin dashboard loaded with current document-administration actions.", request.correlationId(), List.of("trace-agent-admin-dashboard-" + stableSuffix(request.correlationId())), agentAdminDashboardSurface(actor, request.correlationId()));
+    } else if ("action-agent-admin-show-agents".equals(request.actionId()) || "action-agent-admin-list-agents".equals(request.actionId())) {
+      result = new CapabilityActionResult("accepted", "Agent list loaded with backend-authorized filters.", request.correlationId(), List.of("trace-agent-admin-agent-list-" + stableSuffix(request.correlationId())), agentAdminAgentListSurface(actor, request.input(), request.correlationId()));
+    } else if ("action-agent-admin-open-agent-detail".equals(request.actionId())) {
+      result = new CapabilityActionResult("accepted", "Agent detail loaded.", request.correlationId(), List.of("trace-agent-admin-agent-detail-" + stableSuffix(request.correlationId())), agentAdminAgentDetailSurface(actor, request.input(), request.correlationId()));
+    } else if ("action-agent-admin-save-agent-profile".equals(request.actionId())) {
+      var updated = agentAdminDocAdministrationService.updateAgentProfile(actor, new AgentAdminDocAdministrationService.AgentProfileUpdateRequest(agentAdminAgentId(request.input()), stringInput(request.input(), "agentName", null), stringInput(request.input(), "purpose", null)), request.correlationId());
+      var detail = agentAdminAgentDetailSurface(actor, mapOf("agentDefinitionId", updated.row().agentDefinitionId()), request.correlationId());
+      detail.data().put("lastResult", mapOf("status", "accepted", "message", "Agent name and purpose saved.", "traceRefs", updated.traceLinks()));
+      result = new CapabilityActionResult("accepted", "Agent name and purpose saved.", request.correlationId(), updated.traceLinks(), detail);
+    } else if ("action-agent-admin-open-prompt-doc".equals(request.actionId()) || "action-agent-admin-open-skill-doc".equals(request.actionId()) || "action-agent-admin-open-reference-doc".equals(request.actionId())) {
+      result = new CapabilityActionResult("accepted", "Agent document loaded.", request.correlationId(), List.of("trace-agent-admin-doc-read-" + stableSuffix(request.correlationId())), agentAdminDocumentSurface(actor, request.input(), request.correlationId()));
+    } else if ("action-agent-doc-edit-start".equals(request.actionId())) {
+      var session = agentAdminDocAdministrationService.startEditSession(actor, new AgentAdminDocAdministrationService.StartEditSessionRequest(agentAdminAgentId(request.input()), agentDocKindInput(request.input()), stringInput(request.input(), "documentId", stringInput(request.input(), "skillDocumentId", stringInput(request.input(), "referenceDocumentId", null))), stringInput(request.input(), "instructions", stringInput(request.input(), "initialInstructions", ""))), request.correlationId());
+      result = new CapabilityActionResult("accepted", "Edit session started; the editing agent proposal can be refined before save.", request.correlationId(), session.traceLinks(), agentAdminEditSessionSurface(actor, session, request.correlationId()));
+    } else if ("action-agent-doc-edit-revise".equals(request.actionId())) {
+      var session = agentAdminDocAdministrationService.reviseEditSession(actor, new AgentAdminDocAdministrationService.ReviseEditSessionRequest(stringInput(request.input(), "sessionId", ""), stringInput(request.input(), "instructions", ""), stringInput(request.input(), "proposedContent", stringInput(request.input(), "proposedMarkdown", "")), stringInput(request.input(), "changeSummary", "Updated proposal"), listStringInput(request.input(), "warnings")), request.correlationId());
+      result = new CapabilityActionResult("accepted", "Edit session proposal revised.", request.correlationId(), session.traceLinks(), agentAdminEditSessionSurface(actor, session, request.correlationId()));
+    } else if ("action-agent-doc-edit-save".equals(request.actionId())) {
+      var saved = agentAdminDocAdministrationService.saveEditSession(actor, new AgentAdminDocAdministrationService.EditSessionCommandRequest(stringInput(request.input(), "sessionId", "")), request.correlationId());
+      var surface = agentAdminDocumentSurface(actor, mapOf("agentDefinitionId", saved.session().agentDefinitionId(), "kind", saved.session().kind().name(), "documentId", saved.session().documentId()), request.correlationId());
+      surface.data().put("lastResult", mapOf("status", "saved", "savedVersion", saved.savedVersion(), "traceRefs", saved.traceLinks()));
+      result = new CapabilityActionResult("accepted", "Edit saved as the new current document version.", request.correlationId(), saved.traceLinks(), surface);
+    } else if ("action-agent-doc-edit-cancel".equals(request.actionId())) {
+      var session = agentAdminDocAdministrationService.cancelEditSession(actor, new AgentAdminDocAdministrationService.EditSessionCommandRequest(stringInput(request.input(), "sessionId", "")), request.correlationId());
+      result = new CapabilityActionResult("accepted", "Edit session cancelled; proposed content was discarded.", request.correlationId(), session.traceLinks(), agentAdminEditSessionSurface(actor, session, request.correlationId()));
+    } else if ("action-agent-doc-version-history".equals(request.actionId())) {
+      result = new CapabilityActionResult("accepted", "Version history loaded.", request.correlationId(), List.of("trace-agent-admin-version-history-" + stableSuffix(request.correlationId())), agentAdminVersionHistorySurface(actor, request.input(), request.correlationId()));
+    } else if ("action-agent-doc-version-diff".equals(request.actionId())) {
+      result = new CapabilityActionResult("accepted", "Adjacent version diff loaded.", request.correlationId(), List.of("trace-agent-admin-version-diff-" + stableSuffix(request.correlationId())), agentAdminVersionDiffSurface(actor, request.input(), request.correlationId()));
+    } else if ("action-agent-doc-version-restore".equals(request.actionId())) {
+      var restored = agentAdminDocAdministrationService.restoreVersion(actor, new AgentAdminDocAdministrationService.RestoreVersionRequest(agentAdminAgentId(request.input()), agentDocKindInput(request.input()), stringInput(request.input(), "documentId", ""), intInput(request.input(), "version", 1)), request.correlationId());
+      var surface = agentAdminDocumentSurface(actor, mapOf("agentDefinitionId", restored.agentDefinitionId(), "kind", restored.kind().name(), "documentId", restored.documentId()), request.correlationId());
+      surface.data().put("lastResult", mapOf("status", "restored", "restoredFromVersion", restored.restoredFromVersion(), "newCurrentVersion", restored.newCurrentVersion(), "summary", restored.summary(), "traceRefs", restored.traceLinks()));
+      result = new CapabilityActionResult("accepted", "Historical version restored as a new current version.", request.correlationId(), restored.traceLinks(), surface);
+    } else if ("action-agent-admin-open-create-skill".equals(request.actionId())) {
+      result = new CapabilityActionResult("accepted", "Create skill surface opened.", request.correlationId(), List.of("trace-agent-admin-create-skill-open-" + stableSuffix(request.correlationId())), agentAdminCreateSkillSurface(actor, request.input(), request.correlationId()));
+    } else if ("action-agent-admin-create-skill".equals(request.actionId())) {
+      var created = agentAdminDocAdministrationService.createSkill(actor, new AgentAdminDocAdministrationService.CreateSkillRequest(agentAdminAgentId(request.input()), stringInput(request.input(), "skillDocumentId", null), stringInput(request.input(), "stableSkillId", stringInput(request.input(), "skillName", "agent-admin-created-skill")), stringInput(request.input(), "name", stringInput(request.input(), "skillName", "New skill")), stringInput(request.input(), "purpose", stringInput(request.input(), "description", "New skill")), stringInput(request.input(), "whenToUse", "Use when relevant."), stringInput(request.input(), "contentBody", stringInput(request.input(), "initialContent", "# New skill\n")), stringInput(request.input(), "editSessionTranscriptSummary", "Created from Agent Admin")), request.correlationId());
+      result = new CapabilityActionResult("accepted", "Skill created with version 1.", request.correlationId(), created.traceLinks(), agentAdminDocumentSurface(actor, mapOf("agentDefinitionId", created.agentDefinitionId(), "kind", "SKILL", "documentId", created.skillDocumentId()), request.correlationId()));
+    } else if ("action-agent-admin-open-delete-skill".equals(request.actionId())) {
+      result = new CapabilityActionResult("accepted", "Delete skill confirmation opened.", request.correlationId(), List.of("trace-agent-admin-delete-skill-open-" + stableSuffix(request.correlationId())), agentAdminDeleteSkillSurface(actor, request.input(), request.correlationId()));
+    } else if ("action-agent-admin-delete-skill".equals(request.actionId())) {
+      var deleted = agentAdminDocAdministrationService.deleteSkill(actor, new AgentAdminDocAdministrationService.DeleteSkillRequest(agentAdminAgentId(request.input()), stringInput(request.input(), "skillDocumentId", stringInput(request.input(), "documentId", "")), stringInput(request.input(), "confirmation", "")), request.correlationId());
+      var surface = agentAdminAgentDetailSurface(actor, mapOf("agentDefinitionId", deleted.agentDefinitionId()), request.correlationId());
+      surface.data().put("lastResult", mapOf("status", "deleted", "skillDocumentId", deleted.skillDocumentId(), "traceRefs", deleted.traceLinks()));
+      result = new CapabilityActionResult("accepted", "Skill and its reference docs were permanently deleted.", request.correlationId(), deleted.traceLinks(), surface);
+    } else if ("action-agent-admin-open-create-reference-doc".equals(request.actionId())) {
+      result = new CapabilityActionResult("accepted", "Create reference doc surface opened.", request.correlationId(), List.of("trace-agent-admin-create-reference-open-" + stableSuffix(request.correlationId())), agentAdminCreateReferenceDocSurface(actor, request.input(), request.correlationId()));
+    } else if ("action-agent-admin-create-reference-doc".equals(request.actionId())) {
+      var created = agentAdminDocAdministrationService.createReferenceDoc(actor, new AgentAdminDocAdministrationService.CreateReferenceDocRequest(agentAdminAgentId(request.input()), stringInput(request.input(), "skillDocumentId", ""), stringInput(request.input(), "referenceDocumentId", null), stringInput(request.input(), "stableReferenceId", stringInput(request.input(), "referenceName", "agent-admin-created-reference")), stringInput(request.input(), "name", stringInput(request.input(), "referenceName", "New reference doc")), stringInput(request.input(), "description", "Reference doc"), stringInput(request.input(), "whenToConsult", "Consult when relevant."), null, stringInput(request.input(), "contentBody", stringInput(request.input(), "initialContent", "# New reference doc\n")), stringInput(request.input(), "editSessionTranscriptSummary", "Created from Agent Admin")), request.correlationId());
+      result = new CapabilityActionResult("accepted", "Reference doc created with version 1.", request.correlationId(), created.traceLinks(), agentAdminDocumentSurface(actor, mapOf("agentDefinitionId", created.agentDefinitionId(), "kind", "REFERENCE", "documentId", created.referenceDocumentId()), request.correlationId()));
+    } else if ("action-agent-admin-open-delete-reference-doc".equals(request.actionId())) {
+      result = new CapabilityActionResult("accepted", "Delete reference doc confirmation opened.", request.correlationId(), List.of("trace-agent-admin-delete-reference-open-" + stableSuffix(request.correlationId())), agentAdminDeleteReferenceDocSurface(actor, request.input(), request.correlationId()));
+    } else if ("action-agent-admin-delete-reference-doc".equals(request.actionId())) {
+      var deleted = agentAdminDocAdministrationService.deleteReferenceDoc(actor, new AgentAdminDocAdministrationService.DeleteReferenceDocRequest(agentAdminAgentId(request.input()), stringInput(request.input(), "referenceDocumentId", stringInput(request.input(), "documentId", "")), stringInput(request.input(), "confirmation", "")), request.correlationId());
+      var surface = agentAdminAgentDetailSurface(actor, mapOf("agentDefinitionId", deleted.agentDefinitionId()), request.correlationId());
+      surface.data().put("lastResult", mapOf("status", "deleted", "referenceDocumentId", deleted.referenceDocumentId(), "traceRefs", deleted.traceLinks()));
+      result = new CapabilityActionResult("accepted", "Reference doc was permanently deleted.", request.correlationId(), deleted.traceLinks(), surface);
+    } else if ("action-agent-admin-open-runtime-traces".equals(request.actionId())) {
+      result = new CapabilityActionResult("accepted", "Runtime read traces loaded without full document content.", request.correlationId(), List.of("trace-agent-admin-runtime-traces-" + stableSuffix(request.correlationId())), agentAdminRuntimeTracesSurface(actor, request.input(), request.correlationId()));
     } else if ("action-propose-prompt-diff".equals(request.actionId())) {
       var proposal = agentRuntimeService.proposeBehaviorChange(new AgentRuntimeService.BehaviorChangeRequest(actor.selectedContext().tenantId(), AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID, actor.selectedContext(), BehaviorChangeProposal.TargetArtifact.PROMPT, "Approved revised Agent Admin prompt. Continue to require backend authorization, approval, and trace links.", List.of(), "Agent Admin UI-proposed prompt clarification", request.correlationId()));
       result = new CapabilityActionResult(proposal.status() == BehaviorChangeProposal.Status.DENIED ? "denied" : "accepted", "Prompt behavior-change proposal " + proposal.proposalId() + " recorded with status " + proposal.status().name().toLowerCase(Locale.ROOT) + "; prompt text cannot grant authority without backend approval.", request.correlationId(), List.of(proposal.proposalId()), agentBehaviorProposalSurface(actor, request.correlationId()));
@@ -6281,86 +6348,285 @@ public final class WorkstreamService {
         "denialHint", action.disabled() == null ? null : action.disabled().message());
   }
 
-  private SurfaceEnvelope agentAdminDashboardSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    authContextResolver.requireCapability(actor.selectedContext(), AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY);
-    authContextResolver.appendProtectedReadTrace(actor, AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY, "agent_admin.dashboard.v1", correlationId);
-    seedStarterCoreAttention(actor, correlationId);
-    var attention = attentionMaps(attentionService.listWorkstreamItems(actor, AGENT_ADMIN_AGENT_ID, correlationId));
-    var actions = List.of(
-        agentAdminRefreshDashboardAction(), agentAdminOpenCatalogAction(), agentAdminOpenBehaviorProposalsAction(), agentAdminOpenPromptRiskReviewAction(), agentAdminOpenSeedMaterialAction(),
-        agentAdminOpenManifestDriftAction(), agentAdminOpenToolBoundaryAction(), agentAdminOpenModelRefsAction(), agentAdminOpenTraceAction(),
-        displayAgentAdminDashboardAction(), displayAgentCatalogAction(), proposePromptDiffAction(), submitBehaviorChangeAction(), simulateToolBoundaryAction(), listAgentSeedMaterialAction(), testPromptAction(), startPromptRiskReviewAction(), readPromptRiskReviewAction(), openAgentTraceAction());
-    return envelope("surface-agent-admin-dashboard", "dashboard", "Agent Admin dashboard", actor, correlationId,
-        mapOf("surfaceContract", "agent_admin.dashboard.v1",
-            "surfaceSummary", mapOf("id", "surface-agent-admin-dashboard", "title", "Agent Admin dashboard", "type", "dashboard", "contract", "agent_admin.dashboard.v1", "owningWorkstream", "Agent Admin", "owningAgent", AGENT_ADMIN_AGENT_ID, "selectedScopeLabel", contextLabel(actor.selectedContext().tenantId(), actor.selectedContext().customerId()), "readinessState", "ready_with_attention", "lastRefreshedAt", Instant.now().toString()),
-            "scopeSummary", mapOf("selectedAuthContextId", actor.selectedContext().membershipId(), "scopeType", actor.selectedContext().scopeType().name().toLowerCase(Locale.ROOT), "tenantId", actor.selectedContext().tenantId(), "organizationDisplayName", contextLabel(actor.selectedContext().tenantId(), null), "actorRoleSummary", actor.selectedContext().roles().stream().map(Enum::name).toList(), "governanceAuthorized", true, "customerIdentifiersOmittedUnlessAlreadyAuthorized", actor.selectedContext().customerId() == null),
-            "cards", List.of(
-                mapOf("cardId", "agent-admin-card-provider", "label", "Provider/model readiness", "value", "Fail closed", "status", "Open model references; provider secrets and raw errors stay redacted", "severity", "blocked_provider_or_runtime", "actionId", "action-agent-admin-open-model-refs", "targetSurfaceId", "surface-agent-model-refs"),
-                mapOf("cardId", "agent-admin-card-approvals", "label", "Behavior approvals", "value", 1, "status", "Human review required before activation", "severity", "blocked", "actionId", "action-agent-admin-open-behavior-proposals", "targetSurfaceId", "surface-agent-behavior-proposal"),
-                mapOf("cardId", "agent-admin-card-tool-boundary", "label", "Tool-boundary risks", "value", 1, "status", "Side-effecting grant denied until separate review", "severity", "urgent", "actionId", "action-agent-admin-open-tool-boundary", "targetSurfaceId", "surface-agent-tool-boundary-diff"),
-                mapOf("cardId", "agent-admin-card-seed", "label", "Seed material", "value", 3, "status", "Starter defaults visible; tenant overrides preserved", "severity", "info", "actionId", "action-agent-admin-open-seed-material", "targetSurfaceId", "surface-agent-seed-material")),
-            "attentionSections", List.of(
-                actionEntry(agentAdminOpenModelRefsAction()), actionEntry(agentAdminOpenBehaviorProposalsAction()), actionEntry(agentAdminOpenPromptRiskReviewAction()), actionEntry(agentAdminOpenManifestDriftAction()), actionEntry(agentAdminOpenToolBoundaryAction()), actionEntry(agentAdminOpenSeedMaterialAction()), actionEntry(agentAdminOpenTraceAction())),
-            "attentionQueues", List.of(
-                mapOf("queueId", "provider-readiness", "label", "Provider/model readiness", "count", 1, "severity", "blocked_provider_or_runtime", "statusText", "Provider/runtime readiness fails closed", "sourceCapabilityId", AGENT_ADMIN_GET_MODEL_REF_CAPABILITY, "targetSurfaceId", "surface-agent-model-refs", "actionId", "action-agent-admin-open-model-refs", "traceRefs", List.of("trace-agent-admin-model-refs"), "redaction", "provider secrets and raw provider errors redacted"),
-                mapOf("queueId", "behavior-approval", "label", "Behavior proposals awaiting human decision", "count", 1, "severity", "blocked", "statusText", "Approval required", "sourceCapabilityId", AGENT_ADMIN_SUBMIT_REVIEW_CAPABILITY, "targetSurfaceId", "surface-agent-behavior-proposal", "actionId", "action-agent-admin-open-behavior-proposals", "traceRefs", List.of("trace-agent-admin-behavior-review"), "redaction", "raw prompt/skill bodies omitted"),
-                mapOf("queueId", "tool-boundary-risk", "label", "Risky tool-boundary expansion attempts", "count", 1, "severity", "urgent", "statusText", "Simulation denied side effect", "sourceCapabilityId", AGENT_ADMIN_GET_TOOL_BOUNDARY_CAPABILITY, "targetSurfaceId", "surface-agent-tool-boundary-diff", "actionId", "action-agent-admin-open-tool-boundary", "traceRefs", List.of("trace-agent-admin-tool-denied-email-send"), "redaction", "tool inputs and outputs omitted"),
-                mapOf("queueId", "prompt-risk-review", "label", "Prompt-risk autonomous review results", "count", 0, "severity", "warning", "statusText", "Open prompt-risk review status", "sourceCapabilityId", AgentAdminPromptRiskReviewService.READ_CAPABILITY, "targetSurfaceId", "surface-agent-admin-prompt-risk-review", "actionId", "action-agent-admin-open-prompt-risk-review", "traceRefs", List.of("trace-prompt-risk-model-call-001"), "redaction", "browser-safe finding summaries only")),
-            "readinessSummary", mapOf("managedAgentCount", 5, "lifecycle", mapOf("active", 5, "draft", 0), "providerModelReadiness", "blocked_provider_or_runtime", "promptRiskReviewReadiness", "deferred_until_provider_runtime_configured", "noFakeSuccess", true),
-            "approvalQueueCounts", mapOf("proposal", 1, "highRiskPromptToolModelChange", 1, "activation", 0, "rollback", 0, "deferredReview", 1),
-            "manifestDrift", List.of(mapOf("impactedAgent", "Agent Admin", "driftSeverity", "warning", "reviewTargetSurfaceId", "surface-agent-skill-manifest-diff", "summary", "Skill/reference manifests require governed review before activation.")),
-            "loaderDenialState", List.of(mapOf("category", "tool_permission_boundary", "affectedAgent", "Agent Admin", "recoveryTargetSurfaceId", "surface-agent-tool-boundary-diff", "summary", "Side-effecting loader/tool expansion remains denied and traced.")),
-            "authorityExpansionAttempts", List.of(mapOf("category", "tool_boundary", "approvalState", "approval-required", "policyReason", "High-risk side-effecting authority requires human review.", "proposalTargetSurfaceId", "surface-agent-behavior-proposal")),
-            "seedImportReadiness", mapOf("status", "ready", "blockedReasons", List.of(), "preservesTenantOverrides", true, "targetSurfaceId", "surface-agent-seed-material"),
-            "providerModelStatus", mapOf("category", "blocked_provider_or_runtime", "failClosedReason", "Provider/model readiness is surfaced without fabricated success until real configuration is available.", "targetSurfaceId", "surface-agent-model-refs", "secretsVisible", false),
-            "safeRedactionSummary", mapOf("prompts", "redacted", "skills", "redacted", "references", "redacted", "providerData", "redacted", "hiddenTenantsCustomers", "omitted", "privilegedTraceDetails", "role-gated"),
-            "authorizedActions", List.of(
-                authorizedActionMap(agentAdminOpenCatalogAction()), authorizedActionMap(agentAdminOpenBehaviorProposalsAction()), authorizedActionMap(agentAdminOpenPromptRiskReviewAction()), authorizedActionMap(agentAdminOpenSeedMaterialAction()), authorizedActionMap(agentAdminOpenManifestDriftAction()), authorizedActionMap(agentAdminOpenToolBoundaryAction()), authorizedActionMap(agentAdminOpenModelRefsAction()), authorizedActionMap(agentAdminOpenTraceAction()), authorizedActionMap(agentAdminRefreshDashboardAction())),
-            "attentionItems", attention,
-            "recentActivity", List.of(mapOf("activityId", "activity-agent-admin-protected-read", "label", "Dashboard read protected by selected AuthContext", "summary", "Scoped Agent Admin projection returns browser-safe readiness, queue, redaction, and routing summaries.", "traceId", "trace-agent-admin-dashboard")),
-            "hero", mapOf("title", "Govern managed agents safely", "scopeLabel", "Tenant Admin · selected AuthContext", "scopeType", actor.selectedContext().scopeType().name(), "adminLevel", "Agent steward", "redactionSummary", "Provider secrets, raw prompts, raw skills, raw references, hidden authority, hidden customers, and cross-tenant evidence are omitted."),
-            "readiness", "ready_with_attention",
-            "capabilityIds", List.of(AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY, AGENT_ADMIN_GET_MANIFEST_CAPABILITY, AGENT_ADMIN_GET_TOOL_BOUNDARY_CAPABILITY, AGENT_ADMIN_GET_MODEL_REF_CAPABILITY, AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY, AGENT_ADMIN_SIMULATE_TOOL_BOUNDARY_CAPABILITY, AgentAdminPromptRiskReviewService.READ_CAPABILITY, AUDIT_TRACE_READ_CAPABILITY),
-            "redaction", mapOf("browserSafe", true, "omittedFieldKeys", List.of("rawPromptBody", "rawSkillBody", "rawReferenceBody", "providerCredentialValue", "rawProviderError", "rawJwt", "hiddenTenantId", "hiddenCustomerId"), "previewLimitChars", 220),
-            "traceRefs", List.of("trace-agent-admin-dashboard", "trace-agent-admin-catalog", "trace-agent-admin-model-refs"),
-            "systemStates", List.of("loading", "empty", "ready", "submitting", "forbidden", "not-found-or-redacted", "stale/reconnect", "partial-data", "provider-fail-closed", "approval-required", "validation-error", "no-op", "failure")),
+  private SurfaceEnvelope agentAdminBlankSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    var actions = List.of(agentAdminShowDashboardAction(), agentAdminShowAgentsAction());
+    agentAdminDocAdministrationService.listAgents(actor, new AgentAdminDocAdministrationService.AgentListRequest(null, null), correlationId);
+    return envelope("surface-agent-admin-blank", "blank", "Agent Admin", actor, correlationId,
+        mapOf(
+            "surfaceContract", "agent_admin.blank.v1",
+            "state", "ready-empty",
+            "emptyCopy", "Choose Show dashboard, Show agents, or use the composer to find an agent document to improve.",
+            "composerAvailable", true,
+            "clearWorkstream", mapOf("enabled", false, "state", "no-op"),
+            "availableTaskActions", actions.stream().map(this::surfaceActionSummary).toList(),
+            "authorizedActions", actions.stream().map(SurfaceAction::actionId).toList(),
+            "systemStates", List.of("ready-empty", "forbidden", "failure")),
         actions);
   }
 
+  private SurfaceEnvelope agentAdminDashboardSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    var response = agentAdminDocAdministrationService.listAgents(actor, new AgentAdminDocAdministrationService.AgentListRequest(null, null), correlationId);
+    var actions = List.of(agentAdminShowDashboardAction(), agentAdminShowAgentsAction(), agentAdminOpenRuntimeTracesAction());
+    var recent = response.rows().stream()
+        .sorted((left, right) -> String.valueOf(right.lastEditTime()).compareTo(String.valueOf(left.lastEditTime())))
+        .limit(5)
+        .map(this::agentAdminAgentRowMap)
+        .toList();
+    return envelope("surface-agent-admin-dashboard", "dashboard", "Agent Admin dashboard", actor, correlationId,
+        mapOf(
+            "surfaceContract", "agent_admin.dashboard.v1",
+            "thingsYouCanDo", List.of(mapOf("cardId", "total-agents", "label", "Agents", "count", response.totalCount(), "actionId", "action-agent-admin-show-agents", "targetSurfaceId", "surface-agent-admin-agent-list")),
+            "recentlyChangedAgents", recent,
+            "thingsNeedAttention", List.of(),
+            "availableTaskActions", actions.stream().map(this::surfaceActionSummary).toList(),
+            "authorizedActions", actions.stream().map(SurfaceAction::actionId).toList(),
+            "traceRefs", response.traceLinks(),
+            "systemStates", List.of("ready", "forbidden", "failure")),
+        actions);
+  }
+
+  private SurfaceEnvelope agentAdminAgentListSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
+    return agentAdminAgentListSurface(actor, Map.of(), correlationId);
+  }
+
   private SurfaceEnvelope agentAdminCatalogSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    return agentAdminCatalogSurface(actor, Map.of(), correlationId);
+    return agentAdminAgentListSurface(actor, correlationId);
   }
 
   private SurfaceEnvelope agentAdminCatalogSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
-    seedStarterCoreAttention(actor, correlationId);
-    var actions = List.of(displayAgentAdminDashboardAction(), displayAgentCatalogAction(), agentAdminRefreshCatalogAction(), agentAdminSearchCatalogAction(), agentAdminResetCatalogFiltersAction(), openAgentDetailAction(), agentAdminCatalogOpenTraceAction(), openAgentTraceAction());
-    var data = withAttentionItems(agentAdminService.catalog(actor, inputMap(input), correlationId), actor, AGENT_ADMIN_AGENT_ID, correlationId);
-    data.put("authorizedActions", actions.stream().map(this::authorizedActionMap).toList());
-    return envelope("surface-agent-admin-catalog", "list-search", "Agent Admin catalog", actor, correlationId, data, actions);
+    return agentAdminAgentListSurface(actor, input, correlationId);
+  }
+
+  private SurfaceEnvelope agentAdminAgentListSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    var filters = inputMap(input);
+    var response = agentAdminDocAdministrationService.listAgents(actor, new AgentAdminDocAdministrationService.AgentListRequest(stringInput(filters, "nameContains", stringInput(filters, "agentName", null)), stringInput(filters, "workstreamOrDomain", stringInput(filters, "domain", null))), correlationId);
+    var actions = List.of(agentAdminShowDashboardAction(), agentAdminShowAgentsAction(), agentAdminOpenAgentDetailDocAction(), agentAdminOpenRuntimeTracesAction());
+    var state = response.totalCount() == 0 ? "empty-no-agents" : response.filteredCount() == 0 ? "empty-no-filter-matches" : "ready";
+    return envelope("surface-agent-admin-agent-list", "list-search", "Agents", actor, correlationId,
+        mapOf(
+            "surfaceContract", "agent_admin.agent_list.v1",
+            "filters", mapOf("agentName", stringInput(filters, "nameContains", stringInput(filters, "agentName", "")), "workstreamOrDomain", stringInput(filters, "workstreamOrDomain", stringInput(filters, "domain", ""))),
+            "rows", response.rows().stream().map(this::agentAdminAgentRowMap).toList(),
+            "totalCount", response.totalCount(),
+            "filteredCount", response.filteredCount(),
+            "rowActionId", "action-agent-admin-open-agent-detail",
+            "availableTaskActions", actions.stream().map(this::surfaceActionSummary).toList(),
+            "authorizedActions", actions.stream().map(SurfaceAction::actionId).toList(),
+            "traceRefs", response.traceLinks(),
+            "systemStates", List.of("loading", "ready", "empty-no-agents", "empty-no-filter-matches", "forbidden", "validation-error", "failure"),
+            "state", state),
+        actions);
   }
 
   private SurfaceEnvelope agentAdminDetailSurface(AuthContextResolver.ResolvedMe actor, String correlationId) {
-    return agentAdminDetailSurface(actor, null, correlationId);
+    return agentAdminAgentDetailSurface(actor, null, correlationId);
   }
 
   private SurfaceEnvelope agentAdminDetailSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
-    var agentDefinitionId = stringInput(input, "agentDefinitionId", AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID);
-    var actions = List.of(
-        agentDetailRefreshAction(),
-        agentDetailOpenPromptGovernanceAction(),
-        agentDetailOpenSkillManifestAction(),
-        agentDetailOpenToolBoundaryAction(),
-        agentDetailOpenModelRefsAction(),
-        agentDetailRunTestAction(),
-        agentDetailOpenPromptRiskReviewAction(),
-        agentDetailOpenActivationAction(),
-        agentDetailOpenDeactivationAction(),
-        agentDetailOpenRollbackAction(),
-        agentDetailOpenTraceAction(),
-        agentDetailBackToCatalogAction());
-    var data = agentAdminService.definitionDetail(actor, agentDefinitionId, correlationId);
-    data.put("authorizedActions", actions.stream().map(this::authorizedActionMap).toList());
-    return envelope("surface-agent-admin-detail", "show-inspection", "Agent Admin readiness detail", actor, correlationId, data, actions);
+    return agentAdminAgentDetailSurface(actor, input, correlationId);
+  }
+
+  private SurfaceEnvelope agentAdminAgentDetailSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    var detail = agentAdminDocAdministrationService.agentDetail(actor, agentAdminAgentId(input), correlationId);
+    var actions = List.of(agentAdminShowAgentsAction(), agentAdminSaveAgentProfileAction(), agentAdminOpenPromptDocAction(), agentAdminOpenSkillDocAction(), agentAdminOpenReferenceDocAction(), agentAdminOpenCreateSkillAction(), agentAdminOpenDeleteSkillAction(), agentAdminOpenCreateReferenceDocAction(), agentAdminOpenDeleteReferenceDocAction(), agentAdminOpenRuntimeTracesAction());
+    return envelope("surface-agent-admin-agent-detail", "show-inspection", "Agent detail", actor, correlationId,
+        mapOf(
+            "surfaceContract", "agent_admin.agent_detail.v1",
+            "agent", mapOf("agentDefinitionId", detail.agentDefinitionId(), "agentName", detail.agentName(), "purpose", detail.purpose(), "workstreamDomain", detail.workstreamDomain(), "lastEditTime", detail.lastEditTime()),
+            "prompt", docSummaryMap(detail.prompt()),
+            "skills", detail.skills().stream().map(this::skillSummaryMap).toList(),
+            "referenceDocs", detail.referenceDocs().stream().map(this::referenceSummaryMap).toList(),
+            "traceEntryPoints", List.of(mapOf("label", "Runtime reads", "actionId", "action-agent-admin-open-runtime-traces", "targetSurfaceId", "surface-agent-admin-runtime-traces")),
+            "availableTaskActions", actions.stream().map(this::surfaceActionSummary).toList(),
+            "authorizedActions", actions.stream().map(SurfaceAction::actionId).toList(),
+            "traceRefs", detail.traceLinks(),
+            "systemStates", List.of("ready", "forbidden", "failure")),
+        actions);
+  }
+
+  private SurfaceEnvelope agentAdminDocumentSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    var doc = agentAdminDocAdministrationService.readDocumentVersion(actor, documentVersionRequest(input), correlationId);
+    var surfaceId = switch (doc.kind()) {
+      case PROMPT -> "surface-agent-admin-prompt-doc";
+      case SKILL -> "surface-agent-admin-skill-doc";
+      case REFERENCE -> "surface-agent-admin-skill-reference-doc";
+    };
+    var contract = switch (doc.kind()) {
+      case PROMPT -> "agent_admin.prompt_doc.v1";
+      case SKILL -> "agent_admin.skill_doc.v1";
+      case REFERENCE -> "agent_admin.skill_reference_doc.v1";
+    };
+    var actions = List.of(agentAdminDocEditStartAction(), agentAdminVersionHistoryAction(), agentAdminVersionDiffAction(), agentAdminRestoreVersionAction(), agentAdminOpenRuntimeTracesAction(), agentAdminOpenAgentDetailDocAction());
+    return envelope(surfaceId, "document", doc.title(), actor, correlationId,
+        mapOf(
+            "surfaceContract", contract,
+            "doc", documentDetailMap(doc),
+            "readOnlyBanner", doc.currentVersion() ? null : "Historical version: read-only. Restore creates a new current version.",
+            "editInputEnabled", doc.editable(),
+            "availableTaskActions", actions.stream().map(this::surfaceActionSummary).toList(),
+            "authorizedActions", actions.stream().map(SurfaceAction::actionId).toList(),
+            "traceRefs", doc.traceLinks(),
+            "systemStates", List.of("ready", "historical-read-only", "forbidden", "validation-error", "failure")),
+        actions);
+  }
+
+  private SurfaceEnvelope agentAdminEditSessionSurface(AuthContextResolver.ResolvedMe actor, AgentAdminDocAdministrationService.EditSessionRecord session, String correlationId) {
+    var actions = List.of(agentAdminDocEditReviseAction(), agentAdminDocEditSaveAction(), agentAdminDocEditCancelAction(), agentAdminVersionDiffAction());
+    return envelope("surface-agent-admin-edit-session", "workflow-status", "Edit session", actor, correlationId,
+        mapOf(
+            "surfaceContract", "agent_admin.edit_session.v1",
+            "session", editSessionMap(session),
+            "target", mapOf("agentDefinitionId", session.agentDefinitionId(), "kind", session.kind().name().toLowerCase(Locale.ROOT), "documentId", session.documentId(), "baseVersion", session.baseVersion()),
+            "saveCreatesNewCurrentVersion", true,
+            "warningsAdvisoryOnly", true,
+            "availableTaskActions", actions.stream().map(this::surfaceActionSummary).toList(),
+            "authorizedActions", actions.stream().map(SurfaceAction::actionId).toList(),
+            "traceRefs", session.traceLinks(),
+            "systemStates", List.of("drafting", "clarification-needed", "proposed", "refining", "saving", "cancelled", "saved", "provider-unavailable", "stale-current-version", "forbidden", "failure")),
+        actions);
+  }
+
+  private SurfaceEnvelope agentAdminVersionHistorySurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    var history = agentAdminDocAdministrationService.versionHistory(actor, documentVersionRequest(input), correlationId);
+    var selectedVersion = intInput(input, "version", history.rows().stream().map(AgentAdminDocAdministrationService.VersionHistoryRow::version).max(Integer::compareTo).orElse(1));
+    var selected = agentAdminDocAdministrationService.readDocumentVersion(actor, new AgentAdminDocAdministrationService.DocumentVersionRequest(history.agentDefinitionId(), history.kind(), history.documentId(), selectedVersion), correlationId);
+    var actions = List.of(agentAdminVersionHistoryAction(), agentAdminVersionDiffAction(), agentAdminRestoreVersionAction(), agentAdminOpenAgentDetailDocAction());
+    return envelope("surface-agent-admin-version-history", "history", "Version history", actor, correlationId,
+        mapOf(
+            "surfaceContract", "agent_admin.version_history.v1",
+            "agentDefinitionId", history.agentDefinitionId(),
+            "kind", history.kind().name().toLowerCase(Locale.ROOT),
+            "documentId", history.documentId(),
+            "rows", history.rows().stream().map(row -> mapOf("version", row.version(), "currentVersion", row.currentVersion(), "createdAt", row.createdAt(), "label", row.label())).toList(),
+            "selectedVersion", documentDetailMap(selected),
+            "readOnlyBanner", selected.currentVersion() ? null : "Historical version: read-only.",
+            "availableTaskActions", actions.stream().map(this::surfaceActionSummary).toList(),
+            "authorizedActions", actions.stream().map(SurfaceAction::actionId).toList(),
+            "traceRefs", history.traceLinks(),
+            "systemStates", List.of("ready", "no-versions", "forbidden", "failure")),
+        actions);
+  }
+
+  private SurfaceEnvelope agentAdminVersionDiffSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    var diff = agentAdminDocAdministrationService.adjacentDiff(actor, documentVersionRequest(input), correlationId);
+    var actions = List.of(agentAdminVersionHistoryAction(), agentAdminRestoreVersionAction());
+    return envelope("surface-agent-admin-version-diff", "diff", "Version diff", actor, correlationId,
+        mapOf(
+            "surfaceContract", "agent_admin.version_diff.v1",
+            "agentDefinitionId", diff.agentDefinitionId(),
+            "kind", diff.kind().name().toLowerCase(Locale.ROOT),
+            "documentId", diff.documentId(),
+            "priorVersion", diff.priorVersion(),
+            "selectedVersion", diff.selectedVersion(),
+            "diffRule", "selected version N is compared only with N-1",
+            "status", diff.status().name().toLowerCase(Locale.ROOT),
+            "unifiedDiff", diff.unifiedDiff(),
+            "availableTaskActions", actions.stream().map(this::surfaceActionSummary).toList(),
+            "authorizedActions", actions.stream().map(SurfaceAction::actionId).toList(),
+            "traceRefs", diff.traceLinks(),
+            "systemStates", List.of("ready", "no-prior-version", "forbidden", "failure")),
+        actions);
+  }
+
+  private SurfaceEnvelope agentAdminCreateSkillSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    var agentId = agentAdminAgentId(input);
+    agentAdminDocAdministrationService.agentDetail(actor, agentId, correlationId);
+    var actions = List.of(agentAdminCreateSkillAction(), agentAdminOpenAgentDetailDocAction());
+    return envelope("surface-agent-admin-create-skill", "form", "Create skill", actor, correlationId,
+        mapOf("surfaceContract", "agent_admin.create_skill.v1", "agentDefinitionId", agentId, "inputs", List.of("skill name", "purpose/description", "free-form initial content request"), "availableTaskActions", actions.stream().map(this::surfaceActionSummary).toList(), "authorizedActions", actions.stream().map(SurfaceAction::actionId).toList(), "systemStates", List.of("ready", "drafting", "saving", "cancelled", "forbidden", "failure")),
+        actions);
+  }
+
+  private SurfaceEnvelope agentAdminDeleteSkillSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    var detail = agentAdminDocAdministrationService.agentDetail(actor, agentAdminAgentId(input), correlationId);
+    var skillId = stringInput(input, "skillDocumentId", stringInput(input, "documentId", detail.skills().isEmpty() ? "" : detail.skills().get(0).documentId()));
+    var skill = detail.skills().stream().filter(row -> row.documentId().equals(skillId) || row.stableSkillId().equals(skillId)).findFirst().orElse(null);
+    var referenceCount = skill == null ? 0 : skill.referenceDocs().size();
+    var actions = List.of(agentAdminDeleteSkillAction(), agentAdminOpenAgentDetailDocAction());
+    return envelope("surface-agent-admin-delete-skill-confirmation", "confirmation", "Delete skill", actor, correlationId,
+        mapOf("surfaceContract", "agent_admin.delete_skill_confirmation.v1", "agentDefinitionId", detail.agentDefinitionId(), "skillDocumentId", skillId, "skillName", skill == null ? skillId : skill.name(), "permanentDeletionWarning", "Deleting a skill permanently deletes its reference docs. There is no restore.", "referenceDocCount", referenceCount, "availableTaskActions", actions.stream().map(this::surfaceActionSummary).toList(), "authorizedActions", actions.stream().map(SurfaceAction::actionId).toList(), "systemStates", List.of("ready", "confirmed", "forbidden", "failure")),
+        actions);
+  }
+
+  private SurfaceEnvelope agentAdminCreateReferenceDocSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    var detail = agentAdminDocAdministrationService.agentDetail(actor, agentAdminAgentId(input), correlationId);
+    var skillDocumentId = stringInput(input, "skillDocumentId", detail.skills().isEmpty() ? null : detail.skills().get(0).documentId());
+    var actions = List.of(agentAdminCreateReferenceDocAction(), agentAdminOpenSkillDocAction());
+    return envelope("surface-agent-admin-create-reference-doc", "form", "Create reference doc", actor, correlationId,
+        mapOf("surfaceContract", "agent_admin.create_reference_doc.v1", "agentDefinitionId", detail.agentDefinitionId(), "skillDocumentId", skillDocumentId, "inputs", List.of("reference doc name", "short description", "free-form initial content request"), "availableTaskActions", actions.stream().map(this::surfaceActionSummary).toList(), "authorizedActions", actions.stream().map(SurfaceAction::actionId).toList(), "systemStates", List.of("ready", "drafting", "saving", "cancelled", "forbidden", "failure")),
+        actions);
+  }
+
+  private SurfaceEnvelope agentAdminDeleteReferenceDocSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    var detail = agentAdminDocAdministrationService.agentDetail(actor, agentAdminAgentId(input), correlationId);
+    var referenceId = stringInput(input, "referenceDocumentId", stringInput(input, "documentId", detail.referenceDocs().isEmpty() ? "" : detail.referenceDocs().get(0).documentId()));
+    var reference = detail.referenceDocs().stream().filter(row -> row.documentId().equals(referenceId) || row.stableReferenceId().equals(referenceId)).findFirst().orElse(null);
+    var actions = List.of(agentAdminDeleteReferenceDocAction(), agentAdminOpenAgentDetailDocAction());
+    return envelope("surface-agent-admin-delete-reference-doc-confirmation", "confirmation", "Delete reference doc", actor, correlationId,
+        mapOf("surfaceContract", "agent_admin.delete_reference_doc_confirmation.v1", "agentDefinitionId", detail.agentDefinitionId(), "referenceDocumentId", referenceId, "referenceDocName", reference == null ? referenceId : reference.name(), "permanentDeletionWarning", "Deleting a reference doc is permanent. There is no restore.", "availableTaskActions", actions.stream().map(this::surfaceActionSummary).toList(), "authorizedActions", actions.stream().map(SurfaceAction::actionId).toList(), "systemStates", List.of("ready", "confirmed", "forbidden", "failure")),
+        actions);
+  }
+
+  private SurfaceEnvelope agentAdminRuntimeTracesSurface(AuthContextResolver.ResolvedMe actor, Object input, String correlationId) {
+    var response = agentAdminDocAdministrationService.runtimeDocReadTraces(actor, new AgentAdminDocAdministrationService.RuntimeDocReadTraceQuery(stringInput(input, "agentDefinitionId", null), stringInput(input, "documentIdOrStableId", stringInput(input, "documentId", null)), instantInput(input, "occurredAtFrom"), instantInput(input, "occurredAtTo")), correlationId);
+    var actions = List.of(agentAdminOpenRuntimeTracesAction(), agentAdminOpenAgentDetailDocAction());
+    return envelope("surface-agent-admin-runtime-traces", "trace-list", "Runtime reads", actor, correlationId,
+        mapOf(
+            "surfaceContract", "agent_admin.runtime_traces.v1",
+            "filters", mapOf("agentDefinitionId", stringInput(input, "agentDefinitionId", null), "documentIdOrStableId", stringInput(input, "documentIdOrStableId", stringInput(input, "documentId", null)), "occurredAtFrom", stringInput(input, "occurredAtFrom", null), "occurredAtTo", stringInput(input, "occurredAtTo", null)),
+            "rows", response.rows().stream().map(row -> mapOf("traceId", row.traceId(), "agentDefinitionId", row.agentDefinitionId(), "agentName", row.agentName(), "documentType", row.documentType(), "documentIdOrStableId", row.documentIdOrStableId(), "documentName", row.documentName(), "documentRead", row.documentRead(), "timestamp", row.occurredAt(), "requestSessionId", row.requestSessionId(), "userCustomerContext", row.userCustomerContext(), "decision", row.decision(), "safeSummary", row.safeSummary())).toList(),
+            "contentRedaction", "Trace rows do not include full prompt, skill, or reference content.",
+            "availableTaskActions", actions.stream().map(this::surfaceActionSummary).toList(),
+            "authorizedActions", actions.stream().map(SurfaceAction::actionId).toList(),
+            "traceRefs", response.traceLinks(),
+            "systemStates", List.of("ready", "empty", "forbidden", "failure")),
+        actions);
+  }
+
+  private Map<String, Object> agentAdminAgentRowMap(AgentAdminDocAdministrationService.AgentListRow row) {
+    return mapOf("agentDefinitionId", row.agentDefinitionId(), "agentName", row.agentName(), "shortPurpose", row.shortPurpose(), "workstreamDomain", row.workstreamDomain(), "lastEditTime", row.lastEditTime(), "actionId", "action-agent-admin-open-agent-detail", "targetSurfaceId", "surface-agent-admin-agent-detail");
+  }
+
+  private Map<String, Object> docSummaryMap(AgentAdminDocAdministrationService.DocumentSummary doc) {
+    return mapOf("kind", doc.kind().name().toLowerCase(Locale.ROOT), "documentId", doc.documentId(), "title", doc.title(), "description", doc.description(), "currentVersion", doc.currentVersion(), "updatedAt", doc.updatedAt());
+  }
+
+  private Map<String, Object> skillSummaryMap(AgentAdminDocAdministrationService.SkillDocSummary skill) {
+    return mapOf("stableSkillId", skill.stableSkillId(), "documentId", skill.documentId(), "name", skill.name(), "purpose", skill.purpose(), "currentVersion", skill.currentVersion(), "updatedAt", skill.updatedAt(), "referenceDocs", skill.referenceDocs().stream().map(this::referenceSummaryMap).toList(), "actionId", "action-agent-admin-open-skill-doc");
+  }
+
+  private Map<String, Object> referenceSummaryMap(AgentAdminDocAdministrationService.ReferenceDocSummary reference) {
+    return mapOf("stableReferenceId", reference.stableReferenceId(), "documentId", reference.documentId(), "name", reference.name(), "description", reference.description(), "currentVersion", reference.currentVersion(), "updatedAt", reference.updatedAt(), "actionId", "action-agent-admin-open-reference-doc");
+  }
+
+  private Map<String, Object> documentDetailMap(AgentAdminDocAdministrationService.DocumentVersionDetail doc) {
+    return mapOf("agentDefinitionId", doc.agentDefinitionId(), "kind", doc.kind().name().toLowerCase(Locale.ROOT), "documentId", doc.documentId(), "version", doc.version(), "currentVersion", doc.currentVersion(), "editable", doc.editable(), "title", doc.title(), "description", doc.description(), "contentBody", doc.contentBody(), "contentChecksum", doc.contentChecksum(), "createdAt", doc.createdAt(), "actorAccountId", doc.actorAccountId(), "editSessionTranscriptSummary", doc.editSessionTranscriptSummary());
+  }
+
+  private Map<String, Object> editSessionMap(AgentAdminDocAdministrationService.EditSessionRecord session) {
+    return mapOf("sessionId", session.sessionId(), "agentDefinitionId", session.agentDefinitionId(), "kind", session.kind().name().toLowerCase(Locale.ROOT), "documentId", session.documentId(), "baseVersion", session.baseVersion(), "status", session.status().name().toLowerCase(Locale.ROOT), "instructions", session.instructions(), "clarifyingQuestion", session.clarifyingQuestion(), "proposedContent", session.proposedContent(), "changeSummary", session.changeSummary(), "warnings", session.warnings(), "startedAt", session.startedAt(), "endedAt", session.endedAt());
+  }
+
+  private String agentAdminAgentId(Object input) {
+    var requested = stringInput(input, "agentDefinitionId", null);
+    if (requested != null && !requested.isBlank()) return requested;
+    var rows = agentBehaviorRepository.agentDefinitions(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID);
+    return rows.isEmpty() ? AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID : rows.get(0).agentDefinitionId();
+  }
+
+  private AgentAdminDocAdministrationService.AgentDocKind agentDocKindInput(Object input) {
+    var raw = stringInput(input, "kind", stringInput(input, "docType", "PROMPT"));
+    if ("skill-reference".equalsIgnoreCase(raw) || "reference".equalsIgnoreCase(raw)) return AgentAdminDocAdministrationService.AgentDocKind.REFERENCE;
+    if ("skill".equalsIgnoreCase(raw)) return AgentAdminDocAdministrationService.AgentDocKind.SKILL;
+    return AgentAdminDocAdministrationService.AgentDocKind.PROMPT;
+  }
+
+  private AgentAdminDocAdministrationService.DocumentVersionRequest documentVersionRequest(Object input) {
+    return new AgentAdminDocAdministrationService.DocumentVersionRequest(
+        agentAdminAgentId(input),
+        agentDocKindInput(input),
+        stringInput(input, "documentId", stringInput(input, "skillDocumentId", stringInput(input, "referenceDocumentId", null))),
+        optionalIntInput(input, "version"));
   }
 
   private BehaviorChangeProposal proposeToolBoundaryChange(AuthContextResolver.ResolvedMe actor, String correlationId, String summary) {
@@ -7419,9 +7685,22 @@ public final class WorkstreamService {
       case "surface-user-admin-support-access-revoke-confirmation" -> supportAccessRevokeConfirmationSurface(actor, null, correlationId);
       case "surface-user-admin-access-review-task" -> accessReviewBlockedSurface(actor, correlationId);
       case "surface-user-admin-identity-exception-review" -> identityExceptionReviewSurface(actor, null, correlationId);
+      case "surface-agent-admin-blank" -> agentAdminBlankSurface(actor, correlationId);
       case "surface-agent-admin-dashboard" -> agentAdminDashboardSurface(actor, correlationId);
-      case "surface-agent-admin-catalog" -> agentAdminCatalogSurface(actor, correlationId);
-      case "surface-agent-admin-detail" -> agentAdminDetailSurface(actor, correlationId);
+      case "surface-agent-admin-agent-list" -> agentAdminAgentListSurface(actor, correlationId);
+      case "surface-agent-admin-agent-detail" -> agentAdminAgentDetailSurface(actor, null, correlationId);
+      case "surface-agent-admin-prompt-doc" -> agentAdminDocumentSurface(actor, mapOf("kind", "PROMPT"), correlationId);
+      case "surface-agent-admin-skill-doc" -> agentAdminDocumentSurface(actor, mapOf("kind", "SKILL"), correlationId);
+      case "surface-agent-admin-skill-reference-doc" -> agentAdminDocumentSurface(actor, mapOf("kind", "REFERENCE"), correlationId);
+      case "surface-agent-admin-version-history" -> agentAdminVersionHistorySurface(actor, mapOf("kind", "PROMPT"), correlationId);
+      case "surface-agent-admin-version-diff" -> agentAdminVersionDiffSurface(actor, mapOf("kind", "PROMPT", "version", 1), correlationId);
+      case "surface-agent-admin-create-skill" -> agentAdminCreateSkillSurface(actor, null, correlationId);
+      case "surface-agent-admin-delete-skill-confirmation" -> agentAdminDeleteSkillSurface(actor, null, correlationId);
+      case "surface-agent-admin-create-reference-doc" -> agentAdminCreateReferenceDocSurface(actor, null, correlationId);
+      case "surface-agent-admin-delete-reference-doc-confirmation" -> agentAdminDeleteReferenceDocSurface(actor, null, correlationId);
+      case "surface-agent-admin-runtime-traces" -> agentAdminRuntimeTracesSurface(actor, null, correlationId);
+      case "surface-agent-admin-catalog" -> agentAdminAgentListSurface(actor, correlationId);
+      case "surface-agent-admin-detail" -> agentAdminAgentDetailSurface(actor, null, correlationId);
       case "surface-agent-prompt-governance" -> agentPromptGovernanceSurface(actor, correlationId);
       case "surface-agent-skill-version" -> agentSkillVersionSurface(actor, correlationId);
       case "surface-agent-skill-manifest-diff" -> agentSkillManifestSurface(actor, correlationId);
@@ -7468,13 +7747,33 @@ public final class WorkstreamService {
     var summaries = attentionService.listRailSummaries(actor, correlationId).stream()
         .collect(Collectors.toMap(AttentionService.WorkstreamAttentionSummary::workstreamId, summary -> summary, (left, right) -> left, LinkedHashMap::new));
     return agents.stream().map(agent -> {
-      var summary = summaries.get(agent.functionalAgentId());
-      if (summary == null || summary.attentionCount() <= 0) return agent.withAttention(null);
-      return agent.withAttention(new MeResponse.FunctionalAgentSummary.FunctionalAgentAttention(
+      var current = agent;
+      if (AGENT_ADMIN_AGENT_ID.equals(agent.functionalAgentId()) && !isSaasOwnerAdmin(actor)) {
+        current = new MeResponse.FunctionalAgentSummary(
+            agent.functionalAgentId(),
+            agent.label(),
+            "AI-assisted prompt, skill, and reference-doc editing for SaaS Owner/Admin users only.",
+            agent.icon(),
+            agent.workstreamIcon(),
+            agent.defaultSurfaceType(),
+            agent.defaultSurfaceId(),
+            agent.requiredCapabilityIds(),
+            null,
+            "denied",
+            "Agent Admin requires a SaaS Owner/Admin AuthContext.");
+      }
+      var summary = summaries.get(current.functionalAgentId());
+      if (summary == null || summary.attentionCount() <= 0 || !"visible".equals(current.availability())) return current.withAttention(null);
+      return current.withAttention(new MeResponse.FunctionalAgentSummary.FunctionalAgentAttention(
           summary.attentionCount(),
           summary.highestSeverity().name().toLowerCase(Locale.ROOT),
           AttentionService.LIST_RAIL_SUMMARIES_TOOL));
     }).toList();
+  }
+
+  private boolean isSaasOwnerAdmin(AuthContextResolver.ResolvedMe actor) {
+    return actor.selectedContext().scopeType() == ScopeType.SAAS_OWNER
+        && actor.selectedContext().roles().contains(FoundationRole.SAAS_OWNER_ADMIN);
   }
 
   private void seedStarterCoreAttention(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -7570,7 +7869,7 @@ public final class WorkstreamService {
     if (List.of("show saas owner admins", "open saas owner admins", "show app admins", "open app admins", "saas owner admins", "app admins").contains(text)) return new ShellSurfaceAlias(USER_ADMIN_AGENT_ID, "surface-user-admin-saas-owner-admins", "show saas owner admins");
     if (List.of("show organizations", "open organizations", "show organization directory", "open organization directory", "organizations").contains(text)) return new ShellSurfaceAlias(USER_ADMIN_AGENT_ID, "surface-user-admin-organization-directory", "show organizations");
     if (List.of("show customers", "open customers", "show customer directory", "open customer directory", "customers").contains(text)) return new ShellSurfaceAlias(USER_ADMIN_AGENT_ID, "surface-user-admin-customer-directory", "show customers");
-    if (List.of("show agent catalog", "open agent catalog", "show agents", "open agents", "agent catalog").contains(text)) return new ShellSurfaceAlias(AGENT_ADMIN_AGENT_ID, "surface-agent-admin-catalog", "show agent catalog");
+    if (List.of("show agent catalog", "open agent catalog", "show agents", "open agents", "agent catalog", "list agents", "show agent list").contains(text)) return new ShellSurfaceAlias(AGENT_ADMIN_AGENT_ID, "surface-agent-admin-agent-list", "show agents");
     if (List.of("show audit timeline", "open audit timeline", "show trace timeline", "open trace timeline", "audit timeline").contains(text)) return new ShellSurfaceAlias(AUDIT_TRACE_AGENT_ID, "surface-audit-trace-timeline", "show audit timeline");
     if (List.of("show audit search", "open audit search", "show traces", "open traces", "show audit traces", "open audit traces").contains(text)) return new ShellSurfaceAlias(AUDIT_TRACE_AGENT_ID, "surface-audit-trace-search", "show audit traces");
     if (List.of("show governance policies", "open governance policies", "show policies", "open policies", "governance policies", "policies").contains(text)) return new ShellSurfaceAlias(GOVERNANCE_POLICY_AGENT_ID, "surface-governance-policy-inventory", "show governance policies");
@@ -7829,7 +8128,23 @@ public final class WorkstreamService {
       case "action-accept-my-account-personal-attention-digest" -> personalAttentionDigestEmptyProgressSurface(actor, correlationId);
       case "action-reject-my-account-personal-attention-digest" -> personalAttentionDigestEmptyProgressSurface(actor, correlationId);
       case "action-open-user-admin", "action-user-admin-return-dashboard" -> dashboardSurface(actor, correlationId);
-      case "action-open-agent-admin", "action-display-agent-admin-dashboard", "action-agent-admin-refresh-dashboard" -> agentAdminDashboardSurface(actor, correlationId);
+      case "action-open-agent-admin", "action-display-agent-admin-dashboard", "action-agent-admin-refresh-dashboard", "action-agent-admin-show-dashboard" -> agentAdminDashboardSurface(actor, correlationId);
+      case "action-agent-admin-show-blank" -> agentAdminBlankSurface(actor, correlationId);
+      case "action-agent-admin-show-agents", "action-agent-admin-list-agents" -> agentAdminAgentListSurface(actor, correlationId);
+      case "action-agent-admin-open-agent-detail", "action-agent-admin-save-agent-profile" -> agentAdminAgentDetailSurface(actor, null, correlationId);
+      case "action-agent-admin-open-prompt-doc" -> agentAdminDocumentSurface(actor, mapOf("kind", "PROMPT"), correlationId);
+      case "action-agent-admin-open-skill-doc" -> agentAdminDocumentSurface(actor, mapOf("kind", "SKILL"), correlationId);
+      case "action-agent-admin-open-reference-doc" -> agentAdminDocumentSurface(actor, mapOf("kind", "REFERENCE"), correlationId);
+      case "action-agent-doc-edit-start", "action-agent-doc-edit-revise", "action-agent-doc-edit-cancel" -> agentAdminBlankSurface(actor, correlationId);
+      case "action-agent-doc-version-history" -> agentAdminVersionHistorySurface(actor, mapOf("kind", "PROMPT"), correlationId);
+      case "action-agent-doc-version-diff" -> agentAdminVersionDiffSurface(actor, mapOf("kind", "PROMPT", "version", 1), correlationId);
+      case "action-agent-doc-version-restore", "action-agent-doc-edit-save" -> agentAdminDocumentSurface(actor, mapOf("kind", "PROMPT"), correlationId);
+      case "action-agent-admin-open-create-skill" -> agentAdminCreateSkillSurface(actor, null, correlationId);
+      case "action-agent-admin-open-delete-skill" -> agentAdminDeleteSkillSurface(actor, null, correlationId);
+      case "action-agent-admin-open-create-reference-doc" -> agentAdminCreateReferenceDocSurface(actor, null, correlationId);
+      case "action-agent-admin-open-delete-reference-doc" -> agentAdminDeleteReferenceDocSurface(actor, null, correlationId);
+      case "action-agent-admin-create-skill", "action-agent-admin-delete-skill", "action-agent-admin-create-reference-doc", "action-agent-admin-delete-reference-doc" -> agentAdminAgentDetailSurface(actor, null, correlationId);
+      case "action-agent-admin-open-runtime-traces" -> agentAdminRuntimeTracesSurface(actor, null, correlationId);
       case "action-open-governance-policy", "action-governance-policy-dashboard" -> governancePolicySurface(actor, correlationId);
       case "action-governance-policy-list" -> governancePolicyInventorySurface(actor, correlationId);
       case "action-governance-policy-read" -> governancePolicyDetailSurface(actor, null, correlationId);
@@ -7914,7 +8229,7 @@ public final class WorkstreamService {
   }
 
   private SurfaceAction actionById(String actionId) {
-    return List.of(showDashboardAction(), showNotificationCenterAction(), markNotificationReadAction(), dismissNotificationAction(), archiveNotificationAction(), snoozeNotificationAction(), updateNotificationPreferencesAction(), showProfileAction(), showSettingsAction(), showContextAction(), selectContextAction(), updateProfileAction(), updateSettingsAction(), signOutAction(), startPersonalAttentionDigestAction(), readPersonalAttentionDigestAction(), cancelPersonalAttentionDigestAction(), acceptPersonalAttentionDigestAction(), rejectPersonalAttentionDigestAction(), openUserAdminAction(), userAdminReturnDashboardAction(), openAgentAdminAction(), openGovernancePolicyAction(), showSaasOwnerAdminsAction(), openSaasOwnerAdminInvitationCreateAction(), submitSaasOwnerAdminInvitationAction(), displayOrganizationAdminAction(), showOrganizationsAction(), openOrganizationCreateAction(), openOrganizationRenameAction(), openOrganizationSuspendAction(), openOrganizationArchiveAction(), openOrganizationReactivateAction(), organizationListAction(), organizationReadAction(), submitOrganizationCreateAction(), organizationCreateAction(), submitOrganizationRenameAction(), organizationRenameAction(), organizationSuspendAction(), organizationArchiveAction(), organizationReactivateAction(), showOrganizationAdminsAction(), openOrganizationAdminDetailAction(), openOrganizationAdminInvitationDetailAction(), openOrganizationAdminInvitationCreateAction(), organizationAdminInviteAction(), showCustomersAction(), customerReadAction(), openCustomerCreateAction(), openCustomerRenameAction(), openCustomerSuspendAction(), openCustomerArchiveAction(), openCustomerReactivateAction(), submitCustomerCreateAction(), submitCustomerRenameAction(), customerSuspendAction(), customerArchiveAction(), customerReactivateAction(), showCustomerAdminsAction(), openCustomerAdminDetailAction(), openCustomerAdminInvitationDetailAction(), openCustomerAdminInvitationCreateAction(), customerAdminInviteAction(), displayListAction(), showUsersAction(), displayDetailAction(), displayInvitationDetailAction(), openInvitationCreateAction(), openUserAdminInvitationCreateAction(), openInvitationResendConfirmationAction(), openInvitationRevokeConfirmationAction(), openUserAdminInvitationRevokeConfirmationAction(), openMembershipStatusConfirmationAction(), openUserAdminMembershipStatusConfirmationAction(), confirmMembershipStatusChangeAction(), openSupportAccessGrantAction(), openUserAdminSupportAccessGrantAction(), openSupportAccessRevokeConfirmationAction(), openUserAdminSupportAccessRevokeConfirmationAction(), openIdentityExceptionReviewAction(), requestIdentityRelinkAction(), readIdentityRelinkAction(), approveIdentityRelinkAction(), denyIdentityRelinkAction(), completeIdentityRelinkAction(), inviteAction(), resendInvitationAction(), revokeInvitationAction(), confirmUserAdminInvitationRevokeAction(), updateMemberStatusAction(), reactivateMemberStatusAction(), permanentlyRemoveUserAction(), disableAccountAction(), reactivateAccountAction(), readSupportAccessAction(), validateSupportAccessGrantAction(), submitSupportAccessGrantAction(), grantSupportAccessAction(), revokeSupportAccessAction(), confirmUserAdminSupportAccessRevokeAction(), extendSupportAccessAction(), previewRoleChangeAction(), openUserAdminRoleChangePreviewAction(), reviseUserAdminRoleChangeAction(), commitUserAdminRoleChangeAction(), changeMemberRolesAction(), startAccessReviewAction(), readAccessReviewAction(), cancelAccessReviewAction(), acceptAccessReviewResultAction(), rejectAccessReviewResultAction(), deniedReplaceRoleAction(), submitUserAdminInvitationAction(), traceAction(), openAuditAction(), auditTraceDashboardAction(), auditTraceSearchAction(), auditTraceDetailAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction(), auditTraceExportRequestAction(), auditTraceAppendInvestigationNoteAction(), auditTraceSummaryTaskBlockedAction(), auditTraceSummaryTaskReadAction(), auditTraceSummaryReviewAction(), auditTraceSummaryAcceptAction(), auditTraceSummaryRejectAction(), governanceDashboardAction(), governanceListPoliciesAction(), governanceReadPolicyAction(), governanceDraftProposalAction(), governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), governanceRollbackPolicyAction(), governanceOutcomeNoteAction(), governanceStartImpactAnalysisAction(), governanceReadImpactAnalysisAction(), governanceCancelImpactAnalysisAction(), governanceAcceptImpactResultAction(), governanceRejectImpactResultAction(), governanceRequestImpactChangesAction(), agentAdminRefreshDashboardAction(), agentAdminOpenCatalogAction(), agentAdminRefreshCatalogAction(), agentAdminSearchCatalogAction(), agentAdminResetCatalogFiltersAction(), agentAdminCatalogOpenTraceAction(), agentAdminOpenBehaviorProposalsAction(), agentAdminOpenPromptRiskReviewAction(), agentAdminOpenSeedMaterialAction(), agentAdminOpenManifestDriftAction(), agentAdminOpenToolBoundaryAction(), agentAdminOpenModelRefsAction(), agentAdminOpenTraceAction(), displayAgentAdminDashboardAction(), displayAgentCatalogAction(), openAgentDetailAction(), agentDetailRefreshAction(), agentDetailOpenPromptGovernanceAction(), agentDetailOpenSkillManifestAction(), agentDetailOpenToolBoundaryAction(), agentDetailOpenModelRefsAction(), agentDetailRunTestAction(), agentDetailOpenPromptRiskReviewAction(), agentDetailOpenActivationAction(), agentDetailOpenDeactivationAction(), agentDetailOpenRollbackAction(), agentDetailOpenTraceAction(), agentDetailBackToCatalogAction(), activateAgentDefinitionAction(), agentActivationRefreshAction(), agentActivationConfirmAction(), agentActivationCancelAction(), agentActivationOpenProposalAction(), agentActivationOpenTraceAction(), deactivateAgentDefinitionAction(), agentDeactivationRefreshAction(), agentDeactivationConfirmAction(false), agentDeactivationCancelAction(), agentDeactivationOpenProposalAction(), agentDeactivationOpenTraceAction(), agentRollbackRefreshAction(), agentRollbackConfirmAction(false), agentRollbackCancelAction(), agentRollbackOpenProposalAction(), agentRollbackOpenTraceAction(), importAgentSeedDefaultsAction(), agentSeedMaterialRefreshAction(), agentSeedMaterialSearchAction(), agentSeedMaterialResetFiltersAction(), agentSeedMaterialOpenProvenanceAction(), agentSeedMaterialPrepareImportAction(), agentSeedMaterialStartImportAction(), agentSeedMaterialCancelImportAction(), agentSeedMaterialOpenAgentDetailAction(), agentSeedMaterialOpenTraceAction(), agentSeedMaterialBackToSourceAction(), proposePromptDiffAction(), testPromptAction(), agentTestConsoleRefreshAction(), agentTestConsoleRunAction(), agentTestConsoleReadResultAction(), agentTestConsoleOpenProposalAction(false), agentTestConsoleOpenTraceAction(), agentTestConsoleBackToDetailAction(), agentPromptGovernanceRefreshAction(), agentPromptGovernanceSimulateAction(), agentPromptGovernanceSubmitReviewAction(), agentPromptGovernanceApproveAction(), agentPromptGovernanceRejectAction(), agentPromptGovernanceOpenRiskReviewAction(), agentPromptGovernanceOpenTraceAction(), agentPromptGovernanceBackToDetailAction(), agentSkillManifestRefreshAction(), agentSkillManifestSimulateAction(), agentSkillManifestSubmitReviewAction(), agentSkillManifestApproveAction(), agentSkillManifestRejectAction(), agentSkillManifestOpenToolBoundaryAction(), agentSkillManifestOpenModelRefsAction(), agentSkillManifestOpenTraceAction(), agentSkillManifestBackToDetailAction(), agentToolBoundaryRefreshAction(), agentToolBoundarySimulateAction(), agentToolBoundarySubmitReviewAction(), agentToolBoundaryApproveAction(), agentToolBoundaryRejectAction(), agentToolBoundaryOpenModelRefsAction(), agentToolBoundaryOpenTraceAction(), agentToolBoundaryBackToDetailAction(), agentModelRefsRefreshAction(), agentModelRefsRunTestAction(true), agentModelRefsSubmitReviewAction(), agentModelRefsApproveAction(), agentModelRefsRejectAction(), agentModelRefsOpenPromptGovernanceAction(), agentModelRefsOpenToolBoundaryAction(), agentModelRefsOpenTraceAction(), agentModelRefsBackToDetailAction(), agentBehaviorProposalRefreshAction(), agentBehaviorProposalSubmitAction(false), agentBehaviorProposalApproveAction(false), agentBehaviorProposalRejectAction(false), agentBehaviorProposalDeferAction(false), agentBehaviorProposalCancelAction(false), agentBehaviorProposalOpenActivationAction(false), agentBehaviorProposalOpenRollbackAction(false), agentBehaviorProposalOpenSourceAction(), agentBehaviorProposalOpenTraceAction(), approveSkillManifestAction(), submitBehaviorChangeAction(), rejectBehaviorChangeAction(), activateBehaviorChangeAction(), cancelBehaviorChangeAction(), rollbackBehaviorChangeAction(), simulateToolBoundaryAction(), manageModelRefAction(), listAgentSeedMaterialAction(), startPromptRiskReviewAction(), readPromptRiskReviewAction(), cancelPromptRiskReviewAction(), acceptPromptRiskReviewAction(), rejectPromptRiskReviewAction(), promptRiskReviewOpenSourceAction(), promptRiskReviewOpenTraceAction(), agentAdminTraceRefreshAction(), agentAdminTraceDrillDownAction(), agentAdminTraceExportAction(), agentAdminTraceEscalateAction(), agentAdminTraceBackToSourceAction(), legacyPromptRiskReviewAction("action-agentadmin-start-prompt-risk-review", startPromptRiskReviewAction()), legacyPromptRiskReviewAction("action-agentadmin-read-prompt-risk-review", readPromptRiskReviewAction()), legacyPromptRiskReviewAction("action-agentadmin-cancel-prompt-risk-review", cancelPromptRiskReviewAction()), legacyPromptRiskReviewAction("action-agentadmin-accept-prompt-risk-review-result", acceptPromptRiskReviewAction()), legacyPromptRiskReviewAction("action-agentadmin-reject-prompt-risk-review-result", rejectPromptRiskReviewAction()), openAgentTraceAction()).stream().filter(action -> actionId.equals(action.actionId())).findFirst().orElse(null);
+    return List.of(showDashboardAction(), showNotificationCenterAction(), markNotificationReadAction(), dismissNotificationAction(), archiveNotificationAction(), snoozeNotificationAction(), updateNotificationPreferencesAction(), showProfileAction(), showSettingsAction(), showContextAction(), selectContextAction(), updateProfileAction(), updateSettingsAction(), signOutAction(), startPersonalAttentionDigestAction(), readPersonalAttentionDigestAction(), cancelPersonalAttentionDigestAction(), acceptPersonalAttentionDigestAction(), rejectPersonalAttentionDigestAction(), openUserAdminAction(), userAdminReturnDashboardAction(), openAgentAdminAction(), openGovernancePolicyAction(), showSaasOwnerAdminsAction(), openSaasOwnerAdminInvitationCreateAction(), submitSaasOwnerAdminInvitationAction(), displayOrganizationAdminAction(), showOrganizationsAction(), openOrganizationCreateAction(), openOrganizationRenameAction(), openOrganizationSuspendAction(), openOrganizationArchiveAction(), openOrganizationReactivateAction(), organizationListAction(), organizationReadAction(), submitOrganizationCreateAction(), organizationCreateAction(), submitOrganizationRenameAction(), organizationRenameAction(), organizationSuspendAction(), organizationArchiveAction(), organizationReactivateAction(), showOrganizationAdminsAction(), openOrganizationAdminDetailAction(), openOrganizationAdminInvitationDetailAction(), openOrganizationAdminInvitationCreateAction(), organizationAdminInviteAction(), showCustomersAction(), customerReadAction(), openCustomerCreateAction(), openCustomerRenameAction(), openCustomerSuspendAction(), openCustomerArchiveAction(), openCustomerReactivateAction(), submitCustomerCreateAction(), submitCustomerRenameAction(), customerSuspendAction(), customerArchiveAction(), customerReactivateAction(), showCustomerAdminsAction(), openCustomerAdminDetailAction(), openCustomerAdminInvitationDetailAction(), openCustomerAdminInvitationCreateAction(), customerAdminInviteAction(), displayListAction(), showUsersAction(), displayDetailAction(), displayInvitationDetailAction(), openInvitationCreateAction(), openUserAdminInvitationCreateAction(), openInvitationResendConfirmationAction(), openInvitationRevokeConfirmationAction(), openUserAdminInvitationRevokeConfirmationAction(), openMembershipStatusConfirmationAction(), openUserAdminMembershipStatusConfirmationAction(), confirmMembershipStatusChangeAction(), openSupportAccessGrantAction(), openUserAdminSupportAccessGrantAction(), openSupportAccessRevokeConfirmationAction(), openUserAdminSupportAccessRevokeConfirmationAction(), openIdentityExceptionReviewAction(), requestIdentityRelinkAction(), readIdentityRelinkAction(), approveIdentityRelinkAction(), denyIdentityRelinkAction(), completeIdentityRelinkAction(), inviteAction(), resendInvitationAction(), revokeInvitationAction(), confirmUserAdminInvitationRevokeAction(), updateMemberStatusAction(), reactivateMemberStatusAction(), permanentlyRemoveUserAction(), disableAccountAction(), reactivateAccountAction(), readSupportAccessAction(), validateSupportAccessGrantAction(), submitSupportAccessGrantAction(), grantSupportAccessAction(), revokeSupportAccessAction(), confirmUserAdminSupportAccessRevokeAction(), extendSupportAccessAction(), previewRoleChangeAction(), openUserAdminRoleChangePreviewAction(), reviseUserAdminRoleChangeAction(), commitUserAdminRoleChangeAction(), changeMemberRolesAction(), startAccessReviewAction(), readAccessReviewAction(), cancelAccessReviewAction(), acceptAccessReviewResultAction(), rejectAccessReviewResultAction(), deniedReplaceRoleAction(), submitUserAdminInvitationAction(), traceAction(), openAuditAction(), auditTraceDashboardAction(), auditTraceSearchAction(), auditTraceDetailAction(), auditTraceTimelineAction(), auditTraceFailureEvidenceAction(), auditTraceInvestigationGuideAction(), auditTraceExportRequestAction(), auditTraceAppendInvestigationNoteAction(), auditTraceSummaryTaskBlockedAction(), auditTraceSummaryTaskReadAction(), auditTraceSummaryReviewAction(), auditTraceSummaryAcceptAction(), auditTraceSummaryRejectAction(), governanceDashboardAction(), governanceListPoliciesAction(), governanceReadPolicyAction(), governanceDraftProposalAction(), governanceSubmitProposalAction(), governanceSimulateProposalAction(), governanceDecideProposalAction(), governanceActivateProposalAction(), governanceRollbackPolicyAction(), governanceOutcomeNoteAction(), governanceStartImpactAnalysisAction(), governanceReadImpactAnalysisAction(), governanceCancelImpactAnalysisAction(), governanceAcceptImpactResultAction(), governanceRejectImpactResultAction(), governanceRequestImpactChangesAction(), agentAdminShowBlankAction(), agentAdminShowDashboardAction(), agentAdminShowAgentsAction(), agentAdminListAgentsAction(), agentAdminOpenAgentDetailDocAction(), agentAdminSaveAgentProfileAction(), agentAdminOpenPromptDocAction(), agentAdminOpenSkillDocAction(), agentAdminOpenReferenceDocAction(), agentAdminDocEditStartAction(), agentAdminDocEditReviseAction(), agentAdminDocEditSaveAction(), agentAdminDocEditCancelAction(), agentAdminVersionHistoryAction(), agentAdminVersionDiffAction(), agentAdminRestoreVersionAction(), agentAdminOpenCreateSkillAction(), agentAdminCreateSkillAction(), agentAdminOpenDeleteSkillAction(), agentAdminDeleteSkillAction(), agentAdminOpenCreateReferenceDocAction(), agentAdminCreateReferenceDocAction(), agentAdminOpenDeleteReferenceDocAction(), agentAdminDeleteReferenceDocAction(), agentAdminOpenRuntimeTracesAction(), agentAdminRefreshDashboardAction(), agentAdminOpenCatalogAction(), agentAdminRefreshCatalogAction(), agentAdminSearchCatalogAction(), agentAdminResetCatalogFiltersAction(), agentAdminCatalogOpenTraceAction(), agentAdminOpenBehaviorProposalsAction(), agentAdminOpenPromptRiskReviewAction(), agentAdminOpenSeedMaterialAction(), agentAdminOpenManifestDriftAction(), agentAdminOpenToolBoundaryAction(), agentAdminOpenModelRefsAction(), agentAdminOpenTraceAction(), displayAgentAdminDashboardAction(), displayAgentCatalogAction(), openAgentDetailAction(), agentDetailRefreshAction(), agentDetailOpenPromptGovernanceAction(), agentDetailOpenSkillManifestAction(), agentDetailOpenToolBoundaryAction(), agentDetailOpenModelRefsAction(), agentDetailRunTestAction(), agentDetailOpenPromptRiskReviewAction(), agentDetailOpenActivationAction(), agentDetailOpenDeactivationAction(), agentDetailOpenRollbackAction(), agentDetailOpenTraceAction(), agentDetailBackToCatalogAction(), activateAgentDefinitionAction(), agentActivationRefreshAction(), agentActivationConfirmAction(), agentActivationCancelAction(), agentActivationOpenProposalAction(), agentActivationOpenTraceAction(), deactivateAgentDefinitionAction(), agentDeactivationRefreshAction(), agentDeactivationConfirmAction(false), agentDeactivationCancelAction(), agentDeactivationOpenProposalAction(), agentDeactivationOpenTraceAction(), agentRollbackRefreshAction(), agentRollbackConfirmAction(false), agentRollbackCancelAction(), agentRollbackOpenProposalAction(), agentRollbackOpenTraceAction(), importAgentSeedDefaultsAction(), agentSeedMaterialRefreshAction(), agentSeedMaterialSearchAction(), agentSeedMaterialResetFiltersAction(), agentSeedMaterialOpenProvenanceAction(), agentSeedMaterialPrepareImportAction(), agentSeedMaterialStartImportAction(), agentSeedMaterialCancelImportAction(), agentSeedMaterialOpenAgentDetailAction(), agentSeedMaterialOpenTraceAction(), agentSeedMaterialBackToSourceAction(), proposePromptDiffAction(), testPromptAction(), agentTestConsoleRefreshAction(), agentTestConsoleRunAction(), agentTestConsoleReadResultAction(), agentTestConsoleOpenProposalAction(false), agentTestConsoleOpenTraceAction(), agentTestConsoleBackToDetailAction(), agentPromptGovernanceRefreshAction(), agentPromptGovernanceSimulateAction(), agentPromptGovernanceSubmitReviewAction(), agentPromptGovernanceApproveAction(), agentPromptGovernanceRejectAction(), agentPromptGovernanceOpenRiskReviewAction(), agentPromptGovernanceOpenTraceAction(), agentPromptGovernanceBackToDetailAction(), agentSkillManifestRefreshAction(), agentSkillManifestSimulateAction(), agentSkillManifestSubmitReviewAction(), agentSkillManifestApproveAction(), agentSkillManifestRejectAction(), agentSkillManifestOpenToolBoundaryAction(), agentSkillManifestOpenModelRefsAction(), agentSkillManifestOpenTraceAction(), agentSkillManifestBackToDetailAction(), agentToolBoundaryRefreshAction(), agentToolBoundarySimulateAction(), agentToolBoundarySubmitReviewAction(), agentToolBoundaryApproveAction(), agentToolBoundaryRejectAction(), agentToolBoundaryOpenModelRefsAction(), agentToolBoundaryOpenTraceAction(), agentToolBoundaryBackToDetailAction(), agentModelRefsRefreshAction(), agentModelRefsRunTestAction(true), agentModelRefsSubmitReviewAction(), agentModelRefsApproveAction(), agentModelRefsRejectAction(), agentModelRefsOpenPromptGovernanceAction(), agentModelRefsOpenToolBoundaryAction(), agentModelRefsOpenTraceAction(), agentModelRefsBackToDetailAction(), agentBehaviorProposalRefreshAction(), agentBehaviorProposalSubmitAction(false), agentBehaviorProposalApproveAction(false), agentBehaviorProposalRejectAction(false), agentBehaviorProposalDeferAction(false), agentBehaviorProposalCancelAction(false), agentBehaviorProposalOpenActivationAction(false), agentBehaviorProposalOpenRollbackAction(false), agentBehaviorProposalOpenSourceAction(), agentBehaviorProposalOpenTraceAction(), approveSkillManifestAction(), submitBehaviorChangeAction(), rejectBehaviorChangeAction(), activateBehaviorChangeAction(), cancelBehaviorChangeAction(), rollbackBehaviorChangeAction(), simulateToolBoundaryAction(), manageModelRefAction(), listAgentSeedMaterialAction(), startPromptRiskReviewAction(), readPromptRiskReviewAction(), cancelPromptRiskReviewAction(), acceptPromptRiskReviewAction(), rejectPromptRiskReviewAction(), promptRiskReviewOpenSourceAction(), promptRiskReviewOpenTraceAction(), agentAdminTraceRefreshAction(), agentAdminTraceDrillDownAction(), agentAdminTraceExportAction(), agentAdminTraceEscalateAction(), agentAdminTraceBackToSourceAction(), legacyPromptRiskReviewAction("action-agentadmin-start-prompt-risk-review", startPromptRiskReviewAction()), legacyPromptRiskReviewAction("action-agentadmin-read-prompt-risk-review", readPromptRiskReviewAction()), legacyPromptRiskReviewAction("action-agentadmin-cancel-prompt-risk-review", cancelPromptRiskReviewAction()), legacyPromptRiskReviewAction("action-agentadmin-accept-prompt-risk-review-result", acceptPromptRiskReviewAction()), legacyPromptRiskReviewAction("action-agentadmin-reject-prompt-risk-review-result", rejectPromptRiskReviewAction()), openAgentTraceAction()).stream().filter(action -> actionId.equals(action.actionId())).findFirst().orElse(null);
   }
 
   private SurfaceEnvelope envelope(String id, String type, String title, AuthContextResolver.ResolvedMe actor, String correlationId, Map<String, Object> data, List<SurfaceAction> actions) {
@@ -8209,6 +8524,32 @@ public final class WorkstreamService {
     return true;
   }
 
+  private SurfaceAction agentAdminShowBlankAction() { return new SurfaceAction("action-agent-admin-show-blank", "Clear workstream", "surface-request", browserToolId("action-agent-admin-show-blank"), "list-agent-doc-agents", AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY, null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-blank", "inline"), new Audit("AgentAdminBlankDisplayed", true)); }
+  private SurfaceAction agentAdminShowDashboardAction() { return new SurfaceAction("action-agent-admin-show-dashboard", "Show dashboard", "read", browserToolId("action-agent-admin-show-dashboard"), "list-agent-doc-agents", AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY, null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-dashboard", "inline"), new Audit("AgentAdminDashboardDisplayed", true)); }
+  private SurfaceAction agentAdminShowAgentsAction() { return new SurfaceAction("action-agent-admin-show-agents", "Show agents", "read", browserToolId("action-agent-admin-show-agents"), "list-agent-doc-agents", AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY, "schema.agent-admin.agent-list.filter.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-agent-list", "inline"), new Audit("AgentAdminAgentListDisplayed", true)); }
+  private SurfaceAction agentAdminListAgentsAction() { return new SurfaceAction("action-agent-admin-list-agents", "Refresh agent list", "read", browserToolId("action-agent-admin-list-agents"), "list-agent-doc-agents", AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY, "schema.agent-admin.agent-list.filter.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-agent-list", "inline"), new Audit("AgentAdminAgentListDisplayed", true)); }
+  private SurfaceAction agentAdminOpenAgentDetailDocAction() { return new SurfaceAction("action-agent-admin-open-agent-detail", "Open agent", "read", browserToolId("action-agent-admin-open-agent-detail"), "read-agent-doc-agent", AGENT_ADMIN_GET_DEFINITION_CAPABILITY, "schema.agent-admin.agent-detail.open.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-agent-detail", "inline"), new Audit("AgentAdminAgentDetailDisplayed", true)); }
+  private SurfaceAction agentAdminSaveAgentProfileAction() { return new SurfaceAction("action-agent-admin-save-agent-profile", "Save agent name/purpose", "command", browserToolId("action-agent-admin-save-agent-profile"), "update-agent-name-purpose", SAAS_OWNER_ADMIN_MANAGE_CAPABILITY, "schema.agent-admin.agent-profile.update.v1", true, false, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-agent-admin-agent-detail", "inline"), new Audit("AgentAdminAgentProfileUpdated", true)); }
+  private SurfaceAction agentAdminOpenPromptDocAction() { return new SurfaceAction("action-agent-admin-open-prompt-doc", "Open prompt doc", "read", browserToolId("action-agent-admin-open-prompt-doc"), "read-agent-prompt-doc", AGENT_ADMIN_GET_PROMPT_VERSION_CAPABILITY, "schema.agent-admin.doc.read.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-prompt-doc", "inline"), new Audit("AgentAdminPromptDocRead", true)); }
+  private SurfaceAction agentAdminOpenSkillDocAction() { return new SurfaceAction("action-agent-admin-open-skill-doc", "Open skill doc", "read", browserToolId("action-agent-admin-open-skill-doc"), "read-agent-skill-doc", AGENT_ADMIN_GET_SKILL_VERSION_CAPABILITY, "schema.agent-admin.doc.read.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-skill-doc", "inline"), new Audit("AgentAdminSkillDocRead", true)); }
+  private SurfaceAction agentAdminOpenReferenceDocAction() { return new SurfaceAction("action-agent-admin-open-reference-doc", "Open reference doc", "read", browserToolId("action-agent-admin-open-reference-doc"), "read-agent-skill-reference-doc", AGENT_ADMIN_GET_REFERENCE_VERSION_CAPABILITY, "schema.agent-admin.doc.read.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-skill-reference-doc", "inline"), new Audit("AgentAdminReferenceDocRead", true)); }
+  private SurfaceAction agentAdminDocEditStartAction() { return new SurfaceAction("action-agent-doc-edit-start", "Improve behavior", "workflow", browserToolId("action-agent-doc-edit-start"), "draft-agent-doc-edit", AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY, "schema.agent-admin.doc-edit.start.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-edit-session", "inline"), new Audit("AgentAdminDocEditStarted", true)); }
+  private SurfaceAction agentAdminDocEditReviseAction() { return new SurfaceAction("action-agent-doc-edit-revise", "Revise proposal", "workflow", browserToolId("action-agent-doc-edit-revise"), "revise-agent-doc-edit", AGENT_ADMIN_DRAFT_BEHAVIOR_CHANGE_CAPABILITY, "schema.agent-admin.doc-edit.revise.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-edit-session", "inline"), new Audit("AgentAdminDocEditRevised", true)); }
+  private SurfaceAction agentAdminDocEditSaveAction() { return new SurfaceAction("action-agent-doc-edit-save", "Save", "command", browserToolId("action-agent-doc-edit-save"), "save-agent-doc-edit", AGENT_ADMIN_ACTIVATE_CAPABILITY, "schema.agent-admin.doc-edit.save.v1", true, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-prompt-doc", "inline"), new Audit("AgentAdminDocEditSaved", true)); }
+  private SurfaceAction agentAdminDocEditCancelAction() { return new SurfaceAction("action-agent-doc-edit-cancel", "Cancel", "command", browserToolId("action-agent-doc-edit-cancel"), "cancel-agent-doc-edit", AGENT_ADMIN_CANCEL_CAPABILITY, "schema.agent-admin.doc-edit.cancel.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-edit-session", "inline"), new Audit("AgentAdminDocEditCancelled", true)); }
+  private SurfaceAction agentAdminVersionHistoryAction() { return new SurfaceAction("action-agent-doc-version-history", "Version history", "read", browserToolId("action-agent-doc-version-history"), "read-agent-doc-version-history", AGENT_ADMIN_GET_PROMPT_VERSION_CAPABILITY, "schema.agent-admin.doc-version.history.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-version-history", "inline"), new Audit("AgentAdminDocVersionHistoryRead", true)); }
+  private SurfaceAction agentAdminVersionDiffAction() { return new SurfaceAction("action-agent-doc-version-diff", "Show diff", "read", browserToolId("action-agent-doc-version-diff"), "read-agent-doc-version-diff", AGENT_ADMIN_GET_PROMPT_VERSION_CAPABILITY, "schema.agent-admin.doc-version.diff.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-version-diff", "inline"), new Audit("AgentAdminDocVersionDiffRead", true)); }
+  private SurfaceAction agentAdminRestoreVersionAction() { return new SurfaceAction("action-agent-doc-version-restore", "Restore this version", "command", browserToolId("action-agent-doc-version-restore"), "restore-agent-doc-version", AGENT_ADMIN_ROLLBACK_CAPABILITY, "schema.agent-admin.doc-version.restore.v1", true, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-prompt-doc", "inline"), new Audit("AgentAdminDocVersionRestored", true)); }
+  private SurfaceAction agentAdminOpenCreateSkillAction() { return new SurfaceAction("action-agent-admin-open-create-skill", "Create skill", "surface-request", browserToolId("action-agent-admin-open-create-skill"), "create-agent-skill", SAAS_OWNER_ADMIN_MANAGE_CAPABILITY, "schema.agent-admin.skill.create.open.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-create-skill", "inline"), new Audit("AgentAdminCreateSkillOpened", true)); }
+  private SurfaceAction agentAdminCreateSkillAction() { return new SurfaceAction("action-agent-admin-create-skill", "Create skill", "command", browserToolId("action-agent-admin-create-skill"), "create-agent-skill", SAAS_OWNER_ADMIN_MANAGE_CAPABILITY, "schema.agent-admin.skill.create.v1", true, false, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-agent-admin-skill-doc", "inline"), new Audit("AgentAdminSkillCreated", true)); }
+  private SurfaceAction agentAdminOpenDeleteSkillAction() { return new SurfaceAction("action-agent-admin-open-delete-skill", "Delete skill", "surface-request", browserToolId("action-agent-admin-open-delete-skill"), "delete-agent-skill", SAAS_OWNER_ADMIN_MANAGE_CAPABILITY, "schema.agent-admin.skill.delete.open.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-delete-skill-confirmation", "inline"), new Audit("AgentAdminDeleteSkillOpened", true)); }
+  private SurfaceAction agentAdminDeleteSkillAction() { return new SurfaceAction("action-agent-admin-delete-skill", "Delete skill permanently", "command", browserToolId("action-agent-admin-delete-skill"), "delete-agent-skill", SAAS_OWNER_ADMIN_MANAGE_CAPABILITY, "schema.agent-admin.skill.delete.v1", true, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-agent-detail", "inline"), new Audit("AgentAdminSkillDeleted", true)); }
+  private SurfaceAction agentAdminOpenCreateReferenceDocAction() { return new SurfaceAction("action-agent-admin-open-create-reference-doc", "Create reference doc", "surface-request", browserToolId("action-agent-admin-open-create-reference-doc"), "create-agent-skill-reference-doc", SAAS_OWNER_ADMIN_MANAGE_CAPABILITY, "schema.agent-admin.reference.create.open.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-create-reference-doc", "inline"), new Audit("AgentAdminCreateReferenceDocOpened", true)); }
+  private SurfaceAction agentAdminCreateReferenceDocAction() { return new SurfaceAction("action-agent-admin-create-reference-doc", "Create reference doc", "command", browserToolId("action-agent-admin-create-reference-doc"), "create-agent-skill-reference-doc", SAAS_OWNER_ADMIN_MANAGE_CAPABILITY, "schema.agent-admin.reference.create.v1", true, false, null, new Idempotency(true, "client-generated"), new ResultSurface(null, "surface-agent-admin-skill-reference-doc", "inline"), new Audit("AgentAdminReferenceDocCreated", true)); }
+  private SurfaceAction agentAdminOpenDeleteReferenceDocAction() { return new SurfaceAction("action-agent-admin-open-delete-reference-doc", "Delete reference doc", "surface-request", browserToolId("action-agent-admin-open-delete-reference-doc"), "delete-agent-skill-reference-doc", SAAS_OWNER_ADMIN_MANAGE_CAPABILITY, "schema.agent-admin.reference.delete.open.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-delete-reference-doc-confirmation", "inline"), new Audit("AgentAdminDeleteReferenceDocOpened", true)); }
+  private SurfaceAction agentAdminDeleteReferenceDocAction() { return new SurfaceAction("action-agent-admin-delete-reference-doc", "Delete reference doc permanently", "command", browserToolId("action-agent-admin-delete-reference-doc"), "delete-agent-skill-reference-doc", SAAS_OWNER_ADMIN_MANAGE_CAPABILITY, "schema.agent-admin.reference.delete.v1", true, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-agent-detail", "inline"), new Audit("AgentAdminReferenceDocDeleted", true)); }
+  private SurfaceAction agentAdminOpenRuntimeTracesAction() { return new SurfaceAction("action-agent-admin-open-runtime-traces", "Runtime reads", "read", browserToolId("action-agent-admin-open-runtime-traces"), "read-agent-doc-runtime-traces", AGENT_ADMIN_GET_DEFINITION_CAPABILITY, "schema.agent-admin.runtime-traces.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-runtime-traces", "inline"), new Audit("AgentAdminRuntimeTracesRead", true)); }
+
   private SurfaceAction agentAdminRefreshDashboardAction() { return new SurfaceAction("action-agent-admin-refresh-dashboard", "Refresh Agent Admin dashboard", "read", browserToolId("action-agent-admin-refresh-dashboard"), governedToolId(AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY), AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY, null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-dashboard", "inline"), new Audit("AgentAdminDashboardDisplayed", true)); }
   private SurfaceAction agentAdminOpenCatalogAction() { return new SurfaceAction("action-agent-admin-open-catalog", "Open managed agent catalog", "read", browserToolId("action-agent-admin-open-catalog"), governedToolId(AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY), AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY, null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-catalog", "inline"), new Audit("AgentCatalogDisplayed", true)); }
   private SurfaceAction agentAdminRefreshCatalogAction() { return new SurfaceAction("action-agent-admin-refresh-catalog", "Refresh managed agent catalog", "read", browserToolId("action-agent-admin-refresh-catalog"), governedToolId(AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY), AGENT_ADMIN_LIST_DEFINITIONS_CAPABILITY, null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-agent-admin-catalog", "inline"), new Audit("AgentCatalogDisplayed", true)); }
@@ -8440,6 +8781,7 @@ public final class WorkstreamService {
   }
   private static boolean booleanInput(Object input, String key, boolean fallback) { if (input instanceof Map<?, ?> map && map.get(key) instanceof Boolean value) return value; return fallback; }
   private static int intInput(Object input, String key, int fallback) { if (input instanceof Map<?, ?> map && map.get(key) instanceof Number value) return value.intValue(); return fallback; }
+  private static Integer optionalIntInput(Object input, String key) { if (input instanceof Map<?, ?> map && map.get(key) instanceof Number value) return value.intValue(); return null; }
   private static List<FoundationRole> rolesInput(Object input) {
     if (input instanceof Map<?, ?> map) {
       if (map.get("roles") instanceof List<?> roles && !roles.isEmpty()) return roles.stream().map(String::valueOf).map(FoundationRole::valueOf).toList();

@@ -59,8 +59,10 @@ public final class AgentAdminDocAdministrationService {
   private final AuthContextResolver authContextResolver;
   private final Clock clock;
   private final AgentAdminDocEditingRuntime editingRuntime;
+  private static final Map<String, EditSessionRecord> SESSIONS = new ConcurrentHashMap<>();
+
   private final AgentRuntimeTraceSink traceSink;
-  private final Map<String, EditSessionRecord> sessions = new ConcurrentHashMap<>();
+  private final Map<String, EditSessionRecord> sessions = SESSIONS;
 
   public AgentAdminDocAdministrationService(AgentBehaviorRepository repository, AuthContextResolver authContextResolver, Clock clock) {
     this(repository, authContextResolver, clock, new FailClosedAgentAdminDocEditingRuntime(), new NoopAgentRuntimeTraceSink());

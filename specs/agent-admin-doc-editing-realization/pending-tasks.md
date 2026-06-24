@@ -160,7 +160,7 @@
 
 ### AADE-03-001: Workstream/API action wiring
 
-- status: pending
+- status: done
 - source: `backlog/03-api-frontend-build-backlog.md`
 - task brief: `specs/agent-admin-doc-editing-realization/tasks/03-api/01-workstream-api-action-wiring.md`
 - depends on: [AADE-02-002]
@@ -187,7 +187,9 @@
   - non-SaaS-admin access is denied
   - stale governance actions are not exposed as current Agent Admin UI actions
   - changes and queue update are committed
-- notes: []
+- notes:
+  - completed in commit message: `Implement Agent Admin workstream action wiring`
+  - next runnable task after completion: `AADE-04-001` (`pending`, depends on `AADE-03-001`)
 
 ### AADE-04-001: Frontend contracts, API types, and fixtures
 
