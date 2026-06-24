@@ -2,24 +2,24 @@
 
 ## Purpose
 
-Allow SaaS Owner/Admin users to improve managed-agent behavior by editing versioned agent documents through an AI-assisted editing flow. Agent docs include each agent's prompt, its skills, and skill reference documents.
+Allow SaaS Owner/Admin users to improve governed managed-agent behavior by editing versioned agent documents through an AI-assisted editing flow. Agent docs include each agent's `PromptDocument`, assigned `SkillDocument` records, skill reference documents, compact `AgentSkillManifest` entries, and related runtime loading traces.
 
 ## Actors and scope
 
-- SaaS Owner/Admin: may view all agents, view full agent docs, create/update/delete skills, create/update/delete skill reference docs, edit agent names and purposes, restore historical doc versions, and inspect Agent Admin audit/read traces.
+- SaaS Owner/Admin: may view all agents through the agent catalog, view full agent docs, create/update/delete skills, create/update/delete skill reference docs, edit agent names and purposes, restore historical doc versions, and inspect Agent Admin audit/read traces.
 - Tenant/organization/customer admins: not Agent Admin operators.
-- Editing agent: interprets authorized SaaS admin edit requests, reads the relevant current doc and related context, drafts proposed Markdown-preserving changes, summarizes risks/warnings, asks clarifying questions when needed, and returns proposed content for human review.
+- `AgentBehaviorEditorAgent` (editing-agent): interprets authorized SaaS admin edit requests, reads the relevant current doc and related context, drafts proposed Markdown-preserving changes, summarizes risks/warnings, asks clarifying questions when needed, and returns proposed content for human review.
 
 Agent Admin applies to all agents in the app, including foundation agents and future business/domain-specific agents. It does not create or delete whole agents.
 
 ## Agent document model
 
-- Every agent has exactly one prompt doc.
-- Every agent may have zero or more skill docs.
-- Every skill may have zero or more reference docs.
+- Each governed managed agent is represented by an `AgentDefinition` plus one current `PromptDocument`/`PromptVersion`.
+- Every agent may have zero or more `SkillDocument`/`SkillVersion` records assigned through its `AgentSkillManifest`.
+- Every skill may have zero or more governed reference docs.
 - Reference docs belong to a specific skill and are shown under that skill.
-- Agent docs support Markdown, and the editing agent must preserve existing Markdown structure unless the user explicitly asks to reorganize it.
-- Agent docs are initially created by the skills pack. SaaS admins may update prompt docs, create/update/delete skills, and create/update/delete skill reference docs.
+- Agent docs support Markdown, and the `AgentBehaviorEditorAgent` must preserve existing Markdown structure unless the user explicitly asks to reorganize it.
+- Agent docs, manifests, and `ToolPermissionBoundary` records are initially created by governed setup from implementation defaults with provenance. SaaS admins may update prompt docs, create/update/delete skills, create/update/delete skill reference docs, and update manifest membership only through Agent Admin authorization checks.
 
 ## Versioning
 
@@ -34,8 +34,8 @@ Agent Admin applies to all agents in the app, including foundation agents and fu
 
 ## Editing flow
 
-1. User opens Agent Admin, optionally opens the dashboard, then shows the agent list.
-2. User filters by agent name or workstream/domain and opens an agent.
+1. User opens Agent Admin, optionally opens the dashboard, then shows the agent catalog/list.
+2. User filters by agent name or workstream/domain and opens an agent detail.
 3. User opens the prompt, a skill, or a skill reference doc.
 4. On the current/latest version, user enters free-form instructions for improving behavior.
 5. The editing agent may ask clarifying questions or propose a safer alternative for unsafe/out-of-scope requests.
@@ -57,13 +57,13 @@ Diff viewing is on demand through a `Show diff` style toggle or action. Users ma
 
 ## Runtime document loading
 
-Each time an agent handles a request, it retrieves the current prompt and appends the list of its skill names/descriptions to the prompt context. The model decides from those descriptions whether to call `readSkill`. Loaded skills include reference doc names/descriptions. All agents have `readSkill` and `readReferenceDoc` tools. Agents only know about skills listed for themselves; there is no discovery path for other agents' skills. Runtime skill/reference reads are audited/traced.
+Each time an agent handles a request, it resolves the active `AgentDefinition`, current `PromptDocument`/`PromptVersion`, compact `AgentSkillManifest`, reference hints, model policy, selected `AuthContext`, and `ToolPermissionBoundary`. The model sees only compact assigned skill names/descriptions until it calls `readSkill(skillId)`. Loaded skills include reference doc names/descriptions so the model can decide whether to call `readReferenceDoc(referenceId)`. Agents only know about skills listed for themselves; there is no discovery path for other agents' skills. Runtime loading emits `PromptAssemblyTrace`, `SkillLoadTrace`, reference-load trace facts, and `AgentWorkTrace`, including safe denials for unauthorized `PromptDocument` access, unassigned skill denial, disabled-agent denial, inactive/deleted docs, and tool-boundary denial.
 
 ## Out of scope
 
 - Tenant/organization/customer-scoped Agent Admin.
 - Creating or deleting whole agents.
 - Model settings administration.
-- Tool permission administration.
+- Tool permission administration beyond viewing/explaining `ToolPermissionBoundary` effects and preserving manifest assignments during skill edits.
 - Lifecycle activation/publish workflows separate from Save.
 - Prompt-risk approval gates as a required save blocker.

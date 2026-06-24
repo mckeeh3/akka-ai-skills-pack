@@ -419,7 +419,7 @@
 
 ### TASK-017: Repair app-description governed-agent verification coverage
 
-- status: pending
+- status: done
 - source: specs/skills-pack-worker-tool-lifecycle-realignment/verification-notes.md
 - task brief: specs/skills-pack-worker-tool-lifecycle-realignment/tasks/017-repair-app-description-governed-agent-verification.md
 - depends on: [TASK-016]
@@ -440,6 +440,7 @@
   - scope: app-description/spec reconciliation; no root runtime code
   - vertical contract: governed runtime agent foundation app-description coverage; no runtime feature
   - runtime evidence: not applicable; documentation/app-description maintenance task
+  - terminal verification result: app-description governed-agent coverage repaired; maintainer script advanced past the TASK-016 blocker and revealed unrelated optional-security wording in `docs/ai-first-saas-application-architecture.md`, recorded in verification notes for TASK-018.
 
 ### TASK-018: Replacement terminal verification after follow-up repair
 
@@ -465,3 +466,4 @@
   - scope: skills-pack maintenance, replacement terminal verification
   - vertical contract: cross-cutting pack verification; no runtime feature
   - runtime evidence: not applicable; pack-maintenance task
+  - known input from TASK-017: maintainer script now fails later on forbidden optional-security wording in `docs/ai-first-saas-application-architecture.md:255`; see verification notes.

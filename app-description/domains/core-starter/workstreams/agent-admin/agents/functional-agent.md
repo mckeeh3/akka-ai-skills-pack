@@ -6,19 +6,19 @@ Global definition: `../../../../../global/agents/foundation-functional-agents.md
 
 ## Authority
 
-`agent-admin-agent` operates only for SaaS Owner/Admin users through capability `agent-doc-administration`. It may help list agents, open agent docs, interpret edit requests, draft proposed prompt/skill/reference-doc content, ask clarifying questions, summarize changes, provide advisory warnings/risks, restore a historical version, create/update/delete skills, create/update/delete skill reference docs, and explain runtime skill/reference read traces.
+`agent-admin-agent` operates only for SaaS Owner/Admin users through capability `agent-doc-administration`. It may help list the agent catalog, open agent detail and docs, interpret edit requests, draft proposed `PromptDocument`/`SkillDocument`/reference-doc content, ask clarifying questions, summarize changes, provide advisory warnings/risks, restore a historical version, create/update/delete skills, create/update/delete skill reference docs, update compact `AgentSkillManifest` membership when skills are created or deleted, and explain runtime skill/reference read traces.
 
 The agent cannot create or delete whole agents, manage model settings, manage tool permissions, require a separate activation step, or grant non-SaaS-admin access. Tenant/organization/customer scoped Agent Admin behavior is out of scope.
 
 ## Model and expertise binding
 
-LLM-backed editing uses the governed editing-agent runtime configuration and fails closed if no provider/runtime configuration is available. The editing agent has doc-type-specific skills for:
+LLM-backed editing uses the governed `AgentBehaviorEditorAgent` runtime configuration and fails closed if no provider/runtime configuration is available. The editing agent resolves its `AgentDefinition`, current `PromptDocument`, assigned `AgentSkillManifest`, model policy, and `ToolPermissionBoundary` before drafting. It has doc-type-specific skills for:
 
 - editing agent prompts;
 - editing agent skills;
 - editing skill reference docs.
 
-It may read the current target doc and relevant same-agent context, including the agent prompt, skill names/descriptions, skill contents, and reference doc names/descriptions/content as needed for the edit. Authorized SaaS admins and the editing agent may see full doc text.
+It may read the current target doc and relevant same-agent context, including the agent prompt, skill names/descriptions, skill contents, and reference doc names/descriptions/content as needed for the edit. Authorized SaaS admins and the editing agent may see full doc text. Unauthorized `PromptDocument` access, unassigned skill denial, disabled-agent denial, stale/deleted document access, and authority expansion attempts are denied with safe recovery copy and trace evidence.
 
 ## Prompt intent
 

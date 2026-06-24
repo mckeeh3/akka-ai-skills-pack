@@ -54,8 +54,39 @@ The mini-project is **not closed**. The lifecycle/worker/tool realignment artifa
 | `grep -R "PromptDocument" app-description` | Failed/no matches | Confirms first maintainer script blocker. |
 | `for p in ...; grep -RIEq "$p" app-description ...` | Completed | Identified additional likely missing app-description patterns in same verification section. |
 
+## TASK-017 repair notes
+
+Date: 2026-06-24
+
+Repaired the governed runtime agent foundation coverage gap in root `app-description/**` without editing root runtime code.
+
+Patterns added or made explicit in current-intent artifacts:
+
+- `PromptDocument` / `PromptVersion` and unauthorized `PromptDocument` denial semantics.
+- `SkillDocument` / `SkillVersion`, assigned skill loading, and unassigned skill denial semantics.
+- `AgentSkillManifest` compact expertise assignment and skill create/delete membership effects.
+- `AgentBehaviorEditorAgent` as the governed editing-agent used by Agent Admin.
+- `agent catalog` / agent detail wording for Agent Admin browsing surfaces.
+- Existing governed runtime terms were preserved and tightened: `AgentDefinition`, `ToolPermissionBoundary`, `readSkill(skillId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, and `AgentWorkTrace`.
+
+Affected app-description nodes:
+
+- `app-description/domains/core-starter/data-state/managed-agent-behavior-state.md`
+- `app-description/domains/core-starter/capabilities/agent-doc-administration.md`
+- `app-description/domains/core-starter/workstreams/agent-admin/workstream.md`
+- `app-description/domains/core-starter/workstreams/agent-admin/agents/functional-agent.md`
+- `app-description/domains/core-starter/workstreams/agent-admin/tests/coverage.md`
+- `app-description/domains/core-starter/workstreams/agent-admin/traces/work-traces.md`
+
+Validation result for TASK-017 scope:
+
+- `git diff --check` passed.
+- `bash skills-pack/pack/maintainer/tools/verify-opinionated-ai-first-saas-pack.sh` advanced past `checking governed runtime agent foundation core app-description assets`, confirming the TASK-016 app-description blocker was repaired.
+- The maintainer script then failed later at the unrelated optional-security wording guardrail: `docs/ai-first-saas-application-architecture.md:255` contains `Agent tools are treated as one optional exposure surface for selected capabilities, not as the backend design root or security boundary.` This is outside TASK-017's app-description/spec reconciliation scope and is recorded for TASK-018 terminal verification follow-up.
+
 ## Queue decision
 
 - TASK-016 is complete as a terminal verification/reconciliation task because blockers were not silently closed and follow-up tasks were appended.
+- TASK-017 repaired the app-description governed-agent coverage blocker and recorded the newly revealed unrelated maintainer verification blocker for TASK-018.
 - The mini-project remains open.
-- Next runnable task: TASK-017.
+- Next runnable task: TASK-018.
