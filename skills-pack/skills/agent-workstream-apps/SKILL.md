@@ -5,13 +5,23 @@ description: Interpret generated full-stack AI-first SaaS apps as role-authorize
 
 # Agent Workstream Apps
 
-Use this skill when a generated or extended SaaS app should be modeled as a set of role-authorized functional/context-area agents with continuous workstreams and structured surfaces, rather than as a page-first CRUD console or generic chatbot. In the intent compiler model, this skill defines or reviews the workstream bindings that connect global agents, surfaces, tools, policies, and traces to domain capabilities and realization artifacts.
+Use this skill when a generated or extended SaaS app should be modeled as a set of role-authorized functional/context-area agents with continuous workstreams and structured surfaces, rather than as a page-first CRUD console or generic chatbot. In the Interview phase, this skill defines or reviews description-ready workstream bindings in the living app-description graph. In Build/compile handoffs, preserve those bindings so workers, execution harnesses, actor adapters, governed tools, policies, traces, capabilities, and realization artifacts remain connected.
+
+## Lifecycle classification
+
+- Phase role: Interview-phase workstream modeling with Build/compile handoff constraints.
+- Graph layer: workstream, functional-agent worker, structured surface, attention, governed-tool, trace, and realization bindings.
+- Canonical chain: `worker → execution harness → actor adapter → governed tool → capability → Akka implementation`.
 
 ## Required reading
 
 - `../docs/intent-compiler.md`
 - `../docs/current-intent-model.md`
 - `../docs/intent-to-realization-flow.md`
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-component-graph.md`
+- `../docs/app-description-to-code-compile-contract.md`
 - `../docs/agent-workstream-application-architecture.md`
 - `../docs/workforce-decomposition.md`
 - `../docs/workstream-contract.md`
@@ -33,13 +43,13 @@ A workstream app has:
 - functional-agent rail with role/capability visibility and backend-owned attention state
 - continuous stream/composer for work history and requests
 - structured surfaces for dashboards, tables, forms, detail cards, decision cards, diffs, audit timelines, evidence bundles, and system messages
-- surface graph edges backed by browser actions, governed backend capabilities/tools, authorization, audit/work traces, and result surfaces
-- a bounded workstream tool catalog whose governed-tool ids can be exposed through human surface actions/browser-tools, confirmed human chat tool plans, AI agent-tools, APIs, workflows, timers, consumers, MCP-tools, or internal tools without duplicating business semantics
+- surface graph edges backed by declared actor adapters, governed tools, backend capabilities, authorization, audit/work traces, and result surfaces
+- a bounded workstream governed-tool catalog whose ids can be exposed through `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, `api_call`, `workflow_step`, `timer_invocation`, `consumer_reaction`, `mcp_tool_call`, or `internal_call` adapters without duplicating business semantics
 - deterministic surface intent routing from composer prompts to authorized surfaces with safe editable prefill before model fallback
 - optional `human_chat_tool_plan` handling where consequential chat requests produce a detailed plan, require explicit confirmation bound to that plan, execute each governed-tool invocation through backend checks/idempotency, and return result or partial-failure surfaces
 - model-backed agents only where a concrete governed Akka Agent runtime path is required and configured
 
-Routes and pages are implementation/deep-link details. Backend capabilities and authorization are authoritative.
+Routes and pages are implementation/deep-link details. Backend capabilities and authorization are authoritative. Keep the canonical chain explicit: `worker → execution harness → actor adapter → governed tool → capability → Akka implementation`.
 
 ## Routing
 
@@ -62,14 +72,14 @@ For each workstream/functional agent, define:
 - actor roles, scopes, capabilities, hidden/denied states, and default selection
 - backend-owned workstream-local attention category ids, canonical category/severity mappings, producers/workers, lifecycle, My Account/rail aggregation, and dashboard variants
 - prompt intent and bounded authority, including help/how-to behavior that stays within the selected workstream and does not require confirmation unless it becomes consequential tool execution
-- allowed backend capabilities/tools, governed-tool ids, actor adapters/exposure channels, and approval gates
+- allowed backend capabilities, governed-tool ids, actor adapters/exposure channels, and approval gates
 - dashboard/attention model and evidence freshness
 - surfaces, payloads, states, actions, system messages, and trace links
 - surface intent routing catalog: high-confidence prompt patterns, target surfaces, prefill fields, ambiguity/denial behavior, no-mutation guarantee, and tests
 - confirmed human chat tool-plan catalog, when allowed: prompt patterns or scope, proposed-plan detail, confirmation binding, per-tool transaction/idempotency semantics, denials before confirmation, result/partial-failure surfaces, and trace source `human_chat_tool_plan`
 - internal agent or AutonomousAgent delegation only when needed
-- tests for allowed, denied, stale, failure, tenant/customer isolation, deterministic surface no-mutation, and confirmed chat execution/partial-failure paths where those adapters are modeled
+- tests for allowed, denied, stale, failure, tenant/customer isolation, deterministic surface no-mutation, adapter trace source, and confirmed chat execution/partial-failure paths where those adapters are modeled
 
 ## Completion standard
 
-A workstream is not complete because static surfaces render or a deterministic placeholder response exists. The local runtime path must work through AuthContext, backend authorization, durable state/projections, governed Akka Agent invocation when model-backed, capability-backed actions, traces/audit, API responses, and frontend rendering. Provider/security failures must fail closed with actionable structured feedback.
+A workstream is not complete because static surfaces render or a deterministic placeholder response exists. Build/compile output is only manual-ready when required checks pass and the real worker + actor adapter + governed tool + capability path is known. Runtime-ready work must exercise AuthContext, backend authorization, durable state/projections, governed Akka Agent invocation when model-backed, governed-tool/capability-backed actions, traces/audit, API responses, and frontend rendering. Provider/security failures must fail closed with actionable structured feedback.

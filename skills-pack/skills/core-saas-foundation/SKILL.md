@@ -7,7 +7,13 @@ description: Apply the mandatory secure SaaS foundation for every new AI-first S
 
 Use this skill for every new project, app, PRD, spec, backlog, app-description bootstrap, solution decomposition, and generation flow handled by this pack unless the user explicitly asks for repository-maintenance-only work or non-SaaS reference material. In the intent compiler model, this skill seeds and protects the global and foundation-domain current-intent baseline that app-specific work extends.
 
-This skill supplies the secure SaaS baseline. In this repository that baseline is the **SaaS Foundation App**: a runnable out-of-the-box domain with five workstreams that users clone/fork and extend.
+This skill supplies the secure SaaS baseline. In this repository that baseline is the **SaaS Foundation App**: a runnable out-of-the-box domain with five workstreams that users clone/fork and extend. Its lifecycle role is to seed and protect the description-ready foundation graph during Interview, then preserve the same worker → actor adapter → governed tool → capability → Akka implementation chain during Build/compile and runtime verification handoffs.
+
+## Lifecycle classification
+
+- Phase role: Interview-phase foundation baseline and Build/compile guardrail for every generated SaaS app unless explicitly out of scope.
+- Graph layer: global and foundation-domain current-intent nodes for identity, tenancy, admin, governed agents, policies, audit/work traces, workstreams, governed tools, capabilities, and tests.
+- Canonical chain: `worker → execution harness → actor adapter → governed tool → capability → Akka implementation`.
 
 ## Required reading
 
@@ -18,6 +24,10 @@ Read these first when using this skill:
 - `../docs/intent-compiler.md`
 - `../docs/current-intent-model.md`
 - `../docs/intent-to-realization-flow.md`
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-component-graph.md`
+- `../docs/app-description-to-code-compile-contract.md`
 - `../docs/minimum-ai-first-saas-app.md`
 - `../docs/full-core-foundation-readiness.md`
 - `../docs/core-ai-first-saas-foundation.md`
@@ -54,12 +64,12 @@ Every generated SaaS app and every SaaS Foundation App extension must preserve o
 - Akka-owned local authorization state: Account, UserProfile, UserSettings, Membership, Role, Permission/Capability, selected AuthContext, Organization-backed Tenant, Customer, support access, and billing-safe platform records.
 - `/api/me` with browser-safe account, profile, settings, memberships, selected/default context, roles/capabilities, and context switching.
 - Invitation lifecycle and email-invite onboarding using Resend for production email and an explicit captured outbox adapter for local/dev/test.
-- Backend authorization for every protected route, surface action/browser-tool, confirmed human chat tool-plan execution, component command, view query, stream, agent tool, workflow action, consumer side effect, and timer action.
+- Backend authorization for every protected route, `surface_action` browser adapter, `human_chat_tool_plan` execution, component command, view query, stream, `agent_tool_call`, workflow step, consumer side effect, and timer action.
 - Organization/customer scoped commands and queries, backed by tenant/customer isolation, that mechanically reject cross-scope access.
 - AdminAuditEvent and work traces for identity, invitation/email, membership/role, support-access, billing, data access, approval, policy, and consequential AI/tool activity.
 - Governed runtime agent foundation: AgentDefinition, PromptDocument/PromptVersion, SkillDocument/SkillVersion, ReferenceDocument/ReferenceVersion, AgentSkillManifest, AgentReferenceManifest, ToolPermissionBoundary, prompt/skill/reference load traces, and AgentWorkTrace.
 - Bounded AI-assisted admin offload with decision cards for risky changes; agents may draft/recommend but must not autonomously expand authority.
-- Workstream shell surfaces and actions mapped to governed backend capabilities, with any confirmed chat tool-plan adapters sharing the same governed-tool ids and adding explicit plan review, confirmation, result/partial-failure surfaces, and traces.
+- Workstream shell surfaces and actions mapped to governed tools inside backend capabilities, with any confirmed chat tool-plan adapters sharing the same governed-tool ids and adding explicit plan review, confirmation, result/partial-failure surfaces, and traces.
 - Security tests for tenant isolation, forbidden access, disabled users, role/scope denial, `/api/me`, invitation lifecycle, admin list/search, membership lifecycle, last-admin protection, support access, agent-governance boundaries, audit/trace, surface action authorization, markdown sanitization where used, and frontend secret boundaries.
 
 Prompt text, skill text, hidden UI state, and route names cannot grant authority. Backend authorization and tool/data boundaries remain authoritative.
@@ -70,7 +80,7 @@ Model foundation work as user-facing workstream verticals before selecting entit
 
 1. functional/context-area agent ownership;
 2. structured surfaces and surface actions;
-3. governed capability and governed-tool contracts;
+3. governed-tool and capability contracts;
 4. AuthContext, organization/customer scope for product language, tenant/customer scope for internal enforcement, side effects, idempotency, policy/approval, audit/trace, and tests;
 5. selected Akka component families from the pack's eleven-component architecture;
 6. frontend workstream shell/API/realtime behavior where user-visible.
@@ -85,11 +95,11 @@ Bootstrap and maintain secure SaaS foundation files in the current-intent graph:
 
 ### Akka solution decomposition
 
-Every solution plan must include a secure SaaS foundation section before app-specific capabilities. It should show affected foundation/business workstreams, structured surfaces, action-to-capability mappings, and then candidate Akka components. Route through `capability-first-backend` before component implementation.
+Every solution plan must include a secure SaaS foundation section before app-specific capabilities. It should show affected foundation/business workstreams, workers, structured surfaces, action-to-governed-tool/capability mappings, and then candidate Akka components. Route through `capability-first-backend` before component implementation.
 
 ### PRD/spec/backlog planning
 
-Every app PRD or incremental product intent must compile foundation implications into current-intent graph updates and first implementation work that preserves or extends the SaaS Foundation App. Pending tasks should be vertical increments: functional agent, structured surface/action, governed capability, selected Akka substrate, browser/API/realtime work, auth/audit, and tests.
+Every app PRD or incremental product intent must compile foundation implications into current-intent graph updates and first implementation work that preserves or extends the SaaS Foundation App. Pending tasks should be vertical increments: functional agent/worker, structured surface/action adapter, governed tool, capability, selected Akka substrate, browser/API/realtime work, auth/audit, and tests.
 
 ### Generation
 
@@ -101,7 +111,7 @@ Before handing off, verify:
 
 - The target scope is explicit: SaaS Foundation App maintenance/extension, business-domain extension, app-specific feature work, or another named scope.
 - Foundation workstreams and structured surfaces are present or intentionally out of scope.
-- Capabilities are modeled before Akka component selection.
+- Governed tools and capabilities are modeled before Akka component selection.
 - WorkOS/AuthKit, Resend/outbox, `/api/me`, invitation/admin lifecycle, backend authorization, customer-facing organization language, tenant/customer isolation, governed-agent runtime, and audit/work traces are preserved for relevant scope.
 - User Admin can discover and manage users within authority boundaries when User Admin behavior is in scope.
 - Agent Admin, Audit/Trace, and Governance/Policy boundaries are not bypassed by prompts, tools, or frontend state.

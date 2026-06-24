@@ -131,7 +131,7 @@
 
 ### TASK-006: Pilot migrate architecture and workforce skills
 
-- status: pending
+- status: done
 - source: specs/skills-pack-worker-tool-lifecycle-realignment/migration-strategy.md
 - task brief: specs/skills-pack-worker-tool-lifecycle-realignment/tasks/006-pilot-architecture-skills.md
 - depends on: [TASK-005]

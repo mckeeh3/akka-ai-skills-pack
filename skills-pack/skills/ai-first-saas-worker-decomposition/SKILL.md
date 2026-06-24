@@ -5,9 +5,15 @@ description: Identify human, functional-agent, internal-agent, autonomous-agent,
 
 # AI-First SaaS Worker Decomposition
 
-Use this skill after `ai-first-saas` and before detailed surface, capability, agent-team, or Akka component decomposition when a product requirement needs a clear human/agent/system division of labor.
+Use this skill after `ai-first-saas` and before detailed surface, capability, agent-team, or Akka component decomposition when a product requirement needs a clear human/AI/system worker division of labor. Its primary lifecycle role is Interview-phase modeling that makes a request description-ready; its handoff should be compile-ready for downstream surface, capability, and realization skills.
 
 This is a workforce-modeling and routing skill. It does not replace `agent-workstream-apps`, `ai-first-saas-agent-team-design`, `capability-first-backend`, `akka-autonomous-agents`, `akka-agents`, `akka-workflows`, or app-description skills. It produces the worker roster and responsibility map those skills should preserve.
+
+## Lifecycle classification
+
+- Phase role: Interview-phase workforce decomposition with compile-ready handoff to surfaces, capabilities, and realization planning.
+- Graph layer: worker roster, responsibility/authority map, execution harnesses, actor adapters, governed-tool candidates, handoffs, and traces.
+- Canonical chain: `worker → execution harness → actor adapter → governed tool → capability → Akka implementation`.
 
 ## Required reading
 
@@ -16,6 +22,10 @@ Read first:
 - `../docs/intent-compiler.md`
 - `../docs/current-intent-model.md`
 - `../docs/intent-to-realization-flow.md`
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-component-graph.md`
+- `../docs/app-description-to-code-compile-contract.md`
 - `../docs/requirements-to-workstream-development-process.md`
 - `../docs/workforce-decomposition.md`
 - `../docs/agent-workstream-application-architecture.md`
@@ -54,7 +64,7 @@ Do not expand into workforce decomposition when:
 
 ### 1. Identify workstreams and units of work
 
-Start from affected workstreams or domain outcomes. For each unit of work, list the verbs and triggers: inspect, monitor, decide, approve, create, update, revoke, retry, summarize, recommend, evaluate, escalate, notify, reconcile, archive, learn, audit; started by deterministic surface route, surface action, confirmed human chat tool plan, AI agent-tool call, attention item, schedule, event, workflow step, integration, API/MCP call, or deep link.
+Start from affected workstreams or domain outcomes. For each unit of work, list the verbs and triggers: inspect, monitor, decide, approve, create, update, revoke, retry, summarize, recommend, evaluate, escalate, notify, reconcile, archive, learn, audit. Name the worker, execution harness, actor adapter, governed tool, capability, and trace source for each trigger, such as deterministic surface route, `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, attention item, schedule, event, `workflow_step`, integration, `api_call`, `mcp_tool_call`, or deep link.
 
 ### 2. Inventory human workers
 
@@ -73,7 +83,7 @@ Classify each agent worker:
 - `autonomous-agent`: durable background model-driven worker with task lifecycle;
 - `evaluator-agent`: independent reviewer/judge for quality, risk, policy fit, completeness, or outcomes.
 
-For each agent worker, define single responsibility, non-responsibilities, supervising human, authority level, allowed evidence/data, allowed capabilities/governed-tools, approval/autonomy policy, handoffs/escalations, prompt/skill/reference/model/tool governance, traces, and fail-closed behavior.
+For each agent worker, define single responsibility, non-responsibilities, supervising human, authority level, allowed evidence/data, allowed governed tools and capabilities, approval/autonomy policy, handoffs/escalations, prompt/skill/reference/model/tool governance, traces, and fail-closed behavior.
 
 ### 4. Inventory system workers
 
@@ -84,16 +94,16 @@ Record deterministic participants such as workflows, timers, consumers, projecti
 For each work unit, map:
 
 ```text
-primary worker → actor adapter/exposure channel → supporting worker(s) → reviewer/approver → escalation/fallback → handoff artifact → result surface/event → trace/audit record
+primary worker → execution harness → actor adapter → governed tool → capability → supporting worker(s) → reviewer/approver → escalation/fallback → handoff artifact → result surface/event → trace/audit record
 ```
 
-If human and AI workers can both perform or request the same operation, map them to one governed capability/governed-tool with separate actor adapters and trace sources. Human adapters include structured surface actions/browser-tools and, when explicitly modeled, `human_chat_tool_plan` flows with proposed-plan detail, confirmation binding, per-tool idempotency/transaction behavior, denials, and result/partial-failure surfaces. AI-backed adapters require separate tool-boundary exposure and do not inherit human surface availability.
+If human and AI workers can both perform or request the same operation, map them to one governed tool inside one capability with separate actor adapters and trace sources. Human adapters include structured `surface_action` browser paths and, when explicitly modeled, `human_chat_tool_plan` flows with proposed-plan detail, confirmation binding, per-tool idempotency/transaction behavior, denials, and result/partial-failure surfaces. AI-backed adapters require explicit `agent_tool_call` tool-boundary exposure and do not inherit human surface availability.
 
 ### 6. Route downstream
 
 - Functional-agent/workstream placement → `agent-workstream-apps` and `app-description-functional-agent-modeling`.
 - Surface use/production → `ai-first-saas-ui-surfaces` and `app-description-surface-modeling`.
-- Worker actions/tools → `capability-first-backend` and `app-description-capability-modeling`.
+- Worker actions/governed tools → `capability-first-backend` and `app-description-capability-modeling`.
 - Agent team shape → `ai-first-saas-agent-team-design`.
 - Durable background worker → `akka-autonomous-agents` and `akka-autonomous-agent-tasks`.
 - Request/reply/internal specialist → `akka-agents` and focused `akka-agent-*` skills.
@@ -105,7 +115,7 @@ Produce a compact worker decomposition with:
 
 - affected workstreams and scope;
 - worker roster grouped by human, functional-agent, internal-agent, autonomous-agent, evaluator-agent, and system workers;
-- for each worker: responsibility, non-responsibilities, authority level, AuthContext/scope, supervising human or owning workstream, governed tools/capabilities, actor adapters/exposure channels, surfaces used/produced, handoffs/escalations, traces, and failure behavior;
+- for each worker: responsibility, non-responsibilities, authority level, AuthContext/scope, supervising human or owning workstream, execution harnesses, governed tools and capabilities, actor adapters/exposure channels, surfaces used/produced, handoffs/escalations, traces, and failure behavior;
 - worker-to-work-unit responsibility matrix;
 - human/AI shared-operation map showing one governed-tool with separate actor adapters where applicable, including `surface_action`, `human_chat_tool_plan`, and `agent_tool_call` trace sources when those paths are allowed;
 - candidate attention categories and result surfaces each worker produces or consumes;
@@ -120,6 +130,6 @@ Before moving to capability or component design, verify:
 - every agent worker has a specific type, bounded responsibility, non-responsibilities, supervising human, and authority level;
 - no agent worker inherits human authority implicitly;
 - every side-effecting agent worker has bounded autonomy or approval requirements;
-- every worker action maps to a capability/governed-tool candidate;
+- every worker action maps to a governed-tool/capability candidate;
 - every handoff/escalation produces a traceable artifact and target;
 - tests can cover allowed, denied, stale/failure, tenant isolation, audit/trace, and handoff behavior.
