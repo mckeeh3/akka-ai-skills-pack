@@ -7,6 +7,8 @@ description: Convert manual tester failures in a generated SaaS or SaaS Foundati
 
 Use this skill when a human reports that manual testing found many features or flows not working, especially in core SaaS workstreams such as User Admin, My Account, Agent Admin, Audit/Trace, or Governance/Policy.
 
+Use `../docs/manual-test-reconciliation.md` as the lifecycle doctrine for manual runtime test sessions, worker-centric scenario evidence, finding categories, and reconciliation outputs.
+
 This is a drift-repair skill. It should diagnose and update planning/spec/queue artifacts before implementation continues. It may append focused remediation tasks; it should not silently broaden an existing implementation task.
 
 ## Required reads
@@ -16,6 +18,7 @@ Read these first when present:
 - `../README.md`
 - `../references/generated-saas-runtime-completion.md`
 - `../docs/intent-to-realization-flow.md`
+- `../docs/manual-test-reconciliation.md`
 - `../docs/pending-task-queue.md`
 - `../akka-runtime-feature-verification/SKILL.md`
 - `../akka-change-request-to-spec-update/SKILL.md`

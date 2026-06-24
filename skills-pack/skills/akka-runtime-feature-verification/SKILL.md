@@ -7,6 +7,8 @@ description: Verify that generated SaaS or SaaS Foundation App features marked c
 
 Use this skill when a feature, slice, sprint, workstream, or pending-task group is claimed complete or nearly complete and needs a hard runtime-readiness gate before more feature work proceeds.
 
+When manual runtime testing is part of the readiness claim, apply `../docs/manual-test-reconciliation.md` so tester findings become classified reconciliation outputs before more feature work proceeds.
+
 This is a validator/reviewer and drift-repair skill. It may update specs/queue evidence and append remediation tasks, but it should not implement unrelated product code.
 
 ## Required reads
@@ -16,6 +18,7 @@ Read these first when present:
 - `../README.md`
 - `../references/generated-saas-runtime-completion.md`
 - `../docs/intent-to-realization-flow.md`
+- `../docs/manual-test-reconciliation.md` when manual/browser runtime smoke evidence or tester findings are in scope
 - `../docs/pending-task-queue.md`
 - `../docs/structured-surface-contracts.md` when surfaces are in scope
 - `../akka-web-ui-testing/SKILL.md` when browser UI is in scope
