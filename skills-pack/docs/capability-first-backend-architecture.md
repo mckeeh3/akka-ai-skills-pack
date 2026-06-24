@@ -17,7 +17,7 @@ product intent
 → Akka component realization
 ```
 
-Use `./requirements-to-workstream-development-process.md` for broad input, PRD, app-description, planning, backlog, and implementation-readiness work. It discovers capabilities through workstream workforce, attention, dashboard, surface, and action semantics before selecting APIs or Akka components.
+Use `./requirements-to-workstream-development-process.md` for broad input, PRD, app-description, planning, backlog, and implementation-readiness work. It discovers capabilities through workstream workforce, attention, dashboard, surface, and action semantics before selecting APIs or Akka components. Use `./app-worker-tool-model.md` for the canonical separation of workers, execution harnesses, actor adapters, governed tools, capabilities, and Akka implementation.
 
 A capability is the product-level backend ability or grouping. A capability owns one or more governed-tools: semantic executable operations or queries with actors, AuthContext, schemas, side effects, idempotency, policy/approval, audit/work trace, and implementation mapping. Agent workstream actions, structured surface/browser actions, confirmed human chat tool plans, Akka components, HTTP/gRPC/MCP endpoints, workflow steps, timer actions, consumers, and agent-tools are implementation or exposure choices for those governed-tools.
 

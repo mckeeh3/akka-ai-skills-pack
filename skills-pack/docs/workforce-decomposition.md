@@ -6,6 +6,7 @@ This is the canonical workforce-decomposition doctrine for generated secure AI-f
 
 Use it with:
 
+- `./app-worker-tool-model.md` for the canonical worker → harness → actor adapter → governed tool → capability → Akka implementation separation
 - `./requirements-to-workstream-development-process.md`
 - `./agent-workstream-application-architecture.md`
 - `./workstream-contract.md`

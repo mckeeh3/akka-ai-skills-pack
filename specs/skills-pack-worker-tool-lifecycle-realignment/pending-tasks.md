@@ -35,7 +35,7 @@
 
 ### TASK-002: Add canonical app worker and governed-tool model
 
-- status: pending
+- status: done
 - source: specs/skills-pack-worker-tool-lifecycle-realignment/target-architecture.md
 - task brief: specs/skills-pack-worker-tool-lifecycle-realignment/tasks/002-worker-tool-model.md
 - depends on: [TASK-001]

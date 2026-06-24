@@ -1,6 +1,6 @@
 # Intent to Realization Flow
 
-Intent realization maps the current intent graph to specs, task queues, generated code, tests, and runtime validation evidence. It should not realize stale historical intent or isolated component work without a traceable reason.
+Intent realization maps the current intent graph to specs, task queues, generated code, tests, and runtime validation evidence. It should not realize stale historical intent or isolated component work without a traceable reason. Use `./app-worker-tool-model.md` for the canonical worker, execution harness, actor adapter, governed tool, capability, and Akka implementation chain that feature-bearing realization tasks must preserve.
 
 ## Realization chain
 
