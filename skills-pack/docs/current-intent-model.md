@@ -103,3 +103,7 @@ Access should be modeled at workstream level first, then compiled into surface v
 When new input changes intent, update the affected current graph nodes to their new intended state. Do not append historical notes such as "previously we thought..." unless the artifact is explicitly a changelog, task record, or migration note.
 
 See also [Incremental intent processing](incremental-intent-processing.md) and [Intent to realization flow](intent-to-realization-flow.md).
+
+## Lifecycle relationship
+
+Use [App Development Lifecycle](app-development-lifecycle.md) as the canonical three-phase routing doctrine for moving current intent through interview, build/compile, and manual runtime test phases. The current-intent model remains the living app-description graph that each phase reads from and reconciles back into.

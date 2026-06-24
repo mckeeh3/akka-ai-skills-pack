@@ -13,7 +13,7 @@
 
 ### TASK-001: Add canonical three-phase lifecycle doctrine
 
-- status: pending
+- status: done
 - source: specs/skills-pack-worker-tool-lifecycle-realignment/README.md
 - task brief: specs/skills-pack-worker-tool-lifecycle-realignment/tasks/001-lifecycle-doctrine.md
 - depends on: []
