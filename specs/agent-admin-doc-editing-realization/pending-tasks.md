@@ -286,7 +286,7 @@
 
 ### AADE-05-001: Full-stack validation and terminal verification
 
-- status: pending
+- status: done
 - source: verification loop for this mini-project
 - task brief: `specs/agent-admin-doc-editing-realization/tasks/05-validation/01-fullstack-verification.md`
 - depends on: [AADE-04-003]
@@ -312,5 +312,93 @@
 - done criteria:
   - verification determines whether the mini-project done state is achieved
   - material gaps are either absent or converted into follow-up queue tasks with a new terminal verification task
+  - changes and queue update are committed
+- notes:
+  - completed terminal verification pass; mini-project not closed because `mvn test` failed on Agent Admin API/workstream smoke and collateral authorization smoke blockers
+  - verification notes: `specs/agent-admin-doc-editing-realization/verification-notes.md`
+  - commit message: `Verify Agent Admin doc editing full stack`
+
+### AADE-06-001: Repair Agent Admin workstream smoke and stale backend test drift
+
+- status: pending
+- source: `AADE-05-001` terminal verification gaps
+- task brief: `specs/agent-admin-doc-editing-realization/tasks/06-follow-up/01-repair-agent-admin-workstream-smoke-and-stale-tests.md`
+- depends on: [AADE-05-001]
+- required reads:
+  - `specs/agent-admin-doc-editing-realization/verification-notes.md`
+  - `specs/agent-admin-doc-editing-realization/README.md`
+  - `specs/agent-admin-doc-editing-realization/conversation-capture.md`
+  - `specs/agent-admin-doc-editing-realization/pending-tasks.md`
+  - `app-description/domains/core-starter/workstreams/agent-admin/**`
+  - `app-description/domains/core-starter/capabilities/agent-doc-administration.md`
+- skills:
+  - `akka-runtime-feature-verification`
+  - `akka-agent-testing`
+- expected outputs:
+  - current Agent Admin Akka workstream/API smoke path repaired
+  - stale governance-console backend tests reconciled with current intent
+- required checks:
+  - `mvn -Dtest='AgentAdminBrowserWorkstreamSmokeTest,WorkstreamServiceTest,AgentAdminDocAdministrationServiceTest,AgentAdminDocEditingAgentTest,AgentRuntimeServiceTest,AgentRuntimeToolResolverTest,AgentRuntimeTraceSinkTest' test`
+  - `npm --prefix frontend test -- --run frontend/src/workstream-agent-admin-vertical.contract.test.mjs frontend/src/workstream-surfaces.contract.test.mjs frontend/src/workstream-surface-intent-routing.contract.test.mjs`
+  - `git diff --check`
+- done criteria:
+  - Agent Admin backend/API smoke proves current SaaS-admin doc-editing surfaces at the implemented scope
+  - stale tenant-scoped/governance-console Agent Admin assertions no longer block current validation
+  - changes and queue update are committed
+- notes: []
+
+### AADE-06-002: Repair collateral full-suite authorization smoke blockers
+
+- status: pending
+- source: `AADE-05-001` full-suite validation gaps outside direct Agent Admin product behavior
+- task brief: `specs/agent-admin-doc-editing-realization/tasks/06-follow-up/02-repair-collateral-full-suite-authorization-smokes.md`
+- depends on: [AADE-06-001]
+- required reads:
+  - `specs/agent-admin-doc-editing-realization/verification-notes.md`
+  - `specs/agent-admin-doc-editing-realization/pending-tasks.md`
+  - affected smoke tests and workstream authorization/runtime paths named in the verification notes
+- skills:
+  - `akka-runtime-feature-verification`
+  - `akka-web-ui-testing`
+- expected outputs:
+  - Audit/Trace SaaS Owner/Admin scope evidence repaired or reconciled
+  - My Account hosted workstream smoke no longer blocked by Agent Admin SaaS-admin authorization changes
+- required checks:
+  - `mvn -Dtest='AuditTraceBrowserWorkstreamSmokeTest,MyAccountBrowserWorkstreamSmokeTest,WorkstreamServiceTest' test`
+  - `git diff --check`
+- done criteria:
+  - named collateral full-suite failures from `AADE-05-001` pass
+  - shared authorization behavior remains fail-closed and browser-safe
+  - changes and queue update are committed
+- notes: []
+
+### AADE-07-001: Re-run full-stack closure verification
+
+- status: pending
+- source: terminal verification loop after `AADE-06-*` follow-ups
+- task brief: `specs/agent-admin-doc-editing-realization/tasks/07-validation/01-reverify-fullstack-closure.md`
+- depends on: [AADE-06-001, AADE-06-002]
+- required reads:
+  - `specs/agent-admin-doc-editing-realization/README.md`
+  - `specs/agent-admin-doc-editing-realization/conversation-capture.md`
+  - `specs/agent-admin-doc-editing-realization/verification-notes.md`
+  - `specs/agent-admin-doc-editing-realization/pending-tasks.md`
+  - `app-description/domains/core-starter/workstreams/agent-admin/**`
+  - `app-description/domains/core-starter/capabilities/agent-doc-administration.md`
+- skills:
+  - `akka-runtime-feature-verification`
+  - `akka-web-ui-testing`
+  - `akka-agent-testing`
+- expected outputs:
+  - updated `specs/agent-admin-doc-editing-realization/verification-notes.md`
+  - queue closure or another bounded follow-up loop
+- required checks:
+  - `mvn test`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - `npm --prefix frontend run build`
+  - `git diff --check`
+- done criteria:
+  - mini-project done state is either achieved and recorded closed, or remaining material gaps are converted into a further bounded follow-up loop
   - changes and queue update are committed
 - notes: []
