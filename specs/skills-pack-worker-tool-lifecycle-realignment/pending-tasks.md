@@ -158,7 +158,7 @@
 
 ### TASK-007: Pilot migrate app-description and surface/capability skills
 
-- status: pending
+- status: done
 - source: specs/skills-pack-worker-tool-lifecycle-realignment/migration-strategy.md
 - task brief: specs/skills-pack-worker-tool-lifecycle-realignment/tasks/007-pilot-app-description-skills.md
 - depends on: [TASK-006]

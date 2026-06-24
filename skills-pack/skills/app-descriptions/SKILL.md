@@ -14,8 +14,9 @@ This skill is for a harness operating model where the app description is the fil
 Compile incremental user intent into current app-description artifacts, plans, code, tests, and validation evidence in a way that is:
 
 - current-intent first
+- lifecycle-aware: distinguish interview/current-intent work, build/compile work, and manual/runtime validation handoff
 - workstream-centered for user-facing SaaS behavior
-- explicit about app/global/domain/workstream graph nodes
+- explicit about app/global/domain/workstream graph nodes, including workers, execution harnesses, actor adapters, governed tools, capabilities, traces, tests, and realization links
 - clear about behavior, tests, security, observability, and realization
 - safe about readiness before generation
 - suitable for prompt/response review, diff review, and focused file maintenance
@@ -30,6 +31,9 @@ Read only the smallest set needed for the request:
 - `../docs/current-intent-model.md`
 - `../docs/incremental-intent-processing.md`
 - `../docs/intent-compiler-skill-contracts.md`
+- `../docs/app-development-lifecycle.md` when routing between interview, build/compile, and manual/runtime-validation concerns
+- `../docs/app-worker-tool-model.md` and `../docs/app-description-component-graph.md` when workers, surfaces, tools, capabilities, agents, system triggers, or implementation readiness are in scope
+- `../docs/app-description-to-code-compile-contract.md` when planning, generation, code, tests, or validation are requested
 - `../docs/intent-to-realization-flow.md` when planning, generation, code, tests, or validation are requested
 - `../docs/ai-first-saas-application-architecture.md` and `../ai-first-saas/SKILL.md` only when product intent involves delegated work, agents, decisions, governance, supervision, audit, or outcomes
 - `../core-saas-foundation/SKILL.md` when starting or assessing generated SaaS foundation scope
@@ -90,7 +94,7 @@ Load the companion skill that matches the current compiler step. Users do not ne
 
 For generated full-stack SaaS, do not change capabilities, UI, readiness, generation scope, or implementation planning for a user-facing request without checking the relevant workstream graph nodes first.
 
-Workstreams bind together access, surfaces, agents, tools, policies, traces, tests, capabilities, realization files, and validation expectations. Global artifacts define reusable contracts; workstream files define why and how those contracts are used in a specific workstream. For consequential operations, model one shared governed tool id in the capability/workstream tool binding and attach actor-specific adapters to it: human surface action/browser-tool, confirmed human chat tool-plan, AI agent-tool, API/workflow/timer/consumer/MCP/internal exposure as applicable.
+Workstreams bind together access, workers, execution harnesses, surfaces, agents, tools, policies, traces, tests, capabilities, realization files, and validation expectations. Global artifacts define reusable contracts; workstream files define why and how those contracts are used in a specific workstream. For consequential operations, model one shared governed tool id in the capability/workstream tool binding and attach actor-specific adapters to it: human `surface_action`/browser-tool, confirmed `human_chat_tool_plan`, AI `agent_tool_call`, API/workflow/timer/consumer/MCP/internal exposure as applicable. Treat human workers, AI-backed functional/internal/autonomous workers, and system workers as distinct graph implications; none inherits authority from another worker's harness.
 
 ## Decision guide
 
@@ -147,15 +151,17 @@ Start with:
 - Edit the smallest complete set of app/global/domain/workstream files.
 - Use global definitions plus workstream-specific bindings for reusable surfaces, agents, tools, policies, and traces.
 - Replace superseded statements rather than appending conversation chronology.
-- Preserve links from workstream nodes to capabilities, governed tools, actor adapters, realization files, tests, and traces.
-- Treat unresolved authority, policy, data, trace, acceptance, or runtime-validation ambiguity as pending-question material.
+- Preserve the worker → execution harness → actor adapter → governed tool → capability → realization/test/trace chain; do not collapse it into pages, endpoints, prompts, or component methods.
+- Preserve links from workstream nodes to workers, capabilities, governed tools, actor adapters, realization files, tests, and traces.
+- Treat unresolved worker responsibility, authority, policy, data, trace, acceptance, or runtime-validation ambiguity as pending-question material.
 
 ## Final review checklist
 
 Before finishing, verify:
 
-- the request is routed to the smallest suitable companion skill
+- the request is routed to the smallest suitable companion skill and lifecycle phase
 - current-intent graph nodes are identified or the reason they cannot be identified is explicit
+- worker, execution-harness, actor-adapter, governed-tool, capability, trace, test, and realization implications are captured before build/compile work is treated as safe
 - broad AI-first product input is interpreted before CRUD/component decomposition
 - workstream bindings are preserved for user-facing generated-SaaS changes, including global definition plus workstream binding separation for governed tools, surfaces, agents, policies, and traces
 - behavior, tests, security, UI, observability, and realization are kept separate when they change separately

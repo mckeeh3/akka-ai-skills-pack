@@ -13,6 +13,8 @@ Use this skill to update authoritative app-description surface definitions and w
 - `../docs/current-intent-model.md`
 - `../docs/incremental-intent-processing.md`
 - `../docs/intent-compiler-skill-contracts.md`
+- `../docs/app-development-lifecycle.md` when surface work crosses interview, build/compile, or manual/runtime-validation readiness
+- `../docs/app-worker-tool-model.md` and `../docs/app-description-component-graph.md`
 - `../docs/app-description-skill-output-contracts.md`
 - `../docs/structured-surface-contracts.md`
 - `../docs/workstream-surface-intent-routing.md`
@@ -30,6 +32,7 @@ Use this skill to update authoritative app-description surface definitions and w
 For each surface, define:
 
 - whether this is a reusable global surface pattern or a workstream-specific surface binding
+- the human worker(s) the surface serves, the surface's role as a human-worker execution harness, and any adjacent AI/system workers that produce evidence, proposals, attention items, or result payloads for it
 - for durable collection objects, the surface's role in the canonical collection-object progression from `../docs/structured-surface-contracts.md`: domain list/search, lifecycle-aware show/inspection, create, edit, destructive lifecycle confirmation, or domain-specific single-action surface
 - stable domain-semantic id, type, version, owning workstream definition, exactly one owning functional agent, reusable functional agents/workstreams if any, and purpose
 - actor roles/scopes and selected `AuthContext` requirements
@@ -37,7 +40,7 @@ For each surface, define:
 - payload schema summary with frontend-safe fields only, split by visibility: default user-visible fields, on-demand drilldown fields, admin/support/auditor-only fields, and internal-only implementation metadata
 - loading, empty, ready, submitting, success, validation-error, forbidden, conflict, stale/reconnect, partial-data, and failure states as applicable
 - visible and hidden/denied actions
-- stable `actionId`, browser action/tool id, shared governed backend capability/tool id, actor adapter/exposure channel, idempotency/correlation behavior, result surface, confirmation or approval gate, and trace source for each consequential action; keep ids and implementation names out of normal user copy unless the actor is in a support, auditor, admin, or developer-facing diagnostic context
+- stable `actionId`, browser action/tool id, shared governed backend capability/tool id, actor adapter/exposure channel, idempotency/correlation behavior, result surface, confirmation or approval gate, and trace source for each consequential action; model the human `surface_action` adapter separately from matching `human_chat_tool_plan`, `agent_tool_call`, workflow, timer, consumer, API, MCP, or internal adapters; keep ids and implementation names out of normal user copy unless the actor is in a support, auditor, admin, or developer-facing diagnostic context
 - deterministic surface intent routes for composer-enabled workstreams: prompt examples, target surface, safe editable prefill fields, ambiguity behavior, required capability, no-mutation guarantee, denial/system-message result, and route trace
 - target/result surface or typed `system_message`
 - trace/audit/work-trace links, redaction rules, and which trace/evidence details are summarized for users versus exposed only through role-gated drilldowns
@@ -46,7 +49,7 @@ For each surface, define:
 
 ## Modeling rules
 
-- Model SaaS user intent before internal implementation detail. A surface contract must distinguish user-visible UX content from implementation/support metadata. Default SaaS users should see task-relevant outcomes, decisions, next actions, status, confidence/risk summaries, and useful explanations; they should not see internal policy ids, raw trace/event ids, governed-tool ids, backend component names, provider/model internals, prompt internals, correlation/idempotency mechanics, or authorization plumbing unless the surface is explicitly for admins, support, auditors, compliance reviewers, or developers.
+- Model SaaS user intent before internal implementation detail. A surface is a human-worker execution harness and reviewable contract, not the product authority, capability, endpoint, or component. A surface contract must distinguish user-visible UX content from implementation/support metadata. Default SaaS users should see task-relevant outcomes, decisions, next actions, status, confidence/risk summaries, and useful explanations; they should not see internal policy ids, raw trace/event ids, governed-tool ids, backend component names, provider/model internals, prompt internals, correlation/idempotency mechanics, or authorization plumbing unless the surface is explicitly for admins, support, auditors, compliance reviewers, or developers.
 - For each visible field, action, badge, chart, trace link, or evidence block, ask: “Does this help the current actor decide, act, recover, or understand a business outcome?” If not, omit it, translate it into user language, or move it to a role-gated drilldown/audit/support surface.
 - Use progressive disclosure for diagnostics and governance details: default view = user-safe summary; drilldown = role-authorized evidence/audit detail; internal-only = stored implementation metadata never rendered to ordinary users.
 - Translate internal states and denials into SaaS product language. Prefer “You don’t have permission to archive this customer. Ask an organization admin for access.” over “Capability `customer.archive.v2` denied by `PolicyClause#TENANT_ROLE_014`.”
@@ -62,7 +65,7 @@ For each surface, define:
 - When creating or revising a workstream dashboard, command center, queue, decision, audit, workflow/progress, form, table, detail, or other browser-rendered surface contract, include an explicit surface-description sufficiency review question for human app developers: "Is this surface definition sufficiently unambiguous that a developer or generator can implement and review the surface without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics?" If the answer is no, make another pass on the surface description before creating surface implementation tasks.
 - Every browser-rendered surface must link to the selected web UI style guide, named-theme contract, and component-catalog anatomy before implementation. Surface contracts own purpose/authority/capability semantics; frontend realization owns visual/style mechanics and must not invent application meaning.
 - If the app lacks a selected UI style/named-theme contract, route to `app-description-ui` or queue a blocking `category: ui` question before creating surface implementation tasks.
-- Every consequential read/query/mutation/action maps to a backend capability and governed tool id, is authorized server-side, and records whether the surface action is the human `surface_action`/browser-tool adapter versus a separate `human_chat_tool_plan`, AI `agent-tool`, API, workflow, timer, consumer, MCP, or internal adapter.
+- Every consequential read/query/mutation/action maps to a backend capability and governed tool id, is authorized server-side, and records whether the surface action is the human `surface_action`/browser-tool adapter versus a separate `human_chat_tool_plan`, AI `agent_tool_call`, API, workflow, timer, consumer, MCP, or internal adapter. Surface availability never grants AI or system-worker authority; those adapters must be separately modeled in the workstream tool/capability graph.
 - Denials, approval-required results, validation failures, stale/reconnect, no-op, and background-work states are explicit structured outcomes.
 - Do not expose secrets, raw provider data, hidden roles, cross-tenant/customer identifiers, privileged evidence, prompt internals, backend component names, governed-tool ids, policy implementation ids, raw event ids, or correlation/idempotency mechanics in normal browser payloads. If a support/audit/admin/developer surface needs a technical identifier, label it as diagnostic metadata, gate it by role/scope, and keep it visually subordinate to user-meaningful content.
 - Do not describe fixture/static/mock surfaces as normal generated-app runtime.
@@ -74,7 +77,8 @@ For each surface, define:
 Update or propose updates to the app-description with:
 
 - new/changed surface contracts
-- surface action-to-capability mappings that reuse shared governed tool ids instead of redefining operations already exposed through human chat tool plans, agent-tools, APIs, workflows, timers, consumers, MCP, or internal adapters
+- worker/harness/actor-adapter mappings for each surface, including which human worker uses the surface and which AI or system workers may produce evidence, proposals, attention, or result payloads for it
+- surface action-to-capability mappings that reuse shared governed tool ids instead of redefining operations already exposed through human chat tool plans, agent tool calls, APIs, workflows, timers, consumers, MCP, or internal adapters
 - surface intent routing catalog entries for composer-enabled workstreams, including target surfaces, prefill mapping, ambiguity handling, no-mutation guarantees, and tests
 - for each durable collection object in scope, the domain-semantic list/show/create/edit/destructive-lifecycle surface progression, including lifecycle-state-dependent show/task routing and any explicit override from the canonical pattern
 - a surface-description sufficiency review result for each new or substantially changed browser-rendered surface, including whether another description pass is required before code generation and whether the default view avoids exposing internal implementation details that do not help the target SaaS user
@@ -83,4 +87,4 @@ Update or propose updates to the app-description with:
 - assumptions and open questions
 - generation impact: localized UI/API change, backend capability change, broader workstream redesign, UI style/catalog realization prerequisite, or separate app-level surface implementation cleanup
 
-If a surface requires data, authority, behavior, style/catalog binding, or tests not yet described, queue or ask the blocking question instead of inventing it. Do not treat the generated UI as the only review artifact; the app developer should also be able to review and refine the surface description itself, then use that refined description to revise or repair surface-related code.
+If a surface requires data, worker responsibility, authority, governed-tool identity, actor-adapter behavior, style/catalog binding, or tests not yet described, queue or ask the blocking question instead of inventing it. Do not treat the generated UI as the only review artifact; the app developer should also be able to review and refine the surface description itself, then use that refined description to revise or repair surface-related code.
