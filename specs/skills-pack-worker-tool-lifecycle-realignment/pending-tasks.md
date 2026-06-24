@@ -213,7 +213,7 @@
 
 ### TASK-009: Migrate app-description skill family
 
-- status: pending
+- status: done
 - source: specs/skills-pack-worker-tool-lifecycle-realignment/migration-strategy.md
 - task brief: specs/skills-pack-worker-tool-lifecycle-realignment/tasks/009-migrate-app-description-family.md
 - depends on: [TASK-008]

@@ -9,6 +9,14 @@ Use this skill when maintaining app-description workstream agent bindings such a
 
 Functional agents are user-facing AI-backed worker bindings for vertical application areas in the authenticated workstream shell. They are not Akka components, chat sessions, pages, generic assistants, or the human workers who use their surfaces. Each functional agent owns or reuses structured surfaces, starts from role-specific dashboard surfaces, maintains a human surface graph, and invokes governed backend capabilities only through explicit authority rules and allowed actor adapters. Normalize UI nouns such as dashboard, portal, admin screen, command center, work queue, approval area, or agent/chat space into worker ownership plus reusable surface contracts before route/page details.
 
+## Lifecycle classification
+
+- Phase: interview.
+- Kind: focused current-intent capture/editor.
+- Family: app-description.
+- Living-graph contract: functional-agent modeling owns workstream worker bindings in the app-description current-intent graph and keeps workers, execution harnesses, actor adapters, governed tools, capabilities, traces, tests, and realization links explicit.
+- Build/compile handoff: when a functional-agent binding is ready for planning, code, tests, or validation, compile it through `../docs/app-description-to-code-compile-contract.md` rather than treating prompts, pages, or Akka agents as product authority.
+
 ## Required reading
 
 Read these first if present:

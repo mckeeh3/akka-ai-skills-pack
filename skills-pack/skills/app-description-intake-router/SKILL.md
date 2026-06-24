@@ -9,6 +9,14 @@ Use this skill when the user gives flexible product input and the harness must d
 
 This skill is an **intake/router** in the intent compiler. It should route incremental human intent into current app/domain/workstream/global artifacts and downstream realization paths.
 
+## Lifecycle classification
+
+- Phase: interview.
+- Kind: intake/router.
+- Family: app-description.
+- Living-graph contract: route requests by affected app-description current-intent graph nodes, including workers, execution harnesses, actor adapters, governed tools, capabilities, traces, tests, readiness, and realization implications.
+- Build/compile handoff: route planning, generation, code, tests, and validation requests through `../docs/app-description-to-code-compile-contract.md` after current-intent graph sufficiency is clear.
+
 ## Required reading
 
 Read only what is needed for the requested route:

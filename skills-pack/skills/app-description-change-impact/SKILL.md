@@ -10,6 +10,14 @@ Use this skill when a description change has been proposed or applied and the ha
 This skill formalizes the change-impact pass described in the maintenance flow.
 It helps the harness keep the internal app-description system consistent and decide whether future realization can use localized extension/repair safely.
 
+## Lifecycle classification
+
+- Phase: interview.
+- Kind: impact assessor.
+- Family: app-description.
+- Living-graph contract: impact analysis treats app-description as the current-intent graph and checks worker, execution-harness, actor-adapter, governed-tool, capability, trace, test, readiness, and realization edges before declaring a change local.
+- Build/compile handoff: realization scope and queue/spec recommendations must point to `../docs/app-description-to-code-compile-contract.md` when planning, code, tests, or validation are affected.
+
 ## Goal
 
 Analyze a requested or completed description change and produce an impact result that:

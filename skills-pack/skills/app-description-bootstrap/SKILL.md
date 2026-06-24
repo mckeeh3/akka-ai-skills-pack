@@ -10,6 +10,14 @@ Use this skill when the user is starting a new app, a new app-description tree d
 This skill creates the **initial app-description current-intent graph** that later description skills will maintain.
 It is intent-compiler scaffolding for the authoritative current app definition rather than for code.
 
+## Lifecycle classification
+
+- Phase: interview.
+- Kind: focused bootstrap/current-intent capture.
+- Family: app-description.
+- Living-graph contract: bootstrap creates the initial app-description current-intent graph, including app, global, domain, workstream, worker, execution-harness, actor-adapter, governed-tool, capability, trace, test, and realization roots where the requested app scope requires them.
+- Build/compile handoff: bootstrap stops at description-ready graph structure; planning, code, tests, or validation must proceed through `../docs/app-description-to-code-compile-contract.md`.
+
 ## Goal
 
 Create a minimum viable internal app-description tree that:

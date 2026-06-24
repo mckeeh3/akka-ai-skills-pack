@@ -9,6 +9,14 @@ Use this skill when the harness needs to turn flexible user language into a cons
 
 This skill is a **normalizer** in the intent compiler. It does not primarily decide the final next step; it converts messy input into a stable representation that downstream skills can safely compile.
 
+## Lifecycle classification
+
+- Phase: interview.
+- Kind: normalizer.
+- Family: app-description.
+- Living-graph contract: normalization expresses flexible input as a current-intent graph delta with worker, execution-harness, actor-adapter, governed-tool, capability, trace, test, readiness, and realization implications visible before routing.
+- Build/compile handoff: when normalized input includes planning, implementation, code, tests, or validation intent, identify whether the slice can proceed through `../docs/app-description-to-code-compile-contract.md` or must return to description work first.
+
 ## Goal
 
 Produce a normalized result that:

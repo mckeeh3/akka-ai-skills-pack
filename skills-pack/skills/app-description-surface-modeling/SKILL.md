@@ -7,6 +7,14 @@ description: Model structured workstream surfaces in app descriptions, including
 
 Use this skill to update authoritative app-description surface definitions and workstream surface bindings for agent workstream apps. A surface is a typed, backend-backed user interaction unit, not a static mockup.
 
+## Lifecycle classification
+
+- Phase: interview.
+- Kind: focused current-intent capture/editor.
+- Family: app-description.
+- Living-graph contract: surface modeling maintains human execution-harness nodes in the app-description current-intent graph and must preserve surface-to-worker, actor-adapter, governed-tool, capability, trace, test, and realization links.
+- Build/compile handoff: when a surface contract becomes implementation, planning, code, tests, or validation work, hand off through `../docs/app-description-to-code-compile-contract.md` so browser realization compiles the existing graph instead of inventing app meaning.
+
 ## Required reading
 
 - `../docs/intent-compiler.md`

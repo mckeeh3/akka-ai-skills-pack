@@ -9,6 +9,14 @@ Use this as the top-level skill for app-description intent work.
 
 This skill is for a harness operating model where the app description is the file-backed **current-intent graph** for the application. The maintained runnable implementation should stay consistent with that graph.
 
+## Lifecycle classification
+
+- Phase: cross-phase.
+- Kind: orchestrator/router for app-description intent work.
+- Family: app-description.
+- Living-graph contract: coordinate maintenance of the app-description as the file-backed current-intent graph across app, global, domain, workstream, worker, execution-harness, actor-adapter, governed-tool, capability, trace, test, readiness, and realization nodes.
+- Build/compile handoff: route planning, generation, code, tests, and validation through `../docs/app-description-to-code-compile-contract.md`; do not let generated output supersede unreconciled graph intent.
+
 ## Goal
 
 Compile incremental user intent into current app-description artifacts, plans, code, tests, and validation evidence in a way that is:

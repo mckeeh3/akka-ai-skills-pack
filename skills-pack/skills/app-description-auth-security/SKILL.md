@@ -11,6 +11,14 @@ This skill maintains reusable auth/security definitions under `app-description/g
 It does not generate code.
 It defines the access-control and trust semantics that downstream generation must honor.
 
+## Lifecycle classification
+
+- Phase: interview.
+- Kind: focused current-intent capture/editor.
+- Family: app-description.
+- Living-graph contract: auth/security nodes are part of the app-description current-intent graph and must name affected workers, execution harnesses, actor adapters, governed tools, capabilities, traces, tests, and realization implications when security changes touch them.
+- Build/compile handoff: when security intent becomes implementation, planning, code, tests, or validation work, hand off through `../docs/app-description-to-code-compile-contract.md` instead of inventing runtime structure here.
+
 ## Goal
 
 Create or update auth/security-oriented app-description artifacts that:

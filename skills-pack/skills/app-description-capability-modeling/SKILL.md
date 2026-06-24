@@ -10,6 +10,14 @@ Use this skill when the harness needs to define or revise **domain capability no
 This skill maintains `app-description/domains/<domain>/capabilities/<capability>.md` as the inventory of what the app is for, what governed backend operations and queries exist, which governed-tools sit inside each capability, what user-visible outcomes they support, and what is in or out of scope. Reusable tool/role/policy/trace definitions belong under `app-description/global/**`; workstream-specific usage belongs under `domains/<domain>/workstreams/<workstream>/**` bindings.
 It does not generate code.
 
+## Lifecycle classification
+
+- Phase: interview.
+- Kind: focused current-intent capture/editor.
+- Family: app-description.
+- Living-graph contract: capability nodes are part of the app-description current-intent graph and must keep governed tools, workers, execution harnesses, actor adapters, AuthContext, traces, tests, and realization links first-class before implementation details.
+- Build/compile handoff: when capability intent becomes implementation, planning, code, tests, or validation work, hand off through `../docs/app-description-to-code-compile-contract.md` so the governed-tool/capability chain is compiled rather than bypassed.
+
 ## Goal
 
 Create or update capability-oriented app-description artifacts that:

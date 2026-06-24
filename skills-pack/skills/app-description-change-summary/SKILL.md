@@ -10,6 +10,14 @@ Use this skill when the human asks what changed after a revision request or when
 This skill supports the review model where humans do not edit internal artifacts directly.
 Review happens through prompt/response summaries generated from the harness's internal analysis.
 
+## Lifecycle classification
+
+- Phase: interview.
+- Kind: review/summary.
+- Family: app-description.
+- Living-graph contract: summarize semantic changes to the app-description current-intent graph, including workers, execution harnesses, actor adapters, governed tools, capabilities, traces, tests, readiness, and realization impact when they changed.
+- Build/compile handoff: if the summary identifies implementation, planning, code, tests, or validation impact, name that impact as a follow-up through `../docs/app-description-to-code-compile-contract.md` rather than treating generated output as the source of truth.
+
 ## Goal
 
 Produce a clear summary of what changed in the authoritative app description, including:
