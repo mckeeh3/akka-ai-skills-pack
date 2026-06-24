@@ -1,12 +1,14 @@
 package ai.first.application.coreapp.agentadmin;
 
 import ai.first.application.foundation.agent.AgentBehaviorRepository;
+import ai.first.application.foundation.agent.AgentRuntimeTraceSink;
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
 import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
 import ai.first.domain.foundation.agent.AgentDefinition;
 import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import ai.first.domain.foundation.agent.AgentReferenceManifest;
+import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import ai.first.domain.foundation.agent.AgentSkillManifest;
 import ai.first.domain.foundation.agent.PromptDocument;
 import ai.first.domain.foundation.agent.PromptVersion;
@@ -56,12 +58,25 @@ public final class AgentAdminDocAdministrationService {
   private final AgentBehaviorRepository repository;
   private final AuthContextResolver authContextResolver;
   private final Clock clock;
+  private final AgentAdminDocEditingRuntime editingRuntime;
+  private final AgentRuntimeTraceSink traceSink;
   private final Map<String, EditSessionRecord> sessions = new ConcurrentHashMap<>();
 
   public AgentAdminDocAdministrationService(AgentBehaviorRepository repository, AuthContextResolver authContextResolver, Clock clock) {
+    this(repository, authContextResolver, clock, new FailClosedAgentAdminDocEditingRuntime(), new NoopAgentRuntimeTraceSink());
+  }
+
+  public AgentAdminDocAdministrationService(
+      AgentBehaviorRepository repository,
+      AuthContextResolver authContextResolver,
+      Clock clock,
+      AgentAdminDocEditingRuntime editingRuntime,
+      AgentRuntimeTraceSink traceSink) {
     this.repository = Objects.requireNonNull(repository);
     this.authContextResolver = Objects.requireNonNull(authContextResolver);
     this.clock = Objects.requireNonNull(clock);
+    this.editingRuntime = Objects.requireNonNull(editingRuntime);
+    this.traceSink = Objects.requireNonNull(traceSink);
   }
 
   public AgentListResponse listAgents(AuthContextResolver.ResolvedMe actor, AgentListRequest request, String correlationId) {
@@ -171,12 +186,71 @@ public final class AgentAdminDocAdministrationService {
         List.of(new EditInstruction(Instant.now(clock), actor.account().accountId(), safe(request.initialInstructions()))),
         null,
         null,
+        null,
         List.of(),
         List.of(traceId("edit-session-start", base.documentId(), correlationId)),
         Instant.now(clock),
         null);
     sessions.put(session.sessionId(), session);
     return session;
+  }
+
+  public EditSessionRecord draftEditSessionWithAgent(AuthContextResolver.ResolvedMe actor, AgentDraftEditSessionRequest request, String correlationId) {
+    requireSaasAdmin(actor, DRAFT_EDIT_CAPABILITY, "agent_admin.doc_edit_session.agent_draft.v1", correlationId);
+    requireNonBlank(request == null ? null : request.instructions(), "edit-instructions-required");
+    var base = resolveDocument(new DocumentVersionRequest(request.agentDefinitionId(), request.kind(), request.documentId(), null));
+    var session = new EditSessionRecord(
+        "agent-doc-edit-session-" + UUID.randomUUID(),
+        base.agentDefinitionId(),
+        base.kind(),
+        base.documentId(),
+        base.currentVersion(),
+        actor.account().accountId(),
+        EditSessionStatus.DRAFTING,
+        List.of(new EditInstruction(Instant.now(clock), actor.account().accountId(), safe(request.instructions()))),
+        null,
+        null,
+        null,
+        List.of(),
+        List.of(traceId("edit-session-start", base.documentId(), correlationId)),
+        Instant.now(clock),
+        null);
+    var proposed = invokeEditingAgent(actor, session, base, null, correlationId);
+    sessions.put(proposed.sessionId(), proposed);
+    return proposed;
+  }
+
+  public EditSessionRecord reviseEditSessionWithAgent(AuthContextResolver.ResolvedMe actor, AgentReviseEditSessionRequest request, String correlationId) {
+    requireSaasAdmin(actor, DRAFT_EDIT_CAPABILITY, "agent_admin.doc_edit_session.agent_revise.v1", correlationId);
+    requireNonBlank(request == null ? null : request.instructions(), "edit-instructions-required");
+    var existing = session(request.sessionId());
+    ensureSessionActor(actor, existing);
+    if (existing.status() == EditSessionStatus.CANCELLED || existing.status() == EditSessionStatus.SAVED) {
+      throw new AuthorizationException(409, "edit-session-closed");
+    }
+    var instructions = new ArrayList<>(existing.instructions());
+    instructions.add(new EditInstruction(Instant.now(clock), actor.account().accountId(), safe(request.instructions())));
+    var current = new EditSessionRecord(
+        existing.sessionId(),
+        existing.agentDefinitionId(),
+        existing.kind(),
+        existing.documentId(),
+        existing.baseVersion(),
+        existing.actorAccountId(),
+        EditSessionStatus.DRAFTING,
+        List.copyOf(instructions),
+        existing.proposedContent(),
+        existing.changeSummary(),
+        existing.clarifyingQuestion(),
+        existing.warnings(),
+        appendTrace(existing.traceLinks(), traceId("edit-session-revise-request", existing.sessionId(), correlationId)),
+        existing.startedAt(),
+        null);
+    var base = resolveDocument(new DocumentVersionRequest(current.agentDefinitionId(), current.kind(), current.documentId(), null));
+    if (base.currentVersion() != current.baseVersion()) throw new AuthorizationException(409, "edit-session-base-version-stale");
+    var proposed = invokeEditingAgent(actor, current, base, current.proposedContent(), correlationId);
+    sessions.put(proposed.sessionId(), proposed);
+    return proposed;
   }
 
   public EditSessionRecord reviseEditSession(AuthContextResolver.ResolvedMe actor, ReviseEditSessionRequest request, String correlationId) {
@@ -196,6 +270,7 @@ public final class AgentAdminDocAdministrationService {
         List.copyOf(instructions),
         safe(request.proposedContent()),
         safe(request.changeSummary()),
+        null,
         List.copyOf(request.warnings() == null ? List.of() : request.warnings()),
         appendTrace(existing.traceLinks(), traceId("edit-session-revise", existing.sessionId(), correlationId)),
         existing.startedAt(),
@@ -209,6 +284,7 @@ public final class AgentAdminDocAdministrationService {
     var existing = session(request.sessionId());
     ensureSessionActor(actor, existing);
     var cancelled = transitionSession(existing, EditSessionStatus.CANCELLED, correlationId);
+    recordEditTrace("EDIT_SESSION_CANCEL", AgentRuntimeTrace.Decision.DENIED, cancelled, correlationId, "edit session cancelled by actor; proposed output discarded", checksum(cancelled.proposedContent()));
     sessions.put(cancelled.sessionId(), cancelled);
     return cancelled;
   }
@@ -218,12 +294,13 @@ public final class AgentAdminDocAdministrationService {
     var existing = session(request.sessionId());
     ensureSessionActor(actor, existing);
     if (existing.status() == EditSessionStatus.CANCELLED) throw new AuthorizationException(409, "edit-session-cancelled");
-    if (existing.proposedContent() == null || existing.proposedContent().isBlank()) throw new AuthorizationException(409, "edit-session-proposal-required");
+    if (existing.status() != EditSessionStatus.PROPOSAL_READY || existing.proposedContent() == null || existing.proposedContent().isBlank()) throw new AuthorizationException(409, "edit-session-proposal-required");
     var current = resolveDocument(new DocumentVersionRequest(existing.agentDefinitionId(), existing.kind(), existing.documentId(), null));
     if (current.currentVersion() != existing.baseVersion()) throw new AuthorizationException(409, "edit-session-base-version-stale");
     var nextVersion = current.currentVersion() + 1;
     saveCurrentSnapshot(current, existing.proposedContent(), actor.account().accountId(), firstNonBlank(existing.changeSummary(), "Saved from Agent Admin edit session " + existing.sessionId()), editSessionTranscript(existing));
     var saved = transitionSession(existing, EditSessionStatus.SAVED, correlationId);
+    recordEditTrace("EDIT_SESSION_SAVE", AgentRuntimeTrace.Decision.ALLOWED, saved, correlationId, "edit session saved as document version " + nextVersion, checksum(existing.proposedContent()));
     sessions.put(saved.sessionId(), saved);
     return new SaveEditSessionResult(saved, nextVersion, List.of(traceId("edit-session-save", existing.sessionId(), correlationId)));
   }
@@ -303,6 +380,107 @@ public final class AgentAdminDocAdministrationService {
     repository.deleteReferenceDocument(platformScopeId(), reference.referenceDocumentId(), actor.account().accountId(), now);
     removeReferencesFromManifest(agent, List.of(reference.referenceDocumentId()), now);
     return new ReferenceLifecycleResult(agent.agentDefinitionId(), null, reference.referenceDocumentId(), 0, List.of(traceId("reference-delete", reference.referenceDocumentId(), correlationId)));
+  }
+
+  private EditSessionRecord invokeEditingAgent(AuthContextResolver.ResolvedMe actor, EditSessionRecord session, DocumentSnapshot base, String priorProposal, String correlationId) {
+    var agent = agent(session.agentDefinitionId());
+    var result = editingRuntime.proposeEdit(new AgentAdminDocEditingRuntime.EditProposalRequest(
+        platformScopeId(),
+        actor.selectedContext(),
+        actor.account().accountId(),
+        agent.agentDefinitionId(),
+        agent.displayName(),
+        session.kind(),
+        session.documentId(),
+        session.baseVersion(),
+        base.contentBody(),
+        sameAgentEditingContext(agent, session.documentId()),
+        session.instructions().stream().map(EditInstruction::instructions).toList(),
+        priorProposal,
+        correlationId,
+        session.traceLinks()));
+    if (result.decision() != AgentRuntimeTrace.Decision.ALLOWED || result.proposal() == null) {
+      recordEditTrace("EDIT_AGENT_INVOCATION", AgentRuntimeTrace.Decision.DENIED, session, correlationId, firstNonBlank(result.safeErrorSummary(), "editing agent unavailable"), null);
+      throw new AuthorizationException(503, firstNonBlank(result.safeErrorCode(), "AGENT_ADMIN_DOC_EDITING_RUNTIME_UNAVAILABLE"));
+    }
+    var proposal = result.proposal();
+    var status = normalizeProposalStatus(proposal.status(), proposal.proposedMarkdown());
+    var warnings = proposal.warnings().stream().map(AgentAdminDocAdministrationService::safe).toList();
+    var traceLinks = new ArrayList<>(result.traceIds());
+    traceLinks.add(traceId("edit-session-agent-proposal", session.sessionId(), correlationId));
+    recordEditTrace("EDIT_AGENT_INVOCATION", AgentRuntimeTrace.Decision.ALLOWED, session, correlationId, "editing agent returned status=" + status + "; " + safe(proposal.changeSummary()), checksum(proposal.proposedMarkdown()));
+    return new EditSessionRecord(
+        session.sessionId(),
+        session.agentDefinitionId(),
+        session.kind(),
+        session.documentId(),
+        session.baseVersion(),
+        session.actorAccountId(),
+        status,
+        session.instructions(),
+        status == EditSessionStatus.PROPOSAL_READY ? safe(proposal.proposedMarkdown()) : session.proposedContent(),
+        safe(proposal.changeSummary()),
+        safe(proposal.clarifyingQuestion()),
+        warnings,
+        List.copyOf(traceLinks),
+        session.startedAt(),
+        null);
+  }
+
+  private EditSessionStatus normalizeProposalStatus(String status, String proposedMarkdown) {
+    var normalized = status == null ? "" : status.toLowerCase(Locale.ROOT);
+    if ("clarification_requested".equals(normalized)) return EditSessionStatus.CLARIFICATION_REQUESTED;
+    if ("refused".equals(normalized)) return EditSessionStatus.REFUSED;
+    if (!isBlank(proposedMarkdown)) return EditSessionStatus.PROPOSAL_READY;
+    return EditSessionStatus.CLARIFICATION_REQUESTED;
+  }
+
+  private String sameAgentEditingContext(AgentDefinition agent, String targetDocumentId) {
+    var parts = new ArrayList<String>();
+    repository.promptDocument(platformScopeId(), agent.promptDocumentId())
+        .ifPresent(prompt -> parts.add("## Agent prompt: " + prompt.title() + " (" + prompt.promptDocumentId() + ")\n" + redactIfTarget(prompt.promptDocumentId(), targetDocumentId, prompt.contentBody())));
+    var skillManifest = repository.skillManifest(platformScopeId(), agent.skillManifestId()).orElse(null);
+    if (skillManifest != null) {
+      for (var entry : skillManifest.entries()) {
+        repository.skillDocument(platformScopeId(), entry.skillDocumentId())
+            .ifPresent(skill -> parts.add("## Skill: " + skill.title() + " (" + skill.skillDocumentId() + ")\nPurpose: " + skill.purpose() + "\nWhen to use: " + skill.whenToUse() + "\n" + redactIfTarget(skill.skillDocumentId(), targetDocumentId, skill.contentBody())));
+      }
+    }
+    var referenceManifest = repository.referenceManifest(platformScopeId(), agent.referenceManifestId()).orElse(null);
+    if (referenceManifest != null) {
+      for (var entry : referenceManifest.entries()) {
+        repository.referenceDocument(platformScopeId(), entry.referenceDocumentId())
+            .ifPresent(reference -> parts.add("## Reference: " + reference.title() + " (" + reference.referenceDocumentId() + ")\nSummary: " + reference.summary() + "\nWhen to consult: " + reference.whenToConsult() + "\n" + redactIfTarget(reference.referenceDocumentId(), targetDocumentId, reference.contentBody())));
+      }
+    }
+    return String.join("\n\n", parts);
+  }
+
+  private static String redactIfTarget(String documentId, String targetDocumentId, String contentBody) {
+    return Objects.equals(documentId, targetDocumentId) ? "<target document content supplied separately>" : contentBody;
+  }
+
+  private void recordEditTrace(String traceType, AgentRuntimeTrace.Decision decision, EditSessionRecord session, String correlationId, String safeSummary, String checksum) {
+    traceSink.record(new AgentRuntimeTrace(
+        traceId(traceType.toLowerCase(Locale.ROOT), session.sessionId(), correlationId),
+        Instant.now(clock),
+        platformScopeId(),
+        session.agentDefinitionId(),
+        correlationId,
+        session.sessionId(),
+        traceType,
+        decision,
+        session.actorAccountId(),
+        capabilityForTrace(traceType),
+        session.documentId(),
+        safe(safeSummary),
+        checksum));
+  }
+
+  private static String capabilityForTrace(String traceType) {
+    if ("EDIT_SESSION_SAVE".equals(traceType)) return SAVE_EDIT_CAPABILITY;
+    if ("EDIT_SESSION_CANCEL".equals(traceType)) return CANCEL_EDIT_CAPABILITY;
+    return DRAFT_EDIT_CAPABILITY;
   }
 
   private void requireDocumentCapability(AuthContextResolver.ResolvedMe actor, AgentDocKind kind, String surfaceContract, String correlationId) {
@@ -508,6 +686,7 @@ public final class AgentAdminDocAdministrationService {
         existing.instructions(),
         existing.proposedContent(),
         existing.changeSummary(),
+        existing.clarifyingQuestion(),
         existing.warnings(),
         appendTrace(existing.traceLinks(), traceId("edit-session-" + status.name().toLowerCase(Locale.ROOT), existing.sessionId(), correlationId)),
         existing.startedAt(),
@@ -546,9 +725,13 @@ public final class AgentAdminDocAdministrationService {
   }
 
   private static String editSessionTranscript(EditSessionRecord session) {
-    return session.instructions().stream()
+    var instructionTranscript = session.instructions().stream()
         .map(instruction -> instruction.actorAccountId() + ": " + instruction.instructions())
         .collect(java.util.stream.Collectors.joining("\n"));
+    return instructionTranscript
+        + "\n\nchangeSummary: " + safe(session.changeSummary())
+        + "\nwarnings: " + session.warnings()
+        + "\nproposedContentChecksum: " + checksum(session.proposedContent());
   }
 
   private static String simpleUnifiedDiff(String prior, String selected) {
@@ -580,6 +763,10 @@ public final class AgentAdminDocAdministrationService {
 
   private static String firstNonBlank(String value, String fallback) {
     return value == null || value.isBlank() ? fallback : value;
+  }
+
+  private static boolean isBlank(String value) {
+    return value == null || value.isBlank();
   }
 
   private static String safe(String value) {
@@ -629,7 +816,7 @@ public final class AgentAdminDocAdministrationService {
 
   public enum AgentDocKind { PROMPT, SKILL, REFERENCE }
 
-  public enum EditSessionStatus { DRAFTING, PROPOSAL_READY, SAVED, CANCELLED }
+  public enum EditSessionStatus { DRAFTING, CLARIFICATION_REQUESTED, PROPOSAL_READY, REFUSED, SAVED, CANCELLED }
 
   public enum DiffStatus { READY, NO_PRIOR_VERSION, PRIOR_VERSION_NOT_AVAILABLE_IN_CURRENT_SLICE }
 
@@ -703,9 +890,13 @@ public final class AgentAdminDocAdministrationService {
 
   public record EditSessionCommandRequest(String sessionId) {}
 
+  public record AgentDraftEditSessionRequest(String agentDefinitionId, AgentDocKind kind, String documentId, String instructions) {}
+
+  public record AgentReviseEditSessionRequest(String sessionId, String instructions) {}
+
   public record EditInstruction(Instant at, String actorAccountId, String instructions) {}
 
-  public record EditSessionRecord(String sessionId, String agentDefinitionId, AgentDocKind kind, String documentId, int baseVersion, String actorAccountId, EditSessionStatus status, List<EditInstruction> instructions, String proposedContent, String changeSummary, List<String> warnings, List<String> traceLinks, Instant startedAt, Instant endedAt) {
+  public record EditSessionRecord(String sessionId, String agentDefinitionId, AgentDocKind kind, String documentId, int baseVersion, String actorAccountId, EditSessionStatus status, List<EditInstruction> instructions, String proposedContent, String changeSummary, String clarifyingQuestion, List<String> warnings, List<String> traceLinks, Instant startedAt, Instant endedAt) {
     public EditSessionRecord {
       instructions = List.copyOf(instructions == null ? List.of() : instructions);
       warnings = List.copyOf(warnings == null ? List.of() : warnings);
@@ -740,6 +931,18 @@ public final class AgentAdminDocAdministrationService {
   public record ReferenceLifecycleResult(String agentDefinitionId, String skillDocumentId, String referenceDocumentId, int currentVersion, List<String> traceLinks) {
     public ReferenceLifecycleResult {
       traceLinks = List.copyOf(traceLinks == null ? List.of() : traceLinks);
+    }
+  }
+
+  private static final class NoopAgentRuntimeTraceSink implements AgentRuntimeTraceSink {
+    @Override
+    public AgentRuntimeTrace record(AgentRuntimeTrace trace) {
+      return trace;
+    }
+
+    @Override
+    public List<AgentRuntimeTrace> traces() {
+      return List.of();
     }
   }
 }

@@ -97,7 +97,7 @@
 
 ### AADE-02-001: Editing-agent draft/revise/save/cancel flow
 
-- status: pending
+- status: done
 - source: `backlog/02-agent-runtime-build-backlog.md`
 - task brief: `specs/agent-admin-doc-editing-realization/tasks/02-runtime/01-editing-agent-flow.md`
 - depends on: [AADE-01-002]
@@ -122,7 +122,9 @@
   - draft/revise/save/cancel behavior works through backend doc state
   - provider/runtime fail-closed behavior is tested
   - changes and queue update are committed
-- notes: []
+- notes:
+  - completed in commit message: `Implement Agent Admin doc editing agent flow`
+  - next runnable task after completion: `AADE-02-002` (`pending`, depends on `AADE-02-001`)
 
 ### AADE-02-002: Runtime doc loading and read traces
 
