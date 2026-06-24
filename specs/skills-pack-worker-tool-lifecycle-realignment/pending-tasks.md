@@ -236,7 +236,7 @@
 
 ### TASK-010: Migrate AI-first SaaS/workstream/worker family
 
-- status: pending
+- status: done
 - source: specs/skills-pack-worker-tool-lifecycle-realignment/migration-strategy.md
 - task brief: specs/skills-pack-worker-tool-lifecycle-realignment/tasks/010-migrate-ai-first-workstream-family.md
 - depends on: [TASK-009]

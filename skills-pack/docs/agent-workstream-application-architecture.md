@@ -39,7 +39,8 @@ input / PRD / feature request / incremental change
 → human surface graph: dashboard trunk, surface nodes, surface-action edges
 → internal workstream agent graph: virtual dashboard agent, worker agents, delegations, escalations
 → governed-tools inside capability files and surface/action maps
-→ governed capabilities/APIs and exposure channels
+→ governed tools inside capability/API contracts
+→ selected actor adapters and exposure channels
 → Akka substrate and participants
 → request-based workstream Agent turns and AutonomousAgent task candidates
 → events/notifications/projections
@@ -60,7 +61,7 @@ AutonomousAgent task progress/result surfaces are part of the workstream model w
 
 Before selecting surfaces, capabilities, agent teams, or Akka components, identify the workstream workforce. A workforce roster names the human workers, functional-agent worker, internal specialist agent workers, durable autonomous/background agent workers, evaluator/reviewer agents, and deterministic system workers that perform or supervise the work.
 
-Each worker should have explicit responsibility, non-responsibilities, authority, AuthContext/scope, evidence needs, governed-tools/capabilities, surfaces used or produced, handoffs/escalations, audit/work traces, and failure/denial behavior. Use `./workforce-decomposition.md` for the canonical contract. Agent workers are not generic AI helpers; they are bounded workers whose authority is narrower than, and separately declared from, the authority of the human workers they support.
+Each worker should have explicit responsibility, non-responsibilities, authority, AuthContext/scope, evidence needs, execution harnesses, actor adapters, governed tools, capabilities, surfaces used or produced, handoffs/escalations, audit/work traces, and failure/denial behavior. Use `./workforce-decomposition.md` for the canonical contract. Agent workers are not generic AI helpers; they are bounded workers whose authority is narrower than, and separately declared from, the authority of the human workers they support.
 
 A workstream definition is incomplete if it names a functional agent, internal agent, AutonomousAgent task, workflow, dashboard, or consequential surface action without identifying the responsible worker and actor adapter.
 
@@ -87,7 +88,7 @@ For AI-backed actors, prompts, skills, references, tool descriptions, and schema
 
 Example: `useradmin.invitation.create` may be exposed as an **Invite user** surface action in the User Admin dashboard, as a confirmed `human_chat_tool_plan` in the selected User Admin workstream, and as an allowed agent tool for the User Admin Agent. A human can click the action and submit `jane.doe@gmail.com`; the same human can also ask the selected workstream agent, “create a user invite for jane.doe@gmail.com.” The chat path first returns a plan such as “create invitation for jane.doe@gmail.com in the selected organization with role X; send invitation email; record admin audit,” asks for confirmation, and only then invokes the same governed-tool sequence. In every path the backend invokes the same governed capability with selected `AuthContext`, tenant scope, role/capability checks, idempotency, policy gates, audit, traces, and safe denial behavior.
 
-Human availability does not automatically grant AI availability. If a human-backed actor can perform a consequential action from a surface or confirmed chat plan, the AI-backed workstream agent may perform or propose that action only when the same governed tool is explicitly exposed to that agent, within its tool boundary and approval policy. Traces must distinguish direct human surface actions, human-requested confirmed chat plans, and AI-mediated tool calls while preserving their relationship, for example `actorType=human-backed`, `source=surface_action`; `actorType=human-backed`, `source=human_chat_tool_plan`, `confirmedBy=<human account/member>`; or `actorType=ai-backed`, `requestedBy=<human account/member>`, `source=agent_tool_call`. The AI model is never the security boundary; tool catalog membership, AuthContext, schemas, policy/approval, idempotency, and backend authorization decide whether an invocation proceeds.
+Human availability does not automatically grant AI availability. If a human-backed worker can perform a consequential action from a surface or confirmed chat plan, the AI-backed workstream agent may perform or propose that action only when the same governed tool is explicitly exposed to that agent, within its tool boundary and approval policy. Traces must distinguish direct human `surface_action` adapters, human-requested confirmed `human_chat_tool_plan` adapters, and AI-mediated `agent_tool_call` adapters while preserving their relationship, for example `actorType=human-backed`, `source=surface_action`; `actorType=human-backed`, `source=human_chat_tool_plan`, `confirmedBy=<human account/member>`; or `actorType=ai-backed`, `requestedBy=<human account/member>`, `source=agent_tool_call`. The AI model is never the security boundary; tool catalog membership, AuthContext, schemas, policy/approval, idempotency, and backend authorization decide whether an invocation proceeds.
 
 ## SaaS Foundation App workstream set
 
@@ -123,20 +124,20 @@ A workstream is not production-ready just because fixture items render, a determ
 | Workstream agent | The functional agent in its role as the selected workstream user's assistant and shared governed harness for human-backed and AI-backed turns. It can answer workstream-specific “how do I...” questions, interpret shorthand requests such as “dashboard” or “show users”, request or refresh surfaces, invoke allowed capability-backed actions, explain denials/errors, and guide users through tasks. It is not the root app abstraction and does not grant authority. |
 | Human-backed actor | Governed workstream participant whose reasoning engine is an authenticated human supervisor. The harness shapes this actor through surfaces, instructions, evidence, forms, action affordances, confirmations, result surfaces, and trace links. |
 | AI-backed actor | Governed workstream participant whose reasoning engine is a configured model invoked through the Akka Agent runtime path. The harness shapes this actor through prompts, skills, references, tool schemas, tool boundaries, memory, guardrails, and traces. |
-| Human surface action | The human-backed actor's structured surface adapter for a governed workstream tool, including labels, fields, validation, evidence, confirmation/approval UX, result/system-message surfaces, denial states, and trace links. |
-| Human chat tool plan | The human-backed actor's natural-language adapter for consequential tool use. The selected workstream agent interprets the request, proposes a detailed plan, obtains explicit confirmation bound to that plan, then executes individually authorized and traced governed-tool invocations with result/partial-failure surfaces. |
-| AI agent-tool adapter | The AI-backed actor's model-facing adapter for a governed workstream tool, exposed only when the tool boundary allows it and always enforced by backend authorization, policy, idempotency, and traces. |
-| Internal/API/MCP exposure | Non-human browser exposure of a governed workstream tool through workflows, timers, consumers, internal services, HTTP/gRPC APIs, or MCP-tools. These channels share the same capability contract and differ only by caller boundary and trace source. |
+| `surface_action` actor adapter | The human-backed worker's structured surface adapter for a governed workstream tool, including labels, fields, validation, evidence, confirmation/approval UX, result/system-message surfaces, denial states, and trace links. |
+| `human_chat_tool_plan` actor adapter | The human-backed worker's natural-language adapter for consequential governed-tool use. The selected workstream agent interprets the request, proposes a detailed plan, obtains explicit confirmation bound to that plan, then executes individually authorized and traced governed-tool invocations with result/partial-failure surfaces. |
+| `agent_tool_call` actor adapter | The AI-backed worker's model-facing adapter for a governed workstream tool, exposed only when the tool boundary allows it and always enforced by backend authorization, policy, idempotency, and traces. |
+| System/API/MCP actor adapters and exposure channels | Non-human and non-browser exposure of a governed workstream tool through `workflow_step`, `timer_invocation`, `consumer_reaction`, `internal_call`, `api_call`, or `mcp_tool_call`. These channels share the same capability contract and differ only by caller boundary, harness, and trace source. |
 | Internal agent | Non-left-rail agent invoked by workflows, tools, consumers, timers, functional agents, or backend services for bounded work such as classification, summarization, evaluation, routing, replay, proposal drafting, or governance review. |
 | Workstream definition | Design-time root app unit for authenticated consequential work, backed by exactly one functional agent, with role-specific dashboards, attention, surface graph, capability/governed-tool map, expertise, traces, and tests. |
 | Workstream instance | Durable runtime conversational/operational timeline for one workstream definition in a selected organization/customer/AuthContext scope. It retains user requests, agent responses, tool/capability results, structured surfaces, system-message surfaces, decisions, workflow progress, traces, and follow-up actions. Retained records are not automatically separate browser surfaces; render one primary result surface per prompt/action unless a typed progress/detail surface is explicitly part of the contract. |
 | Workstream view/session | Browser rendering of a selected workstream instance. It may be route/deep-link addressable but is not the durable source of truth. |
 | Workstream icon | Universal shell metadata for a workstream launcher/status button: a compact icon chosen from the workstream name/domain, with stable id, accessible label, tooltip text, accent color, and optional glyph/vector asset. Icons keep rails and status panels compact while preserving full workstream names for hover, focus, and screen readers. |
 | Surface | Typed renderable artifact in a workstream, such as a dashboard, form, data table, chart, decision card, diff review, audit timeline, entity detail, approval card, workflow status, exception card, system message, or outcome metric panel. |
-| Surface graph | Human work tree for a workstream: the role-specific dashboard is the trunk, surface nodes are branches, and surface actions are edges that open surfaces, invoke browser-tools, create system-message surfaces, update attention, start internal-agent work, open traces, or route approvals/decisions. |
+| Surface graph | Human work tree for a workstream: the role-specific dashboard is the trunk, surface nodes are branches, and `surface_action` edges open surfaces, invoke browser adapters for governed tools, create system-message surfaces, update attention, start internal-agent work, open traces, or route approvals/decisions. |
 | Internal workstream agent graph | Backend worker graph for a workstream: a virtual dashboard agent view determines agent attention, delegates bounded work to internal worker agents, collects results/proposals, updates attention/surfaces, and escalates to humans when required. |
-| Capability | Product-level backend ability or grouping behind related operations, queries, workflows, timers, consumers, APIs, and internal component calls. Capabilities define authority, scope, schemas, side effects, idempotency, policy/approval, audit, exposure channels, and tests. |
-| Governed-tool / governed workstream tool | Executable semantic operation inside a capability boundary and surface/action map, with actor/caller rules, AuthContext, schemas, side effects, idempotency, policy/approval, audit/work trace, and implementation mapping. It is not inherently a UI action, chat command, or AI function tool; expose it only through qualified actor adapters/channels such as human surface actions/browser-tools, confirmed human chat tool plans, agent-tools, internal-tools, workflow/timer/consumer exposure, API, or MCP-tool. |
+| Capability | Product-level backend ability or grouping behind related governed tools. Capabilities define authority, scope, schemas, side effects, idempotency, policy/approval, audit, actor adapters/exposure channels, and tests. |
+| Governed-tool / governed workstream tool | Executable semantic operation inside a capability boundary and surface/action map, with worker/caller rules, AuthContext, schemas, side effects, idempotency, policy/approval, audit/work trace, and implementation mapping. It is not inherently a UI action, chat command, or AI function tool; expose it only through qualified actor adapters/channels such as `surface_action`, confirmed `human_chat_tool_plan`, `agent_tool_call`, `internal_call`, `workflow_step`, `timer_invocation`, `consumer_reaction`, `api_call`, or `mcp_tool_call`. |
 | Horizontal implementation | Akka entities, workflows, views, consumers, timed actions, agents, endpoints, web UI code, auth/security, audit, and tests that implement capabilities for vertical functional agents and surfaces. |
 
 ## Agent workstream shell
@@ -219,7 +220,7 @@ A generated app grows by adding vertical workstreams. Each workstream is backed 
 - prompt intent and a workstream expert bundle where LLM behavior is involved: governed prompt refs, skills, reference documents, compact expertise manifest, loader rules, tool boundaries, runtime tool bindings, and trace requirements;
 - surfaces the workstream can render or reuse, arranged as a human surface graph;
 - surface actions, including command actions and query/surface-request actions, modeled as graph edges;
-- capabilities and governed-tools it can call directly or through browser-tools, agent-tools, internal-tools, workflows, timers, consumers, APIs, or MCP exposures;
+- governed tools and capabilities it can call directly or through declared actor adapters such as `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, `internal_call`, `workflow_step`, `timer_invocation`, `consumer_reaction`, `api_call`, or `mcp_tool_call`;
 - escalation, approval, denial, and exception behavior;
 - audit/work trace requirements;
 - tests for authorization, surface rendering, capability invocation, tenant isolation, and audit.
@@ -314,10 +315,10 @@ For each operation or query exposed in a workstream, define the capability and g
 - data access and side effects;
 - policy, approval, escalation, and autonomy rules;
 - audit/work-trace fields;
-- exposure channels: surface/workstream action as browser-tool, confirmed human chat tool plan, browser API, workstream-agent agent-tool, internal-agent agent-tool, HTTP/gRPC/MCP endpoint or MCP-tool, workflow step, timer-tool, consumer-tool, view, or internal-tool;
+- actor adapters and exposure channels: `surface_action`, confirmed `human_chat_tool_plan`, `api_call`, workstream-agent or internal-agent `agent_tool_call`, HTTP/gRPC/MCP endpoint or `mcp_tool_call`, `workflow_step`, `timer_invocation`, `consumer_reaction`, view/query, or `internal_call`;
 - success, validation, forbidden, tenant-isolation, idempotency, approval, audit, confirmation, partial-failure, and rendering/tool/API tests.
 
-Agent-tools are optional capability exposure channels. Workstream-agent agent-tools are model-facing exposures of governed-tools for the selected workstream; internal-agent agent-tools are backend AI-worker exposures. Human chat tool plans are human-backed, model-assisted plan/confirmation adapters, not autonomous agent authority. Side-effecting agent-tools require explicit permission and should default to proposal or approval flows unless a bounded autonomous policy is accepted.
+`agent_tool_call` adapters are optional model-facing actor adapters for governed tools. Workstream-agent adapters are model-facing exposures of governed tools for the selected workstream; internal-agent adapters are backend AI-worker exposures. Human chat tool plans are human-backed, model-assisted plan/confirmation adapters, not autonomous agent authority. Side-effecting `agent_tool_call` adapters require explicit permission and should default to proposal or approval flows unless a bounded autonomous policy is accepted.
 
 ## Horizontal Akka implementation
 
@@ -364,8 +365,8 @@ add or extend one affected workstream
 + surface graph node/action-edge changes
 + internal workstream agent graph changes when delegated worker work exists
 + one or two useful user intents/actions
-+ governed capabilities and governed-tools
-+ Akka horizontals needed for those capabilities/governed-tools
++ governed tools inside backend capabilities
++ Akka horizontals needed for those governed tools and capabilities
 + workstream UI rendering
 + authorization, audit, tenant-isolation, governed-tool, and surface tests
 ```
@@ -384,10 +385,10 @@ Before treating a generated full-stack AI-first SaaS app as architecture-ready, 
 - [ ] Internal agents are distinguished from functional agents and have governed behavior, tool boundaries, and traces.
 - [ ] Surfaces are typed renderable artifacts with schemas, allowed actions, states, and rendering tests.
 - [ ] System messages are modeled as typed surfaces, not ad hoc strings.
-- [ ] Surface actions, confirmed human chat tool plans, agent tools, APIs, workflows, timers, and consumers map to governed capabilities and shared governed-tool ids where they perform the same operation.
+- [ ] `surface_action`, confirmed `human_chat_tool_plan`, `agent_tool_call`, `api_call`, `workflow_step`, `timer_invocation`, and `consumer_reaction` adapters map to backend capabilities and shared governed-tool ids where they perform the same operation.
 - [ ] Prompt-entered surface/workstream requests, surface actions, My Account panels, rail selection, and deep links share one shell request pipeline with canonical prompt feedback, origin metadata, target-workstream-only request rendering, backend authorization, denial/system-message behavior, and tests.
 - [ ] Confirmed human chat tool plans, when modeled, include detailed plan review, explicit confirmation binding, deterministic backend authorization, per-tool transaction/idempotency behavior, traces, and result/partial-failure surfaces.
-- [ ] Capability-first backend design remains intact: auth, scope, validation, idempotency, side effects, approval, audit, exposure channels, and tests are defined before Akka component selection.
+- [ ] Capability-first backend design remains intact: auth, scope, validation, idempotency, side effects, approval, audit, actor adapters/exposure channels, and tests are defined before Akka component selection.
 - [ ] Akka components are selected as horizontal implementation details from capability semantics.
 - [ ] The UI shell includes left rail functional agents, main workstream, persistent composer, context/authority indicators, denial/recovery states, and trace links.
 - [ ] Page-first, CRUD-first, and chatbot-bolt-on alternatives are not presented as equal generated-app defaults.
@@ -406,7 +407,7 @@ When this model is maintained in an app-description tree, keep ownership split b
 For high-level product input, apply this sequence:
 
 1. Preserve the mandatory secure AI-first SaaS foundation.
-2. Apply `./requirements-to-workstream-development-process.md`: workstream inventory, attention categories, dashboard contracts, surfaces/actions, governed capabilities/APIs, Akka substrate, agent/AutonomousAgent workers, events/notifications/projections, traces, and tests.
+2. Apply `./requirements-to-workstream-development-process.md`: workstream inventory, attention categories, dashboard contracts, surfaces/actions, governed tools inside capability/API contracts, Akka substrate, agent/AutonomousAgent workers, events/notifications/projections, traces, and tests.
 3. Interpret the product as an agent workstream application unless explicitly out of scope.
 4. Identify functional agents, internal agents, initial workstreams, structured surfaces, and retained human authority.
 5. Model governed backend capabilities for every surface action, tool, workflow step, API, timer, consumer, and internal operation.

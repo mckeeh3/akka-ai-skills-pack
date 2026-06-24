@@ -22,7 +22,7 @@ Workforce decomposition fills the gap between identifying workstreams and select
 
 Generated AI-first SaaS applications must identify the workforce before capability or component selection. The workforce includes human workers, user-facing functional-agent workers, internal specialist agent workers, durable autonomous/background agent workers, and deterministic system workers.
 
-Do not treat agent workers as generic AI helpers. Each agent worker is a bounded worker with explicit responsibility, authority, evidence needs, tools/capabilities, supervision, handoffs, and traces.
+Do not treat agent workers as generic AI helpers. Each agent worker is a bounded worker with explicit responsibility, authority, evidence needs, execution harnesses, actor adapters, governed tools, capabilities, supervision, handoffs, and traces.
 
 Default order:
 
@@ -34,8 +34,8 @@ input / PRD / feature request / incremental change
 → responsibility, authority, supervision, and handoff map
 → per-workstream attention categories and role-specific dashboards
 → human surface graph and agent/internal worker graph
-→ governed capabilities and governed-tools
-→ selected exposure channels
+→ governed tools inside backend capabilities
+→ selected actor adapters and exposure channels
 → Akka substrate and implementation tasks
 ```
 
@@ -95,7 +95,7 @@ For each agent worker, record:
 - single responsibility and explicit non-responsibilities;
 - worker owner/steward and supervising human role;
 - allowed evidence/data and redaction profile;
-- allowed governed-tools/capabilities and exposure channel, if any;
+- allowed governed tools, capability ids, actor adapters, and exposure channels, if any;
 - authority level: recommend, draft, evaluate, propose, execute, approve, or only route;
 - autonomy policy and approval gates;
 - handoffs/escalations to humans, functional agents, workflows, or other agents;
@@ -156,6 +156,8 @@ surfacesUsed:
 surfacesProduced:
 capabilitiesUsed:
 governedTools:
+executionHarnesses:
+actorAdapters:
 exposureChannels:
 handoffsTo:
 escalatesTo:
@@ -179,7 +181,7 @@ worker → emits audit/work traces
 worker → maps to Akka Agent, AutonomousAgent, Workflow, Consumer, Timer, View, Endpoint, or frontend surface as needed
 ```
 
-Surfaces remain the human-backed actor's tool-use interface. Agent tools remain one possible exposure channel for governed-tools. Capabilities remain the product backend boundary. Akka components remain implementation substrates selected after responsibilities and capability semantics are clear.
+Surfaces remain the human-backed worker harness and `surface_action` actor-adapter interface. Agent tools are `agent_tool_call` actor adapters for governed tools, not separate authority. Capabilities remain the product backend boundary. Akka components remain implementation substrates selected after responsibilities, governed-tool semantics, and capability semantics are clear.
 
 ## Readiness checklist
 
@@ -202,6 +204,6 @@ Before moving from description/planning to implementation, verify:
 - Treating a human role's permission as automatic permission for an AI agent.
 - Using a workflow, timer, or consumer as an untracked system worker with no provenance or audit.
 - Making dashboards or surfaces without identifying which worker needs the work and what they can do next.
-- Duplicating business operations separately for human clicks and AI tool calls instead of sharing one governed capability.
+- Duplicating business operations separately for human clicks, confirmed chat plans, and AI tool calls instead of sharing one governed tool inside one capability with separate actor adapters.
 
 See also [Requirements-to-workstream development process](requirements-to-workstream-development-process.md), [Agent workstream application architecture](agent-workstream-application-architecture.md), [Structured surface contracts](structured-surface-contracts.md), and [Capability-first backend architecture](capability-first-backend-architecture.md).

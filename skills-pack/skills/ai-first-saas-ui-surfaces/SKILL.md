@@ -9,12 +9,23 @@ Use this companion after `ai-first-saas` when a product or feature needs browser
 
 This is a UI-surface and routing skill. It does not replace `akka-web-ui-*`, HTTP endpoint, View, Workflow, Agent, or security implementation skills.
 
+## Lifecycle classification
+
+- Phase role: Interview-phase surface selection and contract shaping with Build/compile handoff constraints for browser realization, backend capabilities, traces, and tests.
+- Graph layer: functional-agent workstream, human worker, software/system worker, structured surface, execution harness, actor adapter, governed tool, capability, trace, and UI realization nodes.
+- Canonical chain: `worker → execution harness → actor adapter → governed tool → capability → Akka implementation`.
+
 ## Required reading
 
 Read first:
 - `../docs/intent-compiler.md`
 - `../docs/current-intent-model.md`
 - `../docs/intent-to-realization-flow.md`
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-component-graph.md`
+- `../docs/app-description-to-code-compile-contract.md`
+- `../docs/workforce-decomposition.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../ai-first-saas/SKILL.md`
 
@@ -45,7 +56,7 @@ Before selecting any surface family, place it inside one or more functional/cont
 - identify reusable functional agents that may render or link the same surface without owning its semantics;
 - record workstream placement: default briefing/dashboard, timeline item, attention queue, embedded card, modal, side panel, drill-in, or direct deep link;
 - define payload/query source expectations: read/evidence capabilities, view/query sources, redaction, selected `AuthContext`, and user-visible versus drilldown/admin/support/auditor/internal metadata boundaries for trace/correlation fields;
-- list capability-backed actions and denial/result surfaces; for collection-object surfaces, list row/card selection, create, edit, destructive lifecycle, and lifecycle-specific task edges as delegated surface requests or task surfaces; for dashboard/command-center/attention surfaces, list clickable and keyboard-operable work-object interactions for cards, rows, counters, badges, chart segments, task/progress panels, shortcuts, icons, and buttons; frontend controls are exposure details only; if the same governed-tool is also available through confirmed chat, list the `human_chat_tool_plan` review, confirmation, result, partial-failure, and trace surfaces without duplicating the surface action's business semantics;
+- list capability-backed actions and denial/result surfaces; for collection-object surfaces, list row/card selection, create, edit, destructive lifecycle, and lifecycle-specific task edges as delegated surface requests or task surfaces; for dashboard/command-center/attention surfaces, list clickable and keyboard-operable work-object interactions for cards, rows, counters, badges, chart segments, task/progress panels, shortcuts, icons, and buttons; frontend controls are `surface_action` actor adapters only; if the same governed tool is also available through confirmed chat or an AI-backed worker, list the `human_chat_tool_plan` or `agent_tool_call` adapter review/confirmation/result/partial-failure and trace surfaces without duplicating the surface action's business semantics;
 - link audit/work traces for payload access, worker handoffs, agent work, decisions, approvals, denials, and side effects;
 - treat routes and deep links only as implementation details that reopen a selected functional agent, workstream item, or structured surface.
 

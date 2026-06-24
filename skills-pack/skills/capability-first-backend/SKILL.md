@@ -1,11 +1,11 @@
 ---
 name: capability-first-backend
-description: Model backend behavior as governed capabilities before choosing Akka components or exposure channels, then route to app-description, decomposition, PRD/backlog, or focused implementation skills.
+description: Model backend behavior as governed tools inside capabilities before choosing Akka components, actor adapters, or exposure channels, then route to app-description, decomposition, PRD/backlog, or focused implementation skills.
 ---
 
 # Capability-First Backend
 
-Use this skill after secure AI-first SaaS interpretation and worker/workstream modeling, and before selecting entities, workflows, endpoints, agent tools, MCP tools, timers, consumers, or UI actions.
+Use this skill after secure AI-first SaaS interpretation and worker/workstream modeling, and before selecting entities, workflows, endpoints, `agent_tool_call` adapters, MCP adapters, timers, consumers, or UI `surface_action` adapters.
 
 This is a Build/compile-preparation routing and framing skill. It does not replace `core-saas-foundation`, `ai-first-saas`, app-description/current-intent skills, `akka-solution-decomposition`, spec/backlog skills, or focused Stage 3 component skills. In the living app-description graph, capabilities and governed tools are first-class current-intent nodes that bind worker actions and actor adapters to realization paths.
 
@@ -30,7 +30,7 @@ Read these first when using this skill:
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/agent-workstream-application-architecture.md` for generated full-stack SaaS app modeling before backend capability design
 - `../docs/workforce-decomposition.md` when workers, responsibilities, authority, supervision, or handoffs are in scope
-- `../docs/structured-surface-contracts.md` when workstream surfaces, surface actions, or browser UI actions are in scope
+- `../docs/structured-surface-contracts.md` when workstream surfaces, `surface_action` adapters, or browser UI actions are in scope
 - `../docs/workstream-surface-intent-routing.md` when composer prompts open or prepopulate protected surfaces
 - `../docs/capability-first-backend-architecture.md`
 - `../agent-workstream-apps/SKILL.md` when generated SaaS intent has not already produced functional-agent, workstream, and structured-surface context
@@ -48,7 +48,7 @@ Especially use it when the request involves:
 - `agent_tool_call` or component-tool exposures;
 - browser/API/MCP exposure choices;
 - approval-gated, long-running, scheduled, or event-reactive work;
-- shared semantics across UI actions, APIs, workflows, timers, consumers, and qualified governed-tool exposure channels.
+- shared semantics across `surface_action`, `agent_tool_call`, APIs, workflows, timers, consumers, and qualified governed-tool actor adapters/exposure channels.
 
 ## Do not use when
 
@@ -90,11 +90,11 @@ capability = product ability or grouping
     + idempotency
     + policy/approval rules
     + audit/trace obligations
-    + selected qualified exposure channels
+    + selected actor adapters and qualified exposure channels
     + tests
 ```
 
-Agent tools, browser actions, HTTP/gRPC/MCP endpoints, workflow steps, timer invocations, consumer reactions, view queries, and internal component methods are actor adapters, exposure channels, or realization choices for governed tools. They are not the backend design root.
+`agent_tool_call` adapters, browser `surface_action` adapters, HTTP/gRPC/MCP endpoints, workflow steps, timer invocations, consumer reactions, view queries, and internal component methods are actor adapters, exposure channels, or realization choices for governed tools. They are not the backend design root.
 
 ## Interpretation workflow
 
@@ -131,7 +131,7 @@ For each workstream operation, structured `surface_action`, confirmed `human_cha
 - side effects: state changes, external calls, topics, timers, emails, notifications, workflow starts;
 - policy, approval, escalation, risk/confidence/impact thresholds, and autonomy level;
 - audit/work-trace fields and retention/redaction expectations;
-- selected qualified governed-tool exposure channels or explicit non-exposure;
+- selected actor adapters and qualified governed-tool exposure channels or explicit non-exposure;
 - success, validation, forbidden, tenant-isolation, idempotency, audit, approval, and surface-specific tests.
 
 ### 4. Classify capability shape
@@ -150,7 +150,7 @@ Use the shape to choose the Akka substrate later:
 
 ### 5. Select actor adapters and exposure channels after semantics
 
-Choose only the actor adapters and exposure channels the governed tool needs. Use `structured surface` only for workstream renderable artifacts; use `actor adapter` for worker/harness entry paths and `exposure channel` for HTTP/gRPC/MCP-tool/workflow-tool/timer-tool/consumer-tool/view/internal-tool paths:
+Choose only the actor adapters and exposure channels the governed tool needs. Use `structured surface` only for workstream renderable artifacts; use `actor adapter` for worker/harness entry paths and `exposure channel` for HTTP/gRPC/MCP, workflow, timer, consumer, view, and internal paths:
 - `surface_action` as the structured human browser adapter;
 - `human_chat_tool_plan` for natural-language requests that propose a detailed plan, require explicit confirmation, and execute governed tools only after backend checks;
 - HTTP or gRPC API (`api_call`);
@@ -172,8 +172,8 @@ After capability semantics are clear, route to exactly one primary operating pat
 
 - `app-descriptions` when maintaining or reviewing the app-description/current-intent graph source of truth. Preserve capability inventory under domain/workstream artifacts and link it to global definitions, behavior, auth/security, UI, observability, readiness, and tests.
 - `akka-solution-decomposition` when deriving a direct Akka component plan. The decomposition must preserve the functional-agent/workstream/structured-surface inventory, map surface actions and payload-producing queries to governed tools and capabilities, then map capabilities to entities, workflows, views, agents, consumers, timers, endpoints, and web UI realization.
-- `akka-prd-to-specs-backlog` or related planning skills when compiling accepted current intent into repo-ready specs, backlogs, and pending tasks. Generated tasks must preserve governed-tool ids, capability ids, auth/scope, schemas, side effects, idempotency, approval, audit, exposure channels, and tests.
-- Focused Stage 3 skills only when the secure foundation, capability contract, exposure channel, and Akka component choice are already settled.
+- `akka-prd-to-specs-backlog` or related planning skills when compiling accepted current intent into repo-ready specs, backlogs, and pending tasks. Generated tasks must preserve governed-tool ids, capability ids, auth/scope, schemas, side effects, idempotency, approval, audit, actor adapters/exposure channels, and tests.
+- Focused Stage 3 skills only when the secure foundation, capability contract, actor adapter/exposure channel, and Akka component choice are already settled.
 
 ## Stage 3 mapping
 
@@ -202,7 +202,7 @@ When this skill is used directly, produce or hand off:
 - selected actor adapters/exposure channels and explicit non-exposures, using qualified terms such as `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, `internal_call`, `workflow_step`, `timer_invocation`, `consumer_reaction`, `api_call`, and `mcp_tool_call`;
 - capability-to-governed-tool-to-Akka substrate/component mapping;
 - downstream skill routing;
-- tests required per capability, structured surface, and exposure channel;
+- tests required per capability, structured surface, actor adapter, and exposure channel;
 - open questions only where implementation would otherwise guess workstream ownership, authority, risk, approval, audit, or scope.
 
 ## Anti-patterns

@@ -43,7 +43,7 @@ Generated AI-first SaaS apps model work through structurally comparable worker c
 | Reasoning basis | Human judgment. | AI model reasoning through a governed agent runtime. | Deterministic logic, schedule, event handling, or integration code. |
 | Typical harness | Browser workstream shell, structured surfaces, forms, dashboards, decision cards, confirmations, optional confirmed chat-plan adapter. | Akka `Agent`, Akka `AutonomousAgent`, governed prompts, skills, references, memory, tool boundaries, model policy, guardrails, traces. | Workflow, timer, consumer, projection/view, endpoint, policy engine, internal service, integration. |
 | Context | Surface payloads, evidence, labels, validation, disabled/denied states, help copy, visible traces. | Prompt/context window, retrieved references, memory, tool results, structured responses, policy/guardrail outputs. | Persisted state, event payloads, schedules, service identity, configuration, correlation/provenance. |
-| Tool use | `surface_action` browser-tools and, when explicitly modeled, `human_chat_tool_plan`. | `agent_tool_call` through a bounded tool catalog. | `workflow_step`, `timer_invocation`, `consumer_reaction`, `api_call`, `mcp_tool_call`, or `internal_call`. |
+| Governed-tool use through actor adapters | `surface_action` browser adapters and, when explicitly modeled, confirmed `human_chat_tool_plan`. | `agent_tool_call` through a bounded tool catalog and explicit tool boundary. | `workflow_step`, `timer_invocation`, `consumer_reaction`, `api_call`, `mcp_tool_call`, or `internal_call` with provenance. |
 | Control | Backend AuthContext, role/capability authorization, scoped payloads, confirmations, approval gates, audit. | Backend AuthContext/service authority, tool boundary, prompt/model policy, approval gates, fail-closed provider/runtime checks, traces. | Caller authority basis, idempotency, provenance, policy checks, audit, retry/compensation rules. |
 
 Human workers and software agent workers may be able to request the same governed tool, but neither inherits the other's authority. Human surface availability does **not** imply AI-agent tool availability. AI-backed workers may use a governed tool only when the agent's tool boundary, AuthContext/service authority, autonomy policy, approval gates, and trace requirements explicitly allow the `agent_tool_call` adapter.
@@ -134,7 +134,7 @@ capability = product ability or grouping
       → Akka implementation = components/endpoints/UI/agent runtime that realize it
 ```
 
-Capabilities define business outcome, actors/callers, AuthContext, scope, schemas, validation, data access, side effects, idempotency, policy/approval, audit/work traces, exposure channels, and tests. Governed tools inside the capability are precise executable operations or evidence reads.
+Capabilities define business outcome, actors/callers, AuthContext, scope, schemas, validation, data access, side effects, idempotency, policy/approval, audit/work traces, actor adapters/exposure channels, and tests. Governed tools inside the capability are precise executable operations or evidence reads.
 
 Do not create separate business implementations for a human click, confirmed chat plan, and AI tool call. If they perform the same operation, they use the same governed tool with separate actor adapters and traces. If their authority, inputs, side effects, or approval rules differ enough that they are different operations, model distinct governed tools within the capability and explain the difference.
 

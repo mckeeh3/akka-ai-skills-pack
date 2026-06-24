@@ -9,12 +9,26 @@ Use this companion after `ai-first-saas` when humans or policies must review rec
 
 This is a decision-surface and routing skill. It does not replace workflow, entity, agent, view, endpoint, or web UI implementation guidance.
 
+## Lifecycle classification
+
+- Phase role: Interview-phase decision-surface modeling with Build/compile handoff constraints for approval workflows, governed tools, surfaces, traces, and tests.
+- Graph layer: recommendation/decision workers, execution harnesses, actor adapters, governed tools, capabilities, decision cards, approval state, policy/evidence links, and traces.
+- Canonical chain: `worker → execution harness → actor adapter → governed tool → capability → Akka implementation`.
+
 ## Required reading
 
 Read first:
 - `../docs/intent-compiler.md`
 - `../docs/current-intent-model.md`
 - `../docs/intent-to-realization-flow.md`
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-component-graph.md`
+- `../docs/app-description-to-code-compile-contract.md`
+- `../docs/workforce-decomposition.md`
+- `../docs/agent-workstream-application-architecture.md`
+- `../docs/structured-surface-contracts.md`
+- `../docs/capability-first-backend-architecture.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../ai-first-saas/SKILL.md`
 
@@ -45,6 +59,8 @@ Risk and impact:
 Alternatives considered:
 Known gaps / uncertainty:
 Available actions: approve | reject | modify | defer | escalate | request evidence
+Worker / execution harness / actor adapter for each action:
+Governed tool id and capability id for each action:
 Decision deadline or SLA:
 Trace links:
 Outcome follow-up:
@@ -72,9 +88,10 @@ Outcome follow-up:
 ## Workstream handoff requirements
 
 For generated full-stack SaaS work, every decision-card output must hand off an implementation-ready workstream contract before component selection:
-- owning or reusable functional agent, such as Approval Queue, Governance/Policy, User Admin, Audit/Trace, or a domain supervisor agent;
+- owning or reusable functional-agent workstream, such as Approval Queue, Governance/Policy, User Admin, Audit/Trace, or a domain supervisor agent;
+- responsible human reviewer/approver worker, recommending agent/system worker, and any workflow system worker;
 - structured surface id/type for each recommendation, approval, exception, or deviation card;
-- surface action list mapped to capability ids/classes, including approve, reject, modify, defer, escalate, request evidence, and acknowledge outcome;
+- actor-adapter list mapped to governed-tool ids and capability ids/classes, including approve, reject, modify, defer, escalate, request evidence, and acknowledge outcome;
 - `AuthContext`, tenant/customer scope, reviewer role/capability rules, approval authority, audit/work-trace fields, trace links, and denial behavior;
 - downstream Akka, frontend, realtime, and test skills needed for workflow, view, endpoint, agent, and surface rendering implementation.
 

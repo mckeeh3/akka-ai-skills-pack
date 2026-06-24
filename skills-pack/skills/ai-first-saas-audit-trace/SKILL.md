@@ -5,9 +5,15 @@ description: Design AI-first SaaS audit and work traces for goals, plans, agents
 
 # AI-First SaaS Audit Trace
 
-Use this companion after `ai-first-saas` when delegated work, agent actions, decisions, approvals, policy use, tool calls, data access, or outcomes must be explainable and auditable.
+Use this companion after `ai-first-saas` when delegated work, agent actions, decisions, approvals, policy use, governed-tool invocations, data access, or outcomes must be explainable and auditable.
 
 This is a trace modeling and routing skill. It does not replace observability, logging, security, entity, consumer, view, or endpoint implementation guidance.
+
+## Lifecycle classification
+
+- Phase role: Interview-phase trace model with Build/compile handoff constraints for trace producers, stores, surfaces, and tests.
+- Graph layer: worker, execution harness, actor adapter, governed tool, capability, policy, decision, approval, data access, outcome, and trace nodes.
+- Canonical chain: `worker → execution harness → actor adapter → governed tool → capability → Akka implementation`.
 
 ## Required reading
 
@@ -15,6 +21,14 @@ Read first:
 - `../docs/intent-compiler.md`
 - `../docs/current-intent-model.md`
 - `../docs/intent-to-realization-flow.md`
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-component-graph.md`
+- `../docs/app-description-to-code-compile-contract.md`
+- `../docs/workforce-decomposition.md`
+- `../docs/agent-workstream-application-architecture.md`
+- `../docs/structured-surface-contracts.md`
+- `../docs/capability-first-backend-architecture.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../ai-first-saas/SKILL.md`
 
@@ -41,8 +55,8 @@ Action or observation:
 Authorization basis:
 Policy or guardrail references:
 Prompt / skill / model / agent version when relevant:
-Tool or data resource used:
-Actor adapter / trace source, such as surface_action, human_chat_tool_plan, agent_tool_call, workflow, timer, consumer, API, or MCP:
+Governed tool, actor adapter, or data resource used:
+Execution harness and actor adapter / trace source, such as `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, `workflow_step`, `timer_invocation`, `consumer_reaction`, `api_call`, `mcp_tool_call`, or `internal_call`:
 Input/output summary and redaction status:
 Evidence and rationale links:
 Decision / approval / exception link:
@@ -62,7 +76,7 @@ Retention and access classification:
 
 ## Akka substrate routing
 
-- Audit-grade `WorkTrace`, `DecisionTrace`, `AuditEvent`, `ToolInvocation`, `DataAccessEvent`, and `PolicyInvocation` facts → `akka-event-sourced-entities` or append-only topic/consumer flows.
+- Audit-grade `WorkTrace`, `DecisionTrace`, `AuditEvent`, `GovernedToolInvocation`, `ActorAdapterInvocation`, `DataAccessEvent`, and `PolicyInvocation` facts → `akka-event-sourced-entities` or append-only topic/consumer flows.
 - Trace enrichment, notification, publication, and integration → `akka-consumers`.
 - Trace search, command-center activity feeds, audit views, digest inputs, and outcome dashboards → `akka-views`.
 - Trace-producing long-running plans and approval flows → `akka-workflows`.
@@ -74,9 +88,10 @@ Retention and access classification:
 ## Workstream handoff requirements
 
 For generated full-stack SaaS work, every audit/trace output must hand off an implementation-ready workstream contract before component selection:
-- owning or reusable functional agent, such as Audit/Trace, Agent Admin, User Admin, Governance/Policy, Outcome Metrics, or a domain supervisor agent;
+- owning or reusable functional-agent workstream, such as Audit/Trace, Agent Admin, User Admin, Governance/Policy, Outcome Metrics, or a domain supervisor agent;
+- responsible worker roster and execution harness for each trace producer/reader, including human auditor, functional-agent, internal/evaluator agent, workflow/timer/consumer, API/MCP, or internal service workers;
 - structured surface id/type where user-facing, such as audit timeline, trace detail, investigation dashboard, digest, evidence bundle, or compliance export panel;
-- surface action list and any confirmed chat tool-plan adapters mapped to capability ids/classes, including search traces, open trace detail, request redacted export, link evidence, acknowledge finding, or start investigation;
+- actor-adapter list mapped to governed-tool ids and capability ids/classes, including search traces, open trace detail, request redacted export, link evidence, acknowledge finding, or start investigation;
 - `AuthContext`, tenant/customer scope, auditor/support/admin role rules, redaction, retention, audit/work-trace fields, trace links, and denial behavior;
 - downstream Akka, endpoint/realtime, frontend, and test skills needed for trace producers, append stores, projections, protected access, and surface rendering.
 
@@ -88,7 +103,7 @@ Produce a compact trace design with:
 - correlation model linking goals, plans, agents, tools, policies, decisions, and outcomes
 - storage choice: event-sourced, topic/consumer append, derived view, or observability-only
 - audit search, digest, and investigation surfaces
-- tests needed for trace emission and authorization-sensitive access, including distinct trace evidence for surface actions, confirmed human chat tool plans with `confirmedBy`/confirmation id, AI agent-tool calls with `requestedBy` when applicable, denials, and partial failures
+- tests needed for trace emission and authorization-sensitive access, including distinct trace evidence for `surface_action` adapters, confirmed `human_chat_tool_plan` adapters with `confirmedBy`/confirmation id, AI `agent_tool_call` adapters with `requestedBy` when applicable, denials, and partial failures
 - downstream Akka skills to load next
 - unresolved questions only where retention, privacy, authority, or compliance semantics would otherwise be guessed
 
