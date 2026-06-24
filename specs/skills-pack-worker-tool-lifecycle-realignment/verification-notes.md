@@ -90,3 +90,52 @@ Validation result for TASK-017 scope:
 - TASK-017 repaired the app-description governed-agent coverage blocker and recorded the newly revealed unrelated maintainer verification blocker for TASK-018.
 - The mini-project remains open.
 - Next runnable task: TASK-018.
+
+## TASK-018 replacement terminal verification notes
+
+Date: 2026-06-24
+
+### Conclusion
+
+The mini-project is **not closed**. TASK-017's app-description governed runtime agent foundation blocker is resolved: the maintainer verification script advanced past `checking governed runtime agent foundation core app-description assets`. The next material blocker is the forbidden optional-security wording guardrail in `docs/ai-first-saas-application-architecture.md:255`.
+
+Per the TASK-018 terminal-verification scope, this blocker was not repaired in-place. Focused follow-up TASK-019 and replacement terminal verification TASK-020 were appended.
+
+### Evidence reviewed
+
+- Mini-project done state, target architecture, migration strategy, pending queue, and prior verification notes.
+- Completed follow-up commit since TASK-016: `6d73c34e Repair app-description governed agent coverage`.
+- TASK-017 repair notes showing app-description coverage terms added and the optional-security blocker recorded for TASK-018.
+
+### Done-state comparison after TASK-017
+
+| Done-state item | Result | Evidence |
+|---|---|---|
+| Canonical doctrine exists for lifecycle, worker/tool model, app-description graph, compile contract, and manual-test reconciliation | Pass | Prior terminal verification evidence remains valid. |
+| Routing and migrated skill families remain install-checkable | Pass | Install dry-run and installed reference check passed. |
+| TASK-016 governed-agent app-description blocker is resolved | Pass | Maintainer verification advanced past the governed runtime agent foundation core app-description asset check. |
+| Pack validation checks pass | Blocked | Maintainer verification fails at the forbidden optional-security wording guardrail. |
+
+### FINDING-002 — High — forbidden optional-security wording guardrail
+
+- **Path(s):** `docs/ai-first-saas-application-architecture.md:255`; verification source `skills-pack/pack/maintainer/tools/verify-opinionated-ai-first-saas-pack.sh`
+- **Evidence:** Maintainer verification failed with `Forbidden pattern 'security.*optional|optional.*security|when security is in scope|only when security is in scope|JWT/internal security skills only when security is in scope|generic Akka app|ordinary Akka app|CRUD-first' found in: /home/hxmc/ai/akka-ai-skills-pack/AGENTS.md AGENTS.md pack/AGENTS.md skills/README.md docs/ai-first-saas-application-architecture.md`, and printed `docs/ai-first-saas-application-architecture.md:255:- [ ] Agent tools are treated as one optional exposure surface for selected capabilities, not as the backend design root or security boundary.`
+- **Impact:** The mini-project cannot be closed because one required terminal verification check fails.
+- **Disposition:** Appended TASK-019 to repair the mandatory-security wording guardrail without editing runtime code, followed by replacement terminal verification TASK-020.
+
+### Commands run
+
+| Command | Exit code | Result | Summary |
+|---|---:|---|---|
+| `git diff --check` | 0 | Passed | No whitespace/diff errors before terminal checks. |
+| `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --dry-run` | 0 | Passed | Installer dry-run completed and would manage the skills-pack manifest and skill directories. |
+| `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --check` | 0 | Passed | Installed skill references passed for `/tmp/akka-skills-install-check/.agents/skills`. |
+| `bash skills-pack/pack/maintainer/tools/verify-opinionated-ai-first-saas-pack.sh` | 1 | Failed | Advanced past TASK-016/TASK-017 app-description blocker, then failed on forbidden optional-security wording in `docs/ai-first-saas-application-architecture.md:255`. |
+
+### Queue decision
+
+- TASK-018 is complete as a terminal verification/reconciliation task because it did not silently close the mini-project with a known material blocker.
+- TASK-019 was appended as the focused repair task for the optional-security wording blocker.
+- TASK-020 was appended as the replacement terminal verification task.
+- The mini-project remains open.
+- Next runnable task: TASK-019.

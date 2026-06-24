@@ -444,7 +444,7 @@
 
 ### TASK-018: Replacement terminal verification after follow-up repair
 
-- status: pending
+- status: done
 - source: specs/skills-pack-worker-tool-lifecycle-realignment/verification-notes.md
 - task brief: specs/skills-pack-worker-tool-lifecycle-realignment/tasks/018-terminal-verification-retry.md
 - depends on: [TASK-017]
@@ -467,3 +467,53 @@
   - vertical contract: cross-cutting pack verification; no runtime feature
   - runtime evidence: not applicable; pack-maintenance task
   - known input from TASK-017: maintainer script now fails later on forbidden optional-security wording in `docs/ai-first-saas-application-architecture.md:255`; see verification notes.
+  - terminal verification result: mini-project not closed; TASK-019 and TASK-020 appended for maintainer verification optional-security wording blocker recorded in `specs/skills-pack-worker-tool-lifecycle-realignment/verification-notes.md`.
+
+### TASK-019: Repair optional-security wording guardrail violation
+
+- status: pending
+- source: specs/skills-pack-worker-tool-lifecycle-realignment/verification-notes.md
+- task brief: specs/skills-pack-worker-tool-lifecycle-realignment/tasks/019-repair-optional-security-wording.md
+- depends on: [TASK-018]
+- required reads:
+  - specs/skills-pack-worker-tool-lifecycle-realignment/tasks/019-repair-optional-security-wording.md
+- skills:
+  - ai-first-saas
+- expected outputs:
+  - focused mandatory-security wording repair in `docs/ai-first-saas-application-architecture.md`
+  - updated verification notes/task notes summarizing repaired maintainer-script pattern
+- required checks:
+  - `git diff --check`
+  - `bash skills-pack/pack/maintainer/tools/verify-opinionated-ai-first-saas-pack.sh`
+- done criteria:
+  - Forbidden optional-security wording is removed without weakening mandatory-security doctrine, or any newly revealed unrelated blocker is recorded for terminal verification.
+- notes:
+  - scope: skills-pack docs maintenance; no root runtime code
+  - vertical contract: mandatory-security doctrine wording guardrail; no runtime feature
+  - runtime evidence: not applicable; docs-only pack-maintenance task
+  - blocker from TASK-018: maintainer verification fails on `docs/ai-first-saas-application-architecture.md:255` forbidden optional-security wording.
+
+### TASK-020: Replacement terminal verification after optional-security repair
+
+- status: pending
+- source: specs/skills-pack-worker-tool-lifecycle-realignment/verification-notes.md
+- task brief: specs/skills-pack-worker-tool-lifecycle-realignment/tasks/020-terminal-verification-retry.md
+- depends on: [TASK-019]
+- required reads:
+  - specs/skills-pack-worker-tool-lifecycle-realignment/tasks/020-terminal-verification-retry.md
+- skills:
+  - akka-pending-task-queue-maintenance
+- expected outputs:
+  - updated `specs/skills-pack-worker-tool-lifecycle-realignment/verification-notes.md`
+  - queue closure or appended follow-up tasks plus replacement terminal verification
+- required checks:
+  - `git diff --check`
+  - `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --dry-run`
+  - `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --check`
+  - `bash skills-pack/pack/maintainer/tools/verify-opinionated-ai-first-saas-pack.sh`
+- done criteria:
+  - Mini-project done state is verified after TASK-019, or follow-up tasks are appended.
+- notes:
+  - scope: skills-pack maintenance, replacement terminal verification
+  - vertical contract: cross-cutting pack verification; no runtime feature
+  - runtime evidence: not applicable; pack-maintenance task
