@@ -471,7 +471,7 @@
 
 ### TASK-019: Repair optional-security wording guardrail violation
 
-- status: pending
+- status: done
 - source: specs/skills-pack-worker-tool-lifecycle-realignment/verification-notes.md
 - task brief: specs/skills-pack-worker-tool-lifecycle-realignment/tasks/019-repair-optional-security-wording.md
 - depends on: [TASK-018]
@@ -492,6 +492,7 @@
   - vertical contract: mandatory-security doctrine wording guardrail; no runtime feature
   - runtime evidence: not applicable; docs-only pack-maintenance task
   - blocker from TASK-018: maintainer verification fails on `docs/ai-first-saas-application-architecture.md:255` forbidden optional-security wording.
+  - TASK-019 result: repaired forbidden `optional.*security` wording by changing the agent-tool checklist item to use mandatory governed-exposure wording; `git diff --check` and maintainer verification passed with no newly revealed blocker.
 
 ### TASK-020: Replacement terminal verification after optional-security repair
 

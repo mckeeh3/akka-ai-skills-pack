@@ -139,3 +139,25 @@ Per the TASK-018 terminal-verification scope, this blocker was not repaired in-p
 - TASK-020 was appended as the replacement terminal verification task.
 - The mini-project remains open.
 - Next runnable task: TASK-019.
+
+## TASK-019 repair notes
+
+Date: 2026-06-24
+
+Repaired the forbidden optional-security wording guardrail in `skills-pack/docs/ai-first-saas-application-architecture.md` without editing runtime code.
+
+Pattern repaired:
+
+- Replaced "optional exposure surface" with "governed exposure surface" in the AI-first architecture minimal checklist item for agent tools, removing the maintainer-script `optional.*security` match while preserving the doctrine that security boundaries are mandatory and backend capabilities remain the governed operation boundary.
+
+Validation result for TASK-019 scope:
+
+- `git diff --check` passed.
+- `bash skills-pack/pack/maintainer/tools/verify-opinionated-ai-first-saas-pack.sh` passed, including the previously failing `checking forbidden optional-security phrasing in top-level routing files` step.
+
+Queue decision:
+
+- TASK-019 repaired the optional-security wording blocker from TASK-018.
+- No newly revealed unrelated blocker was found by the maintainer verification script.
+- The mini-project remains ready for replacement terminal verification in TASK-020.
+- Next runnable task: TASK-020.
