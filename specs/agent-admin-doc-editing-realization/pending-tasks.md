@@ -382,7 +382,7 @@
 
 ### AADE-07-001: Re-run full-stack closure verification
 
-- status: pending
+- status: done
 - source: terminal verification loop after `AADE-06-*` follow-ups
 - task brief: `specs/agent-admin-doc-editing-realization/tasks/07-validation/01-reverify-fullstack-closure.md`
 - depends on: [AADE-06-001, AADE-06-002]
@@ -409,4 +409,73 @@
 - done criteria:
   - mini-project done state is either achieved and recorded closed, or remaining material gaps are converted into a further bounded follow-up loop
   - changes and queue update are committed
+- notes:
+  - completed terminal verification pass; mini-project not closed because full `mvn test` still fails at `AgentAdminBrowserWorkstreamSmokeTest.protectedWorkstreamApiWiresCurrentAgentAdminDocEditingActions:100` when the `User Admin` filtered list returns empty rows.
+  - targeted diagnostic `mvn -Dtest='AgentAdminBrowserWorkstreamSmokeTest' test` passed, so the remaining gap appears full-suite/order-dependent rather than a simple isolated smoke failure.
+  - frontend test, typecheck, build, and `git diff --check` passed.
+  - appended `AADE-08-001` to repair Agent Admin full-suite smoke isolation and `AADE-09-001` as the next terminal verification task.
+  - verification notes: `specs/agent-admin-doc-editing-realization/verification-notes.md`
+  - commit message: `Reverify Agent Admin doc editing closure`
+
+### AADE-08-001: Repair Agent Admin full-suite smoke isolation
+
+- status: pending
+- source: `AADE-07-001` terminal verification gap
+- task brief: `specs/agent-admin-doc-editing-realization/tasks/08-follow-up/01-repair-agent-admin-full-suite-isolation.md`
+- depends on: [AADE-07-001]
+- required reads:
+  - `specs/agent-admin-doc-editing-realization/verification-notes.md`
+  - `specs/agent-admin-doc-editing-realization/pending-tasks.md`
+  - `src/test/java/ai/first/application/coreapp/workstream/AgentAdminBrowserWorkstreamSmokeTest.java`
+  - affected Agent Admin doc-admin service/workstream action/runtime seeding paths used by `list-agent-doc-agents`
+  - app-description Agent Admin files only as needed to confirm current SaaS-admin-only doc-editing intent
+- skills:
+  - `akka-runtime-feature-verification`
+  - `akka-agent-testing`
+- expected outputs:
+  - deterministic Agent Admin protected workstream smoke under full-suite execution
+  - implementation/test repair for the order-dependent empty `User Admin` filtered rows
+- required checks:
+  - `mvn -Dtest='AgentAdminBrowserWorkstreamSmokeTest' test`
+  - `mvn test`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - `npm --prefix frontend run build`
+  - `git diff --check`
+- done criteria:
+  - isolated and full-suite Agent Admin protected workstream smoke pass
+  - SaaS-admin-only Agent Admin authorization and current doc-editing API coverage are preserved
+  - changes and queue update are committed
+- notes: []
+
+### AADE-09-001: Re-run full-stack closure verification
+
+- status: pending
+- source: terminal verification loop after `AADE-08-001`
+- task brief: `specs/agent-admin-doc-editing-realization/tasks/09-validation/01-reverify-fullstack-closure.md`
+- depends on: [AADE-08-001]
+- required reads:
+  - `specs/agent-admin-doc-editing-realization/README.md`
+  - `specs/agent-admin-doc-editing-realization/conversation-capture.md`
+  - `specs/agent-admin-doc-editing-realization/verification-notes.md`
+  - `specs/agent-admin-doc-editing-realization/pending-tasks.md`
+  - `specs/agent-admin-doc-editing-realization/tasks/08-follow-up/01-repair-agent-admin-full-suite-isolation.md`
+  - `app-description/domains/core-starter/workstreams/agent-admin/**`
+  - `app-description/domains/core-starter/capabilities/agent-doc-administration.md`
+- skills:
+  - `akka-runtime-feature-verification`
+  - `akka-web-ui-testing`
+  - `akka-agent-testing`
+- expected outputs:
+  - updated `specs/agent-admin-doc-editing-realization/verification-notes.md`
+  - queue closure or another bounded follow-up loop
+- required checks:
+  - `mvn test`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - `npm --prefix frontend run build`
+  - `git diff --check`
+- done criteria:
+  - mini-project done state is either achieved and recorded closed, or remaining material gaps are converted into a further bounded follow-up loop
+  - changes are committed
 - notes: []
