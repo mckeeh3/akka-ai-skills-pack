@@ -6,295 +6,200 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const readBackend = (path) => read(`../../${path}`);
 
 const backendWorkstreamService = readBackend('src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java');
-const backendWorkstreamTest = readBackend('src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java');
 const agents = read('./__tests__/fixtures/workstream/agents.ts');
 const me = read('./__tests__/fixtures/workstream/me.ts');
 const surfaces = read('./__tests__/fixtures/workstream/surfaces.ts');
-const workstream = read('./__tests__/fixtures/workstream/workstream.ts');
+const apiTypes = read('./api/types.ts');
+const surfaceTypes = read('./workstream/types/surfaces.ts');
 const apiClient = read('./__tests__/fixtures/api/FixtureWorkstreamApiClient.ts');
-const agentAdminTaskSurface = read('./workstream/surfaces/AgentAdminTaskSurface.tsx');
-const decisionSurface = read('./workstream/surfaces/DecisionSurface.tsx');
-const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
-const detailEditSurface = read('./workstream/surfaces/DetailEditSurface.tsx');
-const listSearchSurface = read('./workstream/surfaces/ListSearchSurface.tsx');
-const workflowStatusSurface = read('./workstream/surfaces/WorkflowStatusSurface.tsx');
 
-test('Agent Admin functional agent is visible and capability backed for governed runtime', () => {
-  assert.match(agents, /label: 'Agent Admin'[\s\S]*defaultSurfaceType: 'dashboard'[\s\S]*defaultSurfaceId: 'surface-agent-admin-dashboard'/);
+const currentInventoryBlock = surfaces.slice(
+  surfaces.indexOf('export const currentAgentAdminSurfaceEnvelopes = ['),
+  surfaces.indexOf('] as const;', surfaces.indexOf('export const currentAgentAdminSurfaceEnvelopes = ['))
+);
+
+const canonicalBlock = surfaces.slice(
+  surfaces.indexOf('export const canonicalSurfaceEnvelopes = ['),
+  surfaces.indexOf('];', surfaces.indexOf('export const canonicalSurfaceEnvelopes = ['))
+);
+
+test('Agent Admin fixture rail is doc-editing oriented and SaaS-admin capability backed', () => {
+  assert.match(agents, /label: 'Agent Admin'[\s\S]*defaultSurfaceType: 'blank'[\s\S]*defaultSurfaceId: 'surface-agent-admin-blank'/);
   for (const capability of [
     'agent_admin.submit_turn',
     'agent_admin.list_definitions',
     'agent_admin.get_definition',
-    'agent.definitions.manage',
     'agent_admin.get_prompt_version',
     'agent_admin.get_skill_version',
     'agent_admin.get_reference_version',
-    'agent_admin.get_manifest',
-    'agent_admin.get_tool_boundary',
     'agent_admin.draft_behavior_change',
-    'agent_admin.submit_behavior_change_for_review',
-    'agent_admin.approve_behavior_change',
-    'agent_admin.reject_behavior_change',
     'agent_admin.activate_behavior_change',
     'agent_admin.cancel_behavior_change',
     'agent_admin.rollback_behavior_change',
-    'agent_admin.simulate_tool_boundary',
-    'agent_admin.get_model_ref',
-    'agent_admin.list_seed_material',
-    'agent_admin.reseed_missing_defaults',
-    'agent_admin.prompt_risk_review.start',
-    'agent_admin.prompt_risk_review.read',
-    'agent_admin.prompt_risk_review.cancel',
-    'agent_admin.prompt_risk_review.accept_result',
-    'agent_admin.prompt_risk_review.reject_result'
+    'saas_owner.admin.manage',
+    'audit.trace.read'
   ]) {
     assert.match(agents, new RegExp(capability.replaceAll('.', '\\.')));
     assert.match(me, new RegExp(capability.replaceAll('.', '\\.')));
   }
-  assert.match(agents, /attention: \{ count: 4, severity: 'blocked', source: 'attention\.list_rail_summaries' \}/);
-  assert.match(agents, /availability: 'visible'/);
+  for (const staleCapability of [
+    'agent_admin.get_manifest',
+    'agent_admin.get_tool_boundary',
+    'agent_admin.simulate_tool_boundary',
+    'agent_admin.list_seed_material',
+    'agent_admin.reseed_missing_defaults',
+    'agent_admin.prompt_risk_review.start'
+  ]) {
+    assert.doesNotMatch(agents, new RegExp(staleCapability.replaceAll('.', '\\.')));
+    assert.doesNotMatch(me, new RegExp(staleCapability.replaceAll('.', '\\.')));
+  }
 });
 
-test('Agent Admin fixtures include catalog, detail, governed diffs, model refs, test console, decisions, and traces', () => {
-  for (const fixture of [
-    'agentAdminDashboardSurface',
-    'agentAdminCatalogSurface',
-    'agentAdminDetailSurface',
-    'agentPromptGovernanceSurface',
-    'agentSkillManifestSurface',
-    'agentToolBoundarySurface',
-    'agentModelRefsSurface',
-    'agentSeedMaterialSurface',
-    'agentTestConsoleSurface',
-    'agentBehaviorProposalSurface',
-    'agentActivationConfirmationSurface',
-    'agentDeactivationConfirmationSurface',
-    'agentRollbackConfirmationSurface',
-    'agentAdminAgentBlockedSystemMessageSurface',
-    'agentAdminPromptRiskReviewSurface',
-    'agentAdminTraceSurface'
-  ]) {
-    assert.match(surfaces, new RegExp(fixture));
-  }
-  for (const surfaceId of [
+test('current Agent Admin surface inventory matches app-description doc-editing surfaces', () => {
+  const currentSurfaceIds = [
+    'surface-agent-admin-blank',
     'surface-agent-admin-dashboard',
-    'surface-agent-admin-catalog',
-    'surface-agent-admin-detail',
+    'surface-agent-admin-agent-list',
+    'surface-agent-admin-agent-detail',
+    'surface-agent-admin-prompt-doc',
+    'surface-agent-admin-skill-doc',
+    'surface-agent-admin-skill-reference-doc',
+    'surface-agent-admin-edit-session',
+    'surface-agent-admin-version-history',
+    'surface-agent-admin-version-diff',
+    'surface-agent-admin-create-skill',
+    'surface-agent-admin-delete-skill-confirmation',
+    'surface-agent-admin-create-reference-doc',
+    'surface-agent-admin-delete-reference-doc-confirmation',
+    'surface-agent-admin-runtime-traces',
+    'surface-agent-admin-system-message'
+  ];
+  for (const surfaceId of currentSurfaceIds) {
+    assert.match(surfaces, new RegExp(surfaceId));
+  }
+  for (const contract of [
+    'agent_admin.blank.v1',
+    'agent_admin.dashboard.v1',
+    'agent_admin.agent_list.v1',
+    'agent_admin.agent_detail.v1',
+    'agent_admin.prompt_doc.v1',
+    'agent_admin.skill_doc.v1',
+    'agent_admin.skill_reference_doc.v1',
+    'agent_admin.edit_session.v1',
+    'agent_admin.version_history.v1',
+    'agent_admin.version_diff.v1',
+    'agent_admin.create_skill.v1',
+    'agent_admin.delete_skill_confirmation.v1',
+    'agent_admin.create_reference_doc.v1',
+    'agent_admin.delete_reference_doc_confirmation.v1',
+    'agent_admin.runtime_traces.v1',
+    'agent_admin.system_message.v1'
+  ]) assert.match(surfaces, new RegExp(contract.replaceAll('.', '\\.')));
+  assert.match(canonicalBlock, /currentAgentAdminSurfaceEnvelopes/);
+  for (const staleSurfaceId of [
     'surface-agent-prompt-governance',
     'surface-agent-skill-manifest-diff',
     'surface-agent-tool-boundary-diff',
     'surface-agent-model-refs',
     'surface-agent-seed-material',
     'surface-agent-test-console',
-    'surface-agent-behavior-proposal',
+    'surface-agent-admin-prompt-risk-review',
     'surface-agent-activation-confirmation',
-    'surface-agent-deactivation-confirmation',
-    'surface-agent-rollback-confirmation',
-    'surface-agent-admin-agent-provider-blocked',
-    'surface-agent-admin-prompt-risk-review',
-    'surface-agent-admin-trace'
-  ]) {
-    assert.match(surfaces, new RegExp(surfaceId));
-  }
+    'surface-agent-rollback-confirmation'
+  ]) assert.doesNotMatch(currentInventoryBlock, new RegExp(staleSurfaceId));
 });
 
-test('Agent Admin surfaces preserve required UI states, approval gates, validation, redaction, and trace links', () => {
+test('Agent Admin fixtures model document editing, versions, permanence, traces, and denial states', () => {
   for (const marker of [
-    'Loading view',
-    'Empty',
-    'TARGET_NOT_FOUND_OR_FORBIDDEN',
-    'validation-error',
-    'approval-required',
-    'MODEL_POLICY_DENIED',
-    'TOOL_BOUNDARY_DENIED',
-    'Provider secret values are never browser-visible',
-    'redactedPreview',
-    'agent_admin.dashboard.v1',
-    'agent_admin.catalog.v1',
-    'agent_admin.detail.v1',
-    'agent_admin.definition.v1',
-    'agent_admin.prompt_governance.v1',
-    'agent_admin.skill_manifest_diff.v1',
-    'agent_admin.tool_boundary_diff.v1',
-    'agent_admin.model_refs.v1',
-    'agent_admin.seed_material.v1',
-    'agent_admin.behavior_change_proposal.v1',
-    'PromptAssemblyTrace',
-    'SkillLoadTrace',
-    'ReferenceLoadTrace',
-    'AgentWorkTrace',
-    'agentAdminEvidence.read',
-    'readSkill(skillId)',
-    'readReferenceDoc(referenceId)',
-    'no direct mutation',
-    'No-side-effect agent test console',
-    'agent_admin.prompt_risk_review_task.v1',
-    'blocked_provider_or_runtime',
-    'activationBlockedUntilHumanDecision',
-    'Prompt-risk AutonomousAgent worker remains deferred',
-    'no model-backed advisory success is claimed',
-    'agent_admin.activation_confirmation.v1',
-    'agent_admin.deactivation_confirmation.v1',
-    'agent_admin.rollback_confirmation.v1'
-  ]) {
-    assert.match(surfaces, new RegExp(marker.replace(/[()]/g, '\\$&')));
-  }
-  assert.match(surfaces, /requiresApproval: true/);
-  assert.match(surfaces, /modelReferenceSummary/);
-  assert.match(surfaces, /redactedModelReferenceDiff/);
-  assert.match(surfaces, /noFakeSuccess: true/);
-  assert.match(surfaces, /secretVisibility: 'redacted'/);
-  assert.match(surfaces, /trace-prompt-assembly-42/);
-  assert.match(surfaces, /trace-skill-load-17/);
-  assert.match(surfaces, /trace-agent-work-88/);
-  assert.match(surfaces, /Manifest drift and loader denials/);
-  assert.match(surfaces, /Tenant Admin · organization scope/);
-  assert.match(agentAdminTaskSurface, /withDisabledReason/);
-  assert.match(agentAdminTaskSurface, /BACKEND_PREREQUISITE_REQUIRED/);
-  assert.match(decisionSurface, /disabledById/);
-  assert.match(decisionSurface, /BACKEND_PREREQUISITE_REQUIRED/);
-  assert.match(decisionSurface, /recommendation\?\.rationale/);
-  assert.match(decisionSurface, /evidenceSummary/);
-  assert.match(decisionSurface, /Advisory output cannot directly mutate prompts, skills, references, model refs, tool boundaries, activation, rollback, or provider configuration/);
-  assert.match(workflowStatusSurface, /surface-agent-admin-prompt-risk-review/);
-  assert.match(workflowStatusSurface, /AgentAdminPromptRiskReview/);
-  assert.match(workflowStatusSurface, /Prompt-risk findings/);
-  assert.match(workflowStatusSurface, /noDirectMutation/);
-  assert.match(workflowStatusSurface, /cannot activate or mutate behavior artifacts/);
-  assert.doesNotMatch(dashboardSurface, /Opens \$\{entry\.resultSurfaceId/);
+    'thingsYouCanDo',
+    'recentlyChangedAgents',
+    'thingsNeedAttention: []',
+    'agentName',
+    'workstreamDomain',
+    'prompt: agentAdminPromptDoc',
+    'skills: [agentAdminSkillDoc]',
+    'referenceDocs: [agentAdminReferenceDoc]',
+    'contentBody',
+    'editInputEnabled: true',
+    'Historical version: read-only.',
+    'diffRule',
+    'selected version N is compared only with N-1',
+    'Restore this version',
+    'Deleting a skill permanently deletes its reference docs. There is no restore.',
+    'Deleting a reference doc is permanent. There is no restore.',
+    'readSkill',
+    'readReferenceDoc',
+    'Trace rows do not include full prompt, skill, or reference content.',
+    'SaaS admin authority required',
+    'warningsAdvisoryOnly: true',
+    'saveCreatesNewCurrentVersion: true'
+  ]) assert.match(surfaces, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(surfaces, /inputs: \['skill name', 'purpose\/description', 'free-form initial content request'\]/);
+  assert.match(surfaces, /inputs: \['reference doc name', 'short description', 'free-form initial content request'\]/);
 });
 
-test('Agent Admin representative chat tool plan path remains approval-gated', () => {
-  for (const marker of [
-    'agentAdminPromptRiskReviewPlanSteps',
-    'action-agent-prompt-risk-review-start',
-    'AgentAdminPromptRiskReviewService.START_CAPABILITY',
-    'schema.agent-admin.prompt-risk-review.start.v1',
-    'surface-agent-admin-prompt-risk-review',
-    'human_chat_tool_plan.step_failed',
-    'approval-gated-command'
-  ]) assert.match(backendWorkstreamService, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-  assert.match(backendWorkstreamTest, /start prompt risk review for the Agent Admin prompt proposal/);
-  assert.match(backendWorkstreamTest, /approval_required/);
-  assert.match(backendWorkstreamTest, /representativeChatToolPlansCoverAllFiveFoundationWorkstreamsWithConfirmationAndTraceSemantics/);
+test('Agent Admin frontend API and surface types expose doc-editing DTO contracts', () => {
+  for (const typeName of [
+    'AgentAdminDocKind',
+    'AgentAdminAgentListResponse',
+    'AgentAdminAgentDetailResponse',
+    'AgentAdminDocumentVersionDetail',
+    'AgentAdminVersionHistoryResponse',
+    'AgentAdminAdjacentDiffResponse',
+    'AgentAdminEditSessionRecord',
+    'AgentAdminRuntimeDocReadTraceRow'
+  ]) assert.match(apiTypes, new RegExp(`export type ${typeName}`));
+  for (const typeName of [
+    'AgentAdminSurfaceContract',
+    'AgentAdminSurfaceData',
+    'AgentAdminDocumentDetail',
+    'AgentAdminRuntimeTraceRow'
+  ]) assert.match(surfaceTypes, new RegExp(`export type ${typeName}`));
 });
 
-test('Agent Admin actions and fixture client return structured surfaces instead of page routes', () => {
+test('Agent Admin fixture API client routes current doc-editing actions to structured surfaces', () => {
   for (const actionId of [
-    'action-display-agent-admin-dashboard',
-    'action-display-agent-catalog',
-    'action-open-agent-detail',
-    'action-agent-detail-open-prompt-governance',
-    'action-agent-detail-open-skill-manifest',
-    'action-agent-detail-open-tool-boundary',
-    'action-agent-detail-open-model-refs',
-    'action-agent-detail-run-test',
-    'action-agent-detail-open-prompt-risk-review',
-    'action-agent-detail-open-activation',
-    'action-agent-detail-open-deactivation',
-    'action-agent-detail-open-rollback',
-    'action-agent-detail-open-trace',
-    'action-agent-detail-back-to-catalog',
-    'action-agent-prompt-governance-refresh',
-    'action-agent-prompt-governance-simulate',
-    'action-agent-prompt-governance-submit-review',
-    'action-agent-prompt-governance-approve',
-    'action-agent-prompt-governance-reject',
-    'action-agent-prompt-governance-open-risk-review',
-    'action-agent-prompt-governance-open-trace',
-    'action-agent-prompt-governance-back-to-detail',
-    'action-agent-skill-manifest-refresh',
-    'action-agent-skill-manifest-simulate',
-    'action-agent-skill-manifest-submit-review',
-    'action-agent-skill-manifest-approve',
-    'action-agent-skill-manifest-reject',
-    'action-agent-skill-manifest-open-tool-boundary',
-    'action-agent-skill-manifest-open-model-refs',
-    'action-agent-skill-manifest-open-trace',
-    'action-agent-skill-manifest-back-to-detail',
-    'action-agent-tool-boundary-refresh',
-    'action-agent-tool-boundary-simulate',
-    'action-agent-tool-boundary-submit-review',
-    'action-agent-tool-boundary-approve',
-    'action-agent-tool-boundary-reject',
-    'action-agent-tool-boundary-open-model-refs',
-    'action-agent-tool-boundary-open-trace',
-    'action-agent-tool-boundary-back-to-detail',
-    'action-agent-model-refs-refresh',
-    'action-agent-model-refs-run-test',
-    'action-agent-model-refs-submit-review',
-    'action-agent-model-refs-approve',
-    'action-agent-model-refs-reject',
-    'action-agent-model-refs-open-prompt-governance',
-    'action-agent-model-refs-open-tool-boundary',
-    'action-agent-model-refs-open-trace',
-    'action-agent-model-refs-back-to-detail',
-    'action-activate-agent-definition',
-    'action-deactivate-agent-definition',
-    'action-propose-prompt-diff',
-    'action-test-agent-prompt',
-    'action-approve-skill-manifest',
-    'action-submit-behavior-change',
-    'action-reject-behavior-change',
-    'action-activate-behavior-change',
-    'action-cancel-behavior-change',
-    'action-rollback-behavior-change',
-    'action-simulate-tool-boundary',
-    'action-manage-model-ref',
-    'action-list-agent-seed-material',
-    'action-import-agent-seed-defaults',
-    'action-agent-seed-material-open-agent-detail',
-    'action-open-agent-trace',
-    'action-agentadmin-start-prompt-risk-review',
-    'action-agentadmin-read-prompt-risk-review',
-    'action-agentadmin-cancel-prompt-risk-review',
-    'action-agentadmin-accept-prompt-risk-review-result',
-    'action-agentadmin-reject-prompt-risk-review-result'
+    'action-agent-admin-show-blank',
+    'action-agent-admin-show-dashboard',
+    'action-agent-admin-show-agents',
+    'action-agent-admin-open-agent-detail',
+    'action-agent-admin-save-agent-profile',
+    'action-agent-admin-open-prompt-doc',
+    'action-agent-admin-open-skill-doc',
+    'action-agent-admin-open-reference-doc',
+    'action-agent-doc-edit-start',
+    'action-agent-doc-edit-revise',
+    'action-agent-doc-edit-save',
+    'action-agent-doc-edit-cancel',
+    'action-agent-doc-version-history',
+    'action-agent-doc-version-diff',
+    'action-agent-doc-version-restore',
+    'action-agent-admin-open-create-skill',
+    'action-agent-admin-create-skill',
+    'action-agent-admin-open-delete-skill',
+    'action-agent-admin-delete-skill',
+    'action-agent-admin-open-create-reference-doc',
+    'action-agent-admin-create-reference-doc',
+    'action-agent-admin-open-delete-reference-doc',
+    'action-agent-admin-delete-reference-doc',
+    'action-agent-admin-open-runtime-traces'
   ]) {
     assert.match(surfaces, new RegExp(actionId));
+    assert.match(apiClient, new RegExp(actionId));
+    assert.match(backendWorkstreamService, new RegExp(actionId));
   }
-  assert.match(surfaces, /displayAgentDashboardActionResult/);
-  assert.match(surfaces, /displayAgentCatalogActionResult/);
-  assert.match(surfaces, /displayAgentDetailActionResult/);
-  assert.match(surfaces, /displayAgentSeedMaterialActionResult/);
-  assert.match(surfaces, /displayAgentBehaviorProposalActionResult/);
-  assert.match(apiClient, /displayAgentDashboardActionResult/);
-  assert.match(apiClient, /displayAgentCatalogActionResult/);
-  assert.match(apiClient, /displayAgentDetailActionResult/);
-  assert.match(apiClient, /displayAgentSeedMaterialActionResult/);
-  assert.match(apiClient, /displayAgentBehaviorProposalActionResult/);
-  assert.match(apiClient, /displayAgentPromptRiskReviewActionResult/);
-  assert.match(apiClient, /agent_admin\.list_definitions/);
-  assert.match(apiClient, /agent_admin\.list_seed_material/);
-});
-
-test('Agent Admin seed provenance and detail surfaces expose prompt and skill drill-downs', () => {
-  assert.match(listSearchSurface, /Open agent detail/);
-  assert.match(listSearchSurface, /Agent detail exposes governed prompt and skill\/reference manifest drill-downs/);
-  assert.match(detailEditSurface, /Open this agent's prompt and skills/);
-  assert.match(detailEditSurface, /Governed prompt and skill drill-downs/);
-  assert.match(surfaces, /action-agent-seed-material-open-agent-detail/);
-  assert.match(surfaces, /behaviorArtifactCards/);
-  assert.match(surfaces, /action-agent-detail-open-prompt-governance/);
-  assert.match(surfaces, /action-agent-detail-open-skill-manifest/);
-});
-
-test('Agent Admin starts without bootstrap markdown and keeps structured governance surfaces available', () => {
-  assert.match(workstream, /initialWorkstreamItems: WorkstreamItem\[\] = \[\]/);
-  assert.match(surfaces, /Model-backed AgentAdminAgent guidance was blocked before a response was produced/);
-  assert.match(surfaces, /no direct mutation|ToolPermissionBoundary enforcement/);
-  for (const surfaceId of [
-    'surface-agent-admin-dashboard',
-    'surface-agent-admin-catalog',
-    'surface-agent-admin-detail',
-    'surface-agent-prompt-governance',
-    'surface-agent-tool-boundary-diff',
-    'surface-agent-model-refs',
-    'surface-agent-test-console',
-    'surface-agent-admin-prompt-risk-review'
-  ]) {
-    assert.match(surfaces, new RegExp(surfaceId));
-  }
-  assert.match(surfaces, /fullCoreDemoSurfaceEnvelopes/);
-  assert.match(surfaces, /trace-agent-work-88/);
+  for (const resultName of [
+    'displayAgentBlankActionResult',
+    'displayAgentPromptDocActionResult',
+    'displayAgentSkillDocActionResult',
+    'displayAgentReferenceDocActionResult',
+    'displayAgentEditSessionActionResult',
+    'displayAgentVersionHistoryActionResult',
+    'displayAgentVersionDiffActionResult',
+    'displayAgentCreateSkillActionResult',
+    'displayAgentDeleteSkillActionResult',
+    'displayAgentCreateReferenceDocActionResult',
+    'displayAgentDeleteReferenceDocActionResult',
+    'displayAgentRuntimeTracesActionResult'
+  ]) assert.match(apiClient, new RegExp(resultName));
 });

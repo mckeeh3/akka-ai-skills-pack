@@ -123,6 +123,144 @@ export type SystemMessageData = {
   };
 };
 
+export type AgentAdminDocKind = 'prompt' | 'skill' | 'reference';
+
+export type AgentAdminSurfaceContract =
+  | 'agent_admin.blank.v1'
+  | 'agent_admin.dashboard.v1'
+  | 'agent_admin.agent_list.v1'
+  | 'agent_admin.agent_detail.v1'
+  | 'agent_admin.prompt_doc.v1'
+  | 'agent_admin.skill_doc.v1'
+  | 'agent_admin.skill_reference_doc.v1'
+  | 'agent_admin.edit_session.v1'
+  | 'agent_admin.version_history.v1'
+  | 'agent_admin.version_diff.v1'
+  | 'agent_admin.create_skill.v1'
+  | 'agent_admin.delete_skill_confirmation.v1'
+  | 'agent_admin.create_reference_doc.v1'
+  | 'agent_admin.delete_reference_doc_confirmation.v1'
+  | 'agent_admin.runtime_traces.v1'
+  | 'agent_admin.system_message.v1';
+
+export type AgentAdminActionSummary = {
+  actionId: string;
+  label: string;
+  governedToolId?: string;
+  capabilityId?: string;
+  resultSurfaceId?: string;
+  approvalRequired?: boolean;
+  denialHint?: string;
+};
+
+export type AgentAdminDocumentSummary = {
+  kind: AgentAdminDocKind;
+  documentId: string;
+  title: string;
+  description: string;
+  currentVersion: number;
+  updatedAt?: string;
+};
+
+export type AgentAdminReferenceDocSummary = {
+  stableReferenceId: string;
+  documentId: string;
+  name: string;
+  description: string;
+  currentVersion: number;
+  updatedAt?: string;
+  actionId?: string;
+};
+
+export type AgentAdminSkillDocSummary = {
+  stableSkillId: string;
+  documentId: string;
+  name: string;
+  purpose: string;
+  currentVersion: number;
+  updatedAt?: string;
+  referenceDocs: AgentAdminReferenceDocSummary[];
+  actionId?: string;
+};
+
+export type AgentAdminDocumentDetail = {
+  agentDefinitionId: string;
+  kind: AgentAdminDocKind;
+  documentId: string;
+  version: number;
+  currentVersion: boolean;
+  editable: boolean;
+  title: string;
+  description: string;
+  contentBody: string;
+  contentChecksum: string;
+  createdAt: string;
+  actorAccountId: string;
+  editSessionTranscriptSummary: string;
+};
+
+export type AgentAdminRuntimeTraceRow = {
+  traceId: string;
+  agentDefinitionId: string;
+  agentName: string;
+  documentType: AgentAdminDocKind | string;
+  documentIdOrStableId: string;
+  documentName: string;
+  documentRead: 'readSkill' | 'readReferenceDoc' | string;
+  timestamp: string;
+  requestSessionId: string;
+  userCustomerContext: string;
+  decision: string;
+  safeSummary: string;
+};
+
+export type AgentAdminSurfaceData = {
+  surfaceContract: AgentAdminSurfaceContract | string;
+  state?: string;
+  systemStates?: string[];
+  availableTaskActions?: AgentAdminActionSummary[];
+  authorizedActions?: string[];
+  traceRefs?: string[];
+  emptyCopy?: string;
+  composerAvailable?: boolean;
+  clearWorkstream?: { enabled: boolean; state: string };
+  thingsYouCanDo?: Array<{ cardId: string; label: string; count: number; actionId: string; targetSurfaceId: string }>;
+  recentlyChangedAgents?: Array<Record<string, unknown>>;
+  thingsNeedAttention?: Array<unknown>;
+  filters?: Record<string, string | null | undefined>;
+  rows?: Array<Record<string, unknown>> | AgentAdminRuntimeTraceRow[];
+  totalCount?: number;
+  filteredCount?: number;
+  rowActionId?: string;
+  agent?: { agentDefinitionId: string; agentName: string; purpose: string; workstreamDomain: string; lastEditTime?: string };
+  prompt?: AgentAdminDocumentSummary;
+  skills?: AgentAdminSkillDocSummary[];
+  referenceDocs?: AgentAdminReferenceDocSummary[];
+  traceEntryPoints?: Array<{ label: string; actionId: string; targetSurfaceId: string }>;
+  doc?: AgentAdminDocumentDetail;
+  readOnlyBanner?: string | null;
+  editInputEnabled?: boolean;
+  session?: Record<string, unknown>;
+  target?: { agentDefinitionId: string; kind: AgentAdminDocKind; documentId: string; baseVersion: number };
+  saveCreatesNewCurrentVersion?: boolean;
+  warningsAdvisoryOnly?: boolean;
+  selectedVersion?: AgentAdminDocumentDetail | number;
+  priorVersion?: number | null;
+  diffRule?: string;
+  unifiedDiff?: string;
+  agentDefinitionId?: string;
+  kind?: AgentAdminDocKind;
+  documentId?: string;
+  inputs?: string[];
+  skillDocumentId?: string;
+  skillName?: string;
+  referenceDocCount?: number;
+  referenceDocumentId?: string;
+  referenceDocName?: string;
+  permanentDeletionWarning?: string;
+  contentRedaction?: string;
+};
+
 export type AttentionItemStatus = 'open' | 'acknowledged' | 'resolved' | 'dismissed' | 'expired' | string;
 export type AttentionCategory = 'invitation_delivery' | 'provider_readiness' | 'governance_approval' | 'audit_failure_evidence' | 'access_review' | 'policy_exception' | 'workflow_blocked' | 'agent_task_failed' | 'security_review' | string;
 export type AttentionItemSeverity = 'info' | 'warning' | 'urgent' | 'blocked' | 'critical' | string;

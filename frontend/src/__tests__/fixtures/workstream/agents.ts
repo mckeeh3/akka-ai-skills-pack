@@ -41,7 +41,7 @@ export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
   {
     functionalAgentId: 'agent-admin-agent',
     label: 'Agent Admin',
-    purpose: 'Govern agent definitions, prompts, skill manifests, tool boundaries, model refs, seed imports, behavior proposals, and runtime traces.',
+    purpose: 'Improve agent behavior by editing prompt, skill, and skill reference docs with AI-assisted proposals, version history, restore, create/delete doc helpers, and runtime read traces.',
     icon: 'bot',
     workstreamIcon: {
       workstreamId: 'workstream-agent-admin',
@@ -52,10 +52,10 @@ export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
       tooltip: 'Open Agent Admin workstream',
       ariaLabel: 'Open Agent Admin workstream'
     },
-    defaultSurfaceType: 'dashboard',
-    defaultSurfaceId: 'surface-agent-admin-dashboard',
-    requiredCapabilityIds: ['agent_admin.submit_turn', 'agent_admin.list_definitions', 'agent_admin.get_definition', 'agent.definitions.manage', 'agent_admin.get_prompt_version', 'agent_admin.get_skill_version', 'agent_admin.get_reference_version', 'agent_admin.get_manifest', 'agent_admin.get_tool_boundary', 'agent_admin.draft_behavior_change', 'agent_admin.submit_behavior_change_for_review', 'agent_admin.approve_behavior_change', 'agent_admin.reject_behavior_change', 'agent_admin.activate_behavior_change', 'agent_admin.deactivate_behavior_version', 'agent_admin.cancel_behavior_change', 'agent_admin.rollback_behavior_change', 'agent_admin.simulate_tool_boundary', 'agent_admin.get_model_ref', 'agent_admin.list_seed_material', 'agent_admin.reseed_missing_defaults', 'agent_admin.prompt_risk_review.start', 'agent_admin.prompt_risk_review.read', 'agent_admin.prompt_risk_review.cancel', 'agent_admin.prompt_risk_review.accept_result', 'agent_admin.prompt_risk_review.reject_result'],
-    attention: { count: 4, severity: 'blocked', source: 'attention.list_rail_summaries' },
+    defaultSurfaceType: 'blank',
+    defaultSurfaceId: 'surface-agent-admin-blank',
+    requiredCapabilityIds: ['agent_admin.submit_turn', 'agent_admin.list_definitions', 'agent_admin.get_definition', 'agent_admin.get_prompt_version', 'agent_admin.get_skill_version', 'agent_admin.get_reference_version', 'agent_admin.draft_behavior_change', 'agent_admin.activate_behavior_change', 'agent_admin.cancel_behavior_change', 'agent_admin.rollback_behavior_change', 'saas_owner.admin.manage', 'audit.trace.read'],
+    attention: { count: 0, severity: 'info', source: 'agent_admin.runtime_doc_reads.trace_rows' },
     availability: 'visible'
   },
   {
@@ -137,7 +137,7 @@ export const foundationFunctionalAgents: FunctionalAgentSummary[] = [
 export const deniedFunctionalAgentExample: FunctionalAgentSummary = {
   functionalAgentId: 'agent-admin-agent-denied-example',
   label: 'Agent Admin denied example',
-  purpose: 'Demonstrate safe denied rail state for agent governance when capability scope is absent; not part of the default core workstream rail.',
+  purpose: 'Demonstrate safe denied rail state for SaaS-owner-only agent document administration when capability scope is absent; not part of the default core workstream rail.',
   icon: 'bot-off',
   workstreamIcon: {
     workstreamId: 'workstream-agent-admin-denied-example',
@@ -148,9 +148,9 @@ export const deniedFunctionalAgentExample: FunctionalAgentSummary = {
     tooltip: 'Agent Admin workstream denied without agent governance capability',
     ariaLabel: 'Agent Admin workstream denied'
   },
-  defaultSurfaceType: 'governance-diff',
+  defaultSurfaceType: 'system_message',
   requiredCapabilityIds: ['agent_admin.list_definitions'],
   availability: 'denied',
-  deniedReason: 'Agent governance requires tenant-scoped agent_admin.list_definitions capability.'
+  deniedReason: 'Agent Admin doc editing requires SaaS Owner/Admin authority and agent_admin.list_definitions capability.'
 };
 export const hiddenFunctionalAgentExample = foundationFunctionalAgents.find((agent) => agent.availability === 'hidden')!;

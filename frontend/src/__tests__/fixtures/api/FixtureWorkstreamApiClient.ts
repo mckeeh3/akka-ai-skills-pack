@@ -8,18 +8,30 @@ import {
   displayAgentAdminTraceActionResult,
   displayAgentActivationConfirmationActionResult,
   displayAgentBehaviorProposalActionResult,
+  displayAgentBlankActionResult,
   displayAgentDashboardActionResult,
   displayAgentDeactivationConfirmationActionResult,
   displayAgentCatalogActionResult,
+  displayAgentCreateReferenceDocActionResult,
+  displayAgentCreateSkillActionResult,
+  displayAgentDeleteReferenceDocActionResult,
+  displayAgentDeleteSkillActionResult,
   displayAgentDetailActionResult,
+  displayAgentEditSessionActionResult,
   displayAgentManifestActionResult,
   displayAgentModelRefsActionResult,
+  displayAgentPromptDocActionResult,
   displayAgentPromptGovernanceActionResult,
   displayAgentPromptRiskReviewActionResult,
+  displayAgentReferenceDocActionResult,
   displayAgentRollbackConfirmationActionResult,
+  displayAgentRuntimeTracesActionResult,
   displayAgentSeedMaterialActionResult,
+  displayAgentSkillDocActionResult,
   displayAgentTestConsoleActionResult,
   displayAgentToolBoundaryActionResult,
+  displayAgentVersionDiffActionResult,
+  displayAgentVersionHistoryActionResult,
   displayMyAccountDashboardActionResult,
   displayMyAccountProfileActionResult,
   displayMyAccountSettingsActionResult,
@@ -221,8 +233,50 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
     if (action.disabled) return delayedOk({ ...actionResultsByStatus.denied, message: action.disabled.message, correlationId: request.correlationId });
     const result = request.actionId === 'action-show-my-account-dashboard'
       ? displayMyAccountDashboardActionResult
-      : request.actionId === 'action-display-agent-admin-dashboard' || request.actionId === 'action-open-agent-admin'
+      : request.actionId === 'action-agent-admin-show-blank'
+        ? displayAgentBlankActionResult
+      : request.actionId === 'action-agent-admin-show-dashboard' || request.actionId === 'action-agent-admin-refresh-dashboard' || request.actionId === 'action-display-agent-admin-dashboard' || request.actionId === 'action-open-agent-admin'
         ? displayAgentDashboardActionResult
+      : request.actionId === 'action-agent-admin-show-agents' || request.actionId === 'action-agent-admin-list-agents'
+        ? displayAgentCatalogActionResult
+      : request.actionId === 'action-agent-admin-open-agent-detail'
+        ? displayAgentDetailActionResult
+      : request.actionId === 'action-agent-admin-save-agent-profile'
+        ? displayAgentDetailActionResult
+      : request.actionId === 'action-agent-admin-open-prompt-doc'
+        ? displayAgentPromptDocActionResult
+      : request.actionId === 'action-agent-admin-open-skill-doc'
+        ? displayAgentSkillDocActionResult
+      : request.actionId === 'action-agent-admin-open-reference-doc'
+        ? displayAgentReferenceDocActionResult
+      : request.actionId === 'action-agent-doc-edit-start' || request.actionId === 'action-agent-doc-edit-revise' || request.actionId === 'action-agent-doc-edit-cancel'
+        ? displayAgentEditSessionActionResult
+      : request.actionId === 'action-agent-doc-edit-save'
+        ? displayAgentPromptDocActionResult
+      : request.actionId === 'action-agent-doc-version-history'
+        ? displayAgentVersionHistoryActionResult
+      : request.actionId === 'action-agent-doc-version-diff'
+        ? displayAgentVersionDiffActionResult
+      : request.actionId === 'action-agent-doc-version-restore'
+        ? displayAgentPromptDocActionResult
+      : request.actionId === 'action-agent-admin-open-create-skill'
+        ? displayAgentCreateSkillActionResult
+      : request.actionId === 'action-agent-admin-create-skill'
+        ? displayAgentSkillDocActionResult
+      : request.actionId === 'action-agent-admin-open-delete-skill'
+        ? displayAgentDeleteSkillActionResult
+      : request.actionId === 'action-agent-admin-delete-skill'
+        ? displayAgentDetailActionResult
+      : request.actionId === 'action-agent-admin-open-create-reference-doc'
+        ? displayAgentCreateReferenceDocActionResult
+      : request.actionId === 'action-agent-admin-create-reference-doc'
+        ? displayAgentReferenceDocActionResult
+      : request.actionId === 'action-agent-admin-open-delete-reference-doc'
+        ? displayAgentDeleteReferenceDocActionResult
+      : request.actionId === 'action-agent-admin-delete-reference-doc'
+        ? displayAgentDetailActionResult
+      : request.actionId === 'action-agent-admin-open-runtime-traces'
+        ? displayAgentRuntimeTracesActionResult
       : request.actionId === 'action-show-my-profile'
         ? displayMyAccountProfileActionResult
         : request.actionId === 'action-show-my-settings'

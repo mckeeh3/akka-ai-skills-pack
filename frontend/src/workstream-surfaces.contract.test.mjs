@@ -149,6 +149,28 @@ test('base surface frame and action bar preserve envelope, stale, redaction, dis
   assert.match(actionBar, /action\.disabled\.message/);
 });
 
+test('Agent Admin doc-editing surface type contracts are explicit for current surface inventory', () => {
+  for (const marker of [
+    'AgentAdminSurfaceContract',
+    'agent_admin.blank.v1',
+    'agent_admin.agent_list.v1',
+    'agent_admin.agent_detail.v1',
+    'agent_admin.prompt_doc.v1',
+    'agent_admin.skill_doc.v1',
+    'agent_admin.skill_reference_doc.v1',
+    'agent_admin.edit_session.v1',
+    'agent_admin.version_history.v1',
+    'agent_admin.version_diff.v1',
+    'agent_admin.create_skill.v1',
+    'agent_admin.delete_skill_confirmation.v1',
+    'agent_admin.create_reference_doc.v1',
+    'agent_admin.delete_reference_doc_confirmation.v1',
+    'agent_admin.runtime_traces.v1',
+    'AgentAdminSurfaceData',
+    'AgentAdminRuntimeTraceRow'
+  ]) assert.match(surfaceTypes, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+});
+
 test('canonical surface components include dashboard, list/search, detail/edit, decision, audit, workflow, governance diff, and outcome patterns', () => {
   for (const componentName of ['MarkdownResponseSurface', 'SystemMessageSurface', 'DashboardSurface', 'ListSearchSurface', 'DetailEditSurface', 'DecisionSurface', 'AuditTimelineSurface', 'WorkflowStatusSurface', 'GovernanceDiffSurface', 'OutcomeSurface', 'NotificationCenterSurface', 'UserAdminTaskSurface']) {
     assert.match(surfaceIndex, new RegExp(componentName));

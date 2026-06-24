@@ -465,3 +465,134 @@ export type RealtimeEvent = {
   occurredAt: string;
   payload: Record<string, unknown>;
 };
+
+export type AgentAdminDocKind = 'prompt' | 'skill' | 'reference';
+
+export type AgentAdminAgentListRow = {
+  agentDefinitionId: string;
+  agentName: string;
+  shortPurpose: string;
+  workstreamDomain: string;
+  lastEditTime?: string;
+};
+
+export type AgentAdminAgentListResponse = {
+  rows: AgentAdminAgentListRow[];
+  totalCount: number;
+  filteredCount: number;
+  traceLinks: string[];
+};
+
+export type AgentAdminDocumentSummary = {
+  kind: AgentAdminDocKind;
+  documentId: string;
+  title: string;
+  description: string;
+  currentVersion: number;
+  updatedAt?: string;
+};
+
+export type AgentAdminReferenceDocSummary = AgentAdminDocumentSummary & {
+  kind: 'reference';
+  stableReferenceId: string;
+  name: string;
+};
+
+export type AgentAdminSkillDocSummary = AgentAdminDocumentSummary & {
+  kind: 'skill';
+  stableSkillId: string;
+  name: string;
+  purpose: string;
+  referenceDocs: AgentAdminReferenceDocSummary[];
+};
+
+export type AgentAdminAgentDetailResponse = {
+  agentDefinitionId: string;
+  agentName: string;
+  purpose: string;
+  workstreamDomain: string;
+  lastEditTime?: string;
+  prompt: AgentAdminDocumentSummary & { kind: 'prompt' };
+  skills: AgentAdminSkillDocSummary[];
+  referenceDocs: AgentAdminReferenceDocSummary[];
+  traceLinks: string[];
+};
+
+export type AgentAdminDocumentVersionDetail = {
+  agentDefinitionId: string;
+  kind: AgentAdminDocKind;
+  documentId: string;
+  version: number;
+  currentVersion: boolean;
+  editable: boolean;
+  title: string;
+  description: string;
+  contentBody: string;
+  contentChecksum: string;
+  createdAt: string;
+  actorAccountId: string;
+  editSessionTranscriptSummary: string;
+  traceLinks: string[];
+};
+
+export type AgentAdminVersionHistoryRow = {
+  version: number;
+  currentVersion: boolean;
+  createdAt: string;
+  label: string;
+};
+
+export type AgentAdminVersionHistoryResponse = {
+  agentDefinitionId: string;
+  kind: AgentAdminDocKind;
+  documentId: string;
+  rows: AgentAdminVersionHistoryRow[];
+  traceLinks: string[];
+};
+
+export type AgentAdminAdjacentDiffResponse = {
+  agentDefinitionId: string;
+  kind: AgentAdminDocKind;
+  documentId: string;
+  priorVersion?: number;
+  selectedVersion: number;
+  status: 'ready' | 'no_prior_version' | 'prior_version_not_available_in_current_slice' | string;
+  unifiedDiff: string;
+  traceLinks: string[];
+};
+
+export type AgentAdminEditSessionStatus = 'drafting' | 'clarification_requested' | 'proposal_ready' | 'refused' | 'saved' | 'cancelled' | string;
+
+export type AgentAdminEditSessionRecord = {
+  sessionId: string;
+  agentDefinitionId: string;
+  kind: AgentAdminDocKind;
+  documentId: string;
+  baseVersion: number;
+  actorAccountId: string;
+  status: AgentAdminEditSessionStatus;
+  instructions: Array<{ at?: string; actorAccountId: string; instructions: string }>;
+  proposedContent?: string;
+  changeSummary?: string;
+  clarifyingQuestion?: string;
+  warnings: string[];
+  traceLinks: string[];
+  startedAt: string;
+  endedAt?: string;
+};
+
+export type AgentAdminRuntimeDocReadTraceRow = {
+  traceId: string;
+  occurredAt: string;
+  agentDefinitionId: string;
+  agentName: string;
+  documentType: AgentAdminDocKind | string;
+  documentIdOrStableId: string;
+  documentName: string;
+  documentRead: 'readSkill' | 'readReferenceDoc' | string;
+  requestSessionId: string;
+  actorAccountId?: string;
+  userCustomerContext: string;
+  decision: string;
+  safeSummary: string;
+};

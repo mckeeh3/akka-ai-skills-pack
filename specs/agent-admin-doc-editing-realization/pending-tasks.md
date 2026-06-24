@@ -193,7 +193,7 @@
 
 ### AADE-04-001: Frontend contracts, API types, and fixtures
 
-- status: pending
+- status: done
 - source: `backlog/03-api-frontend-build-backlog.md`
 - task brief: `specs/agent-admin-doc-editing-realization/tasks/04-frontend/01-frontend-contracts-api-fixtures.md`
 - depends on: [AADE-03-001]
@@ -217,7 +217,9 @@
   - frontend contracts compile with current surface inventory
   - stale governance fixture assumptions are superseded
   - changes and queue update are committed
-- notes: []
+- notes:
+  - completed in commit message: `Implement Agent Admin frontend doc contracts`
+  - next runnable task after completion: `AADE-04-002` (`pending`, depends on `AADE-04-001`)
 
 ### AADE-04-002: Frontend browsing, doc, and version surfaces
 
