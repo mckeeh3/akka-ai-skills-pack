@@ -1,3 +1,4 @@
+export * from './AgentAdminDocEditingSurface';
 export * from './AuditTimelineSurface';
 export * from './ChatToolPlanSurface';
 export * from './DashboardSurface';

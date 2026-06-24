@@ -12,6 +12,8 @@ const surfaces = read('./__tests__/fixtures/workstream/surfaces.ts');
 const apiTypes = read('./api/types.ts');
 const surfaceTypes = read('./workstream/types/surfaces.ts');
 const apiClient = read('./__tests__/fixtures/api/FixtureWorkstreamApiClient.ts');
+const renderer = read('./workstream/surfaces/SurfaceRenderer.tsx');
+const agentAdminDocEditingSurface = read('./workstream/surfaces/AgentAdminDocEditingSurface.tsx');
 
 const currentInventoryBlock = surfaces.slice(
   surfaces.indexOf('export const currentAgentAdminSurfaceEnvelopes = ['),
@@ -136,6 +138,26 @@ test('Agent Admin fixtures model document editing, versions, permanence, traces,
   ]) assert.match(surfaces, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   assert.match(surfaces, /inputs: \['skill name', 'purpose\/description', 'free-form initial content request'\]/);
   assert.match(surfaces, /inputs: \['reference doc name', 'short description', 'free-form initial content request'\]/);
+});
+
+test('Agent Admin read browsing surfaces are routed to purpose-built renderers', () => {
+  assert.match(renderer, /isAgentAdminDocEditingSurface\(selectedEnvelope\)/);
+  assert.match(renderer, /<AgentAdminDocEditingSurface envelope=\{selectedEnvelope as never\} onAction=\{onAction\}/);
+  for (const marker of [
+    'AgentAdminBlankSurface',
+    'AgentAdminDashboardSurface',
+    'AgentAdminAgentListSurface',
+    'AgentAdminAgentDetailSurface',
+    'AgentAdminDocumentSurface',
+    'AgentAdminVersionHistorySurface',
+    'AgentAdminVersionDiffSurface',
+    'editInputEnabled === true',
+    '!doc.currentVersion ? actionById',
+    'Edit input disabled: selected version',
+    'role="listitem"',
+    'aria-label="Document versions"'
+  ]) assert.match(agentAdminDocEditingSurface, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.doesNotMatch(agentAdminDocEditingSurface, /surface-agent-prompt-governance|surface-agent-tool-boundary-diff|prompt_risk_review|JSON\.stringify/);
 });
 
 test('Agent Admin frontend API and surface types expose doc-editing DTO contracts', () => {

@@ -19,6 +19,7 @@ const listSearchSurface = read('./workstream/surfaces/ListSearchSurface.tsx');
 const notificationCenterSurface = read('./workstream/surfaces/NotificationCenterSurface.tsx');
 const detailEditSurface = read('./workstream/surfaces/DetailEditSurface.tsx');
 const userAdminTaskSurface = read('./workstream/surfaces/UserAdminTaskSurface.tsx');
+const agentAdminDocEditingSurface = read('./workstream/surfaces/AgentAdminDocEditingSurface.tsx');
 const surfaceStyles = read('./styles/components.css');
 const packageJson = read('../package.json');
 const surfaceTypes = read('./workstream/types/surfaces.ts');
@@ -38,7 +39,8 @@ const surfaceComponentFiles = [
   './workstream/surfaces/GovernanceDiffSurface.tsx',
   './workstream/surfaces/OutcomeSurface.tsx',
   './workstream/surfaces/NotificationCenterSurface.tsx',
-  './workstream/surfaces/UserAdminTaskSurface.tsx'
+  './workstream/surfaces/UserAdminTaskSurface.tsx',
+  './workstream/surfaces/AgentAdminDocEditingSurface.tsx'
 ].map(read);
 
 const allSurfaceComponents = surfaceComponentFiles.join('\n');
@@ -69,6 +71,8 @@ test('structured surface renderer routes every canonical surface type', () => {
   assert.match(renderer, /SystemMessageSurface/);
   assert.match(renderer, /UserAdminTaskSurface/);
   assert.match(renderer, /isUserAdminTaskSurface\(selectedEnvelope\)/);
+  assert.match(renderer, /isAgentAdminDocEditingSurface\(selectedEnvelope\)/);
+  assert.match(renderer, /AgentAdminDocEditingSurface/);
   assert.match(renderer, /JSON\.stringify/);
 });
 
@@ -147,6 +151,31 @@ test('base surface frame and action bar preserve envelope, stale, redaction, dis
   assert.match(actionBar, /requiresConfirmation/);
   assert.match(actionBar, /requiresApproval/);
   assert.match(actionBar, /action\.disabled\.message/);
+});
+
+test('Agent Admin doc-editing read surfaces render without raw JSON fallback', () => {
+  for (const marker of [
+    'agent_admin.blank.v1',
+    'agent_admin.dashboard.v1',
+    'agent_admin.agent_list.v1',
+    'agent_admin.agent_detail.v1',
+    'agent_admin.prompt_doc.v1',
+    'agent_admin.skill_doc.v1',
+    'agent_admin.skill_reference_doc.v1',
+    'agent_admin.version_history.v1',
+    'agent_admin.version_diff.v1',
+    'Historical version: read-only.',
+    'Edit input disabled: selected version',
+    'selected version N is compared only with N-1',
+    'ReactMarkdown',
+    'skipHtml',
+    'role="search"',
+    'aria-label="Document versions"',
+    'action-agent-doc-version-restore'
+  ]) assert.match(agentAdminDocEditingSurface, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.doesNotMatch(agentAdminDocEditingSurface, /JSON\.stringify|dangerouslySetInnerHTML|\.innerHTML\s*=/);
+  assert.match(surfaceIndex, /AgentAdminDocEditingSurface/);
+  assert.match(surfaceStyles, /\.agent-admin-doc-surface \{/);
 });
 
 test('Agent Admin doc-editing surface type contracts are explicit for current surface inventory', () => {

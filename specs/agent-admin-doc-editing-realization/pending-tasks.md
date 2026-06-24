@@ -223,7 +223,7 @@
 
 ### AADE-04-002: Frontend browsing, doc, and version surfaces
 
-- status: pending
+- status: done
 - source: `backlog/03-api-frontend-build-backlog.md`
 - task brief: `specs/agent-admin-doc-editing-realization/tasks/04-frontend/02-frontend-browsing-doc-version-surfaces.md`
 - depends on: [AADE-04-001]
@@ -248,7 +248,9 @@
   - read/browse/version surfaces render correctly
   - historical versions are read-only and current-version edit input is enforced in UI state
   - changes and queue update are committed
-- notes: []
+- notes:
+  - completed in commit message: `Implement Agent Admin frontend browse surfaces`
+  - next runnable task after completion: `AADE-04-003` (`pending`, depends on `AADE-04-002`)
 
 ### AADE-04-003: Frontend edit, create/delete, trace flows, and stale governance cleanup
 
