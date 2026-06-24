@@ -58,7 +58,7 @@
 
 ### TASK-003: Define app-description graph and compile contract
 
-- status: pending
+- status: done
 - source: specs/skills-pack-worker-tool-lifecycle-realignment/target-architecture.md
 - task brief: specs/skills-pack-worker-tool-lifecycle-realignment/tasks/003-app-description-graph-and-compile-contract.md
 - depends on: [TASK-001, TASK-002]

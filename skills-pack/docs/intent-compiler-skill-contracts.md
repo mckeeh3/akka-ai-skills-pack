@@ -1,6 +1,6 @@
 # Intent Compiler Skill Contracts
 
-Intent-processing skills should declare which compiler role they perform and produce outputs that preserve current intent, workstream binding, and realization traceability.
+Intent-processing skills should declare which compiler role they perform and produce outputs that preserve current intent, workstream binding, and realization traceability. Use [App-description component graph](app-description-component-graph.md) for graph node families and [App-description to code compile contract](app-description-to-code-compile-contract.md) for bounded build/compile task expectations.
 
 This document defines shared semantics, not a required JSON schema. A task-specific skill may use prose, Markdown tables, or structured blocks when the same information is clear.
 
@@ -54,7 +54,8 @@ Specs, backlogs, task briefs, pending questions, and pending tasks should:
 - carry dependencies and blockers explicitly;
 - include done criteria, required checks, canonical runtime path, readiness target, and runtime validation/manual-smoke path when feature-bearing;
 - for browser-rendered structured surfaces or web UI realization, include required reads for `app-description-ui`, `akka-web-ui-ux-design`, `docs/web-ui-style-guide.md`, `docs/web-ui-component-catalog.md`, and `docs/web-ui-quality-checklist.md`, cite the selected app style/named-theme artifact, and confirm the surface-description sufficiency review has passed or is blocking;
-- preserve the workstream vertical contract or state a valid docs-only/internal/foundation/cross-cutting exemption.
+- preserve the workstream vertical contract or state a valid docs-only/internal/foundation/cross-cutting exemption;
+- include the minimum checklist from [App-description to code compile contract](app-description-to-code-compile-contract.md) for feature-bearing build/compile tasks.
 
 ## Realization contract
 
@@ -83,4 +84,4 @@ Review outputs should report:
 
 If a user input replaces earlier intent, the active artifact should state only the accepted current intent. Historical context belongs in commits, task notes, archived docs, or explicit migration records.
 
-See also [Intent Compiler](intent-compiler.md), [Incremental intent processing](incremental-intent-processing.md), and [Intent to realization flow](intent-to-realization-flow.md).
+See also [Intent Compiler](intent-compiler.md), [Incremental intent processing](incremental-intent-processing.md), [Intent to realization flow](intent-to-realization-flow.md), [App-description component graph](app-description-component-graph.md), and [App-description to code compile contract](app-description-to-code-compile-contract.md).

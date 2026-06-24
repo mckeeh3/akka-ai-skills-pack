@@ -4,7 +4,7 @@ Current intent is the clean, consolidated description of what the application sh
 
 ## App-description intent graph
 
-Represent app intent as a file-backed graph. Directory names identify artifact types; file names identify concrete artifact instances.
+Represent app intent as a file-backed graph. Directory names identify artifact types; file names identify concrete artifact instances. [App-description component graph](app-description-component-graph.md) defines the canonical node families and required links in more detail.
 
 ```text
 app-description/
@@ -102,7 +102,7 @@ Access should be modeled at workstream level first, then compiled into surface v
 
 When new input changes intent, update the affected current graph nodes to their new intended state. Do not append historical notes such as "previously we thought..." unless the artifact is explicitly a changelog, task record, or migration note.
 
-See also [Incremental intent processing](incremental-intent-processing.md) and [Intent to realization flow](intent-to-realization-flow.md).
+See also [Incremental intent processing](incremental-intent-processing.md), [Intent to realization flow](intent-to-realization-flow.md), and [App-description component graph](app-description-component-graph.md).
 
 ## Lifecycle relationship
 
