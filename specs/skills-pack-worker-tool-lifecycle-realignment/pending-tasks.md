@@ -393,7 +393,7 @@
 
 ### TASK-016: Terminal verification and follow-up queue decision
 
-- status: pending
+- status: done
 - source: specs/skills-pack-worker-tool-lifecycle-realignment/README.md
 - task brief: specs/skills-pack-worker-tool-lifecycle-realignment/tasks/016-terminal-verification.md
 - depends on: [TASK-015]
@@ -413,5 +413,55 @@
   - Mini-project done state is verified or follow-up tasks are appended.
 - notes:
   - scope: skills-pack maintenance, terminal verification
+  - vertical contract: cross-cutting pack verification; no runtime feature
+  - runtime evidence: not applicable; pack-maintenance task
+  - terminal verification result: mini-project not closed; TASK-017 and TASK-018 appended for maintainer verification blocker recorded in `specs/skills-pack-worker-tool-lifecycle-realignment/verification-notes.md`
+
+### TASK-017: Repair app-description governed-agent verification coverage
+
+- status: pending
+- source: specs/skills-pack-worker-tool-lifecycle-realignment/verification-notes.md
+- task brief: specs/skills-pack-worker-tool-lifecycle-realignment/tasks/017-repair-app-description-governed-agent-verification.md
+- depends on: [TASK-016]
+- required reads:
+  - specs/skills-pack-worker-tool-lifecycle-realignment/tasks/017-repair-app-description-governed-agent-verification.md
+- skills:
+  - app-descriptions
+  - akka-agent-governed-documents
+- expected outputs:
+  - focused `app-description/**` governed runtime agent foundation coverage repair
+  - verification notes/task notes summarizing repaired maintainer-script patterns
+- required checks:
+  - `git diff --check`
+  - `bash skills-pack/pack/maintainer/tools/verify-opinionated-ai-first-saas-pack.sh`
+- done criteria:
+  - TASK-016 maintainer verification blocker is repaired without editing root runtime code, or any newly revealed unrelated blocker is recorded for terminal verification.
+- notes:
+  - scope: app-description/spec reconciliation; no root runtime code
+  - vertical contract: governed runtime agent foundation app-description coverage; no runtime feature
+  - runtime evidence: not applicable; documentation/app-description maintenance task
+
+### TASK-018: Replacement terminal verification after follow-up repair
+
+- status: pending
+- source: specs/skills-pack-worker-tool-lifecycle-realignment/verification-notes.md
+- task brief: specs/skills-pack-worker-tool-lifecycle-realignment/tasks/018-terminal-verification-retry.md
+- depends on: [TASK-017]
+- required reads:
+  - specs/skills-pack-worker-tool-lifecycle-realignment/tasks/018-terminal-verification-retry.md
+- skills:
+  - akka-pending-task-queue-maintenance
+- expected outputs:
+  - updated `specs/skills-pack-worker-tool-lifecycle-realignment/verification-notes.md`
+  - queue closure or appended follow-up tasks plus replacement terminal verification
+- required checks:
+  - `git diff --check`
+  - `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --dry-run`
+  - `./install-skills.sh --target /tmp/akka-skills-install-check/.agents/skills --check`
+  - `bash skills-pack/pack/maintainer/tools/verify-opinionated-ai-first-saas-pack.sh`
+- done criteria:
+  - Mini-project done state is verified after TASK-017, or follow-up tasks are appended.
+- notes:
+  - scope: skills-pack maintenance, replacement terminal verification
   - vertical contract: cross-cutting pack verification; no runtime feature
   - runtime evidence: not applicable; pack-maintenance task
