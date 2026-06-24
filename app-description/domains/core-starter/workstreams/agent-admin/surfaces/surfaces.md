@@ -10,6 +10,19 @@ Reusable placements:
 - Audit/Trace may reuse all Agent Admin trace drill-ins and diagnostic drawers.
 - My Account may link to Agent Admin dashboard attention through backend-owned workstream attention counters.
 
+## Usability simplification directive
+
+Agent Admin surfaces must optimize for administrator comprehension and task completion before exposing governance detail. The default UI should use plain-language task labels, grouped readiness blockers, and one obvious next action per work object. Internal concepts such as proposal state machines, prompt assembly traces, loader tools, tool-boundary ids, model refs, policy ids, raw artifact identifiers, and idempotency keys are backend-authoritative but should not be primary visible copy for ordinary administrators.
+
+Every Agent Admin surface should apply progressive disclosure:
+
+1. **Summary first:** show the agent, readiness outcome, risk level, blocker, and recommended next action.
+2. **Task second:** route to a focused review, test, approval, activation, rollback, or recovery surface.
+3. **Evidence third:** show redacted diff/evidence summaries only when they help the decision.
+4. **Diagnostics last:** expose raw-ish ids, trace refs, policy/capability ids, and routing metadata only in role-gated diagnostics or Audit/Trace drill-ins.
+
+Dashboard and catalog surfaces must avoid dense grids of equal-weight governance widgets. They should group work into user-understandable queues such as `Needs review`, `Blocked readiness`, `Approved and ready to activate`, `Rollback available`, and `Recent denials`. Artifact-specific surfaces must have one dominant purpose and must not combine unrelated prompt, skill, tool, model, seed, lifecycle, and trace work into a single confusing panel.
+
 ## Collection-object progression
 
 Durable collection objects in this workstream use the canonical progression: list/search discovery → lifecycle-aware show/inspection → separate create/proposal/edit/destructive-lifecycle/task surfaces.

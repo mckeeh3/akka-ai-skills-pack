@@ -2,7 +2,21 @@
 
 ## Purpose
 
-Govern managed-agent definitions, prompts, skills, references, manifests, tool boundaries, model refs, seed imports, behavior proposals, activation, rollback, and runtime traces.
+Allow authorized users to manage AI-assisted editing of managed-agent documents: prompts, skills, references, and related agent behavior docs. Edits are interpreted and drafted by an editing agent, reviewed by the user as a proposed document version, and retained as immutable version history with diffs.
+
+## Description
+
+Agent Admin is the workstream where authorized users edit the documents that define managed-agent behavior, especially agent prompts, skills, references, and related agent docs. Its default experience must feel like an AI-assisted document editing workspace, not a compliance console or raw prompt editor.
+
+Editing is intentionally not direct text editing. The user describes the desired change in natural language, and an editing agent interprets the request, identifies the current agent document version, drafts the actual document changes, and presents a proposed new version for review. The user reviews the proposed changes, including a clear summary and diff, before accepting, rejecting, or asking for further revision.
+
+Each accepted agent-doc change creates a new immutable version. The system retains all prior versions. Users can browse or scroll through version history, inspect a specific version, and request the diff for that version against its immediate predecessor; for example, if the user scrolls from version 10 to version 7, the diff shown for version 7 is between version 7 and version 6. Each version records when it was created, who made the change, and the edit request that triggered the change. Edit request input is enabled only on the current/latest version; historical versions are read-only and must clearly indicate that edits cannot be started from that historical view.
+
+The primary journey starts on `surface-agent-admin-dashboard`, opens an agent document catalog or detail view, and then guides the user into one focused AI-assisted edit flow at a time: choose the agent doc, describe the change, review the editing agent's proposed version, inspect the diff, and accept or request revision. Readiness, testing, activation, rollback, and trace review remain supporting flows, but they should not dominate the default editing experience.
+
+`agent-admin-agent` assists by translating the user's intent into understandable proposed document changes: what changed, why it changed, which document/version it affects, and what risk or follow-up review is relevant. It may draft and revise proposed versions within the selected backend `AuthContext`, but it cannot grant authority, reveal protected content to unauthorized users, skip required review, activate behavior without the required lifecycle path, overwrite tenant customizations, or claim provider/model success when configuration is missing.
+
+The intended outcome is an Agent Admin workstream that makes managed-agent behavior editable by authorized humans through AI assistance: users do not need to understand internal governance mechanics to improve prompts and skills, but every accepted change remains versioned, reviewable, auditable, and recoverable.
 
 ## Functional agent
 
