@@ -69,7 +69,7 @@
 
 ### AADE-01-002: Durable document version and lifecycle behavior
 
-- status: pending
+- status: done
 - source: `backlog/01-backend-doc-admin-build-backlog.md`
 - task brief: `specs/agent-admin-doc-editing-realization/tasks/01-backend-core/02-durable-doc-version-lifecycle.md`
 - depends on: [AADE-01-001]
@@ -91,7 +91,9 @@
 - done criteria:
   - versions, adjacent diff, restore, current-version-only save, skill/reference deletion semantics are tested
   - changes and queue update are committed
-- notes: []
+- notes:
+  - completed in commit message: `Implement durable agent document lifecycle`
+  - next runnable task after completion: `AADE-02-001` (`pending`, depends on `AADE-01-002`)
 
 ### AADE-02-001: Editing-agent draft/revise/save/cancel flow
 

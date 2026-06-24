@@ -17,4 +17,6 @@ public record PromptVersion(
     SeedProvenance seedProvenance,
     Instant createdAt,
     Instant approvedAt,
-    Instant activatedAt) {}
+    Instant activatedAt,
+    String actorAccountId,
+    String editSessionTranscriptSummary) {}

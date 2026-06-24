@@ -19,7 +19,9 @@ public record SkillVersion(
     SeedProvenance seedProvenance,
     Instant createdAt,
     Instant approvedAt,
-    Instant activatedAt) {
+    Instant activatedAt,
+    String actorAccountId,
+    String editSessionTranscriptSummary) {
   public SkillVersion {
     tags = List.copyOf(tags == null ? List.of() : tags);
   }

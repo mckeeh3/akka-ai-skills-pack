@@ -59,7 +59,7 @@ public class ReferenceDocumentView extends View {
   @Consume.FromEventSourcedEntity(ReferenceDocumentEntity.class)
   public static class ReferenceDocumentsUpdater extends TableUpdater<ReferenceDocumentRow> {
     public Effect<ReferenceDocumentRow> onEvent(ReferenceDocumentEntity.Event event) {
-      return effects().updateRow(ReferenceDocumentRow.from(event.document()));
+      return event.document() == null ? effects().ignore() : effects().updateRow(ReferenceDocumentRow.from(event.document()));
     }
   }
 

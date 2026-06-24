@@ -8,8 +8,11 @@ import ai.first.domain.foundation.agent.AgentSkillManifest;
 import ai.first.domain.foundation.agent.ModelConfigRef;
 import ai.first.domain.foundation.agent.ModelPolicy;
 import ai.first.domain.foundation.agent.PromptDocument;
+import ai.first.domain.foundation.agent.PromptVersion;
 import ai.first.domain.foundation.agent.ReferenceDocument;
+import ai.first.domain.foundation.agent.ReferenceVersion;
 import ai.first.domain.foundation.agent.SkillDocument;
+import ai.first.domain.foundation.agent.SkillVersion;
 import ai.first.domain.foundation.agent.ToolPermissionBoundary;
 import java.util.List;
 import java.util.Optional;
@@ -81,6 +84,38 @@ public final class AkkaAgentBehaviorRepository implements AgentBehaviorRepositor
   }
 
   @Override
+  public Optional<PromptVersion> promptVersion(String tenantId, String promptDocumentId, int version) {
+    return componentClient
+        .forEventSourcedEntity(PromptDocumentEntity.entityId(tenantId, promptDocumentId))
+        .method(PromptDocumentEntity::version)
+        .invoke(new PromptDocumentEntity.VersionQuery(tenantId, promptDocumentId, version));
+  }
+
+  @Override
+  public List<PromptVersion> promptVersions(String tenantId, String promptDocumentId) {
+    return componentClient
+        .forEventSourcedEntity(PromptDocumentEntity.entityId(tenantId, promptDocumentId))
+        .method(PromptDocumentEntity::versions)
+        .invoke(new PromptDocumentEntity.DocumentQuery(tenantId, promptDocumentId));
+  }
+
+  @Override
+  public PromptDocument savePromptDocumentVersion(DocumentVersionSave command) {
+    return componentClient
+        .forEventSourcedEntity(PromptDocumentEntity.entityId(command.tenantId(), command.documentId()))
+        .method(PromptDocumentEntity::saveCurrentVersion)
+        .invoke(new PromptDocumentEntity.SaveVersion(command.tenantId(), command.documentId(), command.expectedCurrentVersion(), command.contentBody(), command.actorAccountId(), command.changeSummary(), command.editSessionTranscriptSummary(), command.createdAt()));
+  }
+
+  @Override
+  public PromptDocument restorePromptDocumentVersion(DocumentVersionRestore command) {
+    return componentClient
+        .forEventSourcedEntity(PromptDocumentEntity.entityId(command.tenantId(), command.documentId()))
+        .method(PromptDocumentEntity::restoreVersion)
+        .invoke(new PromptDocumentEntity.RestoreVersion(command.tenantId(), command.documentId(), command.version(), command.actorAccountId(), command.createdAt()));
+  }
+
+  @Override
   public Optional<SkillDocument> skillDocument(String tenantId, String skillDocumentId) {
     return componentClient
         .forEventSourcedEntity(SkillDocumentEntity.entityId(tenantId, skillDocumentId))
@@ -109,6 +144,46 @@ public final class AkkaAgentBehaviorRepository implements AgentBehaviorRepositor
   }
 
   @Override
+  public Optional<SkillVersion> skillVersion(String tenantId, String skillDocumentId, int version) {
+    return componentClient
+        .forEventSourcedEntity(SkillDocumentEntity.entityId(tenantId, skillDocumentId))
+        .method(SkillDocumentEntity::version)
+        .invoke(new SkillDocumentEntity.VersionQuery(tenantId, skillDocumentId, version));
+  }
+
+  @Override
+  public List<SkillVersion> skillVersions(String tenantId, String skillDocumentId) {
+    return componentClient
+        .forEventSourcedEntity(SkillDocumentEntity.entityId(tenantId, skillDocumentId))
+        .method(SkillDocumentEntity::versions)
+        .invoke(new SkillDocumentEntity.DocumentQuery(tenantId, skillDocumentId));
+  }
+
+  @Override
+  public SkillDocument saveSkillDocumentVersion(DocumentVersionSave command) {
+    return componentClient
+        .forEventSourcedEntity(SkillDocumentEntity.entityId(command.tenantId(), command.documentId()))
+        .method(SkillDocumentEntity::saveCurrentVersion)
+        .invoke(new SkillDocumentEntity.SaveVersion(command.tenantId(), command.documentId(), command.expectedCurrentVersion(), command.contentBody(), command.actorAccountId(), command.changeSummary(), command.editSessionTranscriptSummary(), command.createdAt()));
+  }
+
+  @Override
+  public SkillDocument restoreSkillDocumentVersion(DocumentVersionRestore command) {
+    return componentClient
+        .forEventSourcedEntity(SkillDocumentEntity.entityId(command.tenantId(), command.documentId()))
+        .method(SkillDocumentEntity::restoreVersion)
+        .invoke(new SkillDocumentEntity.RestoreVersion(command.tenantId(), command.documentId(), command.version(), command.actorAccountId(), command.createdAt()));
+  }
+
+  @Override
+  public void deleteSkillDocument(String tenantId, String skillDocumentId, String actorAccountId, java.time.Instant deletedAt) {
+    componentClient
+        .forEventSourcedEntity(SkillDocumentEntity.entityId(tenantId, skillDocumentId))
+        .method(SkillDocumentEntity::delete)
+        .invoke(new SkillDocumentEntity.DeleteDocument(tenantId, skillDocumentId, actorAccountId, deletedAt));
+  }
+
+  @Override
   public Optional<ReferenceDocument> referenceDocument(String tenantId, String referenceDocumentId) {
     return componentClient
         .forEventSourcedEntity(ReferenceDocumentEntity.entityId(tenantId, referenceDocumentId))
@@ -134,6 +209,46 @@ public final class AkkaAgentBehaviorRepository implements AgentBehaviorRepositor
         .stream()
         .map(AkkaAgentBehaviorRepository::toReferenceDocument)
         .toList();
+  }
+
+  @Override
+  public Optional<ReferenceVersion> referenceVersion(String tenantId, String referenceDocumentId, int version) {
+    return componentClient
+        .forEventSourcedEntity(ReferenceDocumentEntity.entityId(tenantId, referenceDocumentId))
+        .method(ReferenceDocumentEntity::version)
+        .invoke(new ReferenceDocumentEntity.VersionQuery(tenantId, referenceDocumentId, version));
+  }
+
+  @Override
+  public List<ReferenceVersion> referenceVersions(String tenantId, String referenceDocumentId) {
+    return componentClient
+        .forEventSourcedEntity(ReferenceDocumentEntity.entityId(tenantId, referenceDocumentId))
+        .method(ReferenceDocumentEntity::versions)
+        .invoke(new ReferenceDocumentEntity.DocumentQuery(tenantId, referenceDocumentId));
+  }
+
+  @Override
+  public ReferenceDocument saveReferenceDocumentVersion(DocumentVersionSave command) {
+    return componentClient
+        .forEventSourcedEntity(ReferenceDocumentEntity.entityId(command.tenantId(), command.documentId()))
+        .method(ReferenceDocumentEntity::saveCurrentVersion)
+        .invoke(new ReferenceDocumentEntity.SaveVersion(command.tenantId(), command.documentId(), command.expectedCurrentVersion(), command.contentBody(), command.actorAccountId(), command.changeSummary(), command.editSessionTranscriptSummary(), command.createdAt()));
+  }
+
+  @Override
+  public ReferenceDocument restoreReferenceDocumentVersion(DocumentVersionRestore command) {
+    return componentClient
+        .forEventSourcedEntity(ReferenceDocumentEntity.entityId(command.tenantId(), command.documentId()))
+        .method(ReferenceDocumentEntity::restoreVersion)
+        .invoke(new ReferenceDocumentEntity.RestoreVersion(command.tenantId(), command.documentId(), command.version(), command.actorAccountId(), command.createdAt()));
+  }
+
+  @Override
+  public void deleteReferenceDocument(String tenantId, String referenceDocumentId, String actorAccountId, java.time.Instant deletedAt) {
+    componentClient
+        .forEventSourcedEntity(ReferenceDocumentEntity.entityId(tenantId, referenceDocumentId))
+        .method(ReferenceDocumentEntity::delete)
+        .invoke(new ReferenceDocumentEntity.DeleteDocument(tenantId, referenceDocumentId, actorAccountId, deletedAt));
   }
 
   @Override

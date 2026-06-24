@@ -53,7 +53,7 @@ public class PromptDocumentView extends View {
   @Consume.FromEventSourcedEntity(PromptDocumentEntity.class)
   public static class PromptDocumentsUpdater extends TableUpdater<PromptDocumentRow> {
     public Effect<PromptDocumentRow> onEvent(PromptDocumentEntity.Event event) {
-      return effects().updateRow(PromptDocumentRow.from(event.document()));
+      return event.document() == null ? effects().ignore() : effects().updateRow(PromptDocumentRow.from(event.document()));
     }
   }
 

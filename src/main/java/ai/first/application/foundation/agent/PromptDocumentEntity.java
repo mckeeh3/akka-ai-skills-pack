@@ -7,6 +7,11 @@ import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import ai.first.domain.foundation.agent.GovernedArtifactLifecycleFact;
 import ai.first.domain.foundation.agent.PromptDocument;
 import ai.first.domain.foundation.agent.PromptVersion;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,6 +39,66 @@ public class PromptDocumentEntity extends EventSourcedEntity<PromptDocumentEntit
 
   public ReadOnlyEffect<Optional<PromptVersion>> version(VersionQuery query) {
     return effects().reply(currentState().versionForTenant(query.tenantId(), query.version()));
+  }
+
+  public ReadOnlyEffect<List<PromptVersion>> versions(DocumentQuery query) {
+    return effects().reply(currentState().versionsForTenant(query.tenantId()));
+  }
+
+  public Effect<PromptDocument> saveCurrentVersion(SaveVersion command) {
+    var validation = validateSaveVersion(command);
+    if (validation.isPresent()) {
+      return effects().error(validation.get());
+    }
+    var existing = currentState().document();
+    var nextVersion = existing.activeVersion() + 1;
+    var savedAt = timestamp(command.createdAt());
+    var updated = new PromptDocument(
+        existing.tenantId(),
+        existing.promptDocumentId(),
+        existing.agentDefinitionId(),
+        existing.title(),
+        existing.promptType(),
+        existing.status(),
+        nextVersion,
+        command.contentBody(),
+        checksum(command.contentBody()),
+        command.changeSummary(),
+        existing.seedProvenance(),
+        existing.createdAt(),
+        savedAt);
+    return effects()
+        .persist(new Event.PromptDocumentSaved(updated, toVersion(updated, command.actorAccountId(), command.editSessionTranscriptSummary()), lifecycleFact(updated, command.actorAccountId(), command.editSessionTranscriptSummary())))
+        .thenReply(State::document);
+  }
+
+  public Effect<PromptDocument> restoreVersion(RestoreVersion command) {
+    var validation = validateRestoreVersion(command);
+    if (validation.isPresent()) {
+      return effects().error(validation.get());
+    }
+    var existing = currentState().document();
+    var restoredFrom = currentState().versions().get(command.version());
+    var nextVersion = existing.activeVersion() + 1;
+    var savedAt = timestamp(command.createdAt());
+    var changeSummary = "Restored from version " + command.version();
+    var updated = new PromptDocument(
+        existing.tenantId(),
+        existing.promptDocumentId(),
+        existing.agentDefinitionId(),
+        existing.title(),
+        existing.promptType(),
+        existing.status(),
+        nextVersion,
+        restoredFrom.contentBody(),
+        checksum(restoredFrom.contentBody()),
+        changeSummary,
+        existing.seedProvenance(),
+        existing.createdAt(),
+        savedAt);
+    return effects()
+        .persist(new Event.PromptDocumentSaved(updated, toVersion(updated, command.actorAccountId(), changeSummary), lifecycleFact(updated, command.actorAccountId(), changeSummary)))
+        .thenReply(State::document);
   }
 
   public ReadOnlyEffect<List<GovernedArtifactLifecycleFact>> history(DocumentQuery query) {
@@ -82,6 +147,31 @@ public class PromptDocumentEntity extends EventSourcedEntity<PromptDocumentEntit
     return Optional.empty();
   }
 
+  private Optional<String> validateSaveVersion(SaveVersion command) {
+    if (command == null) return Optional.of("save-version-command-required");
+    if (blank(command.tenantId())) return Optional.of("tenant-required");
+    if (blank(command.documentId())) return Optional.of("prompt-document-id-required");
+    if (blank(command.contentBody())) return Optional.of("prompt-content-required");
+    if (containsSecretLikeContent(command.contentBody())) return Optional.of("prompt-content-contains-secret-like-value");
+    var existing = currentState().documentForTenant(command.tenantId())
+        .filter(document -> document.promptDocumentId().equals(command.documentId()));
+    if (existing.isEmpty()) return Optional.of("prompt-document-not-found");
+    if (existing.get().activeVersion() != command.expectedCurrentVersion()) return Optional.of("stale-current-version");
+    return Optional.empty();
+  }
+
+  private Optional<String> validateRestoreVersion(RestoreVersion command) {
+    if (command == null) return Optional.of("restore-version-command-required");
+    if (blank(command.tenantId())) return Optional.of("tenant-required");
+    if (blank(command.documentId())) return Optional.of("prompt-document-id-required");
+    var existing = currentState().documentForTenant(command.tenantId())
+        .filter(document -> document.promptDocumentId().equals(command.documentId()));
+    if (existing.isEmpty()) return Optional.of("prompt-document-not-found");
+    if (command.version() < 1 || command.version() >= existing.get().activeVersion()) return Optional.of("historical-version-required");
+    if (!currentState().versions().containsKey(command.version())) return Optional.of("prompt-version-not-found");
+    return Optional.empty();
+  }
+
   private Optional<String> validate(PromptDocument document) {
     if (document == null) return Optional.of("prompt-document-required");
     if (blank(document.tenantId())) return Optional.of("tenant-required");
@@ -95,6 +185,10 @@ public class PromptDocumentEntity extends EventSourcedEntity<PromptDocumentEntit
   }
 
   private GovernedArtifactLifecycleFact lifecycleFact(PromptDocument document) {
+    return lifecycleFact(document, lifecycleActor(document), lifecycleTranscript(document));
+  }
+
+  private GovernedArtifactLifecycleFact lifecycleFact(PromptDocument document, String actorAccountId, String reason) {
     var previous = currentState().document();
     return GovernedArtifactLifecycleFact.of(
         document.tenantId(),
@@ -108,9 +202,9 @@ public class PromptDocumentEntity extends EventSourcedEntity<PromptDocumentEntit
         document.activeVersion(),
         document.promptDocumentId() + ":v" + document.activeVersion(),
         document.contentChecksum(),
-        "system",
+        actorAccountId,
         document.seedProvenance() == null ? null : document.seedProvenance().correlationId(),
-        document.changeSummary(),
+        reason,
         false,
         document.updatedAt());
   }
@@ -145,6 +239,10 @@ public class PromptDocumentEntity extends EventSourcedEntity<PromptDocumentEntit
   }
 
   private static PromptVersion toVersion(PromptDocument document) {
+    return toVersion(document, lifecycleActor(document), lifecycleTranscript(document));
+  }
+
+  private static PromptVersion toVersion(PromptDocument document, String actorAccountId, String editSessionTranscriptSummary) {
     return new PromptVersion(
         document.tenantId(),
         document.promptDocumentId(),
@@ -159,7 +257,31 @@ public class PromptDocumentEntity extends EventSourcedEntity<PromptDocumentEntit
         document.seedProvenance(),
         document.updatedAt(),
         document.updatedAt(),
-        document.status() == AgentLifecycleStatus.ACTIVE ? document.updatedAt() : null);
+        document.status() == AgentLifecycleStatus.ACTIVE ? document.updatedAt() : null,
+        actorAccountId,
+        editSessionTranscriptSummary);
+  }
+
+  private static String lifecycleActor(PromptDocument document) {
+    return document.seedProvenance() == null || blank(document.seedProvenance().importerActor())
+        ? "system"
+        : document.seedProvenance().importerActor();
+  }
+
+  private static String lifecycleTranscript(PromptDocument document) {
+    return document.changeSummary();
+  }
+
+  private static Instant timestamp(Instant value) {
+    return value == null ? Instant.EPOCH : value;
+  }
+
+  private static String checksum(String content) {
+    try {
+      return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(String.valueOf(content).getBytes(StandardCharsets.UTF_8)));
+    } catch (NoSuchAlgorithmException e) {
+      throw new IllegalStateException(e);
+    }
   }
 
   private static boolean blank(String value) {
@@ -205,6 +327,13 @@ public class PromptDocumentEntity extends EventSourcedEntity<PromptDocumentEntit
     Optional<PromptVersion> versionForTenant(String tenantId, int version) {
       return Optional.ofNullable(versions.get(version)).filter(candidate -> candidate.tenantId().equals(tenantId));
     }
+
+    List<PromptVersion> versionsForTenant(String tenantId) {
+      return versions.values().stream()
+          .filter(candidate -> candidate.tenantId().equals(tenantId))
+          .sorted(java.util.Comparator.comparingInt(PromptVersion::version))
+          .toList();
+    }
   }
 
   public sealed interface Event {
@@ -223,4 +352,6 @@ public class PromptDocumentEntity extends EventSourcedEntity<PromptDocumentEntit
 
   public record DocumentQuery(String tenantId, String documentId) {}
   public record VersionQuery(String tenantId, String documentId, int version) {}
+  public record SaveVersion(String tenantId, String documentId, int expectedCurrentVersion, String contentBody, String actorAccountId, String changeSummary, String editSessionTranscriptSummary, Instant createdAt) {}
+  public record RestoreVersion(String tenantId, String documentId, int version, String actorAccountId, Instant createdAt) {}
 }

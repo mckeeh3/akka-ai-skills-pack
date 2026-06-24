@@ -7,6 +7,12 @@ import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import ai.first.domain.foundation.agent.GovernedArtifactLifecycleFact;
 import ai.first.domain.foundation.agent.ReferenceDocument;
 import ai.first.domain.foundation.agent.ReferenceVersion;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
+import java.util.Comparator;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,6 +42,10 @@ public class ReferenceDocumentEntity extends EventSourcedEntity<ReferenceDocumen
     return effects().reply(currentState().versionForTenant(query.tenantId(), query.version()));
   }
 
+  public ReadOnlyEffect<List<ReferenceVersion>> versions(DocumentQuery query) {
+    return effects().reply(currentState().versionsForTenant(query.tenantId()));
+  }
+
   public ReadOnlyEffect<List<GovernedArtifactLifecycleFact>> history(DocumentQuery query) {
     return effects().reply(currentState().historyForTenant(query.tenantId()));
   }
@@ -46,6 +56,9 @@ public class ReferenceDocumentEntity extends EventSourcedEntity<ReferenceDocumen
     if (validation.isPresent()) {
       return effects().error(validation.get());
     }
+    if (currentState().deleted()) {
+      return effects().error("reference-document-deleted");
+    }
     if (document.equals(currentState().document())) {
       return effects().persist(new Event.LifecycleFactAppended(noOpFact(document))).thenReply(State::document);
     }
@@ -54,11 +67,82 @@ public class ReferenceDocumentEntity extends EventSourcedEntity<ReferenceDocumen
         .thenReply(State::document);
   }
 
+  public Effect<ReferenceDocument> saveCurrentVersion(SaveVersion command) {
+    var validation = validateSaveVersion(command);
+    if (validation.isPresent()) {
+      return effects().error(validation.get());
+    }
+    var existing = currentState().document();
+    var nextVersion = existing.activeVersion() + 1;
+    var savedAt = timestamp(command.createdAt());
+    var updated = new ReferenceDocument(
+        existing.tenantId(),
+        existing.referenceDocumentId(),
+        existing.stableReferenceId(),
+        existing.title(),
+        existing.summary(),
+        existing.whenToConsult(),
+        existing.referenceType(),
+        existing.accessLevel(),
+        existing.tags(),
+        existing.status(),
+        nextVersion,
+        command.contentBody(),
+        checksum(command.contentBody()),
+        existing.seedProvenance(),
+        existing.createdAt(),
+        savedAt);
+    return effects()
+        .persist(new Event.ReferenceDocumentSaved(updated, toVersion(updated, command.actorAccountId(), command.editSessionTranscriptSummary()), lifecycleFact(updated, command.actorAccountId(), command.editSessionTranscriptSummary())))
+        .thenReply(State::document);
+  }
+
+  public Effect<ReferenceDocument> restoreVersion(RestoreVersion command) {
+    var validation = validateRestoreVersion(command);
+    if (validation.isPresent()) {
+      return effects().error(validation.get());
+    }
+    var existing = currentState().document();
+    var restoredFrom = currentState().versions().get(command.version());
+    var nextVersion = existing.activeVersion() + 1;
+    var savedAt = timestamp(command.createdAt());
+    var changeSummary = "Restored from version " + command.version();
+    var updated = new ReferenceDocument(
+        existing.tenantId(),
+        existing.referenceDocumentId(),
+        existing.stableReferenceId(),
+        existing.title(),
+        existing.summary(),
+        existing.whenToConsult(),
+        existing.referenceType(),
+        existing.accessLevel(),
+        existing.tags(),
+        existing.status(),
+        nextVersion,
+        restoredFrom.contentBody(),
+        checksum(restoredFrom.contentBody()),
+        existing.seedProvenance(),
+        existing.createdAt(),
+        savedAt);
+    return effects()
+        .persist(new Event.ReferenceDocumentSaved(updated, toVersion(updated, command.actorAccountId(), changeSummary), lifecycleFact(updated, command.actorAccountId(), changeSummary)))
+        .thenReply(State::document);
+  }
+
+  public Effect<akka.Done> delete(DeleteDocument command) {
+    var validation = validateDelete(command);
+    if (validation.isPresent()) {
+      return effects().error(validation.get());
+    }
+    return effects().persist(new Event.ReferenceDocumentDeleted(null)).thenReply(state -> akka.Done.getInstance());
+  }
+
   @Override
   public State applyEvent(Event event) {
     return switch (event) {
       case Event.ReferenceDocumentSaved saved -> currentState().save(saved.document(), saved.activeVersion(), saved.lifecycleFact());
       case Event.LifecycleFactAppended appended -> currentState().appendHistory(appended.lifecycleFact());
+      case Event.ReferenceDocumentDeleted ignored -> currentState().delete();
     };
   }
 
@@ -82,6 +166,44 @@ public class ReferenceDocumentEntity extends EventSourcedEntity<ReferenceDocumen
     return Optional.empty();
   }
 
+  private Optional<String> validateSaveVersion(SaveVersion command) {
+    if (command == null) return Optional.of("save-version-command-required");
+    if (currentState().deleted()) return Optional.of("reference-document-deleted");
+    if (blank(command.tenantId())) return Optional.of("tenant-required");
+    if (blank(command.documentId())) return Optional.of("reference-document-id-required");
+    if (blank(command.contentBody())) return Optional.of("reference-content-required");
+    if (PromptDocumentEntity.containsSecretLikeContent(command.contentBody())) return Optional.of("reference-content-contains-secret-like-value");
+    var existing = currentState().documentForTenant(command.tenantId())
+        .filter(document -> document.referenceDocumentId().equals(command.documentId()));
+    if (existing.isEmpty()) return Optional.of("reference-document-not-found");
+    if (existing.get().activeVersion() != command.expectedCurrentVersion()) return Optional.of("stale-current-version");
+    return Optional.empty();
+  }
+
+  private Optional<String> validateRestoreVersion(RestoreVersion command) {
+    if (command == null) return Optional.of("restore-version-command-required");
+    if (currentState().deleted()) return Optional.of("reference-document-deleted");
+    if (blank(command.tenantId())) return Optional.of("tenant-required");
+    if (blank(command.documentId())) return Optional.of("reference-document-id-required");
+    var existing = currentState().documentForTenant(command.tenantId())
+        .filter(document -> document.referenceDocumentId().equals(command.documentId()));
+    if (existing.isEmpty()) return Optional.of("reference-document-not-found");
+    if (command.version() < 1 || command.version() >= existing.get().activeVersion()) return Optional.of("historical-version-required");
+    if (!currentState().versions().containsKey(command.version())) return Optional.of("reference-version-not-found");
+    return Optional.empty();
+  }
+
+  private Optional<String> validateDelete(DeleteDocument command) {
+    if (command == null) return Optional.of("delete-document-command-required");
+    if (currentState().deleted()) return Optional.of("reference-document-deleted");
+    if (blank(command.tenantId())) return Optional.of("tenant-required");
+    if (blank(command.documentId())) return Optional.of("reference-document-id-required");
+    if (currentState().documentForTenant(command.tenantId()).filter(document -> document.referenceDocumentId().equals(command.documentId())).isEmpty()) {
+      return Optional.of("reference-document-not-found");
+    }
+    return Optional.empty();
+  }
+
   private Optional<String> validate(ReferenceDocument document) {
     if (document == null) return Optional.of("reference-document-required");
     if (blank(document.tenantId())) return Optional.of("tenant-required");
@@ -96,6 +218,10 @@ public class ReferenceDocumentEntity extends EventSourcedEntity<ReferenceDocumen
   }
 
   private GovernedArtifactLifecycleFact lifecycleFact(ReferenceDocument document) {
+    return lifecycleFact(document, lifecycleActor(document), lifecycleTranscript(document));
+  }
+
+  private GovernedArtifactLifecycleFact lifecycleFact(ReferenceDocument document, String actorAccountId, String reason) {
     var previous = currentState().document();
     return GovernedArtifactLifecycleFact.of(
         document.tenantId(),
@@ -109,9 +235,9 @@ public class ReferenceDocumentEntity extends EventSourcedEntity<ReferenceDocumen
         document.activeVersion(),
         document.referenceDocumentId() + ":v" + document.activeVersion(),
         document.contentChecksum(),
-        "system",
+        actorAccountId,
         document.seedProvenance() == null ? null : document.seedProvenance().correlationId(),
-        document.summary(),
+        reason,
         false,
         document.updatedAt());
   }
@@ -129,7 +255,7 @@ public class ReferenceDocumentEntity extends EventSourcedEntity<ReferenceDocumen
         document.activeVersion(),
         document.referenceDocumentId() + ":v" + document.activeVersion(),
         document.contentChecksum(),
-        "system",
+        lifecycleActor(document),
         document.seedProvenance() == null ? null : document.seedProvenance().correlationId(),
         "duplicate-save-no-op",
         false,
@@ -146,6 +272,10 @@ public class ReferenceDocumentEntity extends EventSourcedEntity<ReferenceDocumen
   }
 
   private static ReferenceVersion toVersion(ReferenceDocument document) {
+    return toVersion(document, lifecycleActor(document), lifecycleTranscript(document));
+  }
+
+  private static ReferenceVersion toVersion(ReferenceDocument document, String actorAccountId, String editSessionTranscriptSummary) {
     return new ReferenceVersion(
         document.tenantId(),
         document.referenceDocumentId(),
@@ -163,16 +293,40 @@ public class ReferenceDocumentEntity extends EventSourcedEntity<ReferenceDocumen
         document.seedProvenance(),
         document.updatedAt(),
         document.updatedAt(),
-        document.status() == AgentLifecycleStatus.ACTIVE ? document.updatedAt() : null);
+        document.status() == AgentLifecycleStatus.ACTIVE ? document.updatedAt() : null,
+        actorAccountId,
+        editSessionTranscriptSummary);
+  }
+
+  private static String lifecycleActor(ReferenceDocument document) {
+    return document.seedProvenance() == null || blank(document.seedProvenance().importerActor())
+        ? "system"
+        : document.seedProvenance().importerActor();
+  }
+
+  private static String lifecycleTranscript(ReferenceDocument document) {
+    return document.summary();
+  }
+
+  private static Instant timestamp(Instant value) {
+    return value == null ? Instant.EPOCH : value;
+  }
+
+  private static String checksum(String content) {
+    try {
+      return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(String.valueOf(content).getBytes(StandardCharsets.UTF_8)));
+    } catch (NoSuchAlgorithmException e) {
+      throw new IllegalStateException(e);
+    }
   }
 
   private static boolean blank(String value) {
     return value == null || value.isBlank();
   }
 
-  public record State(ReferenceDocument document, Map<Integer, ReferenceVersion> versions, List<GovernedArtifactLifecycleFact> history) {
+  public record State(ReferenceDocument document, Map<Integer, ReferenceVersion> versions, List<GovernedArtifactLifecycleFact> history, boolean deleted) {
     static State empty() {
-      return new State(null, Map.of(), List.of());
+      return new State(null, Map.of(), List.of(), false);
     }
 
     public State {
@@ -185,25 +339,36 @@ public class ReferenceDocumentEntity extends EventSourcedEntity<ReferenceDocumen
       updatedVersions.put(version.version(), version);
       var updatedHistory = new java.util.ArrayList<>(history);
       updatedHistory.add(lifecycleFact);
-      return new State(document, updatedVersions, updatedHistory);
+      return new State(document, updatedVersions, updatedHistory, false);
     }
 
     State appendHistory(GovernedArtifactLifecycleFact lifecycleFact) {
       var updatedHistory = new java.util.ArrayList<>(history);
       updatedHistory.add(lifecycleFact);
-      return new State(document, versions, updatedHistory);
+      return new State(document, versions, updatedHistory, deleted);
+    }
+
+    State delete() {
+      return new State(null, Map.of(), List.of(), true);
     }
 
     List<GovernedArtifactLifecycleFact> historyForTenant(String tenantId) {
-      return history.stream().filter(fact -> fact.tenantId().equals(tenantId)).toList();
+      return deleted ? List.of() : history.stream().filter(fact -> fact.tenantId().equals(tenantId)).toList();
     }
 
     Optional<ReferenceDocument> documentForTenant(String tenantId) {
-      return Optional.ofNullable(document).filter(candidate -> candidate.tenantId().equals(tenantId));
+      return deleted ? Optional.empty() : Optional.ofNullable(document).filter(candidate -> candidate.tenantId().equals(tenantId));
     }
 
     Optional<ReferenceVersion> versionForTenant(String tenantId, int version) {
-      return Optional.ofNullable(versions.get(version)).filter(candidate -> candidate.tenantId().equals(tenantId));
+      return deleted ? Optional.empty() : Optional.ofNullable(versions.get(version)).filter(candidate -> candidate.tenantId().equals(tenantId));
+    }
+
+    List<ReferenceVersion> versionsForTenant(String tenantId) {
+      return deleted ? List.of() : versions.values().stream()
+          .filter(candidate -> candidate.tenantId().equals(tenantId))
+          .sorted(Comparator.comparingInt(ReferenceVersion::version))
+          .toList();
     }
   }
 
@@ -219,8 +384,15 @@ public class ReferenceDocumentEntity extends EventSourcedEntity<ReferenceDocumen
       @Override public ReferenceDocument document() { return null; }
       @Override public ReferenceVersion activeVersion() { return null; }
     }
+    @TypeName("reference-document-deleted")
+    record ReferenceDocumentDeleted(ReferenceDocument document) implements Event {
+      @Override public ReferenceVersion activeVersion() { return null; }
+    }
   }
 
   public record DocumentQuery(String tenantId, String documentId) {}
   public record VersionQuery(String tenantId, String documentId, int version) {}
+  public record SaveVersion(String tenantId, String documentId, int expectedCurrentVersion, String contentBody, String actorAccountId, String changeSummary, String editSessionTranscriptSummary, Instant createdAt) {}
+  public record RestoreVersion(String tenantId, String documentId, int version, String actorAccountId, Instant createdAt) {}
+  public record DeleteDocument(String tenantId, String documentId, String actorAccountId, Instant deletedAt) {}
 }

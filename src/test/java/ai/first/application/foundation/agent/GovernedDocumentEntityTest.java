@@ -60,6 +60,52 @@ class GovernedDocumentEntityTest {
   }
 
   @Test
+  void promptCurrentVersionSaveAddsMetadataAndRejectsStaleBase() {
+    var v1 = prompt("tenant-1", "prompt-user-admin", AgentLifecycleStatus.ACTIVE, 1, "Follow policy.");
+    var testKit = EventSourcedTestKit.of(
+        PromptDocumentEntity.entityId(v1.tenantId(), v1.promptDocumentId()),
+        PromptDocumentEntity::new);
+    testKit.method(PromptDocumentEntity::save).invoke(v1);
+
+    var saved = testKit.method(PromptDocumentEntity::saveCurrentVersion)
+        .invoke(new PromptDocumentEntity.SaveVersion("tenant-1", v1.promptDocumentId(), 1, "Follow policy and explain denials.", "admin-1", "Add denial guidance.", "user: add denial guidance", NOW));
+    var stale = testKit.method(PromptDocumentEntity::saveCurrentVersion)
+        .invoke(new PromptDocumentEntity.SaveVersion("tenant-1", v1.promptDocumentId(), 1, "Stale overwrite.", "admin-1", "Stale", "user: stale", NOW));
+    var version2 = testKit.method(PromptDocumentEntity::version)
+        .invoke(new PromptDocumentEntity.VersionQuery("tenant-1", v1.promptDocumentId(), 2));
+
+    assertEquals(2, saved.getReply().activeVersion());
+    assertEquals("admin-1", version2.getReply().orElseThrow().actorAccountId());
+    assertEquals("user: add denial guidance", version2.getReply().orElseThrow().editSessionTranscriptSummary());
+    assertTrue(stale.isError());
+    assertEquals("stale-current-version", stale.getError());
+    assertFalse(stale.didPersistEvents());
+  }
+
+  @Test
+  void skillDeleteClearsVersionsAndBlocksRestore() {
+    var v1 = skill("tenant-1", "skill-access-review", AgentLifecycleStatus.ACTIVE, 1, "Use stale membership evidence.");
+    var testKit = EventSourcedTestKit.of(
+        SkillDocumentEntity.entityId(v1.tenantId(), v1.skillDocumentId()),
+        SkillDocumentEntity::new);
+    testKit.method(SkillDocumentEntity::save).invoke(v1);
+    testKit.method(SkillDocumentEntity::saveCurrentVersion)
+        .invoke(new SkillDocumentEntity.SaveVersion("tenant-1", v1.skillDocumentId(), 1, "Use stale membership and role risk evidence.", "admin-1", "Update skill.", "user: update skill", NOW));
+
+    var deleted = testKit.method(SkillDocumentEntity::delete)
+        .invoke(new SkillDocumentEntity.DeleteDocument("tenant-1", v1.skillDocumentId(), "admin-1", NOW));
+    var restore = testKit.method(SkillDocumentEntity::restoreVersion)
+        .invoke(new SkillDocumentEntity.RestoreVersion("tenant-1", v1.skillDocumentId(), 1, "admin-1", NOW));
+    var versions = testKit.method(SkillDocumentEntity::versions)
+        .invoke(new SkillDocumentEntity.DocumentQuery("tenant-1", v1.skillDocumentId()));
+
+    assertEquals(akka.Done.getInstance(), deleted.getReply());
+    assertTrue(restore.isError());
+    assertEquals("skill-document-deleted", restore.getError());
+    assertTrue(versions.getReply().isEmpty());
+  }
+
+  @Test
   void referenceDocumentDeniesCrossTenantLookupWithoutLeakingRecord() {
     var reference = reference("tenant-1", "ref-access-review", AgentLifecycleStatus.ACTIVE, 1, "Access review policy facts.");
     var testKit = EventSourcedTestKit.of(

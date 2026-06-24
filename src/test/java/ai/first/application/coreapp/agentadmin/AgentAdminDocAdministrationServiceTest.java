@@ -8,6 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ai.first.application.coreapp.agentadmin.AgentAdminDocAdministrationService.AgentDocKind;
 import ai.first.application.coreapp.agentadmin.AgentAdminDocAdministrationService.AgentListRequest;
+import ai.first.application.coreapp.agentadmin.AgentAdminDocAdministrationService.CreateReferenceDocRequest;
+import ai.first.application.coreapp.agentadmin.AgentAdminDocAdministrationService.CreateSkillRequest;
+import ai.first.application.coreapp.agentadmin.AgentAdminDocAdministrationService.DeleteSkillRequest;
 import ai.first.application.coreapp.agentadmin.AgentAdminDocAdministrationService.DocumentVersionRequest;
 import ai.first.application.coreapp.agentadmin.AgentAdminDocAdministrationService.EditSessionCommandRequest;
 import ai.first.application.coreapp.agentadmin.AgentAdminDocAdministrationService.EditSessionStatus;
@@ -20,6 +23,7 @@ import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
 import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
+import ai.first.domain.foundation.agent.ReferenceDocument;
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AccountStatus;
 import ai.first.domain.foundation.identity.Customer;
@@ -116,13 +120,59 @@ class AgentAdminDocAdministrationServiceTest {
     assertEquals(EditSessionStatus.SAVED, saved.session().status());
     assertEquals(2, saved.savedVersion());
 
-    var restored = service.restoreVersion(owner, new RestoreVersionRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentDocKind.PROMPT, AgentBehaviorSeedLoader.USER_ADMIN_PROMPT_ID, 2), "corr-restore");
+    var historical = service.readDocumentVersion(owner, new DocumentVersionRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentDocKind.PROMPT, AgentBehaviorSeedLoader.USER_ADMIN_PROMPT_ID, 1), "corr-historical");
+    assertFalse(historical.currentVersion());
+    assertFalse(historical.editable());
+
+    var diff = service.adjacentDiff(owner, new DocumentVersionRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentDocKind.PROMPT, AgentBehaviorSeedLoader.USER_ADMIN_PROMPT_ID, 2), "corr-diff-v2");
+    assertEquals(AgentAdminDocAdministrationService.DiffStatus.READY, diff.status());
+    assertTrue(diff.unifiedDiff().contains("Concise behavior note."));
+
+    var restored = service.restoreVersion(owner, new RestoreVersionRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentDocKind.PROMPT, AgentBehaviorSeedLoader.USER_ADMIN_PROMPT_ID, 1), "corr-restore");
     assertEquals(3, restored.newCurrentVersion());
-    assertEquals("restored-current-slice-version", restored.summary());
+    assertEquals("Restored from version 1", restored.summary());
+    var restoredCurrent = service.readDocumentVersion(owner, docRequest, "corr-restored-current");
+    assertEquals(3, restoredCurrent.version());
+    assertEquals("Restored from version 1", restoredCurrent.editSessionTranscriptSummary());
 
     var cancelSession = service.startEditSession(owner, new StartEditSessionRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentDocKind.SKILL, AgentBehaviorSeedLoader.ACCESS_REVIEW_SKILL_DOC_ID, "Try an alternate skill wording."), "corr-start-cancel");
     var cancelled = service.cancelEditSession(owner, new EditSessionCommandRequest(cancelSession.sessionId()), "corr-cancel");
     assertEquals(EditSessionStatus.CANCELLED, cancelled.status());
+  }
+
+  @Test
+  void staleEditSessionSaveIsRejectedAfterCurrentVersionChanges() {
+    var owner = actor("owner@example.test", "membership-owner");
+    var request = new StartEditSessionRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentDocKind.PROMPT, AgentBehaviorSeedLoader.USER_ADMIN_PROMPT_ID, "First edit.");
+    var stale = service.startEditSession(owner, request, "corr-stale-start");
+    var winning = service.startEditSession(owner, request, "corr-winning-start");
+    var before = service.readDocumentVersion(owner, new DocumentVersionRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentDocKind.PROMPT, AgentBehaviorSeedLoader.USER_ADMIN_PROMPT_ID, null), "corr-stale-before");
+    service.reviseEditSession(owner, new ReviseEditSessionRequest(winning.sessionId(), "Ship winning edit.", before.contentBody() + "\n\nWinning edit.", "Winning edit", List.of()), "corr-winning-revise");
+    service.saveEditSession(owner, new EditSessionCommandRequest(winning.sessionId()), "corr-winning-save");
+    service.reviseEditSession(owner, new ReviseEditSessionRequest(stale.sessionId(), "Ship stale edit.", before.contentBody() + "\n\nStale edit.", "Stale edit", List.of()), "corr-stale-revise");
+
+    var failure = assertThrows(AuthorizationException.class, () -> service.saveEditSession(owner, new EditSessionCommandRequest(stale.sessionId()), "corr-stale-save"));
+
+    assertEquals(409, failure.httpStatus());
+    assertEquals("edit-session-base-version-stale", failure.reasonCode());
+  }
+
+  @Test
+  void skillAndReferenceLifecycleSupportsPermanentDeletionCascade() {
+    var owner = actor("owner@example.test", "membership-owner");
+    var skill = service.createSkill(owner, new CreateSkillRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, "skill-test-coaching", "test.coaching.v1", "Test Coaching", "Coach tests", "Use for test guidance", "# Test Coaching\nUse examples.", "Create test skill"), "corr-create-skill");
+    var reference = service.createReferenceDoc(owner, new CreateReferenceDocRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, skill.skillDocumentId(), "ref-test-coaching", "test.coaching.reference.v1", "Test Coaching Reference", "Reference for test coaching", "Consult for test coaching details", ReferenceDocument.ReferenceType.PROCESS, "# Test Reference\nDetails.", "Create test reference"), "corr-create-reference");
+
+    var skillDoc = service.readDocumentVersion(owner, new DocumentVersionRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentDocKind.SKILL, skill.skillDocumentId(), null), "corr-read-created-skill");
+    var referenceDoc = service.readDocumentVersion(owner, new DocumentVersionRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentDocKind.REFERENCE, reference.referenceDocumentId(), null), "corr-read-created-reference");
+    assertEquals(1, skillDoc.version());
+    assertEquals(1, referenceDoc.version());
+
+    service.deleteSkill(owner, new DeleteSkillRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, skill.skillDocumentId(), "Permanently delete Test Coaching and its reference docs"), "corr-delete-skill");
+
+    assertThrows(AuthorizationException.class, () -> service.readDocumentVersion(owner, new DocumentVersionRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentDocKind.SKILL, skill.skillDocumentId(), null), "corr-read-deleted-skill"));
+    assertThrows(AuthorizationException.class, () -> service.readDocumentVersion(owner, new DocumentVersionRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentDocKind.REFERENCE, reference.referenceDocumentId(), null), "corr-read-deleted-reference"));
+    assertThrows(AuthorizationException.class, () -> service.restoreVersion(owner, new RestoreVersionRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentDocKind.REFERENCE, reference.referenceDocumentId(), 1), "corr-restore-deleted-reference"));
   }
 
   @Test

@@ -6,9 +6,13 @@ import ai.first.domain.foundation.agent.AgentSkillManifest;
 import ai.first.domain.foundation.agent.ModelConfigRef;
 import ai.first.domain.foundation.agent.ModelPolicy;
 import ai.first.domain.foundation.agent.PromptDocument;
+import ai.first.domain.foundation.agent.PromptVersion;
 import ai.first.domain.foundation.agent.ReferenceDocument;
+import ai.first.domain.foundation.agent.ReferenceVersion;
 import ai.first.domain.foundation.agent.SkillDocument;
+import ai.first.domain.foundation.agent.SkillVersion;
 import ai.first.domain.foundation.agent.ToolPermissionBoundary;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,14 +24,28 @@ public interface AgentBehaviorRepository {
 
   Optional<PromptDocument> promptDocument(String tenantId, String promptDocumentId);
   PromptDocument savePromptDocument(PromptDocument prompt);
+  default Optional<PromptVersion> promptVersion(String tenantId, String promptDocumentId, int version) { throw unsupportedVersionLifecycle(); }
+  default List<PromptVersion> promptVersions(String tenantId, String promptDocumentId) { throw unsupportedVersionLifecycle(); }
+  default PromptDocument savePromptDocumentVersion(DocumentVersionSave command) { throw unsupportedVersionLifecycle(); }
+  default PromptDocument restorePromptDocumentVersion(DocumentVersionRestore command) { throw unsupportedVersionLifecycle(); }
 
   Optional<SkillDocument> skillDocument(String tenantId, String skillDocumentId);
   SkillDocument saveSkillDocument(SkillDocument skill);
   List<SkillDocument> skillDocuments(String tenantId);
+  default Optional<SkillVersion> skillVersion(String tenantId, String skillDocumentId, int version) { throw unsupportedVersionLifecycle(); }
+  default List<SkillVersion> skillVersions(String tenantId, String skillDocumentId) { throw unsupportedVersionLifecycle(); }
+  default SkillDocument saveSkillDocumentVersion(DocumentVersionSave command) { throw unsupportedVersionLifecycle(); }
+  default SkillDocument restoreSkillDocumentVersion(DocumentVersionRestore command) { throw unsupportedVersionLifecycle(); }
+  default void deleteSkillDocument(String tenantId, String skillDocumentId, String actorAccountId, Instant deletedAt) { throw unsupportedVersionLifecycle(); }
 
   Optional<ReferenceDocument> referenceDocument(String tenantId, String referenceDocumentId);
   ReferenceDocument saveReferenceDocument(ReferenceDocument reference);
   List<ReferenceDocument> referenceDocuments(String tenantId);
+  default Optional<ReferenceVersion> referenceVersion(String tenantId, String referenceDocumentId, int version) { throw unsupportedVersionLifecycle(); }
+  default List<ReferenceVersion> referenceVersions(String tenantId, String referenceDocumentId) { throw unsupportedVersionLifecycle(); }
+  default ReferenceDocument saveReferenceDocumentVersion(DocumentVersionSave command) { throw unsupportedVersionLifecycle(); }
+  default ReferenceDocument restoreReferenceDocumentVersion(DocumentVersionRestore command) { throw unsupportedVersionLifecycle(); }
+  default void deleteReferenceDocument(String tenantId, String referenceDocumentId, String actorAccountId, Instant deletedAt) { throw unsupportedVersionLifecycle(); }
 
   Optional<AgentSkillManifest> skillManifest(String tenantId, String manifestId);
   AgentSkillManifest saveSkillManifest(AgentSkillManifest manifest);
@@ -43,4 +61,11 @@ public interface AgentBehaviorRepository {
 
   Optional<ModelPolicy> modelPolicy(String tenantId, String modelPolicyRefId);
   ModelPolicy saveModelPolicy(ModelPolicy modelPolicy);
+
+  private static UnsupportedOperationException unsupportedVersionLifecycle() {
+    return new UnsupportedOperationException("agent-document-version-lifecycle-not-bound");
+  }
+
+  record DocumentVersionSave(String tenantId, String documentId, int expectedCurrentVersion, String contentBody, String actorAccountId, String changeSummary, String editSessionTranscriptSummary, Instant createdAt) {}
+  record DocumentVersionRestore(String tenantId, String documentId, int version, String actorAccountId, Instant createdAt) {}
 }

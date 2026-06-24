@@ -5,11 +5,15 @@ import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
 import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
 import ai.first.domain.foundation.agent.AgentDefinition;
+import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import ai.first.domain.foundation.agent.AgentReferenceManifest;
 import ai.first.domain.foundation.agent.AgentSkillManifest;
 import ai.first.domain.foundation.agent.PromptDocument;
+import ai.first.domain.foundation.agent.PromptVersion;
 import ai.first.domain.foundation.agent.ReferenceDocument;
+import ai.first.domain.foundation.agent.ReferenceVersion;
 import ai.first.domain.foundation.agent.SkillDocument;
+import ai.first.domain.foundation.agent.SkillVersion;
 import ai.first.domain.foundation.identity.FoundationRole;
 import ai.first.domain.foundation.identity.ScopeType;
 import java.nio.charset.StandardCharsets;
@@ -46,6 +50,8 @@ public final class AgentAdminDocAdministrationService {
   public static final String CANCEL_EDIT_CAPABILITY = AgentRuntimeCapabilityIds.CANCEL_BEHAVIOR_CHANGE;
   public static final String SAVE_EDIT_CAPABILITY = AgentRuntimeCapabilityIds.ACTIVATE_BEHAVIOR_CHANGE;
   public static final String RESTORE_VERSION_CAPABILITY = AgentRuntimeCapabilityIds.ROLLBACK_BEHAVIOR_CHANGE;
+  public static final String MANAGE_SKILL_CAPABILITY = "saas_owner.admin.manage";
+  public static final String MANAGE_REFERENCE_CAPABILITY = "saas_owner.admin.manage";
 
   private final AgentBehaviorRepository repository;
   private final AuthContextResolver authContextResolver;
@@ -128,31 +134,27 @@ public final class AgentAdminDocAdministrationService {
 
   public DocumentVersionDetail readDocumentVersion(AuthContextResolver.ResolvedMe actor, DocumentVersionRequest request, String correlationId) {
     requireDocumentCapability(actor, request == null ? null : request.kind(), "agent_admin.doc_version.read.v1", correlationId);
-    var resolved = resolveDocument(request);
-    if (request.version() != null && request.version() != resolved.currentVersion()) {
-      throw new AuthorizationException(404, "document-version-not-found-in-current-slice");
-    }
-    return resolved.toVersionDetail(correlationId);
+    return resolveDocumentVersion(request).toVersionDetail(correlationId);
   }
 
   public VersionHistoryResponse versionHistory(AuthContextResolver.ResolvedMe actor, DocumentVersionRequest request, String correlationId) {
     requireDocumentCapability(actor, request == null ? null : request.kind(), "agent_admin.doc_version.history.v1", correlationId);
-    var resolved = resolveDocument(request);
-    var row = new VersionHistoryRow(resolved.currentVersion(), true, resolved.updatedAt(), resolved.title());
-    return new VersionHistoryResponse(resolved.agentDefinitionId(), resolved.kind(), resolved.documentId(), List.of(row), List.of(traceId("version-history", resolved.documentId(), correlationId)));
+    if (request == null) throw new AuthorizationException(400, "document-request-required");
+    var current = resolveDocument(new DocumentVersionRequest(request.agentDefinitionId(), request.kind(), request.documentId(), null));
+    var rows = versionSnapshots(current).stream()
+        .map(version -> new VersionHistoryRow(version.version(), version.version() == current.currentVersion(), version.updatedAt(), version.title()))
+        .toList();
+    return new VersionHistoryResponse(current.agentDefinitionId(), current.kind(), current.documentId(), rows, List.of(traceId("version-history", current.documentId(), correlationId)));
   }
 
   public AdjacentDiffResponse adjacentDiff(AuthContextResolver.ResolvedMe actor, DocumentVersionRequest request, String correlationId) {
     requireDocumentCapability(actor, request == null ? null : request.kind(), "agent_admin.doc_version.diff.v1", correlationId);
-    var resolved = resolveDocument(request);
-    var selectedVersion = request.version() == null ? resolved.currentVersion() : request.version();
-    if (selectedVersion != resolved.currentVersion()) {
-      throw new AuthorizationException(404, "document-version-not-found-in-current-slice");
+    var selected = resolveDocumentVersion(request);
+    if (selected.version() <= 1) {
+      return new AdjacentDiffResponse(selected.agentDefinitionId(), selected.kind(), selected.documentId(), null, selected.version(), DiffStatus.NO_PRIOR_VERSION, "", List.of(traceId("version-diff", selected.documentId(), correlationId)));
     }
-    if (selectedVersion <= 1) {
-      return new AdjacentDiffResponse(resolved.agentDefinitionId(), resolved.kind(), resolved.documentId(), null, selectedVersion, DiffStatus.NO_PRIOR_VERSION, "", List.of(traceId("version-diff", resolved.documentId(), correlationId)));
-    }
-    return new AdjacentDiffResponse(resolved.agentDefinitionId(), resolved.kind(), resolved.documentId(), selectedVersion - 1, selectedVersion, DiffStatus.PRIOR_VERSION_NOT_AVAILABLE_IN_CURRENT_SLICE, "", List.of(traceId("version-diff", resolved.documentId(), correlationId)));
+    var prior = resolveDocumentVersion(new DocumentVersionRequest(selected.agentDefinitionId(), selected.kind(), selected.documentId(), selected.version() - 1));
+    return new AdjacentDiffResponse(selected.agentDefinitionId(), selected.kind(), selected.documentId(), prior.version(), selected.version(), DiffStatus.READY, simpleUnifiedDiff(prior.contentBody(), selected.contentBody()), List.of(traceId("version-diff", selected.documentId(), correlationId)));
   }
 
   public EditSessionRecord startEditSession(AuthContextResolver.ResolvedMe actor, StartEditSessionRequest request, String correlationId) {
@@ -220,7 +222,7 @@ public final class AgentAdminDocAdministrationService {
     var current = resolveDocument(new DocumentVersionRequest(existing.agentDefinitionId(), existing.kind(), existing.documentId(), null));
     if (current.currentVersion() != existing.baseVersion()) throw new AuthorizationException(409, "edit-session-base-version-stale");
     var nextVersion = current.currentVersion() + 1;
-    saveCurrentSnapshot(current, existing.proposedContent(), nextVersion, firstNonBlank(existing.changeSummary(), "Saved from Agent Admin edit session " + existing.sessionId()));
+    saveCurrentSnapshot(current, existing.proposedContent(), actor.account().accountId(), firstNonBlank(existing.changeSummary(), "Saved from Agent Admin edit session " + existing.sessionId()), editSessionTranscript(existing));
     var saved = transitionSession(existing, EditSessionStatus.SAVED, correlationId);
     sessions.put(saved.sessionId(), saved);
     return new SaveEditSessionResult(saved, nextVersion, List.of(traceId("edit-session-save", existing.sessionId(), correlationId)));
@@ -229,10 +231,78 @@ public final class AgentAdminDocAdministrationService {
   public RestoreVersionResult restoreVersion(AuthContextResolver.ResolvedMe actor, RestoreVersionRequest request, String correlationId) {
     requireSaasAdmin(actor, RESTORE_VERSION_CAPABILITY, "agent_admin.doc_version.restore.v1", correlationId);
     var current = resolveDocument(new DocumentVersionRequest(request.agentDefinitionId(), request.kind(), request.documentId(), null));
-    if (request.version() != current.currentVersion()) throw new AuthorizationException(404, "document-version-not-found-in-current-slice");
-    var nextVersion = current.currentVersion() + 1;
-    saveCurrentSnapshot(current, current.contentBody(), nextVersion, "Restored from version " + request.version());
-    return new RestoreVersionResult(current.agentDefinitionId(), current.kind(), current.documentId(), request.version(), nextVersion, "restored-current-slice-version", List.of(traceId("version-restore", current.documentId(), correlationId)));
+    if (request.version() < 1 || request.version() >= current.currentVersion()) throw new AuthorizationException(404, "historical-document-version-required");
+    if (!versionExists(current, request.version())) throw new AuthorizationException(404, "document-version-not-found");
+    restoreSnapshot(current, request.version(), actor.account().accountId());
+    return new RestoreVersionResult(current.agentDefinitionId(), current.kind(), current.documentId(), request.version(), current.currentVersion() + 1, "Restored from version " + request.version(), List.of(traceId("version-restore", current.documentId(), correlationId)));
+  }
+
+  public SkillLifecycleResult createSkill(AuthContextResolver.ResolvedMe actor, CreateSkillRequest request, String correlationId) {
+    requireSaasAdmin(actor, MANAGE_SKILL_CAPABILITY, "agent_admin.skill.create.v1", correlationId);
+    requireNonBlank(request == null ? null : request.agentDefinitionId(), "agentDefinitionId-required");
+    requireNonBlank(request.stableSkillId(), "stableSkillId-required");
+    requireNonBlank(request.name(), "skill-name-required");
+    requireNonBlank(request.contentBody(), "skill-content-required");
+    var agent = agent(request.agentDefinitionId());
+    var now = Instant.now(clock);
+    var documentId = firstNonBlank(request.skillDocumentId(), "skill-" + safeId(request.stableSkillId()));
+    if (repository.skillDocument(platformScopeId(), documentId).isPresent()) throw new AuthorizationException(409, "skill-document-already-exists");
+    var skill = repository.saveSkillDocument(new SkillDocument(platformScopeId(), documentId, request.stableSkillId(), request.name(), firstNonBlank(request.purpose(), request.name()), request.whenToUse(), List.of("agent-admin-created"), AgentLifecycleStatus.ACTIVE, 1, request.contentBody(), checksum(request.contentBody()), null, now, now));
+    var manifest = repository.skillManifest(platformScopeId(), agent.skillManifestId()).orElseThrow(() -> new AuthorizationException(404, "skill-manifest-not-found-or-forbidden"));
+    var entries = new ArrayList<>(manifest.entries());
+    entries.add(new AgentSkillManifest.Entry(skill.stableSkillId(), skill.skillDocumentId(), skill.activeVersion(), skill.title(), skill.purpose(), skill.whenToUse()));
+    repository.saveSkillManifest(new AgentSkillManifest(manifest.tenantId(), manifest.manifestId(), manifest.agentDefinitionId(), manifest.status(), manifest.manifestVersion() + 1, entries, checksum(entries.toString()), manifest.seedProvenance(), manifest.createdAt(), now));
+    return new SkillLifecycleResult(agent.agentDefinitionId(), skill.skillDocumentId(), 1, List.of(traceId("skill-create", skill.skillDocumentId(), correlationId)));
+  }
+
+  public ReferenceLifecycleResult createReferenceDoc(AuthContextResolver.ResolvedMe actor, CreateReferenceDocRequest request, String correlationId) {
+    requireSaasAdmin(actor, MANAGE_REFERENCE_CAPABILITY, "agent_admin.reference.create.v1", correlationId);
+    requireNonBlank(request == null ? null : request.agentDefinitionId(), "agentDefinitionId-required");
+    requireNonBlank(request.skillDocumentId(), "skillDocumentId-required");
+    requireNonBlank(request.stableReferenceId(), "stableReferenceId-required");
+    requireNonBlank(request.name(), "reference-name-required");
+    requireNonBlank(request.contentBody(), "reference-content-required");
+    var agent = agent(request.agentDefinitionId());
+    skill(agent, request.skillDocumentId());
+    var now = Instant.now(clock);
+    var documentId = firstNonBlank(request.referenceDocumentId(), "ref-" + safeId(request.stableReferenceId()));
+    if (repository.referenceDocument(platformScopeId(), documentId).isPresent()) throw new AuthorizationException(409, "reference-document-already-exists");
+    var tags = List.of("agent-admin-created", skillReferenceTag(request.skillDocumentId()));
+    var reference = repository.saveReferenceDocument(new ReferenceDocument(platformScopeId(), documentId, request.stableReferenceId(), request.name(), firstNonBlank(request.description(), request.name()), request.whenToConsult(), request.referenceType() == null ? ReferenceDocument.ReferenceType.OTHER : request.referenceType(), "internal", tags, AgentLifecycleStatus.ACTIVE, 1, request.contentBody(), checksum(request.contentBody()), null, now, now));
+    var manifest = repository.referenceManifest(platformScopeId(), agent.referenceManifestId()).orElseThrow(() -> new AuthorizationException(404, "reference-manifest-not-found-or-forbidden"));
+    var entries = new ArrayList<>(manifest.entries());
+    entries.add(new AgentReferenceManifest.Entry(reference.stableReferenceId(), reference.referenceDocumentId(), reference.activeVersion(), reference.title(), reference.summary(), reference.whenToConsult(), "consult", reference.accessLevel()));
+    repository.saveReferenceManifest(new AgentReferenceManifest(manifest.tenantId(), manifest.manifestId(), manifest.agentDefinitionId(), manifest.workstreamExpertBundleId(), manifest.status(), manifest.manifestVersion() + 1, entries, checksum(entries.toString()), manifest.seedProvenance(), manifest.createdAt(), now));
+    return new ReferenceLifecycleResult(agent.agentDefinitionId(), request.skillDocumentId(), reference.referenceDocumentId(), 1, List.of(traceId("reference-create", reference.referenceDocumentId(), correlationId)));
+  }
+
+  public SkillLifecycleResult deleteSkill(AuthContextResolver.ResolvedMe actor, DeleteSkillRequest request, String correlationId) {
+    requireSaasAdmin(actor, MANAGE_SKILL_CAPABILITY, "agent_admin.skill.delete.v1", correlationId);
+    requireNonBlank(request == null ? null : request.agentDefinitionId(), "agentDefinitionId-required");
+    var agent = agent(request.agentDefinitionId());
+    var skill = skill(agent, request.skillDocumentId());
+    if (request.confirmation() == null || !request.confirmation().contains(skill.title())) throw new AuthorizationException(400, "skill-delete-confirmation-required");
+    var now = Instant.now(clock);
+    var referencesToDelete = referencesForSkill(agent, skill.skillDocumentId());
+    for (var reference : referencesToDelete) {
+      repository.deleteReferenceDocument(platformScopeId(), reference.referenceDocumentId(), actor.account().accountId(), now);
+    }
+    removeReferencesFromManifest(agent, referencesToDelete.stream().map(ReferenceDocument::referenceDocumentId).toList(), now);
+    repository.deleteSkillDocument(platformScopeId(), skill.skillDocumentId(), actor.account().accountId(), now);
+    removeSkillFromManifest(agent, skill.skillDocumentId(), now);
+    return new SkillLifecycleResult(agent.agentDefinitionId(), skill.skillDocumentId(), 0, List.of(traceId("skill-delete", skill.skillDocumentId(), correlationId)));
+  }
+
+  public ReferenceLifecycleResult deleteReferenceDoc(AuthContextResolver.ResolvedMe actor, DeleteReferenceDocRequest request, String correlationId) {
+    requireSaasAdmin(actor, MANAGE_REFERENCE_CAPABILITY, "agent_admin.reference.delete.v1", correlationId);
+    requireNonBlank(request == null ? null : request.agentDefinitionId(), "agentDefinitionId-required");
+    var agent = agent(request.agentDefinitionId());
+    var reference = reference(agent, request.referenceDocumentId());
+    if (request.confirmation() == null || !request.confirmation().contains(reference.title())) throw new AuthorizationException(400, "reference-delete-confirmation-required");
+    var now = Instant.now(clock);
+    repository.deleteReferenceDocument(platformScopeId(), reference.referenceDocumentId(), actor.account().accountId(), now);
+    removeReferencesFromManifest(agent, List.of(reference.referenceDocumentId()), now);
+    return new ReferenceLifecycleResult(agent.agentDefinitionId(), null, reference.referenceDocumentId(), 0, List.of(traceId("reference-delete", reference.referenceDocumentId(), correlationId)));
   }
 
   private void requireDocumentCapability(AuthContextResolver.ResolvedMe actor, AgentDocKind kind, String surfaceContract, String correlationId) {
@@ -310,15 +380,15 @@ public final class AgentAdminDocAdministrationService {
         if (request.documentId() != null && !request.documentId().isBlank() && !request.documentId().equals(prompt.promptDocumentId())) {
           throw new AuthorizationException(404, "document-not-found-or-forbidden");
         }
-        yield new DocumentSnapshot(agent.agentDefinitionId(), kind, prompt.promptDocumentId(), prompt.title(), prompt.changeSummary(), prompt.activeVersion(), prompt.contentBody(), prompt.contentChecksum(), prompt.updatedAt());
+        yield new DocumentSnapshot(agent.agentDefinitionId(), kind, prompt.promptDocumentId(), prompt.title(), prompt.changeSummary(), prompt.activeVersion(), prompt.activeVersion(), prompt.contentBody(), prompt.contentChecksum(), prompt.updatedAt(), "system", prompt.changeSummary());
       }
       case SKILL -> {
         var skill = skill(agent, request.documentId());
-        yield new DocumentSnapshot(agent.agentDefinitionId(), kind, skill.skillDocumentId(), skill.title(), skill.purpose(), skill.activeVersion(), skill.contentBody(), skill.contentChecksum(), skill.updatedAt());
+        yield new DocumentSnapshot(agent.agentDefinitionId(), kind, skill.skillDocumentId(), skill.title(), skill.purpose(), skill.activeVersion(), skill.activeVersion(), skill.contentBody(), skill.contentChecksum(), skill.updatedAt(), "system", skill.purpose());
       }
       case REFERENCE -> {
         var reference = reference(agent, request.documentId());
-        yield new DocumentSnapshot(agent.agentDefinitionId(), kind, reference.referenceDocumentId(), reference.title(), reference.summary(), reference.activeVersion(), reference.contentBody(), reference.contentChecksum(), reference.updatedAt());
+        yield new DocumentSnapshot(agent.agentDefinitionId(), kind, reference.referenceDocumentId(), reference.title(), reference.summary(), reference.activeVersion(), reference.activeVersion(), reference.contentBody(), reference.contentChecksum(), reference.updatedAt(), "system", reference.summary());
       }
     };
   }
@@ -345,22 +415,73 @@ public final class AgentAdminDocAdministrationService {
         .orElseThrow(() -> new AuthorizationException(404, "reference-not-found-or-forbidden"));
   }
 
-  private void saveCurrentSnapshot(DocumentSnapshot current, String contentBody, int nextVersion, String changeSummary) {
-    var now = Instant.now(clock);
-    var checksum = checksum(contentBody);
-    switch (current.kind()) {
-      case PROMPT -> {
-        var existing = repository.promptDocument(platformScopeId(), current.documentId()).orElseThrow();
-        repository.savePromptDocument(new PromptDocument(existing.tenantId(), existing.promptDocumentId(), existing.agentDefinitionId(), existing.title(), existing.promptType(), existing.status(), nextVersion, contentBody, checksum, changeSummary, existing.seedProvenance(), existing.createdAt(), now));
+  private DocumentSnapshot resolveDocumentVersion(DocumentVersionRequest request) {
+    var current = resolveDocument(request);
+    var selectedVersion = request.version() == null ? current.currentVersion() : request.version();
+    if (selectedVersion < 1 || selectedVersion > current.currentVersion()) throw new AuthorizationException(404, "document-version-not-found");
+    return switch (current.kind()) {
+      case PROMPT -> repository.promptVersion(platformScopeId(), current.documentId(), selectedVersion)
+          .map(version -> new DocumentSnapshot(current.agentDefinitionId(), AgentDocKind.PROMPT, version.promptDocumentId(), version.title(), version.changeSummary(), current.currentVersion(), version.version(), version.contentBody(), version.contentChecksum(), version.createdAt(), version.actorAccountId(), version.editSessionTranscriptSummary()))
+          .orElseGet(() -> selectedVersion == current.currentVersion() ? current : missingDocumentVersion());
+      case SKILL -> repository.skillVersion(platformScopeId(), current.documentId(), selectedVersion)
+          .map(version -> new DocumentSnapshot(current.agentDefinitionId(), AgentDocKind.SKILL, version.skillDocumentId(), version.title(), version.purpose(), current.currentVersion(), version.version(), version.contentBody(), version.contentChecksum(), version.createdAt(), version.actorAccountId(), version.editSessionTranscriptSummary()))
+          .orElseGet(() -> selectedVersion == current.currentVersion() ? current : missingDocumentVersion());
+      case REFERENCE -> repository.referenceVersion(platformScopeId(), current.documentId(), selectedVersion)
+          .map(version -> new DocumentSnapshot(current.agentDefinitionId(), AgentDocKind.REFERENCE, version.referenceDocumentId(), version.title(), version.summary(), current.currentVersion(), version.version(), version.contentBody(), version.contentChecksum(), version.createdAt(), version.actorAccountId(), version.editSessionTranscriptSummary()))
+          .orElseGet(() -> selectedVersion == current.currentVersion() ? current : missingDocumentVersion());
+    };
+  }
+
+  private static DocumentSnapshot missingDocumentVersion() {
+    throw new AuthorizationException(404, "document-version-not-found");
+  }
+
+  private List<DocumentSnapshot> versionSnapshots(DocumentSnapshot current) {
+    return switch (current.kind()) {
+      case PROMPT -> repository.promptVersions(platformScopeId(), current.documentId()).stream()
+          .map(version -> new DocumentSnapshot(current.agentDefinitionId(), AgentDocKind.PROMPT, version.promptDocumentId(), version.title(), version.changeSummary(), current.currentVersion(), version.version(), version.contentBody(), version.contentChecksum(), version.createdAt(), version.actorAccountId(), version.editSessionTranscriptSummary()))
+          .toList();
+      case SKILL -> repository.skillVersions(platformScopeId(), current.documentId()).stream()
+          .map(version -> new DocumentSnapshot(current.agentDefinitionId(), AgentDocKind.SKILL, version.skillDocumentId(), version.title(), version.purpose(), current.currentVersion(), version.version(), version.contentBody(), version.contentChecksum(), version.createdAt(), version.actorAccountId(), version.editSessionTranscriptSummary()))
+          .toList();
+      case REFERENCE -> repository.referenceVersions(platformScopeId(), current.documentId()).stream()
+          .map(version -> new DocumentSnapshot(current.agentDefinitionId(), AgentDocKind.REFERENCE, version.referenceDocumentId(), version.title(), version.summary(), current.currentVersion(), version.version(), version.contentBody(), version.contentChecksum(), version.createdAt(), version.actorAccountId(), version.editSessionTranscriptSummary()))
+          .toList();
+    };
+  }
+
+  private boolean versionExists(DocumentSnapshot current, int version) {
+    return switch (current.kind()) {
+      case PROMPT -> repository.promptVersion(platformScopeId(), current.documentId(), version).isPresent();
+      case SKILL -> repository.skillVersion(platformScopeId(), current.documentId(), version).isPresent();
+      case REFERENCE -> repository.referenceVersion(platformScopeId(), current.documentId(), version).isPresent();
+    };
+  }
+
+  private void saveCurrentSnapshot(DocumentSnapshot current, String contentBody, String actorAccountId, String changeSummary, String editSessionTranscriptSummary) {
+    var command = new AgentBehaviorRepository.DocumentVersionSave(platformScopeId(), current.documentId(), current.currentVersion(), contentBody, actorAccountId, changeSummary, editSessionTranscriptSummary, Instant.now(clock));
+    try {
+      switch (current.kind()) {
+        case PROMPT -> repository.savePromptDocumentVersion(command);
+        case SKILL -> repository.saveSkillDocumentVersion(command);
+        case REFERENCE -> repository.saveReferenceDocumentVersion(command);
       }
-      case SKILL -> {
-        var existing = repository.skillDocument(platformScopeId(), current.documentId()).orElseThrow();
-        repository.saveSkillDocument(new SkillDocument(existing.tenantId(), existing.skillDocumentId(), existing.stableSkillId(), existing.title(), existing.purpose(), existing.whenToUse(), existing.tags(), existing.status(), nextVersion, contentBody, checksum, existing.seedProvenance(), existing.createdAt(), now));
+    } catch (IllegalStateException failure) {
+      if ("stale-current-version".equals(failure.getMessage())) throw new AuthorizationException(409, "edit-session-base-version-stale");
+      throw failure;
+    }
+  }
+
+  private void restoreSnapshot(DocumentSnapshot current, int version, String actorAccountId) {
+    var command = new AgentBehaviorRepository.DocumentVersionRestore(platformScopeId(), current.documentId(), version, actorAccountId, Instant.now(clock));
+    try {
+      switch (current.kind()) {
+        case PROMPT -> repository.restorePromptDocumentVersion(command);
+        case SKILL -> repository.restoreSkillDocumentVersion(command);
+        case REFERENCE -> repository.restoreReferenceDocumentVersion(command);
       }
-      case REFERENCE -> {
-        var existing = repository.referenceDocument(platformScopeId(), current.documentId()).orElseThrow();
-        repository.saveReferenceDocument(new ReferenceDocument(existing.tenantId(), existing.referenceDocumentId(), existing.stableReferenceId(), existing.title(), existing.summary(), existing.whenToConsult(), existing.referenceType(), existing.accessLevel(), existing.tags(), existing.status(), nextVersion, contentBody, checksum, existing.seedProvenance(), existing.createdAt(), now));
-      }
+    } catch (IllegalStateException failure) {
+      throw new AuthorizationException(404, failure.getMessage());
     }
   }
 
@@ -395,6 +516,52 @@ public final class AgentAdminDocAdministrationService {
 
   private DocumentSummary docSummary(AgentDocKind kind, String documentId, String title, String description, int currentVersion, Instant updatedAt) {
     return new DocumentSummary(kind, documentId, title, description, currentVersion, updatedAt);
+  }
+
+  private List<ReferenceDocument> referencesForSkill(AgentDefinition agent, String skillDocumentId) {
+    var tag = skillReferenceTag(skillDocumentId);
+    return referenceSummaries(agent).stream()
+        .map(summary -> repository.referenceDocument(platformScopeId(), summary.documentId()).orElse(null))
+        .filter(Objects::nonNull)
+        .filter(reference -> reference.tags().contains(tag))
+        .toList();
+  }
+
+  private void removeSkillFromManifest(AgentDefinition agent, String skillDocumentId, Instant now) {
+    var manifest = repository.skillManifest(platformScopeId(), agent.skillManifestId()).orElseThrow();
+    var entries = manifest.entries().stream()
+        .filter(entry -> !entry.skillDocumentId().equals(skillDocumentId))
+        .toList();
+    repository.saveSkillManifest(new AgentSkillManifest(manifest.tenantId(), manifest.manifestId(), manifest.agentDefinitionId(), manifest.status(), manifest.manifestVersion() + 1, entries, checksum(entries.toString()), manifest.seedProvenance(), manifest.createdAt(), now));
+  }
+
+  private void removeReferencesFromManifest(AgentDefinition agent, List<String> referenceDocumentIds, Instant now) {
+    if (referenceDocumentIds.isEmpty()) return;
+    var manifest = repository.referenceManifest(platformScopeId(), agent.referenceManifestId()).orElseThrow();
+    var ids = java.util.Set.copyOf(referenceDocumentIds);
+    var entries = manifest.entries().stream()
+        .filter(entry -> !ids.contains(entry.referenceDocumentId()))
+        .toList();
+    repository.saveReferenceManifest(new AgentReferenceManifest(manifest.tenantId(), manifest.manifestId(), manifest.agentDefinitionId(), manifest.workstreamExpertBundleId(), manifest.status(), manifest.manifestVersion() + 1, entries, checksum(entries.toString()), manifest.seedProvenance(), manifest.createdAt(), now));
+  }
+
+  private static String editSessionTranscript(EditSessionRecord session) {
+    return session.instructions().stream()
+        .map(instruction -> instruction.actorAccountId() + ": " + instruction.instructions())
+        .collect(java.util.stream.Collectors.joining("\n"));
+  }
+
+  private static String simpleUnifiedDiff(String prior, String selected) {
+    if (Objects.equals(prior, selected)) return "";
+    return "--- version N-1\n+++ version N\n-" + String.valueOf(prior).replace("\n", "\n-") + "\n+" + String.valueOf(selected).replace("\n", "\n+");
+  }
+
+  private static String skillReferenceTag(String skillDocumentId) {
+    return "skill-document:" + skillDocumentId;
+  }
+
+  private static String safeId(String value) {
+    return String.valueOf(value).toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]+", "-").replaceAll("(^-|-$)", "");
   }
 
   private Instant lastEditTime(AgentDefinition agent, PromptDocument prompt, List<Instant> skillTimes, List<Instant> referenceTimes) {
@@ -446,9 +613,10 @@ public final class AgentAdminDocAdministrationService {
     }
   }
 
-  private record DocumentSnapshot(String agentDefinitionId, AgentDocKind kind, String documentId, String title, String description, int currentVersion, String contentBody, String checksum, Instant updatedAt) {
+  private record DocumentSnapshot(String agentDefinitionId, AgentDocKind kind, String documentId, String title, String description, int currentVersion, int version, String contentBody, String checksum, Instant updatedAt, String actorAccountId, String editSessionTranscriptSummary) {
     DocumentVersionDetail toVersionDetail(String correlationId) {
-      return new DocumentVersionDetail(agentDefinitionId, kind, documentId, currentVersion, true, true, title, description, contentBody, checksum, updatedAt, List.of(traceId("version-read", documentId, correlationId)));
+      var current = version == currentVersion;
+      return new DocumentVersionDetail(agentDefinitionId, kind, documentId, version, current, current, title, description, contentBody, checksum, updatedAt, actorAccountId, editSessionTranscriptSummary, List.of(traceId("version-read", documentId, correlationId)));
     }
   }
 
@@ -504,7 +672,7 @@ public final class AgentAdminDocAdministrationService {
 
   public record DocumentVersionRequest(String agentDefinitionId, AgentDocKind kind, String documentId, Integer version) {}
 
-  public record DocumentVersionDetail(String agentDefinitionId, AgentDocKind kind, String documentId, int version, boolean currentVersion, boolean editable, String title, String description, String contentBody, String contentChecksum, Instant createdAt, List<String> traceLinks) {
+  public record DocumentVersionDetail(String agentDefinitionId, AgentDocKind kind, String documentId, int version, boolean currentVersion, boolean editable, String title, String description, String contentBody, String contentChecksum, Instant createdAt, String actorAccountId, String editSessionTranscriptSummary, List<String> traceLinks) {
     public DocumentVersionDetail {
       traceLinks = List.copyOf(traceLinks == null ? List.of() : traceLinks);
     }
@@ -555,6 +723,22 @@ public final class AgentAdminDocAdministrationService {
 
   public record RestoreVersionResult(String agentDefinitionId, AgentDocKind kind, String documentId, int restoredFromVersion, int newCurrentVersion, String summary, List<String> traceLinks) {
     public RestoreVersionResult {
+      traceLinks = List.copyOf(traceLinks == null ? List.of() : traceLinks);
+    }
+  }
+
+  public record CreateSkillRequest(String agentDefinitionId, String skillDocumentId, String stableSkillId, String name, String purpose, String whenToUse, String contentBody, String editSessionTranscriptSummary) {}
+  public record DeleteSkillRequest(String agentDefinitionId, String skillDocumentId, String confirmation) {}
+  public record SkillLifecycleResult(String agentDefinitionId, String skillDocumentId, int currentVersion, List<String> traceLinks) {
+    public SkillLifecycleResult {
+      traceLinks = List.copyOf(traceLinks == null ? List.of() : traceLinks);
+    }
+  }
+
+  public record CreateReferenceDocRequest(String agentDefinitionId, String skillDocumentId, String referenceDocumentId, String stableReferenceId, String name, String description, String whenToConsult, ReferenceDocument.ReferenceType referenceType, String contentBody, String editSessionTranscriptSummary) {}
+  public record DeleteReferenceDocRequest(String agentDefinitionId, String referenceDocumentId, String confirmation) {}
+  public record ReferenceLifecycleResult(String agentDefinitionId, String skillDocumentId, String referenceDocumentId, int currentVersion, List<String> traceLinks) {
+    public ReferenceLifecycleResult {
       traceLinks = List.copyOf(traceLinks == null ? List.of() : traceLinks);
     }
   }

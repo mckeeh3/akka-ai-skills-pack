@@ -55,7 +55,7 @@ public class SkillDocumentView extends View {
   @Consume.FromEventSourcedEntity(SkillDocumentEntity.class)
   public static class SkillDocumentsUpdater extends TableUpdater<SkillDocumentRow> {
     public Effect<SkillDocumentRow> onEvent(SkillDocumentEntity.Event event) {
-      return effects().updateRow(SkillDocumentRow.from(event.document()));
+      return event.document() == null ? effects().ignore() : effects().updateRow(SkillDocumentRow.from(event.document()));
     }
   }
 

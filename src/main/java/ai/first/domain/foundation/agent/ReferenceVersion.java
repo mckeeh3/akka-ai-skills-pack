@@ -21,7 +21,9 @@ public record ReferenceVersion(
     SeedProvenance seedProvenance,
     Instant createdAt,
     Instant approvedAt,
-    Instant activatedAt) {
+    Instant activatedAt,
+    String actorAccountId,
+    String editSessionTranscriptSummary) {
   public ReferenceVersion {
     tags = List.copyOf(tags == null ? List.of() : tags);
   }
