@@ -9,10 +9,14 @@ Use this skill only when the task is already narrowed to a stateful component bu
 - `EventSourcedEntity`
 - `KeyValueEntity`
 
-This is not the general front door for broad requirements, prompts, PDRs, or specification files.
+This is not the general front door for broad requirements, prompts, PRDs, or specification files.
 If the broader Akka component set or backend capability contract is still unknown, start with:
 - `capability-first-backend`
 - `akka-solution-decomposition`
+
+## Compile contract gate
+
+Use this skill only after the current-intent slice or task has identified a stateful backend capability candidate. Before choosing an entity type, confirm the affected workstream or internal/foundation scope, governed-tool/capability semantics, AuthContext and tenant/customer scope, idempotency, audit/trace, and exposure adapters are known or explicitly out of scope. If those inputs are missing, route back to current-intent/task reconciliation instead of selecting an entity type from CRUD convenience or component preference.
 
 ## Required reading
 

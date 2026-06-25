@@ -29,6 +29,7 @@ The skill must:
 - select the next runnable `pending` task unless the user named a specific task
 - keep the task scope bounded
 - prefer fresh-context execution
+- mark the selected task `in-progress` before implementation edits, and touch no other task status except newly discovered blockers or follow-ups required by the selected task
 - load only the task's required reads and listed skills
 - confirm the task is in the build/compile phase, respects the readiness target, and has the compile-contract inputs needed to proceed or block it before coding
 - preserve current-intent graph provenance and any AI-first operating-model, governance, approval, audit, supervision UI, or outcome constraints named by the task without broadening scope
@@ -96,7 +97,7 @@ Still execute only one queue item.
 
 ## Queue file contract
 
-Use `../docs/intent-compiler-skill-contracts.md` and `../docs/intent-to-realization-flow.md` for the detailed queue-execution contract. Preserve generated-SaaS/SaaS Foundation App context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
+Use `../docs/pending-task-queue.md`, `../docs/intent-compiler-skill-contracts.md`, and `../docs/intent-to-realization-flow.md` for the detailed queue-execution contract. The lifecycle is `pending` -> `in-progress` before edits -> `done` only after required checks and done criteria pass, or `blocked`/`superseded` with explicit notes when safe execution cannot continue. Preserve generated-SaaS/SaaS Foundation App context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
 
 ## Blocking rules
 
