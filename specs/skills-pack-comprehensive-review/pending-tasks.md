@@ -44,7 +44,7 @@
 
 ### TASK-002: Terminal verification after file inventory review
 
-- status: pending
+- status: done
 - source: specs/skills-pack-comprehensive-review/README.md
 - task brief: none
 - depends on: [TASK-001]
