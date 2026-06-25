@@ -37,7 +37,7 @@ Preferred pattern:
 
 ## What to test
 
-For each reusable entity example, cover at least:
+For each target entity, cover at least:
 1. successful command path
 2. validation error path
 3. no-op or idempotent path when applicable
@@ -60,23 +60,19 @@ Use these `KeyValueEntityTestKit` capabilities:
 
 ## Repository examples
 
-### Standard entity tests
+### Repository example tests
 - `DurableIdentityRepositoryEntityTest`
-  - success
-  - validation error
-  - no-op
-  - delete
-
-### Downstream/internal entity tests
-- a domain-specific key value entity test
-  - create
-  - idempotent no-op
-  - strongly consistent read pattern
-  - replication filter command shape
-
-### TTL test
+  - success-path current-state persistence
+  - tenant-filtered read behavior
 - `DurableNotificationRepositoryEntityTest`
-  - asserts `Optional.of(Duration.ofDays(30))` from `getExpireAfter()`
+  - tenant-scoped notification, preference, outbox, and digest repository behavior
+
+### Target-project pattern tests
+- entity-specific validation errors
+- idempotent no-op commands
+- delete behavior when supported by the target entity
+- strongly consistent read and replication filter command shape when the target uses KVE replication
+- TTL behavior when the target command attaches `expireAfter(...)`, including the expected `getExpireAfter()` value
 
 ## Generated SaaS compile review
 
