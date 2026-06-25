@@ -36,27 +36,29 @@ Read these first if present:
 1. Return `akka.http.javadsl.model.HttpResponse`.
 2. Build an Akka `Source` of API-facing elements.
 3. Wrap the source with `HttpResponses.serverSentEvents(...)`.
-4. If clients may reconnect, extract `requestContext().lastSeenSseEventId()` and resume from there.
-5. Prefer stable event ids and explicit event types when reconnect behavior matters.
-6. Map internal domain or notification types to API-facing records before streaming.
-7. For view-backed SSE via `serverSentEventsForView(...)`, use a dedicated view stream query without `ORDER BY`; view SSE events are emitted in created/event order.
+4. Extend `AbstractHttpEndpoint` when reconnect, JWT, principal, header, or correlation metadata is read through `requestContext()`.
+5. If clients may reconnect, extract `requestContext().lastSeenSseEventId()` and resume from there.
+6. Prefer stable event ids and explicit event types when reconnect behavior matters.
+7. Authenticate and authorize the stream before opening it; for scoped streams, filter or reject by tenant/customer and capability server-side before any event is emitted.
+8. Map internal domain or notification types to API-facing records before streaming.
+9. For view-backed SSE via `serverSentEventsForView(...)`, use a dedicated view stream query without `ORDER BY`; view SSE events are emitted in created/event order.
 
-## Repository examples
+## Target-project patterns
 
-### Focused resumable SSE mechanics example
+### Focused resumable SSE mechanics pattern
 - a domain-specific SSE endpoint
   - finite deterministic stream only for isolated transport/reconnect mechanics tests, not for claimed component-backed realtime features
   - uses `requestContext().lastSeenSseEventId()`
   - sets SSE ids and event type explicitly
   - tested with `SseRouteTester`
 
-### Component-backed SSE examples
+### Component-backed SSE patterns
 - `WorkstreamEndpoint#events`
   - maps event sourced entity notifications to API records
 - a domain-specific authenticated notification stream
   - maps key value entity notifications to API records
 
-### View-backed SSE example
+### View-backed SSE pattern
 - a domain-specific workstream log stream endpoint
   - streams a view query with `streamUpdates = true`
   - uses an SSE-specific view query with no `ORDER BY`
@@ -90,3 +92,5 @@ Before finishing, verify:
 - reconnect logic uses `lastSeenSseEventId()` when needed
 - ids and event types are stable where relevant
 - tests cover streaming behavior
+- protected streams fail closed before emitting events when AuthContext, tenant/customer scope, membership, capability, or provider/config prerequisites are missing
+- tests cover forbidden or cross-tenant subscriptions and resume-from-offset behavior without leaking skipped events

@@ -37,13 +37,15 @@ Read these first if present:
 4. Keep principal-aware behavior in the endpoint layer.
 5. In tests, treat `httpClient` calls as internet calls unless explicitly impersonating a service.
 
-## Repository example
+## Target-project pattern
+
+Use this pattern in the target project when an internal-only HTTP endpoint is needed:
 
 - a domain-specific internal-only status endpoint
   - class-level service-only ACL
   - method-level override exposing one public route
   - principal inspection via `requestContext().getPrincipals()`
-  - integration test pattern using `impersonate-service`
+  - integration test pattern using service impersonation when the target test harness supports it
 
 ## Testing rules
 
@@ -66,3 +68,4 @@ Before finishing, verify:
 - method-level ACLs are present only for true overrides
 - principal inspection uses `requestContext()`
 - tests cover denied and allowed paths
+- internal visibility is not treated as business authorization; protected service methods still validate service identity, tenant/customer scope, capability, and audit requirements before component calls

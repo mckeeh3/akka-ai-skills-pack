@@ -7,6 +7,9 @@ description: Implement Akka Java SDK HTTP endpoints that call other HTTP service
 
 Use this skill when an endpoint calls another HTTP service.
 
+## Generated SaaS input contract
+
+Use `../references/generated-saas-input-contract.md`, `../docs/app-worker-tool-model.md`, and `../docs/app-description-to-code-compile-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the responsible worker, execution harness, actor adapter, governed tool, capability, AuthContext/scope, DTO, upstream service contract, side-effect/idempotency policy, trace/result surface, selected implementation path, and tests are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Capability-first exposure rule
 
@@ -33,14 +36,18 @@ Read these first if present:
 1. Inject `HttpClientProvider`.
 2. Create a client with `httpClientFor(serviceNameOrBaseUrl)`.
 3. Make an HTTP request with `GET`, `POST`, `PUT`, `PATCH`, or `DELETE`.
-4. Deserialize upstream responses as endpoint-local API records.
-5. Return your own API response or HTTP error.
+4. Propagate only the approved caller/service context, tenant/customer scope, correlation id, and idempotency key required by the upstream contract; do not forward bearer tokens, cookies, or internal headers blindly.
+5. Deserialize upstream responses as endpoint-local API records.
+6. Map upstream denials, validation failures, outages, and unsafe payloads to your own redacted API response or HTTP error, with audit/work-trace evidence where required.
 
-## Repository example
+## Target-project pattern
 
-- a domain-specific HTTP-client endpoint (no current snapshot example)
+Use this pattern in the target project when endpoint-to-HTTP-service delegation is required; there is no current source snapshot example in this pack.
+
+- a domain-specific HTTP-client endpoint
   - uses `HttpClientProvider`
-  - reads a base URL from a request header for a self-contained local example only
+  - reads a base URL from configuration or a secured/allowlisted capability contract
+  - uses a request-header base URL only for a self-contained local example, never as the generated-app runtime default
   - delegates to another HTTP route and remaps the response
 
 ## Note on deployed services
@@ -53,6 +60,9 @@ Use absolute URLs only for configured/allowlisted external services or for speci
 
 Before finishing, verify:
 - `HttpClientProvider` is injected where needed
-- the target service name or base URL is explicit
+- the target service name or base URL is explicit and configured/allowlisted; arbitrary caller-supplied upstream URLs are rejected outside explicit secured proxy capabilities
+- approved caller/service identity, AuthContext, tenant/customer scope, correlation, and idempotency semantics are preserved without blindly forwarding sensitive headers
 - upstream response parsing uses endpoint-local records
-- the endpoint exposes its own stable API contract
+- upstream errors and denials are redacted, audited/traced where required, and mapped to the endpoint's own stable API contract
+- missing upstream configuration fails closed with an actionable error
+- tests cover configured success, forbidden or cross-tenant access, invalid upstream configuration, upstream error mapping, and redaction
