@@ -31,19 +31,19 @@ The Domain Operations dashboard is the surface graph trunk. It summarizes open d
 - AI recommendation with confidence, risk, impact, alternatives, and evidence summaries;
 - missing evidence list, counterpart/budget signals, stale marker, and redaction profile;
 - role-gated diagnostics for work item id, policy clause ids, threshold values, evidence refs, trace ids, `correlationId`, and other implementation metadata;
-- action descriptors with `browserToolId`, `governedToolId`, `capabilityId`, confirmation/approval requirements, idempotency, and result-surface behavior for implementation mapping, rendered as user-safe action labels by default.
+- action descriptors with `surfaceActionId`, `governedToolId`, `capabilityId`, actor-adapter exposure, confirmation/approval requirements, idempotency, and result-surface behavior for implementation mapping, rendered as user-safe action labels by default.
 
 ### Actions and capability mapping
 
-| Surface action | Capability id | Governed-tool / exposure | Result surface |
+| Surface action | Capability id | Governed-tool / actor adapter(s) | Result surface |
 |---|---|---|---|
-| Refresh review | `domain.work-items.review.read` | `domain.review.read` as browser-tool/agent-tool | update current surface |
-| Approve item | `domain.work-items.approve` | `domain.approve` as browser-tool | success `system_message`, workflow status, dashboard refresh |
-| Reject item | `domain.work-items.reject` | `domain.reject` as browser-tool | system message plus audit trace |
-| Request evidence | `domain.work-items.evidence.request` | `domain.request_evidence` as browser-tool/internal-tool | evidence task progress surface |
-| Escalate deviation | `domain.deviations.escalate` | `domain.escalate_deviation` as browser-tool | `decision-card` in Governance/Policy |
-| Open policy clause | `governance.policy.read` | `policy.open_clause` as browser-tool surface-request | policy version card |
-| Open audit trace | `audit.traces.view` | `audit.open_trace` as browser-tool | `audit-trace-explorer` |
+| Refresh review | `domain.work-items.review.read` | `domain.review.read` as `surface_action`; `agent_tool_call` only when tool boundary allows | update current surface |
+| Approve item | `domain.work-items.approve` | `domain.approve` as `surface_action` | success `system_message`, workflow status, dashboard refresh |
+| Reject item | `domain.work-items.reject` | `domain.reject` as `surface_action` | system message plus audit trace |
+| Request evidence | `domain.work-items.evidence.request` | `domain.request_evidence` as `surface_action` plus governed `internal_call`/workflow task | evidence task progress surface |
+| Escalate deviation | `domain.deviations.escalate` | `domain.escalate_deviation` as `surface_action` | `decision-card` in Governance/Policy |
+| Open policy clause | `governance.policy.read` | `policy.open_clause` as `surface_action` surface request | policy version card |
+| Open audit trace | `audit.traces.view` | `audit.open_trace` as `surface_action` | `audit-trace-explorer` |
 
 ### States and tests
 

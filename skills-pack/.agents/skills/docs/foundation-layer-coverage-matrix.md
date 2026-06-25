@@ -4,6 +4,8 @@ Use this matrix to check whether the reusable horizontal SaaS Foundation App con
 
 The matrix maps foundation concerns to the installed skills-pack guidance that teaches them, the root app artifacts that currently realize them, and known coverage notes. It is not a runtime readiness claim by itself; runtime readiness remains governed by the root app `app-description/00-system/readiness-status.md` and `specs/full-core-saas-readiness/**` evidence.
 
+The app-description anchors in this matrix intentionally point to existing root-app compatibility files, including legacy numbered directories where they still exist. Do not use those numbered paths as the canonical layout for new app-description work; new intent should follow the current-intent graph under `app-description/app.md`, `global/**`, and `domains/<domain>/workstreams/<workstream>/**`.
+
 ## Coverage states
 
 | State | Meaning |

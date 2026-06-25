@@ -47,16 +47,20 @@ For generated SaaS APIs, design `.proto` methods as exposure surfaces for accept
 - specify streaming resume, event id, ordering, and stale semantics for surface or workstream streams.
 
 
-## Repository examples
+## Target-project proto patterns
 
-- `workstream_event_grpc_endpoint.proto`
+When the target project already has gRPC examples, prefer its local conventions. Common generated-SaaS patterns include:
+
+- a workstream event gRPC endpoint proto
   - `google.protobuf.Timestamp`
   - `google.protobuf.StringValue`
+  - explicit event id, trace/audit reference, and resume or ordering fields when streaming
   - `reserved` field number and field name
   - deprecated field example
-- `internal_status_grpc_endpoint.proto`
+- an internal status gRPC endpoint proto
   - `google.protobuf.Empty`
   - `google.protobuf.StringValue`
+  - service-only status/readiness messages
   - reserved field number and field name
 
 ## External protobuf types
@@ -107,3 +111,4 @@ Before finishing, verify:
 - removed fields are `reserved`
 - deprecated fields are marked explicitly when kept on the wire
 - common protobuf types are used intentionally rather than ad hoc strings
+- generated SaaS methods expose accepted capabilities with scope, denial/status, trace/audit, and safe-error fields rather than standalone RPC mechanics

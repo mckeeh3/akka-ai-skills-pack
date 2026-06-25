@@ -72,7 +72,7 @@ For generated AI-first SaaS work in this source repository and downstream forks,
 
 ## Style guide
 
-- [ ] A selected style guide is recorded in `app-description/55-ui/style-guide.md`, `specs/cross-cutting/*ui-style-guide*.md`, or an equivalent authoritative UI spec.
+- [ ] A selected style guide is recorded in the current-intent UI/surface realization graph (for example `app-description/domains/<domain>/workstreams/<workstream>/realization/frontend-routes.md`, a shared/global UI style spec, or `specs/cross-cutting/*ui-style-guide*.md`). Legacy/template compatibility trees may use `app-description/55-ui/style-guide.md` only when it is mapped back to the owning workstream surfaces.
 - [ ] The authored stylesheet or component styling implements the selected AI-first style guide through CSS variables/tokens or project-standard styling configuration rather than scattered hard-coded values.
 - [ ] Canonical-style UI was compared against `skills-pack/docs/web-ui-component-catalog.md`, `skills-pack/examples/web-ui/ai-first-workstream-enterprise/component-catalog.html`, and the broader reference mockups or installed equivalents for anatomy, hierarchy, token roles, and component craft without copying demo content.
 - [ ] The user-facing theme preference is named-theme based; available themes, default theme, tone metadata for contrast testing only, and persistence scope are recorded.

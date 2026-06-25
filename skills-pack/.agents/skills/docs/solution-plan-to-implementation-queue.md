@@ -1,8 +1,8 @@
 # Solution plan to implementation queue
 
-Use this lightweight template after Stage 1 decomposition is accepted.
+Use this lightweight template after a solution plan or current-intent slice is accepted and ready to compile into bounded implementation work.
 
-For durable multi-session execution with task status, use `./pending-question-queue.md` for unresolved decisions and `./pending-task-queue.md` for implementation work. Materialize them as `specs/pending-questions.md` and `specs/pending-tasks.md`.
+For durable multi-session execution with task status, use `./pending-question-queue.md` for unresolved decisions and `./pending-task-queue.md` for implementation work. Materialize them in the target/root project as `specs/pending-questions.md` and `specs/pending-tasks.md`.
 
 Purpose:
 - turn unresolved design decisions into a durable clarification queue when needed
@@ -28,9 +28,11 @@ That contract should tell the next agent or next phase:
 - which delegated authority, policy/approval, trace, supervision UI, evaluation, and outcome requirements must be carried into each generated SaaS task
 - which workstream expertise requirements each functional-agent task must preserve: expert bundle id, prompt, skills, references, compact manifests, loader tools, tool boundaries, default-content governance, governance UI, traces, and tests
 
-## Done means working
+## Done means working evidence
 
-For generated Akka apps, especially full-stack secure AI-first SaaS apps, do not treat a queue item or sprint as complete merely because a component was generated. A named feature such as `user sign-in`, `user auth`, `invitation onboarding`, `User Admin`, `Agent Admin`, or an app-specific workstream is implemented only when the required backend, API, frontend/workstream surface, authorization, audit/trace, and tests needed for that named scope work together.
+For generated Akka apps, especially full-stack secure AI-first SaaS apps, do not treat a queue item or sprint as complete merely because a component was generated. A named feature such as `user sign-in`, `user auth`, `invitation onboarding`, `User Admin`, `Agent Admin`, or an app-specific workstream is implemented only when the required backend, API, frontend/workstream surface, authorization, audit/trace, and tests needed for that named scope work together at the queue item's stated readiness level.
+
+Record whether the increment is `surface-ready`, `backend-ready`, `frontend-rendered`, `api-smoked`, `browser-smoked`, `manual-ready`, or `runtime-ready`. Use `runtime-ready` only when the real local Akka/API/UI/agent path works for the claimed scope with required authorization, tenant/customer scoping, side effects, audit/work traces, and provider behavior or explicit fail-closed evidence.
 
 Deferrals are allowed only when they narrow or rename the goal, are marked as blocked/deferred in the queue, or are outside the explicitly selected scope. If a deferral prevents the named feature from working through the locally running Akka app, the feature is not done.
 

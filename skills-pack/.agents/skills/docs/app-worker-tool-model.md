@@ -34,6 +34,18 @@ Do not collapse these layers. A worker is not a tool. A surface is not authoriza
 | Capability | Product-level backend ability or grouping that owns one or more governed tools and their shared business contract. | An agent tool or transport endpoint. |
 | Akka implementation | Entity, Workflow, View, Agent, AutonomousAgent, Consumer, Timed Action, endpoint, service, and frontend code that realizes capabilities and adapters. | The product semantic contract. |
 
+## Conceptual clarification: workers, models, harnesses, and tools
+
+An app worker is the participant that does work in the product model. For AI-first SaaS modeling, workers are intentionally comparable even when their reasoning substrates differ:
+
+- a **human worker** reasons with human judgment; the browser workstream shell and structured surfaces are that worker's execution harnesses;
+- an **AI-backed software worker** reasons through an AI model inside a governed agent runtime; prompts, skills, references, memory, model policy, guardrails, and tool boundaries are its execution harness;
+- a **system worker** acts through deterministic logic, schedules, event handling, integrations, or persisted workflows.
+
+Surfaces are therefore not merely UI pages. They are the structured harnesses that let a human worker inspect evidence, choose actions, supply input, confirm consequences, see denials, and receive result surfaces. In the same way, an agent runtime is the structured harness that lets an AI model receive context, select allowed tools, and return bounded outputs. This symmetry is useful for app modeling, but it does not make humans, AI models, and deterministic systems identical.
+
+The shared abstraction between all workers and the backend is the **governed tool**. A governed tool is the app-building-block contract for one semantic operation or evidence read. Human surface actions, confirmed human chat plans, AI `agent_tool_call`s, workflow steps, timer invocations, consumer reactions, APIs, MCP calls, and internal calls are actor adapters or exposure paths to governed tools; they are not separate business operations by default.
+
 ## Worker symmetry and differences
 
 Generated AI-first SaaS apps model work through structurally comparable worker contracts while preserving important human/software/system differences.

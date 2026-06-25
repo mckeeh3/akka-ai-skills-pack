@@ -69,7 +69,7 @@ Read these first if present:
 - `../docs/pending-task-queue.md`
 - `../docs/ai-first-saas-application-architecture.md` when the backlog item includes delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
 - `../docs/requirements-to-workstream-development-process.md` when the backlog item touches generated SaaS workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent tasks, notifications/projections, or trace-aware queue execution
-- target project path: app-description/15-operating-model/ or equivalent operating-model specs when present and relevant
+- target project path: current-intent operating-model nodes under app-description/global/{workers,policies,surfaces,agents,tools,traces}/ and app-description/domains/<domain>/workstreams/<workstream>/ when present and relevant
 - target project path: specs/templates/implementation-task-template.md if the target project provides it; otherwise use the task-brief structure described in this skill
 - target project path: specs/akka-solution-plan.md
 - the target slice spec under target project path: specs/slices/

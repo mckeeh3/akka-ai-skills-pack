@@ -15,11 +15,12 @@ For every user increment, the skills pack should:
 
 1. classify the increment's intent kind and affected scope;
 2. normalize it into a current-intent delta;
-3. reconcile it with existing app/domain/workstream/global artifacts;
-4. identify ambiguity that must become a pending question;
-5. update current-state intent artifacts without preserving obsolete phrasing;
-6. route downstream realization into specs, backlogs, tasks, code, tests, and validation;
-7. preserve traceability from objective to runtime evidence.
+3. identify the worker/tool lens: who or what does the work, through which harness, by which actor adapter, using which governed tool, under which authority;
+4. reconcile it with existing app/domain/workstream/global artifacts;
+5. identify ambiguity that must become a pending question;
+6. update current-state intent artifacts without preserving obsolete phrasing;
+7. route downstream realization into specs, backlogs, tasks, code, tests, and validation;
+8. preserve traceability from objective to runtime evidence.
 
 ## Traceability spine
 
@@ -29,15 +30,19 @@ Forward traceability should follow this chain:
 app objective
   -> domain
     -> workstream
-      -> actor adapter / surface action / human chat tool plan / agent tool / governed tool / policy / trace
-        -> capability / API / Akka component / frontend route
-          -> test
-            -> runtime trace / audit / outcome
+      -> worker
+        -> execution harness
+          -> actor adapter / surface_action / human_chat_tool_plan / agent_tool_call / workflow_step / timer_invocation / consumer_reaction / api_call / mcp_tool_call / internal_call
+            -> governed tool
+              -> capability
+                -> API / Akka component / frontend route / agent runtime
+                  -> test
+                    -> runtime trace / audit / outcome
 ```
 
 Reverse traceability should make it possible to start from code, state, an event, an endpoint, a test, or a runtime trace and identify the intent artifact that justified it.
 
-When a human surface action, confirmed human chat tool plan, and AI agent tool perform the same consequential operation, the compiler should model them as actor-specific adapters of one governed workstream tool rather than as separate business semantics. The current-intent graph should preserve the shared governed tool id, the surface/browser adapter, the `human_chat_tool_plan` adapter, the AI-backed agent-tool adapter, internal/API/MCP exposure channels when present, their confirmation/approval/denial behavior, and trace source such as `surface_action`, `human_chat_tool_plan`, or `agent_tool_call`. Model-generated plans are intent mediation only; they do not grant security authority.
+When a human surface action, confirmed human chat tool plan, and AI agent tool perform the same consequential operation, the compiler should model them as actor-specific adapters of one governed workstream tool rather than as separate business semantics. The current-intent graph should preserve the shared governed tool id; the `surface_action`, `human_chat_tool_plan`, and `agent_tool_call` adapters; internal/API/MCP/system exposure channels when present; their confirmation/approval/denial behavior; and trace sources such as `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, `workflow_step`, `timer_invocation`, `consumer_reaction`, `api_call`, `mcp_tool_call`, or `internal_call`. Model-generated plans are intent mediation only; they do not grant security authority.
 
 ## Canonical doc set
 

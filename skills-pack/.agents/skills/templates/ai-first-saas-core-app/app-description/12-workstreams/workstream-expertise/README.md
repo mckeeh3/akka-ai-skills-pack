@@ -2,6 +2,8 @@
 
 Each LLM-backed functional agent needs a workstream expert bundle. The bundle makes the agent competent for one workstream through governed prompt intent, model binding, skills, references, manifests, loader tools, tool boundaries, traces, and tests. Expertise guides behavior; it does not grant authority.
 
+Within this legacy numbered template, map reusable agent definitions into current-intent `app-description/global/agents/**` nodes and workstream-specific expertise/bindings into `app-description/domains/<domain>/workstreams/<workstream>/agents/**` before treating them as active app intent.
+
 ## Required bundle fields
 
 - bundle id and owning functional agent;

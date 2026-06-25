@@ -22,7 +22,7 @@ Use:
 - `ReadOnlyEffect<T>` for normal read-only handlers
 - `Effect<T>` for strongly consistent reads that should route to the primary region
 
-Repository example:
+Target-project pattern:
 - a domain-specific eventual read method
 - a domain-specific strongly consistent read method
 
@@ -34,7 +34,7 @@ When the task explicitly needs replication filtering:
 - validate region input first
 - reply after the filter update effect
 
-Repository example:
+Target-project pattern:
 - a domain-specific replication include-region method
 - a domain-specific replication exclude-region method
 
@@ -45,7 +45,7 @@ If exposing replication behavior through HTTP:
 - validate incoming requests
 - map outcomes to clear API responses
 
-Repository example:
+Target-project pattern:
 - a domain-specific admin include-region endpoint method
 - a domain-specific admin exclude-region endpoint method
 - a domain-specific admin strongly consistent read endpoint method
@@ -58,7 +58,7 @@ Cover:
 - region include/exclude commands
 - request validation at endpoint or entity layer as appropriate
 
-Repository examples:
+Target-project tests:
 - a domain-specific key value entity test
 - a domain-specific admin endpoint integration test
 

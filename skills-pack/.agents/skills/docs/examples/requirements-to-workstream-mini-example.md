@@ -28,13 +28,13 @@ Do not start by listing pages, database tables, CRUD endpoints, or Akka componen
 
 ## Surface graph and actions
 
-The User Admin dashboard is the trunk of the human surface graph. Dashboard attention cards branch to list/detail/evidence surfaces; surface actions are graph edges that either open another surface, invoke a browser-tool, emit a system-message surface, start internal-agent work, or refresh dashboard attention.
+The User Admin dashboard is the trunk of the human surface graph. Dashboard attention cards branch to list/detail/evidence surfaces; surface actions are graph edges that either open another surface, invoke a governed `surface_action`/browser `api_call`, emit a system-message surface, start internal-agent work, or refresh dashboard attention.
 
 ```text
 surface.user_admin.dashboard.v1
 ├─ failed invitation delivery card
 │  ├─ action.user_admin.open_invitation_queue → surface.user_admin.user_list.v1[filter=failed_invites]
-│  ├─ action.user_admin.resend_invitation → browser-tool admin.invitations.resend → dashboard queue refresh + audit trace
+│  ├─ action.user_admin.resend_invitation → `surface_action` admin.invitations.resend → dashboard queue refresh + audit trace
 │  └─ action.user_admin.open_trace → surface.audit.trace_explorer.v1
 ├─ access-review risk card
 │  ├─ action.user_admin.open_access_review → surface.user_admin.user_account.v1 or decision-card.v1
@@ -43,15 +43,15 @@ surface.user_admin.dashboard.v1
    └─ action.audit.open_trace → surface.audit.dashboard.v1 / audit-trace-explorer
 ```
 
-| Surface/action | Governed capability/API | Qualified exposure | Notes |
+| Surface/action | Governed capability/API | Qualified actor adapter(s) | Notes |
 |---|---|---|---|
-| `action.user_admin.refresh_dashboard` | `admin.users.dashboard.read` | browser-tool, agent-tool | read-only dashboard query with AuthContext and tenant/customer scope |
-| `action.user_admin.open_invitation_queue` | `admin.users.search` | browser-tool | surface-request action; opens filtered list from dashboard queue |
-| `action.user_admin.resend_invitation` | `admin.invitations.resend` | browser-tool; `human_chat_tool_plan` when the user confirms the proposed resend plan | command with idempotency key, permission check, Resend/captured-outbox path, audit, `requestedBy`/`confirmedBy` trace facts, and partial-failure result surface |
-| `action.user_admin.start_access_review` | `admin.access_review.read` then `admin.access_review.resolve` when confirmed | browser-tool, internal-tool | starts review workflow and may launch internal investigation task; resolution remains authorized/approved |
-| `action.audit.open_trace` | `admin.audit.read` / `audit.traces.view` | browser-tool, agent-tool | redacted evidence query with sensitive-read audit when required |
+| `action.user_admin.refresh_dashboard` | `admin.users.dashboard.read` | `surface_action`; `agent_tool_call` only when tool boundary allows | read-only dashboard query with AuthContext and tenant/customer scope |
+| `action.user_admin.open_invitation_queue` | `admin.users.search` | `surface_action` | surface-request action; opens filtered list from dashboard queue |
+| `action.user_admin.resend_invitation` | `admin.invitations.resend` | `surface_action`; `human_chat_tool_plan` when the user confirms the proposed resend plan | command with idempotency key, permission check, Resend/captured-outbox path, audit, `requestedBy`/`confirmedBy` trace facts, and partial-failure result surface |
+| `action.user_admin.start_access_review` | `admin.access_review.read` then `admin.access_review.resolve` when confirmed | `surface_action`; governed `internal_call`/workflow task when investigation is launched | starts review workflow and may launch internal investigation task; resolution remains authorized/approved |
+| `action.audit.open_trace` | `admin.audit.read` / `audit.traces.view` | `surface_action`; `agent_tool_call` only when tool boundary allows | redacted evidence query with sensitive-read audit when required |
 
-Every browser button, confirmed human chat tool plan, AI-backed agent-tool, and system-message suggestion maps to one of these capabilities or to a declared follow-up capability. Surface actions, chat plans, and agent calls are actor adapters over shared governed-tool ids rather than duplicate business semantics.
+Every browser button, confirmed human chat tool plan, AI-backed agent tool call, and system-message suggestion maps to one of these capabilities or to a declared follow-up capability. Surface actions, chat plans, and agent calls are actor adapters over shared governed-tool ids rather than duplicate business semantics.
 
 ## Internal workstream agent graph and expertise
 

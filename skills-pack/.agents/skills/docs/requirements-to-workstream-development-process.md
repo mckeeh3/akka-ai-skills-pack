@@ -22,7 +22,7 @@ Related doctrine:
 
 ## Core rule
 
-For generated secure AI-first SaaS apps, process broad requirements and incremental changes through workstreams before pages, CRUD resources, endpoint lists, database tables, event streams, or Akka component families. For an existing app, reconcile the input against the existing workstream graph: affected workstreams, role-specific dashboards, attention items, surface graph nodes/edges, deterministic surface intent routes, governed-tools, internal workstream agent graph, workstream expertise, Akka substrate, UI/API, tests, and pending tasks.
+For generated secure AI-first SaaS apps, process broad requirements and incremental changes through workstreams before pages, CRUD resources, endpoint lists, database tables, event streams, or Akka component families. During input ingestion, first translate verbs and desired outcomes into worker/work/harness/tool candidates: who or what does the work, how the worker receives context, which actor adapter mediates the action, and which governed tool should carry the backend semantic contract. For an existing app, reconcile the input against the existing workstream graph: affected workstreams, role-specific dashboards, attention items, surface graph nodes/edges, deterministic surface intent routes, governed-tools, internal workstream agent graph, workstream expertise, Akka substrate, UI/API, tests, and pending tasks.
 
 Default order:
 
@@ -52,9 +52,11 @@ A planning output is implementation-ready only when each vertical slice can be t
 
 ```text
 workstream attention category
-→ responsible worker and actor adapter
+→ responsible worker
+→ execution harness
+→ actor adapter: surface_action, human_chat_tool_plan, agent_tool_call, workflow_step, timer_invocation, consumer_reaction, api_call, mcp_tool_call, or internal_call
 → role-specific dashboard state
-→ surface graph node/action edge
+→ surface graph node/action edge or explicit non-human harness reason
 → deterministic surface intent route or explicit no-route reason
 → governed capability/API and governed-tool
 → exposure channel: browser-tool, agent-tool, internal-tool, workflow/timer/consumer/MCP exposure, or API

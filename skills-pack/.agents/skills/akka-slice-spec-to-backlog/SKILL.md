@@ -62,13 +62,13 @@ Read these first if present:
 - `../docs/ai-first-saas-application-architecture.md` when the slice or sprint includes delegated work, agents, approvals, exceptions, governance, audit, supervision UI, or outcomes
 - `../docs/requirements-to-workstream-development-process.md` when the source increment includes generated SaaS workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent candidates, notifications/projections, or task queues
 - `../docs/workstream-surface-intent-routing.md` when the slice includes composer-enabled workstreams, create/edit/task surfaces, or natural-language surface requests
-- target project path: app-description/15-operating-model/ or equivalent operating-model specs when present and relevant
+- target project path: relevant app-description/global/** and app-description/domains/** current-intent graph nodes for the slice or sprint, plus legacy numbered operating-model specs only when the target project still maintains them
 - target project path: specs/templates/build-backlog-template.md if the target project provides it; otherwise use the backlog structure described in this skill
 - target project path: specs/templates/implementation-task-template.md if the target project provides it; otherwise use the task-brief structure described in this skill
 - the target slice spec file under target project path: specs/slices/ or sprint spec file under target project path: specs/sprints/
 - the related module spec under target project path: specs/modules/ when present
 - any cross-cutting spec files referenced or obviously relevant to the slice or sprint
-- target project path: specs/cross-cutting/*ui-style-guide*.md, target project path: app-description/55-ui/style-guide.md, or equivalent style artifact when the slice or sprint includes browser UI work
+- target project path: specs/cross-cutting/*ui-style-guide*.md, relevant app-description/global/surfaces/** or app-description/domains/**/surfaces/** style/surface guidance, legacy app-description/55-ui/style-guide.md only when still maintained, or an equivalent style artifact when the slice or sprint includes browser UI work
 - target project path: specs/akka-solution-plan.md
 
 If a matching backlog file already exists:

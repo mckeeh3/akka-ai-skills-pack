@@ -157,7 +157,7 @@ Select components from capability semantics:
 Ready when:
 
 - all five workstream PRDs exist and declare required surfaces, actions, capabilities, traces, and tests;
-- app-description generation can map each workstream to `12-workstreams/`, `10-capabilities/`, `40-auth-security/`, `50-observability/`, `55-ui/`, and `30-tests/`;
+- app-description generation can map each workstream into the current-intent graph (`app.md`, `global/**`, `domains/<domain>/capabilities/**`, `domains/<domain>/data-state/**`, and `domains/<domain>/workstreams/<workstream>/**` with `realization/` and `tests/` nodes), using numbered folders such as `12-workstreams/`, `10-capabilities/`, `40-auth-security/`, `50-observability/`, `55-ui/`, and `30-tests/` only as legacy compatibility targets when an existing app-description already uses them;
 - implementation planning can produce Akka components and frontend surface work from capability contracts;
 - no core surface remains a non-functional mockup;
 - tests cover authz, tenant isolation, denied access, disabled users, stale data, audit, system-message redaction, and frontend secret boundaries.

@@ -39,6 +39,10 @@ For protected MCP surfaces, preserve the capability contract at the edge: enforc
 
 Expose read-only scoped evidence capabilities more readily than side-effecting capabilities. Consequential MCP tools should default to proposal or approval-request capabilities unless an accepted policy grants bounded autonomous authority, and they must share the same authority, idempotency, approval, and audit semantics as any UI/API/workflow surface for the same capability.
 
+## Generated SaaS input contract
+
+Use `../references/generated-saas-input-contract.md`, `../docs/app-worker-tool-model.md`, and `../docs/app-description-to-code-compile-contract.md` as the shared gate. Do not implement generated SaaS runtime MCP code until the responsible worker/client, MCP actor adapter, governed tool, capability, AuthContext/scope, DTO, side-effect/idempotency policy, trace/result surface, selected endpoint/component path, and tests are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
+
 ## Required reading before coding
 
 Read these first if present:
@@ -91,7 +95,7 @@ Rules:
 9. If a manual `inputSchema` is used, it must exactly match the JSON shape Jackson will parse into the Java parameter.
 10. Static resources use `uri`, zero parameters, and return `String`, `byte[]`, or JSON-serializable objects.
 11. Dynamic resources use `uriTemplate`; each placeholder must match a `String` parameter name.
-12. Prompt methods return `String`. Prefer required `String` parameters in repository examples; verify `Optional<String>` prompt parameters against the exact SDK version before relying on them.
+12. Prompt methods return `String`. Prefer required `String` parameters in target-project examples; verify `Optional<String>` prompt parameters against the exact SDK version before relying on them.
 13. Extend `AbstractMcpEndpoint` only when request context access is needed.
 14. For generated SaaS MCP surfaces, resolve caller context and authorize every protected tool/resource/prompt against tenant/customer scope, allowed tool/resource grants, and required capability before calling components.
 15. Side-effecting tools must preserve the named capability's idempotency, approval/policy, and audit/work-trace semantics; prefer proposal or approval-request tools when authority is not explicitly granted.
@@ -104,14 +108,14 @@ Choose one of these modes before coding:
 ### 1. Component-calling MCP tools
 Use when the MCP endpoint should expose current entity or view state as LLM-friendly JSON.
 
-Repository example:
+Target-project pattern:
 - a domain-specific MCP summary tool
 
 ### 2. Resource and prompt endpoint
 Use when the main work is exposing static guidance, dynamic resources, or reusable prompt templates.
 
-Pattern references:
-- a packaged-resource guidance method such as `attentionGuidelines`
+Target-project patterns:
+- a packaged-resource guidance method such as attention or policy guidance
 - a resource method that returns a domain-specific event or state summary
 - a domain-specific MCP prompt/resource responder
 
@@ -124,7 +128,7 @@ Pattern to implement:
 ### 4. MCP testing task
 Use when you need to verify tool output, prompt construction, or context-aware behavior.
 
-Pattern references:
+Target-project patterns:
 - a component-backed endpoint test using `TestKitSupport` and direct endpoint instantiation
 - a request-context endpoint test with a stubbed `McpRequestContext`
 
@@ -151,4 +155,4 @@ When answering coding tasks:
 - name the MCP server path explicitly
 - state whether the endpoint exposes tools, resources, prompts, or a combination
 - call out whether the endpoint is pure edge logic or calls other components
-- list the concrete example files used as references
+- list the concrete target-project files used as references, or state when no local reference file exists

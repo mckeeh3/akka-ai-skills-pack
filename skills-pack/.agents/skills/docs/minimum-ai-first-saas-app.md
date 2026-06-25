@@ -68,7 +68,7 @@ Use the eleven Akka component families deliberately:
 10. gRPC Endpoint
 11. MCP Endpoint
 
-Capabilities and governed-tools are the bridge between product intent and components. The same components implement business functionality while exposing selected adapters such as browser-tools, confirmed `human_chat_tool_plan` paths, AI-backed agent-tools, workflows, timers, consumers, APIs, and MCP tools. Humans and agents use tools only through explicit, backend-authorized capability/tool boundaries with durable traces; the AI model is not the security boundary.
+Capabilities and governed tools are the bridge between product intent and components. The same components implement business functionality while exposing selected actor adapters such as `surface_action`, confirmed `human_chat_tool_plan`, `agent_tool_call`, `workflow_step`, `timer_invocation`, `consumer_reaction`, `api_call`, `mcp_tool_call`, and `internal_call`. Humans, agents, and systems use governed tools only through explicit, backend-authorized capability/tool boundaries with durable traces; the AI model is not the security boundary.
 
 ## Required runtime semantics
 

@@ -6,7 +6,7 @@ Primary official semantics:
 - `akka-context/sdk/workflows.html.md`
 - `akka-context/sdk/http-endpoints.html.md`
 
-Local executable examples: none in the current curated SaaS Foundation App examples. Treat the code below as a minimal domain-specific pattern, not a class name to look up.
+Local executable examples: none in the current curated SaaS Foundation App examples. Treat the code below as a minimal domain-specific mechanics pattern, not a class name to look up and not a complete generated-SaaS security contract.
 
 ## Use this pattern when
 
@@ -52,6 +52,10 @@ public class DomainWorkflowEndpoint {
   }
 }
 ```
+
+## Security and authority boundary
+
+For generated secure AI-first SaaS apps, a workflow endpoint is an exposure adapter for a governed capability; route availability and `@Acl` shape are not authorization. Before starting, reading, resuming, or streaming a workflow with protected data, resolve the signed-in account or service identity, selected `AuthContext`, tenant/customer scope, role/capability grants, idempotency/correlation, and audit/work trace obligations in backend code. Map endpoint actions to the responsible worker, actor adapter (`surface_action`, `api`, `workflow_step`, or another declared adapter), governed-tool id, and capability id. Missing identity, scope, provider/security configuration, or capability authorization should fail closed with safe HTTP/system-message responses and trace evidence.
 
 ## Routing shape
 
@@ -106,12 +110,14 @@ Pattern examples:
 
 ## Testing reminders
 
-Prefer route-level tests with `httpClient`:
+Prefer route-level tests with `httpClient` that prove the endpoint mechanics and the governed capability boundary:
 - start route returns expected status and body
 - get route reflects eventual workflow completion with `Awaitility` when needed
 - resume route rejects invalid workflow state with HTTP 400
 - missing workflow read maps to HTTP 404
 - SSE route uses `testKit.getSelfSseRouteTester()`
+- protected routes reject missing/wrong tenant or capability without starting/resuming the workflow
+- side-effecting resume/start routes preserve idempotency, correlation, and audit/work trace expectations
 
 Repository examples:
 - a domain-specific workflow endpoint integration test

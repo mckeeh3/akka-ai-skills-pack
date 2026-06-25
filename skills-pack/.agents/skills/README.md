@@ -61,7 +61,7 @@ worker
           -> Akka implementation
 ```
 
-Use `docs/app-worker-tool-model.md` for the chain, `docs/app-description-component-graph.md` for graph nodes and links, and `docs/app-description-to-code-compile-contract.md` for build/compile task sufficiency. A surface action, confirmed human chat tool plan, AI agent tool call, workflow step, timer, consumer, API, MCP, or internal call is an actor adapter to a governed tool; it is not a separate business operation by default.
+Use `docs/app-worker-tool-model.md` for the chain, `docs/app-description-component-graph.md` for graph nodes and links, and `docs/app-description-to-code-compile-contract.md` for build/compile task sufficiency. Treat human, AI-backed software, and deterministic system participants as workers with different reasoning substrates: the human worker reasons through human judgment via structured surfaces, the software agent reasons through an AI model via an agent runtime, and the system worker acts through deterministic workflow/timer/consumer/integration harnesses. A surface action, confirmed human chat tool plan, AI agent tool call, workflow step, timer, consumer, API, MCP, or internal call is an actor adapter to a governed tool; it is not a separate business operation by default. Governed tools are the semantic app-building-block contracts between workers and backend capabilities.
 
 ## AI-first SaaS entry routing
 

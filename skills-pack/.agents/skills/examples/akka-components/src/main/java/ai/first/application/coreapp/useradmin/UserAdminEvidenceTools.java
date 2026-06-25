@@ -9,6 +9,7 @@ import ai.first.application.foundation.invitation.InvitationView;
 import ai.first.application.coreapp.useradmin.UserAdminService;
 import ai.first.domain.foundation.identity.AccountStatus;
 import ai.first.domain.foundation.identity.AuthContext;
+import ai.first.domain.foundation.identity.ScopeType;
 import ai.first.domain.foundation.identity.UserSettings;
 import java.util.List;
 import java.util.Objects;
@@ -41,7 +42,7 @@ public final class UserAdminEvidenceTools {
       Read scoped, browser-safe User Admin evidence for the selected AuthContext.
       This is a read-only DATA_LOOKUP tool: it summarizes members, invitations, role/status facts,
       and recent audit trace ids without mutating invitations, memberships, roles, accounts, authorization,
-      provider configuration, or audit policy. It enforces tenant/customer scope and tenant.user.read before returning data.
+      provider configuration, or audit policy. It enforces SaaS Owner, tenant, or customer scope and the matching read capability before returning data.
       """)
   public String read(@Description("Optional plain-language evidence focus; may include tenantId=<id> only for the selected tenant") String evidenceRequest) {
     var actor = actor();
@@ -54,7 +55,7 @@ public final class UserAdminEvidenceTools {
         .toList();
     var traceId = "trace-useradmin-evidence-" + stableSuffix(correlationId + ":" + authContext.membershipId());
     return "tool_id=" + TOOL_ID
-        + "\ncapability=" + CAPABILITY_ID
+        + "\ncapability=" + effectiveReadCapability()
         + "\nmode=read_only_no_direct_mutation"
         + "\nselectedTenantId=" + safe(authContext.tenantId())
         + "\nselectedCustomerId=" + safe(authContext.customerId())
@@ -79,7 +80,9 @@ public final class UserAdminEvidenceTools {
         .filter(membership -> membership.membershipId().equals(authContext.membershipId()))
         .findFirst()
         .orElseThrow(() -> new AuthorizationException(403, "evidence-membership-not-found"));
-    if (!selected.tenantId().equals(authContext.tenantId()) || !Objects.equals(selected.customerId(), authContext.customerId())) {
+    if (selected.scopeType() != authContext.scopeType()
+        || !Objects.equals(selected.tenantId(), authContext.tenantId())
+        || !Objects.equals(selected.customerId(), authContext.customerId())) {
       throw new AuthorizationException(403, "evidence-auth-context-mismatch");
     }
     var profile = identityRepository.profile(account.accountId());
@@ -88,9 +91,16 @@ public final class UserAdminEvidenceTools {
   }
 
   private void requireReadCapability() {
-    if (!authContext.hasCapability(CAPABILITY_ID)) {
-      throw new AuthorizationException(403, "missing-capability:" + CAPABILITY_ID);
+    var capability = effectiveReadCapability();
+    if (!authContext.hasCapability(capability)) {
+      throw new AuthorizationException(403, "missing-capability:" + capability);
     }
+  }
+
+  private String effectiveReadCapability() {
+    if (authContext.scopeType() == ScopeType.SAAS_OWNER) return "saas_owner.admin.manage";
+    if (authContext.scopeType() == ScopeType.CUSTOMER) return "customer.user.read";
+    return CAPABILITY_ID;
   }
 
   private void requireRequestedScope(String evidenceRequest) {
@@ -99,7 +109,14 @@ public final class UserAdminEvidenceTools {
     var index = evidenceRequest.indexOf(marker);
     if (index < 0) return;
     var requested = evidenceRequest.substring(index + marker.length()).split("[\\s,;]")[0].trim();
-    if (!requested.isBlank() && !requested.equals(authContext.tenantId())) {
+    if (requested.isBlank()) return;
+    if (authContext.scopeType() == ScopeType.SAAS_OWNER) {
+      if (!"platform".equals(requested) && !"null".equalsIgnoreCase(requested) && !"saas-owner".equalsIgnoreCase(requested)) {
+        throw new AuthorizationException(403, "evidence-tenant-mismatch");
+      }
+      return;
+    }
+    if (!requested.equals(authContext.tenantId())) {
       throw new AuthorizationException(403, "evidence-tenant-mismatch");
     }
   }

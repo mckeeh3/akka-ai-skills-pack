@@ -60,6 +60,13 @@ Prevent stockouts by monitoring inventory risk, recommending replenishment, comp
 | `inventory.policy.evaluateDeviation` | Human opens policy check from recommendation. | Policy Deviation Reviewer invokes as evaluator/internal tool. | Produces evidence and escalation result. |
 | `inventory.audit.openTrace` | Auditor opens audit timeline. | Inventory Operations Agent may summarize allowed trace evidence. | Redaction differs by actor. |
 
+## Authority and runtime boundaries
+
+- Human surface availability does not grant AI tool authority. Each `agent_tool_call` needs an explicit tool-boundary entry, scoped AuthContext or service authority, approval/autonomy policy, and trace source.
+- Workflow, timer, consumer, and internal paths should be modeled as system-worker actor adapters (`workflow_step`, `timer_invocation`, `consumer_reaction`, `internal_call`) that invoke the same governed tools with provenance and idempotency.
+- Provider or security configuration gaps fail closed with actionable user/system messages and audit/work traces; they are not replaced by mock/model-less normal runtime behavior.
+- Runtime-ready evidence would need the real worker → harness → actor adapter → governed tool → capability → Akka/API/UI path, including denial, trace, and outcome checks.
+
 ## Akka realization candidates
 
 - Inventory/replenishment decisions and audit-grade approvals: EventSourcedEntity.

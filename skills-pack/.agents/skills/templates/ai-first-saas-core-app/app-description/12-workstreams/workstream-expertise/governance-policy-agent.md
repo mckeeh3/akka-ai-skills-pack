@@ -4,6 +4,7 @@
 - owning functional agent: `governance-policy-agent`
 - workstream id: `governance-policy`
 - scope: policy concepts, approval gates, proposals, simulations/impact analysis, replay evidence, activation/rollback, improvement governance, and human review
+- model binding: inherited governed default or explicit `ModelConfigRef`/`ModelPolicy`; missing provider/security configuration fails closed with an actionable `system_message` and AgentWorkTrace, and no provider secrets appear in prompt, skill, reference, trace, or browser payloads
 - primary surfaces: `agent-governance-center`, `decision-card`, `audit-trace-explorer`, `markdown_response`, `system_message`
 
 ## Prompt intent

@@ -5,7 +5,7 @@ Small, agent-oriented reference for Akka Java SDK Consumers.
 Primary official semantics:
 - `akka-context/sdk/consuming-producing.html.md`
 
-Local executable example:
+Curated projection pattern example:
 - `../examples/akka-components/src/main/java/ai/first/application/foundation/workstream/WorkstreamEventAttentionConsumer.java`
 
 ## Quick source selection
@@ -24,6 +24,8 @@ Design for:
 - duplicate delivery
 - idempotent downstream writes
 - explicit `effects().ignore()` for unhandled cases
+- preserved tenant/customer scope, source refs, correlation/idempotency keys, and audit/work trace provenance for protected downstream effects
+- backend capability authorization at the producer/caller or consumer boundary; never rely on topic names, frontend visibility, or payload fields alone as authority
 
 ## Minimal patterns
 
@@ -87,7 +89,7 @@ Use this when one Akka service publishes a public event stream and another Akka 
 Dedicated reference:
 - `./service-to-service-consumers.md`
 
-Local producer-side executable example:
+Local projection-side pattern example:
 - `../examples/akka-components/src/main/java/ai/first/application/foundation/workstream/WorkstreamEventAttentionConsumer.java`
 
 ## Topic production with subject metadata
@@ -119,3 +121,5 @@ Prefer:
 
 Reference test:
 - `../examples/akka-components/src/test/java/ai/first/application/foundation/workstream/WorkstreamEventBackboneServiceTest.java`
+
+For generated-app workstream consumers, tests should also cover duplicate delivery, scope mismatch or unsupported-event denial, safe no-op behavior, and audit/work trace evidence for consequential projections or side effects.

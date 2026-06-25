@@ -2,6 +2,8 @@
 
 Use this reference when deciding whether to implement an Akka Java SDK stateful component as an Event Sourced Entity (ESE) or a Key Value Entity (KVE).
 
+For generated SaaS work, make this choice only after the current-intent graph or selected task identifies the worker/actor adapter, governed tool, capability, `AuthContext`, tenant/customer scope, audit/work traces, and validation path. Entity mechanics do not grant authorization and should not replace the capability contract.
+
 ## Decision summary
 
 | If the requirement is... | Prefer |
@@ -45,9 +47,19 @@ Use this reference when deciding whether to implement an Akka Java SDK stateful 
 
 ## Reference examples in this repository
 
+Use `../examples/akka-components/REFERENCE-INDEX.md` for the current curated example list. Treat those files as generation guidance, not a duplicate application baseline or a tree to copy wholesale into a target app.
+
 ### Event Sourced Entity references
 
+- `../examples/akka-components/src/main/java/ai/first/application/foundation/agent/AgentDefinitionEntity.java`
+- `../examples/akka-components/src/main/java/ai/first/application/foundation/agent/PromptDocumentEntity.java`
+- `../examples/akka-components/src/main/java/ai/first/application/foundation/workstream/DurableWorkstreamEventRepositoryEntity.java`
+
 ### Key Value Entity references
+
+- `../examples/akka-components/src/main/java/ai/first/application/foundation/notification/DurableNotificationRepositoryEntity.java`
+- `../examples/akka-components/src/main/java/ai/first/application/foundation/identity/DurableIdentityRepositoryEntity.java`
+- `../examples/akka-components/src/main/java/ai/first/application/foundation/workstream/DurableWorkstreamLogEntity.java`
 
 ## Command handler algorithms
 
@@ -85,8 +97,8 @@ Use this reference when deciding whether to implement an Akka Java SDK stateful 
 | Later write without TTL | cancels TTL | cancels TTL |
 
 Repository references:
-- ESE: `ExpiringAgentDefinitionEntity`
-- KVE: `DurableNotificationRepositoryEntity`
+- ESE: target-project pattern using `persist(...).expireAfter(...)` on an event-sourced entity when a durable final fact plus expiry is required
+- KVE: target-project pattern using `updateState(...).expireAfter(...)` on a key value entity when current state should expire
 
 ## Notifications
 

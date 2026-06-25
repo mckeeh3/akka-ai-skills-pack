@@ -395,12 +395,14 @@ Before treating a generated full-stack AI-first SaaS app as architecture-ready, 
 
 ## App-description layer ownership
 
-When this model is maintained in an app-description tree, keep ownership split by layer:
+When this model is maintained in an app-description tree, keep ownership split by current-intent graph nodes:
 
-- `12-workstreams/` owns application meaning: functional agents, internal agents, durable workstreams, workstream expert bundles under `workstream-expertise/**`, surface index and contracts, reusable surface placement, action-to-capability mappings, trace semantics, and surface/action tests.
-- `55-ui/` owns browser realization: shell rendering, functional-agent rail, workstream panel, persistent composer, structured-surface rendering, routes/deep links, forms/interactions, frontend API contracts, state/realtime, accessibility/responsive behavior, and style guide.
-- `55-ui/` must link back to `12-workstreams/`, capability, security, observability, and test layers instead of redefining functional agents, surface contracts, or capability semantics.
-- `60-generation/` and generated frontend source are downstream projections, not authoritative product meaning.
+- `domains/<domain>/workstreams/<workstream>/**` owns application meaning: functional agents, internal agents, durable workstreams, workstream expert bundles, surface contracts/bindings, reusable surface placement, action-to-capability mappings, trace semantics, readiness, and surface/action tests.
+- `domains/<domain>/capabilities/**`, `domains/<domain>/data-state/**`, and `global/tools/**` own capability groupings, governed-tool contracts, durable state, and reusable operation semantics.
+- Workstream `realization/frontend-routes.md`, `realization/api-contracts.md`, and related frontend realization notes own browser realization: shell rendering, functional-agent rail, workstream panel, persistent composer, structured-surface rendering, routes/deep links, forms/interactions, frontend API contracts, state/realtime, accessibility/responsive behavior, and style guide links.
+- Realization nodes and generated frontend/backend source are downstream projections, not authoritative product meaning.
+
+Legacy numbered folders such as `12-workstreams/`, `10-capabilities/`, `55-ui/`, and `60-generation/` may be maintained only as compatibility projections when they are clearly mapped to the current-intent graph above; do not present them as the canonical layout for new app-description work.
 
 ## Routing implications
 
@@ -417,7 +419,7 @@ For high-level product input, apply this sequence:
 
 Use `./workstream-expertise-model.md` with this doctrine when a functional agent needs governed skills, reference documents, manifests, loader authorization, tool boundaries, traces, and tests that make it an expert in its workstream. Use `./agent-component-selection-guide.md` before choosing whether supporting agent work should be a request-based `Agent`, `AutonomousAgent`, `Workflow`, `Workflow + Agent`, or `Workflow + AutonomousAgent`.
 
-When a target app-description already has or receives `12-workstreams/surface-contracts/**`, run `tools/validate-surface-contracts.sh <app-description-dir>` as a lightweight structural check before treating the surface layer as ready for implementation.
+When a target app-description already has or receives workstream surface contracts or legacy `12-workstreams/surface-contracts/**` compatibility files, run `tools/validate-surface-contracts.sh <app-description-dir>` as a lightweight structural check before treating the surface layer as ready for implementation.
 
 Use `./current-intent-model.md` when capturing domain-level and workstream-level intent for the core SaaS app domain or app-specific domains. It defines the current app/domain/workstream graph, global definitions, workstream bindings, realization mappings, and tests.
 

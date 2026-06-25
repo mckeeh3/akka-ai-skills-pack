@@ -141,9 +141,8 @@ Typical behavior:
 - reply type is often `Done`
 - one command may replace the full current state in one update and trigger separate audit/trace recording when consequential
 
-Repository example:
-- a domain-specific key value entity
-- `WorkstreamEventAttentionConsumer`
+Repository/target-project pattern:
+- use an actual target-project KVE selected by the capability, with `WorkstreamEventAttentionConsumer` as a current example of a consumer that preserves tenant/customer scope and correlation when reacting to workstream state
 
 ### 3. Focused doc/example snippet
 Use when teaching one concept only.
@@ -156,8 +155,9 @@ Prefer a minimal example per topic:
 - replication/consistent read
 - testing
 
-Repository example:
-- `DurableNotificationRepositoryEntity`
+Repository/target-project pattern:
+- `DurableNotificationRepositoryEntity` for tenant-scoped current-state notification repository behavior
+- Akka SDK docs or target-project code for delete, TTL, `NotificationStream`, replication, and consistent-read snippets when those concepts are actually in scope
 
 ## Final review checklist
 

@@ -10,6 +10,10 @@ Local executable examples:
 - `../examples/akka-components/src/main/java/ai/first/application/foundation/attention/AttentionProducerService.java`
 - `../examples/akka-components/src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java`
 
+## Authority rule
+
+Treat a timer as a deterministic system worker adapter to a governed backend capability, not as independent product authority. Timer-created commands still need tenant/customer scope, idempotency/stale handling, authorization or internal-policy checks appropriate to the system actor, audit/work traces, and user-visible failure or attention surfaces when outcomes matter. Missing security/provider configuration must fail closed rather than silently completing timer-driven work.
+
 ## Quick choice
 
 Use:

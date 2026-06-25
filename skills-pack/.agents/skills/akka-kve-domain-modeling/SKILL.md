@@ -48,9 +48,9 @@ State should:
 - provide `empty(...)` factory when useful
 - never know about Akka effects or entity APIs
 
-Good examples:
-- `WorkstreamLog.State`
-- `GovernancePolicy.State`
+Target-project examples:
+- current-state records owned by the selected target-project capability
+- scoped configuration, preference, cursor, or summary state that can be replaced atomically
 
 ## Command rules
 
@@ -62,11 +62,13 @@ Commands should:
 - represent caller intent, not persistence details
 - carry scoped identifiers, idempotency/correlation fields, and safe defaults required by the capability contract
 
-Examples:
+Target-project command examples:
 - `AddItem`
 - `Attention`
 - `CreateOrder`
 - `LineItemReadyToShip`
+
+Use names like these as patterns only; bind actual commands to the accepted capability and tenant/customer scope rather than to a copied demo domain.
 
 ## Validation pattern
 
@@ -78,9 +80,8 @@ Preferred style:
 - keep messages explicit and deterministic
 - do not throw for normal business validation
 
-Examples:
-- `WorkstreamLogValidator`
-- `GovernancePolicyValidator`
+Target-project pattern:
+- `<DomainName>Validator` in the selected domain package, with one deterministic validation path per command type
 
 ## Command-to-state pattern
 
@@ -94,9 +95,8 @@ Rules:
 - encode idempotent duplicate/stale behavior as no-op when the capability allows it
 - no-op is represented by `Optional.empty()` or a boolean decision
 
-Examples:
-- `WorkstreamLogCommandHandler`
-- `GovernancePolicyCommandHandler`
+Target-project pattern:
+- `<DomainName>CommandHandler` in the selected domain package, returning an updated state or an explicit no-op decision
 
 ## Business-decision helper pattern
 
@@ -105,8 +105,8 @@ When one command may cause a more complex full-state transition:
 - return an updated state or empty
 - calculate the minimal state change needed, then let the entity replace the full state once
 
-Pattern reference:
-- `GovernancePolicyReadyToShipBusinessLogic`
+Target-project pattern:
+- `<DomainName>ReadyToShipBusinessLogic` or another focused helper only when the selected capability needs complex full-state transition logic
 
 ## Hard rules
 

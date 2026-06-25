@@ -38,9 +38,9 @@ A workstream is not a page, route, CRUD module, chat session, Akka component, pr
 | Default surface | Initial dashboard, attention, briefing, or explicit deferred/system-message surface. |
 | Attention model | Workstream-local manifest category ids mapped to canonical `AttentionItem.category` values, severities, lifecycle, producers, idempotency, left-rail count effect, My Account aggregation effect, and tests; see `./workstream-attention-contracts.md`. |
 | Role-specific dashboards | Dashboard purpose and variants by role/AuthContext; the dashboard is the human surface graph trunk; attention and next-action objects are clickable/keyboard-operable by default and append request/result surfaces. |
-| Human surface graph | Nodes, edges, dashboard object interactions, deterministic composer surface-intent routes, result surfaces, deferred typed surfaces if any, system-message surfaces, deep-link/surface-request behavior, stale/reconnect handling, and graph tests. For durable object collections, include the domain-semantic list/search → lifecycle-aware show/inspection → separate create/edit/destructive-lifecycle/task-surface progression or an explicit justified override. Recommended placement: `12-workstreams/surface-graph.md` plus `deferred-typed-surfaces.md` when first-slice fallbacks exist. |
-| Surface contracts | Stable surface ids/types/versions, exactly one owner functional agent, explicit reusable-by agents/workstreams, compact or full payload schemas, states, actions, surface intent route/prefill behavior where applicable, auth, redaction, traces, and tests under `12-workstreams/surface-contracts/**`. |
-| Capability/governed-tool map | Every read/query/mutation/surface request/agent tool/internal action maps to a capability id, governed-tool id, actor adapter/exposure channel, schema, idempotency, policy, audit, and tests. Treat the governed tool as the shared semantic operation; human surface actions/browser-tools, confirmed human chat tool plans, AI agent-tools, APIs, workflows, timers, consumers, MCP-tools, and internal-tools are actor- or caller-specific exposures of that operation. The manifest carries lightweight `surfaceActionMappings`/tool mappings with surface id or adapter id, action id, capability id, governed-tool id, exposure channel, auth basis, idempotency summary, confirmation/approval requirement, result/system-message surface, partial-failure behavior, and trace requirement; this mapping is required at `capability-ready` and above. |
+| Human surface graph | Nodes, edges, dashboard object interactions, deterministic composer surface-intent routes, result surfaces, deferred typed surfaces if any, system-message surfaces, deep-link/surface-request behavior, stale/reconnect handling, and graph tests. For durable object collections, include the domain-semantic list/search → lifecycle-aware show/inspection → separate create/edit/destructive-lifecycle/task-surface progression or an explicit justified override. Recommended current-intent placement: `domains/<domain>/workstreams/<workstream>/surfaces/**`, plus an explicit deferred-typed-surfaces artifact when first-slice fallbacks exist. Legacy/template compatibility trees may keep `12-workstreams/surface-graph.md` only when mapped back to the owning domain/workstream. |
+| Surface contracts | Stable surface ids/types/versions, exactly one owner functional agent, explicit reusable-by agents/workstreams, compact or full payload schemas, states, actions, surface intent route/prefill behavior where applicable, auth, redaction, traces, and tests under the owning current-intent workstream's `surfaces/**` artifacts; legacy/template compatibility trees may keep `12-workstreams/surface-contracts/**` when mapped back to the current-intent graph. |
+| Capability/governed-tool map | Every read/query/mutation/surface request/agent tool/internal action maps to a capability id, governed-tool id, actor adapter/exposure channel, schema, idempotency, policy, audit, and tests. Treat the governed tool as the shared semantic operation; human surface actions/browser-tools, confirmed human chat tool plans, AI agent-tools, APIs, workflows, timers, consumers, MCP-tools, and internal-tools are actor- or caller-specific exposures of that operation. The manifest carries lightweight `workstreamToolCatalog` and, when used, `surfaceActionMappings` with governed-tool id, capability id, actor adapter/exposure channel, auth basis, idempotency, transaction boundary, confirmation/approval requirement, result/system-message surface, partial-failure behavior, and trace source/requirement; these mappings are required at `capability-ready` and above. |
 | Workstream expertise bundle | Required for LLM-backed functional agents: prompt intent, model binding, skills, references, manifests, loader tools, tool boundary, traces, governance owner, and tests. It must name which governed tools are exposed to the AI-backed actor; human surface availability alone does not grant model tool availability. |
 | Internal workstream agent graph | Virtual dashboard agent, worker agents/AutonomousAgent tasks, delegation edges, progress/result/failure surfaces, escalation, authority basis, tool boundaries, traces, and tests when delegated/background model work exists. Manifest `internalWorkers` entries are structured when present; omit or use `[]` when no internal/background worker behavior is claimed. |
 | Runtime realization | Selected Akka substrate and participants, HTTP/gRPC/MCP/API/frontend/realtime paths, provider fail-closed behavior, and local validation. At `runtime-ready` and `production-ready`, manifest `readinessEvidence` must name local commands, an API/UI smoke path, provider/security fail-closed check, and trace evidence from the real governed runtime path. |
@@ -132,22 +132,35 @@ Do not silently substitute one id family for another. Map ids explicitly when im
 
 ## Minimum app-description placement
 
+For new current-intent graph work, place workstream contracts under the owning domain/workstream and link to global reusable artifacts:
+
 ```text
-app-description/12-workstreams/
-  workstream-manifest.json          # machine-readable workstream/agent/surface/capability index
-  functional-agents.md              # workstream catalog and exactly-one functional-agent ownership
-  workstreams-and-retention.md      # instance semantics, retention, redaction, durable log fields
-  attention-and-dashboards.md       # attention categories, dashboard variants, My Account/rail aggregation
-  internal-agents.md                # supporting internal agent graph candidates
-  surfaces-index.md                 # surface inventory and shared/deferred/domain sections
-  surface-graph.md                  # explicit surface nodes and edges
-  deferred-typed-surfaces.md        # first-slice fallback/deferred result surfaces when present
-  foundation-workstream-completeness.md # readiness/evidence/gap matrix for foundation workstreams
-  surface-contracts/*.md            # structured surface contracts
-  workstream-expertise/*.md         # one bundle per LLM-backed functional agent
-app-description/10-capabilities/**  # capability and governed-tool definitions
-app-description/55-ui/**            # browser realization, routes/deep links, shell rendering
-app-description/70-traceability/**  # workstream/agent/surface/capability/test/trace maps
+app-description/domains/<domain>/
+  capabilities/<capability>.md              # capability and governed-tool definitions
+  workstreams/<workstream>/
+    workstream.md                           # workstream responsibility, readiness, and manifest/index pointer
+    access.md                               # roles, AuthContext, hidden/denied states
+    workers/<worker>.md                     # human/agent/system worker roster and handoffs
+    surfaces/<surface-or-graph>.md          # dashboard, surface contracts, graph edges, deferred result surfaces
+    agents/<functional-agent-or-bundle>.md  # expertise bundle and internal agent graph bindings
+    tools/<governed-tool-binding>.md        # workstream adapter/tool bindings
+    traces/<trace-binding>.md               # workstream trace and audit obligations
+    tests/<test-expectation>.md             # contract/runtime validation expectations
+    realization/frontend-routes.md          # browser realization and deep links
+    realization/api-contracts.md            # API/endpoint/realtime mappings
+    realization/akka-components.md          # selected Akka substrates after capability shape is clear
+```
+
+Legacy/template compatibility trees may keep the established numbered index when it is explicitly mapped back to the current-intent graph and not presented as a competing canonical structure:
+
+```text
+app-description/12-workstreams/workstream-manifest.json
+app-description/12-workstreams/functional-agents.md
+app-description/12-workstreams/attention-and-dashboards.md
+app-description/12-workstreams/surface-contracts/*.md
+app-description/10-capabilities/**
+app-description/55-ui/**
+app-description/70-traceability/**
 ```
 
 ## Validation checklist
@@ -161,7 +174,7 @@ A workstream contract is incomplete if any non-deferred item is missing:
 - [ ] attention categories and dashboard variants are specified;
 - [ ] dashboard attention and next-action objects specify interaction targets, request/result append behavior, and `none` reasons only for explicit non-actionable exceptions;
 - [ ] surface graph nodes and edges map to structured surface contracts, with exactly one owner per surface, deterministic composer surface-intent routes where applicable, and explicit deferred typed surfaces where fallbacks remain;
-- [ ] every protected edge/action maps to a capability and governed-tool exposure channel, with manifest `surfaceActionMappings` or equivalent tool-adapter mappings required from `capability-ready` upward;
+- [ ] every protected edge/action maps to a capability and governed-tool exposure channel, with manifest `workstreamToolCatalog` and any `surfaceActionMappings`/equivalent tool-adapter mappings required from `capability-ready` upward;
 - [ ] any `human_chat_tool_plan` adapter states proposed-plan detail, confirmation binding, per-tool transaction/idempotency behavior, result/partial-failure surfaces, and trace source;
 - [ ] LLM-backed behavior has an expertise bundle and governed runtime path;
 - [ ] internal/background agent work has structured worker entries, graph, task lifecycle, authority, traces, and progress/result/failure surfaces;

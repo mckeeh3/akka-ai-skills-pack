@@ -35,7 +35,8 @@ Use these labels to prevent contract/rendering work from being mistaken for runt
 
 Feature-bearing done notes, verification docs, and task briefs should record:
 
-- the canonical path tested: browser surface/action or non-UI trigger -> API/endpoint/client -> Akka component/service/substrate -> view/trace/audit outcome;
+- the current-intent workstream/capability node or selected task that the evidence closes;
+- the canonical path tested: worker -> execution harness -> actor adapter -> governed tool -> capability -> browser surface/action or non-UI trigger -> API/endpoint/client -> Akka component/service/substrate -> view/trace/audit outcome;
 - the actor role, selected `AuthContext`, tenant/customer/organization scope, and at least one denial/forbidden or hidden/not-found case when authorization is in scope;
 - success, validation/error, stale/conflict/idempotency, and provider-unconfigured fail-closed behavior where relevant;
 - commands and/or manual smoke steps with pass/fail result;

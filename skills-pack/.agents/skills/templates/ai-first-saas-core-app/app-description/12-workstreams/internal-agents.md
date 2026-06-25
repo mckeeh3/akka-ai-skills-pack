@@ -4,7 +4,7 @@ Internal agents are backend/supporting workers. They are not left-rail workstrea
 
 ## Foundation internal graph examples
 
-Each row is a compact worker contract. Expand a row into a dedicated section before implementation when the worker becomes runtime scope. Internal workers use actor adapter/source `internal`; each governed-tool invocation still needs idempotency, a transaction boundary, a result/partial-failure surface, and an audit/work trace source.
+Each row is a compact worker contract. Expand a row into a dedicated section before implementation when the worker becomes runtime scope. Internal workers use actor adapter/source `internal_call` (or the manifest short form `internal` where required by schema); each governed-tool invocation still needs idempotency, a transaction boundary, a result/partial-failure surface, and an audit/work trace source.
 
 | workerId | Owning workstream | Virtual dashboard agent view | Trigger/source | Substrate | Capability/governed-tool | Authority boundary | Progress/result/failure surfaces |
 |---|---|---|---|---|---|---|---|
@@ -22,11 +22,11 @@ Each row is a compact worker contract. Expand a row into a dedicated section bef
 - selected Akka substrate, usually `AutonomousAgent` when durable lifecycle, progress, cancellation, delegation, or result snapshots matter;
 - input/output schema;
 - capability ids and governed-tool ids;
-- actor adapter/source, normally `internal`, plus any originating surface/chat/API/workflow/timer/consumer/MCP trigger context;
+- actor adapter/source, normally `internal_call` (manifest short form `internal`), plus any originating surface/chat/API/workflow/timer/consumer/MCP trigger context;
 - service or AuthContext authority basis;
 - idempotency key and transaction boundary for every governed-tool invocation;
 - result/partial-failure surface behavior;
-- model config/policy, prompt/skill/reference manifests, and tool boundary when model-backed;
+- model config/policy, prompt/skill/reference manifests, tool boundary, registered runtime tools, and provider/security fail-closed behavior when model-backed;
 - progress/result/failed/cancelled/stale surfaces;
 - attention creation/resolution behavior;
 - audit/work trace fields, including trace source and requestedBy/confirmedBy when a human request or confirmed chat tool plan initiated the work;

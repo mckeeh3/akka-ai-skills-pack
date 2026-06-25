@@ -47,7 +47,7 @@ For each command capability:
 1. name the capability this handler implements or supports
 2. inspect `currentState()`
 3. validate input, including tenant/customer scoped ids carried by the command
-4. enforce or assume a documented caller-boundary AuthContext/scope check; do not rely on UI or prompt-only authorization
+4. enforce AuthContext/scope checks at the entity when this handler owns the guard, or require a documented enforced caller-boundary check before invocation; block rather than assuming authorization from UI visibility, prompt text, tool descriptions, or route availability
 5. return `effects().error(...)` on invalid input, forbidden scope, or business rejection when appropriate
 6. apply idempotency rules before emitting new facts; duplicate or stale downstream commands should usually no-op
 7. delegate business decision logic to domain helpers

@@ -139,9 +139,9 @@ Pattern to implement:
 ### 5. Protocol-design task
 Use when the main work is protobuf layout, compatibility, common message types, or external proto imports.
 
-Repository examples:
-- `workstream_event_grpc_endpoint.proto`
-- `internal_status_grpc_endpoint.proto`
+Target-project proto patterns when present:
+- a workstream event gRPC endpoint proto with explicit event, trace, and resume fields
+- an internal status gRPC endpoint proto with service-only status/readiness messages
 
 ## Final review checklist
 

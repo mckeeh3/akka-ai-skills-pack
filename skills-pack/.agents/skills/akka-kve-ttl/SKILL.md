@@ -32,10 +32,9 @@ Use TTL only on commands that actually update state.
 - A later update without `expireAfter(...)` cancels the TTL.
 - If the entity should keep expiring after later writes, each relevant update must include `expireAfter(...)`.
 
-## Repository example
+## Target-project pattern
 
-See:
-- `DurableNotificationRepositoryEntity.addItem(...)`
+Use a target-project KVE command that actually writes state and attach TTL on that update effect. The current skills-pack examples do not provide a reusable KVE TTL fixture, so do not cite repository TTL behavior unless the target code includes `expireAfter(...)`.
 
 ## Testing guidance
 
@@ -45,8 +44,8 @@ Use `KeyValueEntityTestKit` and assert:
 - `result.getExpireAfter()`
 - resulting state
 
-Repository example:
-- `DurableNotificationRepositoryEntityTest`
+Target-project test pattern:
+- for the KVE command that attaches TTL, assert `getExpireAfter()` alongside reply and state-update expectations
 
 ## Generated SaaS compile review
 

@@ -32,16 +32,13 @@ Use TTL only on write commands that actually persist events.
 - A later persist without `expireAfter(...)` cancels the TTL.
 - If the entity should keep expiring after later writes, each relevant persist must include `expireAfter(...)`.
 
-## Repository example
+## Example guidance
 
-See:
-- `ExpiringAgentDefinitionEntity.addItem(...)`
-
-This shows:
-- validation error on blank input
-- persist of one event
-- `.expireAfter(Duration.ofDays(30))`
-- reply with `Done`
+The current curated SaaS Foundation App examples do not include a dedicated expiring EventSourcedEntity fixture. When adding TTL in a target project, keep the example or implementation focused on:
+- validation before persist
+- persist of the event that activates expiry
+- `.expireAfter(Duration...)` on that persist effect
+- a clear reply after the TTL-bearing effect
 
 ## Testing guidance
 
