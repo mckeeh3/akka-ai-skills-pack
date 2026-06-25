@@ -13,6 +13,22 @@ This is not the skill for writing the Java `Agent` class itself. Use it before `
 
 Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
+## Worker/tool/capability alignment
+
+For generated AI-first SaaS app work, treat the agent runtime, autonomous task loop, or governed artifact in scope as a software-worker harness concern, not as the product operation or authorization boundary. Keep the chain explicit:
+
+```text
+software worker
+→ Akka Agent/AutonomousAgent harness or focused governance artifact
+→ actor adapter (`agent_tool_call`, `human_chat_tool_plan`, workflow/timer/consumer/API/MCP/internal adapter as applicable)
+→ governed tool
+→ backend capability
+→ Akka/frontend implementation
+```
+
+Human surface availability, prompt/skill/reference text, model output, task instructions, and Akka tool registration do not grant tool authority. A model-facing tool, loader, or autonomous task action may be exposed only when the active workstream tool catalog, governed tool contract, backend `AuthContext`, and `ToolPermissionBoundary` explicitly allow that actor adapter; denials and approval-required paths must fail closed and be traced.
+
+
 ## Required reading
 
 Read these first if present:
@@ -59,6 +75,7 @@ AgentDefinition
 - promptDocumentId / activePromptVersion reference
 - skillManifestId / activeSkillManifestVersion reference
 - modelConfigRef
+- workstreamToolCatalogRefs / governedToolIds exposed to this agent
 - toolPermissionBoundary
 - policyRefs / approvalBoundaryRefs
 - traceRequirements
@@ -127,17 +144,18 @@ Typical events:
 1. Agent definitions are tenant-scoped. Include `tenantId` in commands, state, events, views, and endpoints.
 2. Classify each agent definition as `functional_context_area` or `internal_worker`. Functional/context-area agents may appear as role-authorized workstream verticals with structured surfaces; internal agents are invoked behind workflows, tools, consumers, timers, or services and should not be exposed as primary navigation unless product intent promotes them.
 3. Backend authorization is authoritative. Do not trust frontend-visible role labels or prompt instructions.
-4. Tool permissions are denied by default. Add explicit allow rules by tool id/category/scope.
-5. Model config references must not contain provider secrets or frontend-exposed credentials; use `akka-agent-model-governance` when defining `ModelConfigRef`, model policy, fallback model policy, provider-secret boundaries, model-use traces, or tenant/agent/task model selection.
-6. Disabled or archived agents cannot be used by runtime flows, workflows, tools, scheduled jobs, or test consoles except for authorized inspection/replay.
-7. Draft agents cannot perform consequential production actions.
-8. Authority changes that expand autonomy or tool access require an explicit approval rule unless the product has a documented single-admin simplification.
-9. Lifecycle, placement, authority, prompt reference, skill manifest, model, and tool-boundary changes emit audit events.
-10. Prompts and skills are not security boundaries. Mechanical authorization checks still gate data and tool access.
-11. Tools are exposure surfaces for named capabilities. Do not grant a tool because a prompt/skill asks for it; require the capability contract and active `ToolPermissionBoundary` to allow it.
-12. Runtime flows must resolve the active behavior profile before invoking the Java `Agent` class.
-13. The resolved profile's `AgentSkillManifest` is per agent; User Admin and Agent Admin must not silently share a generic global skill list.
-14. Use `../docs/agent-runtime-invocation-pattern.md` for the concrete `AgentRuntimeResolver` handoff: AuthContext validation, active AgentDefinition lookup, prompt assembly from the active prompt plus compact assigned-skill names/descriptions/hints, ToolPermissionBoundary, Java Agent invocation with Akka-registered tools including `readSkill(skillId)`, readSkill authorization, and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace emission must happen before or around model invocation.
+4. Tool permissions are denied by default. Add explicit allow rules by governed tool id, adapter tool id/category, actor adapter/source, and scope.
+5. A functional workstream agent profile may support human-backed surface actions, confirmed `human_chat_tool_plan` execution, and AI-backed `agent_tool_call` exposure, but those are separate adapters over governed tools. Human availability does not automatically grant model tool availability, and prompt/skill/reference text cannot expand the active tool catalog.
+6. Model config references must not contain provider secrets or frontend-exposed credentials; use `akka-agent-model-governance` when defining `ModelConfigRef`, model policy, fallback model policy, provider-secret boundaries, model-use traces, or tenant/agent/task model selection.
+7. Disabled or archived agents cannot be used by runtime flows, workflows, tools, scheduled jobs, or test consoles except for authorized inspection/replay.
+8. Draft agents cannot perform consequential production actions.
+9. Authority changes that expand autonomy or tool access require an explicit approval rule unless the product has a documented single-admin simplification.
+10. Lifecycle, placement, authority, prompt reference, skill manifest, model, workstream tool catalog, and tool-boundary changes emit audit events.
+11. Prompts and skills are not security boundaries. Mechanical authorization checks still gate data and tool access.
+12. Tools are exposure surfaces for named capabilities. Do not grant a tool because a prompt/skill asks for it; require the governed tool contract and active `ToolPermissionBoundary` to allow it.
+13. Runtime flows must resolve the active behavior profile before invoking the Java `Agent` class.
+14. The resolved profile's `AgentSkillManifest` is per agent; User Admin and Agent Admin must not silently share a generic global skill list.
+15. Use `../docs/agent-runtime-invocation-pattern.md` for the concrete `AgentRuntimeResolver` handoff: AuthContext validation, active AgentDefinition lookup, prompt assembly from the active prompt plus compact assigned-skill names/descriptions/hints, ToolPermissionBoundary, Java Agent invocation with Akka-registered tools including `readSkill(skillId)`, readSkill authorization, and PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace emission must happen before or around model invocation.
 
 ## Admin API and UI surfaces
 

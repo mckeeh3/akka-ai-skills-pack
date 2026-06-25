@@ -91,6 +91,9 @@ content:
     - id: app-generate-app
       path: skills/app-generate-app
       category: focused
+    - id: app-development-lifecycle
+      path: skills/app-development-lifecycle
+      category: focused
     - id: ai-first-saas
       path: skills/ai-first-saas
       category: architecture

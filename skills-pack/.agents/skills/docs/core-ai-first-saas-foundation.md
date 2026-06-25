@@ -126,7 +126,7 @@ The SaaS Foundation App domain must include all of these together:
 - bounded core functional agents for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy that answer and guide within established bootstrap scope, deny or defer unsupported SaaS Foundation App actions, and never expand privileges autonomously;
 - durable workstream log for requests, `markdown_response` entries, capability/tool results, denials, correlation ids, and trace references, with browser rendering that avoids duplicate generic activity/detail surfaces for the same typed result;
 - audit/work trace substrate for identity, authorization, prompt/skill/tool use, capability checks, data access, denials, and response generation;
-- capability-first backend contracts before exposing browser actions, agent tools, workflows, timers, consumers, or APIs;
+- capability-first backend contracts before exposing browser actions, confirmed human chat tool plans, AI-backed agent tools, workflows, timers, consumers, or APIs;
 - tests for allowed bootstrap access, forbidden access, missing/disabled authority where modeled, trace creation, markdown sanitization, and frontend secret boundaries.
 
 Any intentionally deferred foundation-domain behavior must become explicit follow-up work, such as WorkOS/AuthKit completion, `/api/me`, invitations/onboarding, Resend/outbox email delivery, User Admin depth, Agent Admin governed documents, Audit/Trace search UI, support access, subscription/billing boundary where relevant, or tenant-isolation/security coverage.

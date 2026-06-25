@@ -9,26 +9,36 @@
 
 A decision card is an attention item and action gate. It appears when a recommendation, risky command, policy deviation, behavior change, access risk, or exception needs human judgment before commit or escalation.
 
+
+## User-visible/internal metadata boundary
+
+Default rendering must use SaaS product language and show only information the current actor needs to decide, act, recover, or understand the business outcome. Internal ids, raw trace/event/correlation data, governed-tool/capability ids, backend component names, prompt/provider/model details, and policy implementation references are implementation metadata. Expose them only in authorized admin, support, auditor, or developer drilldowns, and keep them visually subordinate to user-meaningful labels.
+
 ## Payload summary
 
 Payload must include:
 
-- decision id, source workstream/surface/action ids, selected `AuthContext`, `correlationId`, trace ids, policy/version references, and lifecycle status;
-- recommendation, evidence, confidence, risk, impact, affected entities, alternatives, requested action, due/SLA data, and required reviewer role/capability;
-- redacted evidence bundle with source refs and omitted-field markers;
+- user-visible decision title, affected business object, lifecycle status, recommendation, confidence/risk/impact summary, requested action, due/SLA data, and plain-language reviewer requirement;
+- default-visible evidence summary, alternatives, and consequence copy that help the reviewer decide without reading raw trace/policy internals;
+- role-gated diagnostic metadata: decision id, source workstream/surface/action ids, selected `AuthContext`, `correlationId`, trace ids, policy/version references, required reviewer role/capability, redacted evidence source refs, and omitted-field markers;
 - action descriptors for approve, reject, request changes, defer, escalate, request evidence, open source surface, and open audit trace.
 
 ## Compact payload schema
 
 ```ts
 type DecisionCardData = {
-  decisionId: string;
-  source: { workstreamId: string; surfaceId: string; actionId?: string; capabilityId?: string };
+  title: string;
+  subjectLabel: string;
   lifecycleStatus: string;
   recommendation: { summary: string; confidence?: number; risk: string; impact: string; alternatives: string[] };
-  evidenceRefs: Array<{ refId: string; refType: string; label: string; redactionMarkers: string[] }>;
-  requiredReviewer: { roleOrCapability: string; approvalPolicyRef?: string };
+  visibleEvidenceSummary: string;
   dueAt?: string;
+  diagnostics?: {
+    decisionId: string;
+    source: { workstreamId: string; surfaceId: string; actionId?: string; capabilityId?: string };
+    evidenceRefs: Array<{ refId: string; refType: string; label: string; redactionMarkers: string[] }>;
+    requiredReviewer: { roleOrCapability: string; approvalPolicyRef?: string };
+  };
 };
 ```
 
@@ -56,11 +66,15 @@ type DecisionCardData = {
 | `decision.request-evidence` | `decision-card.evidence.request` | `decisions.evidence.request` | `governance-decisions-audit` | browser-tool, internal-tool | deferred `task-progress-surface` or `system_message` | decision id + evidence request id | true |
 | `decision.open-trace` | `decision-card.trace.open` | `audit.traces.view` | `governance-decisions-audit` | browser-tool | `audit-trace-explorer` | trace id | true |
 
+
+
+Action mappings must preserve the shared tool-use contract: `governedToolId`, actor adapter/source (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/workflow/timer/consumer/MCP/internal), `confirmationRequired`, `approvalPolicy`, idempotency key, transaction boundary, result/partial-failure behavior, `traceSource`, and `traceRequired`. If this surface exposes only the browser-tool adapter, state `surface_action` and keep any chat/agent adapter in the workstream tool catalog instead of duplicating business semantics.
+
 ## UI states
 
 - `loading`: show decision skeleton without unsafe recommendation text.
 - `empty`: no decision selected or decision already resolved.
-- `error`: safe category and trace/correlation link.
+- `error`: safe category and readable support/reference link; raw trace/correlation detail appears only in authorized diagnostic detail.
 - `forbidden`: do not reveal recommendation/evidence to unauthorized reviewers.
 - `conflict`: decision changed/resolved by another actor; show refresh and current lifecycle state.
 - `approval-needed`: nested approval or escalation required.
@@ -74,7 +88,7 @@ type DecisionCardData = {
 
 ## Rendering and capability tests
 
-- Decision cards render evidence, risk, confidence, impact, alternatives, policy refs, action status, and trace links.
+- Decision cards render user-readable evidence, risk, confidence, impact, alternatives, action status, and role-appropriate trace/policy links; raw policy refs and diagnostic ids are hidden or subordinate unless the reviewer role is authorized to inspect them.
 - Unauthorized reviewers see forbidden/system-message surfaces without hidden facts.
 - Approve/reject/defer/escalate actions invoke correct capability ids, preserve idempotency, and update source/dashboard attention.
 - Conflict and already-resolved cases produce safe no-op or conflict system messages.

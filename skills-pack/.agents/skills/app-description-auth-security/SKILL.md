@@ -11,6 +11,14 @@ This skill maintains reusable auth/security definitions under `app-description/g
 It does not generate code.
 It defines the access-control and trust semantics that downstream generation must honor.
 
+## Lifecycle classification
+
+- Phase: interview.
+- Kind: focused current-intent capture/editor.
+- Family: app-description.
+- Living-graph contract: auth/security nodes are part of the app-description current-intent graph and must name affected workers, execution harnesses, actor adapters, governed tools, capabilities, traces, tests, and realization implications when security changes touch them.
+- Build/compile handoff: when security intent becomes implementation, planning, code, tests, or validation work, hand off through `../docs/app-description-to-code-compile-contract.md` instead of inventing runtime structure here.
+
 ## Goal
 
 Create or update auth/security-oriented app-description artifacts that:
@@ -91,19 +99,19 @@ For each requested change, identify and describe as applicable:
 - authentication mechanism or trust source, using WorkOS/AuthKit for generated browser users
 - frontend-to-backend token propagation expectations
 - local user/account linking rules
-- authorization rules by capability id/operation/query and selected exposure surface
+- authorization rules by capability id/governed-tool id/operation/query and selected exposure surface or actor adapter, including surface action/browser-tool, confirmed human chat tool plan, AI agent-tool, API, workflow, timer, consumer, MCP, and internal callers
 - tenancy or ownership boundaries
 - admin roles and scopes when user administration is in scope
 - bootstrap/invite/first-login behavior when relevant, including mandatory email delivery for production, explicit local/dev/test outbox capture, invitation status, expiry, resend, revoke/cancel, acceptance, delivery status, delivery attempts, idempotency, and audit trail
 - internal-only versus external access
-- agent/tool/data/policy permission grants, autonomy thresholds, and approval gates
+- agent/tool/data/policy permission grants, workstream tool-catalog membership, autonomy thresholds, explicit human chat confirmation requirements, and approval gates
 - policy, prompt, skill, guardrail, and evaluator update authority
 - sensitive-data categories
 - visibility, masking, redaction, or retention expectations
 - secret-handling constraints
 - forbidden access patterns
 - unauthorized and forbidden response behavior
-- explicit default-deny rule for every route, agent tool, data access path, workflow action, view query, stream, consumer side effect, timer action, and generated UI action unless deliberately public static assets
+- explicit default-deny rule for every route, surface action/browser-tool, human chat tool-plan execution, agent tool, data access path, workflow action, view query, stream, consumer side effect, timer action, MCP/API exposure, internal-tool call, and generated UI action unless deliberately public static assets
 - dependencies on behavior, test, and observability graph nodes
 
 ## Standard auth/security output shape
@@ -150,7 +158,7 @@ Avoid:
 - treating a route, agent tool, data access path, workflow action, view query, stream, or generated UI action as unauthenticated or unauthorized by default
 - defining sensitive-data rules without mentioning logs, responses, or audit visibility
 - assuming denial behavior is irrelevant because a framework will handle it somehow
-- using prompt instructions as the only control for agent tool use, data access, policy commits, or high-impact actions
+- using prompt instructions, model plans, or UI/chat labels as the only control for surface actions, human chat tool-plan execution, agent tool use, data access, policy commits, or high-impact actions
 - delaying auth/security until after behavior is already fixed
 
 ## Final review checklist
@@ -159,7 +167,7 @@ Before finishing, verify:
 - the caller or principal model is explicit
 - authentication expectations are explicit where relevant
 - secure SaaS foundation objects and `/api/me` semantics are explicit for generated SaaS apps
-- authorization rules are explicit by action or surface
+- authorization rules are explicit by capability/governed-tool and by adapter/action/surface, including confirmation and approval semantics for chat-mediated or agent-mediated execution
 - trust boundaries are called out
 - sensitive-data rules are included where relevant
 - agent/tool/data/policy authority boundaries are explicit for generated AI-first SaaS semantics

@@ -12,15 +12,17 @@ Related doctrine:
 - `./workstream-contract.md`
 - `./workstream-manifest-schema.md`
 - `./minimum-implementable-workstream-slice.md`
+- `./workforce-decomposition.md`
 - `./workstream-attention-contracts.md`
 - `./structured-surface-contracts.md`
+- `./workstream-surface-intent-routing.md`
 - `./capability-first-backend-architecture.md`
 - `./agent-component-selection-guide.md`
 - `./workstream-ui-reference-architecture.md`
 
 ## Core rule
 
-For generated secure AI-first SaaS apps, process broad requirements and incremental changes through workstreams before pages, CRUD resources, endpoint lists, database tables, event streams, or Akka component families. For an existing app, reconcile the input against the existing workstream graph: affected workstreams, role-specific dashboards, attention items, surface graph nodes/edges, governed-tools, internal workstream agent graph, workstream expertise, Akka substrate, UI/API, tests, and pending tasks.
+For generated secure AI-first SaaS apps, process broad requirements and incremental changes through workstreams before pages, CRUD resources, endpoint lists, database tables, event streams, or Akka component families. For an existing app, reconcile the input against the existing workstream graph: affected workstreams, role-specific dashboards, attention items, surface graph nodes/edges, deterministic surface intent routes, governed-tools, internal workstream agent graph, workstream expertise, Akka substrate, UI/API, tests, and pending tasks.
 
 Default order:
 
@@ -28,9 +30,12 @@ Default order:
 input / PRD / feature request / incremental change
 → secure SaaS foundation and tenant/customer/AuthContext assumptions
 → affected workstream inventory
+→ workforce decomposition: human workers, functional-agent workers, internal/autonomous/evaluator agent workers, and system workers
+→ responsibility, authority, supervision, and handoff map
 → per-workstream attention breakdown: "what needs my attention?"
 → role-specific dashboard surfaces and attention summary contracts
 → human surface graph: dashboard trunk, surface nodes, surface-action edges
+→ deterministic surface intent routing for composer-enabled surface opens/prefills
 → internal workstream agent graph: virtual dashboard agent, worker agents, delegations, escalations
 → governed-tools inside capability files and surface/action maps
 → governed capability/API contracts and selected exposure channels
@@ -47,8 +52,10 @@ A planning output is implementation-ready only when each vertical slice can be t
 
 ```text
 workstream attention category
+→ responsible worker and actor adapter
 → role-specific dashboard state
 → surface graph node/action edge
+→ deterministic surface intent route or explicit no-route reason
 → governed capability/API and governed-tool
 → exposure channel: browser-tool, agent-tool, internal-tool, workflow/timer/consumer/MCP exposure, or API
 → selected Akka substrate and participant
@@ -66,14 +73,16 @@ Direct solution plans and PRD-to-spec/backlog outputs must make the graph model 
 1. scope label and secure SaaS foundation assumptions;
 2. one-workstream vs multi-workstream decision, with split/merge rationale and shared cross-workstream concerns;
 3. affected workstreams and owner functional agents;
-4. per-role dashboard/attention contracts, including My Account and left rail effects;
-5. human surface graph nodes, action edges, result surfaces, edge effects, and trace links;
-6. internal workstream agent graph, including virtual dashboard agent, worker agents, delegations, governed-tools, stop/escalation rules, and result/proposal surfaces;
-7. workstream expertise plan: prompt intent, skill/reference families, compact manifests, tool boundaries, authorized loaders, denials, governance owner, default-content governance expectations, user-help examples, and tests;
-8. capability and governed-tool inventory with AuthContext, tenant/customer scope, schemas, side effects, idempotency, policy/approval, audit/work traces, qualified exposure channels, and tests;
-9. Akka substrate mapping only after the capability/governed-tool contract is clear;
-10. implementation order by vertical workstream/attention/dashboard/surface-edge/governed-tool/capability increments;
-11. pending questions or pending tasks that preserve the same context.
+4. workforce decomposition: human workers, functional-agent workers, internal/autonomous/evaluator agent workers, system workers, responsibility boundaries, authority, supervision, and handoffs;
+5. per-role dashboard/attention contracts, including My Account and left rail effects;
+6. human surface graph nodes, action edges, result surfaces, edge effects, and trace links;
+7. deterministic surface intent routing catalog for composer-enabled workstreams, including target surfaces, prefill mapping, ambiguity/fallback, no-mutation guarantees, and tests;
+8. internal workstream agent graph, including virtual dashboard agent, worker agents, delegations, governed-tools, stop/escalation rules, and result/proposal surfaces;
+9. workstream expertise plan: prompt intent, skill/reference families, surface familiarity, compact manifests, tool boundaries, authorized loaders, denials, governance owner, default-content governance expectations, user-help examples, and tests;
+10. capability and governed-tool inventory with AuthContext, tenant/customer scope, schemas, side effects, idempotency, policy/approval, audit/work traces, qualified exposure channels, and tests;
+11. Akka substrate mapping only after the capability/governed-tool contract is clear;
+12. implementation order by vertical workstream/worker/attention/dashboard/surface-edge/surface-route/governed-tool/capability increments;
+13. pending questions or pending tasks that preserve the same context.
 
 Large PRDs must not skip the one-workstream vs multi-workstream decision. Incremental inputs must reconcile against existing workstream graph nodes, surface edges, governed-tools, expertise bundles, specs, backlogs, queues, and tests instead of regenerating a disconnected plan.
 

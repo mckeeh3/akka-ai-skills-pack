@@ -9,6 +9,22 @@ Use this skill when generated AI-first SaaS apps need an agent-mediated maintena
 
 This skill defines the `AgentBehaviorEditorAgent` responsibility and proposal contract. It does not replace focused governance skills; route to `akka-agent-prompt-governance`, `akka-agent-skill-governance`, `akka-agent-governed-documents`, `akka-agent-tool-boundaries`, `akka-agent-model-governance`, `ai-first-saas-policy-governance`, and the target artifact implementation skill as needed.
 
+## Worker/tool/capability alignment
+
+For generated AI-first SaaS app work, treat the agent runtime, autonomous task loop, or governed artifact in scope as a software-worker harness concern, not as the product operation or authorization boundary. Keep the chain explicit:
+
+```text
+software worker
+→ Akka Agent/AutonomousAgent harness or focused governance artifact
+→ actor adapter (`agent_tool_call`, `human_chat_tool_plan`, workflow/timer/consumer/API/MCP/internal adapter as applicable)
+→ governed tool
+→ backend capability
+→ Akka/frontend implementation
+```
+
+Human surface availability, prompt/skill/reference text, model output, task instructions, and Akka tool registration do not grant tool authority. A model-facing tool, loader, or autonomous task action may be exposed only when the active workstream tool catalog, governed tool contract, backend `AuthContext`, and `ToolPermissionBoundary` explicitly allow that actor adapter; denials and approval-required paths must fail closed and be traced.
+
+
 ## Required reading
 
 Read these first if present:
@@ -46,8 +62,8 @@ Read these first if present:
 
 It must not:
 - directly mutate active prompt, skill, manifest, tool-boundary, policy, or agent authority state;
-- grant tool, data, tenant/customer, role, scope, approval, or model authority through text;
-- bypass backend authorization, review, activation, trace, or tenant-isolation checks;
+- grant tool, data, tenant/customer, role, scope, approval, model authority, or confirmed human chat execution through text;
+- bypass backend authorization, review, activation, plan confirmation, trace, or tenant-isolation checks;
 - approve its own consequential authority expansion unless a narrow product policy explicitly allows it.
 
 ## Structured output contract
@@ -105,7 +121,7 @@ human behavior-change request
 
 Classify as **blocked** when the request attempts cross-tenant access, secret exfiltration, hidden-policy override, unauthorized role/scope change, or direct activation without authority.
 
-Classify as **high** when the proposal changes tool/data access, autonomy level, approval boundaries, billing/security/admin capabilities, external side effects, model/provider policy, or tenant-wide policy.
+Classify as **high** when the proposal changes governed tool catalog membership, tool/data access, human chat tool-plan authority, AI-backed `agent_tool_call` exposure, autonomy level, approval boundaries, billing/security/admin capabilities, external side effects, model/provider policy, or tenant-wide policy.
 
 Classify as **medium** when the proposal changes core task instructions, skill content used by consequential workflows, evaluation rubrics, or reference examples that alter behavior.
 
@@ -154,8 +170,8 @@ Use `TestModelProvider` for the editing agent's structured proposal output. Asse
 Before finishing, verify:
 - `AgentBehaviorEditorAgent` has a bounded responsibility and one structured output shape
 - proposed diff, draft version, review/approval, and activation are separate steps
-- authority expansion cannot be granted by prompt/skill/manifest/tool-boundary text
-- high-risk changes route to a decision card or approval workflow
+- authority expansion cannot be granted by prompt/skill/reference/manifest/tool-boundary text
+- high-risk changes route to a decision card or approval workflow, including changes to confirmed `human_chat_tool_plan` or AI-backed agent-tool exposure
 - governed artifact commands enforce tenant scope, lifecycle, and permissions
 - proposal, denial, review, approval, activation, and rejection are audited/traced
 - tests cover allowed drafts, blocked expansion, cross-tenant denial, and unchanged active behavior after rejection

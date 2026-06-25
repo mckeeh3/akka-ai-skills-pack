@@ -1,6 +1,6 @@
 ---
 name: ai-first-saas-ui-surfaces
-description: Design AI-first SaaS supervision, decision, governance, digest, audit, and goal-to-execution UI surfaces, then route implementation to Akka web UI, HTTP endpoint, view, workflow, agent, trace, and outcome skills.
+description: Design AI-first SaaS supervision, decision, governance, digest, audit, goal-to-execution, and collection-object progression UI surfaces, then route implementation to Akka web UI, HTTP endpoint, view, workflow, agent, trace, and outcome skills.
 ---
 
 # AI-First SaaS UI Surfaces
@@ -9,16 +9,27 @@ Use this companion after `ai-first-saas` when a product or feature needs browser
 
 This is a UI-surface and routing skill. It does not replace `akka-web-ui-*`, HTTP endpoint, View, Workflow, Agent, or security implementation skills.
 
+## Lifecycle classification
+
+- Phase role: Interview-phase surface selection and contract shaping with Build/compile handoff constraints for browser realization, backend capabilities, traces, and tests.
+- Graph layer: functional-agent workstream, human worker, software/system worker, structured surface, execution harness, actor adapter, governed tool, capability, trace, and UI realization nodes.
+- Canonical chain: `worker → execution harness → actor adapter → governed tool → capability → Akka implementation`.
+
 ## Required reading
 
 Read first:
 - `../docs/intent-compiler.md`
 - `../docs/current-intent-model.md`
 - `../docs/intent-to-realization-flow.md`
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-component-graph.md`
+- `../docs/app-description-to-code-compile-contract.md`
+- `../docs/workforce-decomposition.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../ai-first-saas/SKILL.md`
 
-Use canonical doctrine plus this skill for surface selection. Also use `../docs/agent-workstream-application-architecture.md`, `../docs/structured-surface-contracts.md`, and `../docs/full-core-foundation-readiness.md` when deciding where a surface belongs in the agent workstream model. Use the runnable SaaS Foundation App repository root as the canonical runnable implementation reference and root `frontend/**` as the reusable frontend reference source. Pack examples are available under `.agents/skills/examples/**` after install.
+Use canonical doctrine plus this skill for surface selection. Also use `../docs/agent-workstream-application-architecture.md`, `../docs/structured-surface-contracts.md`, and `../docs/full-core-foundation-readiness.md` when deciding where a surface belongs in the agent workstream model. `../docs/structured-surface-contracts.md` is the canonical source for the mandatory collection-object surface progression. Use the runnable SaaS Foundation App repository root as the canonical runnable implementation reference and root `frontend/**` as the reusable frontend reference source. Pack examples are available under `.agents/skills/examples/**` after install.
 
 Then load focused downstream implementation skills only for the selected UI, API, realtime, and backing component scope.
 
@@ -36,14 +47,17 @@ Use for tasks that mention or imply:
 
 Choose only the surfaces justified by the requested workflow.
 
+For any durable collection of domain things such as users, customers, orders, policies, agents, invitations, or governed documents, start with the canonical collection-object surface progression from `../docs/structured-surface-contracts.md` unless the app-description explicitly records a safer override. Use domain-semantic names, not generic CRUD names. The default progression is: list/search for discovery and selection → lifecycle-aware show/inspection for one object → separate single-purpose create, edit, destructive lifecycle confirmation, or domain-specific task surfaces.
+
 Before selecting any surface family, place it inside one or more functional/context-area agent workstreams:
 
 - identify the owning functional agent responsible for the surface's user outcome;
+- identify the human, agent, or system worker that needs, produces, or acts through the surface;
 - identify reusable functional agents that may render or link the same surface without owning its semantics;
 - record workstream placement: default briefing/dashboard, timeline item, attention queue, embedded card, modal, side panel, drill-in, or direct deep link;
-- define payload/query source expectations: read/evidence capabilities, view/query sources, redaction, selected `AuthContext`, and trace/correlation fields;
-- list capability-backed actions and denial/result surfaces; for dashboard/command-center/attention surfaces, list clickable and keyboard-operable work-object interactions for cards, rows, counters, badges, chart segments, task/progress panels, shortcuts, icons, and buttons; frontend controls are exposure details only;
-- link audit/work traces for payload access, agent work, decisions, approvals, denials, and side effects;
+- define payload/query source expectations: read/evidence capabilities, view/query sources, redaction, selected `AuthContext`, and user-visible versus drilldown/admin/support/auditor/internal metadata boundaries for trace/correlation fields;
+- list capability-backed actions and denial/result surfaces; for collection-object surfaces, list row/card selection, create, edit, destructive lifecycle, and lifecycle-specific task edges as delegated surface requests or task surfaces; for dashboard/command-center/attention surfaces, list clickable and keyboard-operable work-object interactions for cards, rows, counters, badges, chart segments, task/progress panels, shortcuts, icons, and buttons; frontend controls are `surface_action` actor adapters only; if the same governed tool is also available through confirmed chat or an AI-backed worker, list the `human_chat_tool_plan` or `agent_tool_call` adapter review/confirmation/result/partial-failure and trace surfaces without duplicating the surface action's business semantics;
+- link audit/work traces for payload access, worker handoffs, agent work, decisions, approvals, denials, and side effects;
 - treat routes and deep links only as implementation details that reopen a selected functional agent, workstream item, or structured surface.
 
 ### Goal-to-Execution Workbench
@@ -73,7 +87,7 @@ Must expose:
 - workstream placement as the default dashboard/attention surface for the owning agent; routes/deep links, drill-ins, and direct links are implementation details
 - payload/query source expectations for objective or operational scope, progress, outcome, risk, policy/autonomy status, agent roster/activity, approval/exception queues, material events, and trace/correlation ids
 - capability-backed supervision actions, queue actions, drill-down reads, refresh/reconnect behavior, and denial/result surfaces; dashboard objects representing attention or next work open the detail/decision/progress/evidence/result surface directly and append request/result surfaces rather than remaining inert visuals
-- compressed routine activity with drill-down to audit facts and work-trace links
+- compressed routine activity with drill-down to role-gated audit facts and work-trace links; the default command-center view must summarize what matters in business terms, not list raw internal agent/tool events
 
 Route to:
 - command-center read models → `akka-views`
@@ -88,7 +102,7 @@ Use when a recommendation, exception, or policy deviation needs human judgment.
 Must expose:
 - owning functional agent responsible for the decision outcome, such as Approval Queue, Risk & Exceptions, Governance/Policy, or a domain-specific reviewer agent; reusable placements such as Audit/Trace and Outcome Metrics where justified
 - workstream placement as an attention item, approval-needed card, exception card, or side-panel drill-in; routes/deep links only reopen that workstream item or surface
-- payload/query source expectations for recommendation, evidence, confidence, risk, impact, alternatives, policy clause/version, affected goal/plan/entity, and trace/correlation ids
+- payload/query source expectations for recommendation, evidence, confidence, risk, impact, alternatives, policy clause/version, affected goal/plan/entity, and trace/correlation ids, with default-visible evidence/risk summaries separated from privileged policy/audit diagnostics
 - capability-backed approve/reject/modify/defer/escalate/request-evidence controls with confirmation/approval, idempotency, denial/result surfaces, and audit/work-trace links
 - learning options such as one-time exception, precedent, example, or policy proposal
 
@@ -138,7 +152,7 @@ Use when users investigate who/what/when/why/how-authorized for work, decisions,
 Must expose:
 - owning functional agent such as Audit/Trace, with reusable placements from every functional agent that needs investigation drill-down
 - workstream placement as an investigation timeline, trace drill-in, decision evidence drawer, or audit detail surface; routes/deep links only reopen scoped trace surfaces
-- payload/query source expectations for chronological agent steps, tool calls, data access, policy invocations, approvals, actions, rollback, outcomes, audit events, authorization basis, redaction profile, and trace/correlation ids
+- payload/query source expectations for chronological agent steps, tool calls, data access, policy invocations, approvals, actions, rollback, outcomes, audit events, authorization basis, redaction profile, and trace/correlation ids; split the UX into user-readable investigation summaries and role-gated raw audit/support detail
 - capability-backed trace search, filter, export, evidence-open, and escalation controls with backend authorization, denial/result surfaces, and audit links
 - stable links to goal, plan, decision, evidence, policy version, and audit events
 
@@ -151,12 +165,16 @@ Route to:
 ## UI design rules
 
 - Select and describe surfaces through functional-agent workstream placement before frontend routes, pages, or components.
+- Use the canonical collection-object progression for durable object collections: domain list/search surfaces always allow selecting a listed object; selected objects open lifecycle-appropriate show/inspection surfaces; show/inspection surfaces delegate consequential changes to separate edit, destructive lifecycle confirmation, and domain-specific single-action surfaces.
+- Keep each surface single-purpose. Do not design one broad CRUD page that lists, shows, creates, edits, and deletes objects.
 - Center structured surfaces on objectives, decisions, policies, traces, or outcomes; not only raw records.
+- Design default surface views for the target SaaS user, not for the implementation team. Avoid exposing internal policy ids, capability ids, governed-tool ids, backend component names, provider/model details, prompt internals, raw event ids, and correlation/idempotency mechanics unless the selected surface is explicitly an admin/support/auditor/developer diagnostic view.
+- Use progressive disclosure: ordinary users get concise business summaries and next actions; managers/admins get operational controls; auditors/compliance reviewers get scoped evidence and policy detail; support/developer views may expose diagnostic ids when authorized and visually subordinate.
 - Make autonomy boundaries visible where actions occur.
 - Separate automated work, human-needed work, exceptions, and FYI activity.
 - Rank attention queues by stakes/risk/SLA, not only recency.
 - Compress routine activity, but always preserve drill-down to audit facts.
-- Do not make chat the primary control surface for consequential actions.
+- Keep structured surfaces as the default and primary supervision/control path for consequential actions, but do not categorically forbid direct workstream chat execution when a complete governed `human_chat_tool_plan` boundary exists. The chat path must propose a detailed plan, show an explicit review/confirmation state, bind confirmation to that plan, execute only backend-authorized governed-tools, and render denial/result/partial-failure surfaces with trace links.
 - Do not choose visual styling implicitly; for generated full-stack AI-first SaaS, the web UI is mandatory, so if no style guide is selected, use the existing UI style-selection guidance before implementation.
 - Use visual craft only as a cosmetic layer that clarifies existing surfaces, states, authority, and attention hierarchy; it must not change functional agents, surface contracts, capability mappings, authorization, APIs, tests, or readiness semantics.
 - Keep routes, pages, and deep links as browser realization details for reopening a functional agent, workstream item, or structured surface; never use them as the primary decomposition.
@@ -164,10 +182,11 @@ Route to:
 ## Output expectations
 
 Produce a compact UI-surface plan with:
-- selected surfaces, owning functional agent, reusable functional agents, and primary human roles/temporal modes
+- selected surfaces, owning functional agent, reusable functional agents, responsible human/agent/system workers, and primary human roles/temporal modes
+- for each durable collection object in scope, the domain-semantic list/show/create/edit/destructive-lifecycle progression, including lifecycle-state-specific show/task routing
 - workstream placement for each surface, plus route/deep-link behavior only as implementation detail
-- payload/query source expectations, backing durable objects, read models, redaction, and trace requirements
-- capability-backed actions per surface, including idempotency, approval/denial/result surfaces, and audit links
+- payload/query source expectations, backing durable objects, read models, redaction, trace requirements, and visibility split for default user content, drilldowns, role-gated diagnostics, and internal-only metadata
+- capability-backed actions per surface, including idempotency, confirmation, approval/denial/result surfaces, partial-failure handling, and audit links; when chat is an allowed adapter, include the linked `human_chat_tool_plan` review/confirmation/result surfaces and shared governed-tool id
 - API/realtime needs tied to the surface contract rather than page navigation
 - frontend state, form, loading/error/empty, accessibility, responsive, visual hierarchy, and reduced-motion requirements
 - downstream Akka and web UI skills to load next
@@ -177,9 +196,10 @@ Produce a compact UI-surface plan with:
 
 Before implementation, verify:
 - each selected surface has an owning functional agent, reusable placement if any, and explicit workstream placement
+- every durable collection object uses the canonical progression or records an explicit justified override; list row/card selection opens a show/inspection surface; create, edit, and destructive lifecycle actions are separate surfaces
 - routes/deep links are implementation details for selected functional agents, workstream items, or structured surfaces
 - UI guidance routes to `akka-web-ui-*` and HTTP endpoint skills instead of replacing them
-- approval/decision controls have evidence, policy, risk, impact, capability, and audit backing
+- approval/decision controls have evidence, policy, risk, impact, capability, and audit backing, while default copy translates internal backing into user-understandable language
 - every agent activity or material event can link to a trace or source artifact
 - routine summaries are auditable
-- tests can cover loading, empty, error, success, action, authorization, audit/trace, and realtime update states where in scope
+- tests can cover loading, empty, error, success, action, authorization, deterministic surface no-mutation, chat-plan confirmation/denial/partial-failure, audit/trace, and realtime update states where in scope

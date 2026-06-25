@@ -9,6 +9,11 @@
 
 This surface is the scoped account/membership detail node reached from `user-admin-user-list`, dashboard attention items, audit evidence drill-ins, prompt requests, and deep links through the shell request pipeline.
 
+
+## User-visible/internal metadata boundary
+
+Default rendering must use SaaS product language and show only information the current actor needs to decide, act, recover, or understand the business outcome. Internal ids, raw trace/event/correlation data, governed-tool/capability ids, backend component names, prompt/provider/model details, and policy implementation references are implementation metadata. Expose them only in authorized admin, support, auditor, or developer drilldowns, and keep them visually subordinate to user-meaningful labels.
+
 ## Payload summary
 
 Payload must include:
@@ -55,11 +60,15 @@ type UserAdminUserAccountData = {
 | `user-admin.resolve-detail-access-review` | `user-admin.user-detail.access-review.resolve` | `useradmin.access_review.resolve` | `secure-tenant-user-foundation` | browser-tool | `user-admin-user-account`, `decision-card`, or deferred `task-progress-surface` | review item id + decision id | true |
 | `user-admin.open-detail-audit` | `user-admin.user-detail.audit.open` | `audit.traces.view` | `governance-decisions-audit` | browser-tool | `audit-trace-explorer` | trace id | true |
 
+
+
+Action mappings must preserve the shared tool-use contract: `governedToolId`, actor adapter/source (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/workflow/timer/consumer/MCP/internal), `confirmationRequired`, `approvalPolicy`, idempotency key, transaction boundary, result/partial-failure behavior, `traceSource`, and `traceRequired`. If this surface exposes only the browser-tool adapter, state `surface_action` and keep any chat/agent adapter in the workstream tool catalog instead of duplicating business semantics.
+
 ## UI states
 
 - `loading`: preserve target identity only when already authorized.
 - `empty`: not normally valid; use hidden-not-found/forbidden/system message as appropriate.
-- `error`: safe category, retry, and `correlationId`.
+- `error`: safe category, retry, and readable support/reference label; raw `correlationId` appears only in authorized diagnostic detail.
 - `forbidden`: no target existence leakage; show denial category only.
 - `conflict`: projection/version conflict for concurrent membership/role changes.
 - `stale`: disable mutations until refreshed.

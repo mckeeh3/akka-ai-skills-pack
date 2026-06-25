@@ -9,6 +9,11 @@
 
 This surface is the governance workspace for managed agent definitions, prompts, skills, references, manifests, tool boundaries, behavior proposals, tests, simulations, approvals, and activation history.
 
+
+## User-visible/internal metadata boundary
+
+Default rendering must use SaaS product language and show only information the current actor needs to decide, act, recover, or understand the business outcome. Internal ids, raw trace/event/correlation data, governed-tool/capability ids, backend component names, prompt/provider/model details, and policy implementation references are implementation metadata. Expose them only in authorized admin, support, auditor, or developer drilldowns, and keep them visually subordinate to user-meaningful labels.
+
 ## Payload summary
 
 Payload must include:
@@ -55,11 +60,15 @@ type AgentGovernanceCenterData = {
 | `agent-governance.open-document-version` | `agent-governance.document-version.open` | `agents.documents.read` | `managed-agent-foundation` | browser-tool | deferred `agent-version-card` | document id + version id | true |
 | `agent-governance.open-tool-boundary-trace` | `agent-governance.tool-boundary-trace.open` | `audit.traces.view` | `governance-decisions-audit` | browser-tool | `audit-trace-explorer` | trace id | true |
 
+
+
+Action mappings must preserve the shared tool-use contract: `governedToolId`, actor adapter/source (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/workflow/timer/consumer/MCP/internal), `confirmationRequired`, `approvalPolicy`, idempotency key, transaction boundary, result/partial-failure behavior, `traceSource`, and `traceRequired`. If this surface exposes only the browser-tool adapter, state `surface_action` and keep any chat/agent adapter in the workstream tool catalog instead of duplicating business semantics.
+
 ## UI states
 
 - `loading`: governance workspace skeleton without showing stale secrets.
 - `empty`: no managed agents or no proposals in selected scope.
-- `error`: safe category and `correlationId`.
+- `error`: safe category and readable support/reference label; raw `correlationId` appears only in authorized diagnostic detail.
 - `forbidden`: no hidden agent/document existence leakage.
 - `conflict`: proposal/version changed; require refresh.
 - `approval-needed`: high-risk change requires reviewer decision.

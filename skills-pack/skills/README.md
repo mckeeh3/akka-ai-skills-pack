@@ -113,6 +113,7 @@ Canonical doctrine:
 
 Top-level entry skills:
 
+- `app-development-lifecycle` — explain and apply the three-phase Interview → Build/compile → Manual runtime test loop and route lifecycle/process questions to the right phase.
 - `ai-first-saas` — interpret product intent as a secure AI-first SaaS operating model and route to app-description, decomposition, planning, or implementation.
 - `agent-workstream-apps` — interpret generated full-stack AI-first SaaS apps as role-authorized functional-agent workstream applications.
 - `ai-first-saas-worker-decomposition` — identify human, functional-agent, internal/autonomous/evaluator agent, and system workers before surfaces, capabilities, or components are selected.

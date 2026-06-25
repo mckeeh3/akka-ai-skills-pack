@@ -6,6 +6,10 @@ Use this note during skills-pack maintenance to keep the installed pack focused.
 
 The pack is healthy but broad. Do not delete installed skills casually: skill names are a public routing surface for harnesses and downstream prompts. Prefer consolidation by routing, shared references, and shorter skills before removing a skill from the manifest.
 
+## Source and installed-layout decision
+
+Treat `skills-pack/skills/**` plus the top-level `skills-pack/docs/**`, `references/**`, `examples/**`, `templates/**`, and `tools/**` directories as the canonical source. Treat `.agents/skills/**` installs, including any checkout-local `skills-pack/.agents/skills/**` mirror, as installer output for harness consumption and installed-layout validation. Do not hand-edit the installed mirror for doctrine changes; update source assets and refresh installs with `install-skills.sh --prune` when a maintained installed copy must be reconciled.
+
 ## Consolidation watchlist
 
 These focused pairs intentionally remain separate because Akka KVE and ESE APIs differ, but they should share examples and avoid copied doctrine:
@@ -38,6 +42,18 @@ Broad orchestrator skills should be short routing contracts. They may contain:
 - output/validation expectations.
 
 They should not copy long sections from canonical docs. If a broad skill grows beyond roughly 200 lines, first move repeated doctrine into `docs/**` or `references/**` and leave a precise pointer.
+
+### June 2026 broad-skill audit
+
+Reviewed manifest-routed broad skills over roughly 200 lines after lifecycle/worker-tool migrations:
+
+| Skill | Finding | Action |
+|---|---|---|
+| `akka-solution-decomposition` | Duplicated long output and capability inventory doctrine already covered by canonical lifecycle/worker-tool docs and `capability-first-backend`. | Compressed to a compact planning contract; no retirement. |
+| `capability-first-backend` | Repeated the governed-tool/capability model in several long lists. | Compressed duplicated lists while preserving required authority, adapter, AuthContext, idempotency, audit, and test fields; no retirement. |
+| `akka-http-endpoints` | Decision guide repeated examples in prose. | Replaced with a compact mode table; no retirement. |
+
+No public skill names were retired in this audit.
 
 ## Example pruning rules
 

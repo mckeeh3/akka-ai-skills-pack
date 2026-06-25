@@ -6,6 +6,8 @@ Use this mode only when the user explicitly mentions skills-pack, `.agents/skill
 
 The repository has a two-fold purpose: maintain the harness skills library and provide the runnable SaaS Foundation App that users clone or fork. The skills pack supports both purposes by giving harness agents focused guidance, referenced docs, templates, tools, and code examples for maintaining the SaaS Foundation App and adding downstream business-specific SaaS domains, workstreams, surfaces, agents, Akka components, frontend extensions, app-description extensions, specs, docs, and tests.
 
+The canonical app development lifecycle is the three-phase Interview → Build/compile → Manual runtime test loop documented in `docs/app-development-lifecycle.md` and exposed directly through `skills/app-development-lifecycle/SKILL.md`. Keep this lifecycle visible in top-level routing whenever changing process, routing, app-description, planning, realization, or verification guidance.
+
 ## Scope
 
 Work here when a task targets installable `.agents` assets:

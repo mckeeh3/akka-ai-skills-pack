@@ -10,8 +10,9 @@ Primary maintenance entry points:
 
 - `AGENTS.md` — source-maintainer guidance for skills-pack work
 - `skills/README.md` — skill routing map installed with the skills
+- `skills/app-development-lifecycle/SKILL.md` — direct answer/routing skill for the canonical app development lifecycle
 - `skills/*/SKILL.md` — focused harness guidance installed into `.agents/skills` or `~/.agents/skills`
-- `docs/` — source-attention doctrine, routing, and reference docs; start with `docs/business-intent-interview-process.md` for Stage 1 SMB business-intent capture, `docs/business-extension-requirements-guidance.md` for Stage 2 business-extension requirement/intent/goals guidance, `docs/generated-saas-canonical-doctrine.md` for shared generated-app rules, `docs/foundation-layer-coverage-matrix.md` for horizontal foundation coverage, `docs/web-ui-docs-index.md` for UI guidance, and `docs/skill-consolidation-and-pruning.md` for pack-tightening policy
+- `docs/` — source-attention doctrine, routing, and reference docs; start with `docs/app-development-lifecycle.md` for the three-phase Interview → Build/compile → Manual runtime test loop, `docs/app-worker-tool-model.md` for worker/tool/capability modeling, `docs/business-intent-interview-process.md` for Stage 1 SMB business-intent capture, `docs/business-extension-requirements-guidance.md` for Stage 2 business-extension requirement/intent/goals guidance, `docs/generated-saas-canonical-doctrine.md` for shared generated-app rules, `docs/foundation-layer-coverage-matrix.md` for horizontal foundation coverage, `docs/web-ui-docs-index.md` for UI guidance, and `docs/skill-consolidation-and-pruning.md` for pack-tightening policy
 - `examples/` — code examples used by installed skills as generation guidance for real Akka/SaaS Foundation App implementation patterns
 - `templates/` — source-attention SaaS Foundation App description assets
 - root `akka-context/` — official Akka reference material kept at repository top level and not installed

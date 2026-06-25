@@ -11,11 +11,11 @@ Use this skill when a project already has planning artifacts under `specs/`, esp
 specs/pending-tasks.md
 ```
 
-This is a queue repair/materialization skill. It does not redo PRD decomposition, does not revise app meaning, and does not implement application code. It translates already-accepted backlog/task-brief work into the durable execution queue while preserving current-intent graph provenance and source semantics. For generated secure AI-first SaaS, source semantics include the existing workstream graph chain: workstream → role-specific dashboard attention → human surface graph node/action or workstream event → internal workstream agent graph delegation/result when applicable → governed-tool inside capability and surface/action maps → selected Akka substrate/exposure channel → request-based Agent or durable AutonomousAgent task → notification/projection → audit/work trace.
+This is a queue repair/materialization skill. It does not redo PRD decomposition, does not revise app meaning, and does not implement application code. It translates already-accepted backlog/task-brief work into the durable execution queue while preserving current-intent graph provenance and source semantics. For generated secure AI-first SaaS, source semantics include the existing workstream graph chain: workstream → role-specific dashboard attention → human surface graph node/action or workstream event → deterministic surface intent route/prefill behavior when applicable → internal workstream agent graph delegation/result when applicable → governed-tool inside capability and surface/action maps → selected Akka substrate/exposure channel → request-based Agent or durable AutonomousAgent task → notification/projection → audit/work trace.
 
 ## Goal
 
-Create or repair `specs/pending-tasks.md` so future harness runs can execute one focused task at a time with `akka-do-next-pending-task`. Each generated or repaired queue entry must be an execution handoff, not a planning placeholder: it should include the source backlog/task brief, dependencies, smallest required reads, exact skills, expected outputs, checks, done criteria, and the inherited workstream id, dashboard/attention, surface graph node/action, internal-agent graph context, governed-tool id, capability id, AuthContext/scope, role/capability rules, approval, audit/trace, UI/style, existing-app, and Java base-package context needed to implement safely without rereading the PRD.
+Create or repair `specs/pending-tasks.md` so future harness runs can execute one focused task at a time with `akka-do-next-pending-task`. Each generated or repaired queue entry must be an execution handoff, not a planning placeholder: it should carry the lifecycle phase/readiness target and the compile contract needed for one build/compile run, including the source backlog/task brief, dependencies, smallest required reads, exact skills, expected outputs, checks, done criteria, and the inherited workstream id, dashboard/attention, surface graph node/action, surface intent route/no-route context, internal-agent graph context, workstream tool catalog, governed-tool id, actor adapter/exposure channel, capability id, AuthContext/scope, role/capability rules, confirmation/approval behavior, transaction/idempotency semantics, result/partial-failure surface, audit/trace source, UI/style, existing-app, and Java base-package context needed to implement safely without rereading the PRD.
 
 The skill must:
 - read existing solution, slice, backlog, and task-brief artifacts
@@ -46,6 +46,10 @@ Do **not** use this skill when:
 
 Read these first if present:
 - `../README.md`
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-to-code-compile-contract.md`
+- `../docs/manual-test-reconciliation.md` when queue entries include manual/runtime validation or remediation work
 - `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS baseline and first-slice implementation order
 - `../docs/intent-compiler.md`
 - `../docs/current-intent-model.md`
@@ -53,6 +57,7 @@ Read these first if present:
 - `../docs/intent-compiler-skill-contracts.md`
 - `../docs/ai-first-saas-application-architecture.md` when backlog work involves delegated operations, agents, governance, decisions, supervision, audit, or outcomes
 - `../docs/requirements-to-workstream-development-process.md` when materializing generated SaaS workstreams, attention, dashboards, surface actions, capabilities, AutonomousAgent tasks, notifications/projections, or trace-aware queues
+- `../docs/workstream-surface-intent-routing.md` when queue entries touch composer-enabled workstreams, create/edit/task surfaces, or surface prefill behavior
 - `../docs/pending-question-queue.md`
 - `../docs/pending-task-queue.md`
 - `../docs/solution-plan-to-implementation-queue.md`
@@ -78,7 +83,7 @@ Create or update:
 specs/pending-tasks.md
 ```
 
-Use the contract in `../docs/pending-task-queue.md`, especially the required `Vertical workstream contract` block. For generated full-stack AI-first SaaS, do not emit a runnable queue entry unless that contract is present or the task explicitly declares `internal-only`, `foundation-only`, `cross-cutting`, `docs-only`, or `non-runtime` scope with a non-attention/non-UI reason, trace expectations, and validation path.
+Use the contract in `../docs/pending-task-queue.md`, especially the required `Vertical workstream contract` block, and the checklist in `../docs/app-description-to-code-compile-contract.md`. For generated full-stack AI-first SaaS, do not emit a runnable queue entry unless that contract is present or the task explicitly declares `internal-only`, `foundation-only`, `cross-cutting`, `docs-only`, or `non-runtime` scope with a non-attention/non-UI reason, trace expectations, and validation path.
 
 ## Queue derivation rules
 
@@ -98,8 +103,10 @@ Before finishing, verify:
 - unresolved blocking questions are reflected as blocked/omitted task work, not hidden assumptions
 - dependencies are neither missing nor over-serialized
 - required reads are minimal and sufficient, including AI-first doctrine or specs only where they affect the task
+- lifecycle/readiness target, compile contract, required checks, and manual runtime scenario/non-runtime exemption are explicit for each runnable task
 - skills match the component family plus any necessary AI-first companion skill
 - required checks and done criteria are concrete
+- consequential generated-SaaS entries carry the tool-use contract: governed-tool id, capability id, actor adapter/exposure channel, confirmation/approval behavior, idempotency/transaction boundary, result/partial-failure surface, and trace evidence; if those fields are missing, the entry is blocked for backlog/task-brief repair rather than guessed
 - no application code was changed
 
 ## Response style

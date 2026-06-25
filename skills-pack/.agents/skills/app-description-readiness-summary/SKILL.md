@@ -10,6 +10,14 @@ Use this skill when the human wants a concise explanation of whether the current
 This skill is a review-oriented companion to `app-description-readiness-assessment`.
 It explains the readiness result in prompt/response form.
 
+## Lifecycle classification
+
+- Phase: interview.
+- Kind: review/summary.
+- Family: app-description.
+- Living-graph contract: readiness summaries explain whether the app-description current-intent graph is sufficient across workers, execution harnesses, actor adapters, governed tools, capabilities, tests, security, observability, UI, and realization links.
+- Build/compile handoff: if generation is recommended, state that the next step should follow `../docs/app-description-to-code-compile-contract.md` rather than treating the summary as implementation authority.
+
 ## Goal
 
 Produce a concise readiness summary that explains:

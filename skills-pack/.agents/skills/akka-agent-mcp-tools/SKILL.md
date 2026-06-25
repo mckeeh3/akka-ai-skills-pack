@@ -9,11 +9,29 @@ Use this skill when an agent should call remote MCP tools.
 
 ## Capability-first boundary rule
 
-Treat every remote MCP tool as a selected cross-service exposure surface for a named backend capability. Before registering a remote MCP server, identify the capability id, allowed caller service/agent, `AuthContext` and tenant/customer scope propagation, input/output schemas, side effects, idempotency, approval policy, audit/trace obligations, and expected denial behavior.
+Treat every remote MCP tool as a selected cross-service exposure surface for a named backend capability and governed workstream tool. Before registering a remote MCP server, identify the governed tool id, capability id, allowed caller service/agent, `AuthContext` and tenant/customer scope propagation, input/output schemas, side effects, idempotency, approval policy, audit/trace obligations, and expected denial behavior.
 
-Register only the remote tools needed for the current agent task with `.withAllowedToolNames(...)` or `.withToolNameFilter(...)`. For managed agents or protected remote tools, also load `akka-agent-tool-boundaries` and enforce the active `ToolPermissionBoundary` against stable MCP tool ids/categories before remote invocation. Do not rely on MCP tool descriptions, prompt text, or model instructions for authorization. The remote MCP endpoint must still enforce ACL/JWT/service identity, validate scope, redact outputs, and audit access according to the capability contract.
+Register only the remote tools needed for the current agent task with `.withAllowedToolNames(...)` or `.withToolNameFilter(...)`. For managed agents or protected remote tools, also load `akka-agent-tool-boundaries` and enforce the active `ToolPermissionBoundary` against stable MCP tool ids/categories before remote invocation. Do not rely on MCP tool descriptions, prompt text, skill/reference text, or model instructions for authorization. The remote MCP endpoint must still enforce ACL/JWT/service identity, validate scope, redact outputs, and audit access according to the capability contract.
+
+For workstream agents, MCP is the remote AI-backed `agent_tool_call` adapter. A human-confirmed `human_chat_tool_plan` may execute the same governed tool through a backend service path, but it must carry its own plan confirmation, `requestedBy`/`confirmedBy` trace facts, per-tool idempotency, result surfaces, and partial-failure reporting; granting the MCP tool to the model is a separate `ToolPermissionBoundary` decision.
 
 Prefer read-only evidence capabilities for remote MCP tool use. Side-effecting remote MCP tools require an explicit capability contract and should usually be proposal or approval-request capabilities unless an accepted policy grants bounded autonomous authority.
+
+## Worker/tool/capability alignment
+
+For generated AI-first SaaS app work, treat the agent runtime, autonomous task loop, or governed artifact in scope as a software-worker harness concern, not as the product operation or authorization boundary. Keep the chain explicit:
+
+```text
+software worker
+→ Akka Agent/AutonomousAgent harness or focused governance artifact
+→ actor adapter (`agent_tool_call`, `human_chat_tool_plan`, workflow/timer/consumer/API/MCP/internal adapter as applicable)
+→ governed tool
+→ backend capability
+→ Akka/frontend implementation
+```
+
+Human surface availability, prompt/skill/reference text, model output, task instructions, and Akka tool registration do not grant tool authority. A model-facing tool, loader, or autonomous task action may be exposed only when the active workstream tool catalog, governed tool contract, backend `AuthContext`, and `ToolPermissionBoundary` explicitly allow that actor adapter; denials and approval-required paths must fail closed and be traced.
+
 
 ## Required reading
 
@@ -30,7 +48,7 @@ Read these first if present:
 
 1. Build remote tool configs with `RemoteMcpTools.fromService(...)` for another Akka service or `fromServer(...)` for an external HTTPS MCP server.
 2. Use `.withAllowedToolNames(...)` or `.withToolNameFilter(...)` to narrow exposure to the selected capability surface.
-3. Register each remote tool in the tool registry/catalog with stable tool id, MCP server/tool binding, capability id, read-only or side-effecting classification, scope rules, and trace requirements.
+3. Register each remote tool in the tool registry/catalog with stable tool id, governed tool id, MCP server/tool binding, capability id, read-only or side-effecting classification, scope rules, and trace requirements.
 4. Check `ToolPermissionBoundary` before remote invocation; denied or approval-required MCP tools must not be called.
 5. Add caller headers, bearer tokens, or interceptors only when the capability contract requires them; never use spoofable headers as the only authority source.
 6. Keep timeouts explicit for remote calls.
@@ -46,14 +64,14 @@ When implementing this pattern in a target project, create target-specific examp
 - expose only the selected read-only summary or governed action tool ids;
 - use service ACLs so the remote MCP boundary is selective rather than open by default;
 - return compact, redacted evidence DTOs instead of raw entity state;
-- preserve `ToolPermissionBoundary`, tenant/customer scope, idempotency, approval-required behavior, and trace emission;
+- preserve `ToolPermissionBoundary`, tenant/customer scope, idempotency, approval-required behavior, `agent_tool_call` trace emission, and safe denial/partial-failure reporting;
 - include integration tests for ungranted MCP denial, approval-required results, duplicate idempotency behavior, and no direct side-effect execution.
 
 ## Review checklist
 
 Before finishing, verify:
 - the MCP server URI or service name is explicit
-- the registered tool names map to named capability ids
+- the registered tool names map to named governed tool ids and capability ids
 - only needed tool names are exposed
 - stable MCP tool ids are checked against ToolPermissionBoundary before remote invocation
 - caller/service identity, tenant/customer scope, and required headers/tokens are deliberate

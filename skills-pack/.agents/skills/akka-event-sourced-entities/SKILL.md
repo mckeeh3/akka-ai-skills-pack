@@ -9,6 +9,10 @@ Use this as the top-level skill for Akka Java SDK event sourced entity work.
 
 Use it only after the relevant backend capability contract is clear enough, or as part of a decomposition task that is explicitly deciding whether an event-sourced entity should carry a capability. For broad product work, route through `capability-first-backend` and `akka-solution-decomposition` before implementing entities.
 
+## Compile contract gate
+
+Use this skill only for a compile-ready slice under `../docs/app-description-to-code-compile-contract.md`, except for explicitly scoped doc/example maintenance. Before changing generated runtime code, confirm the accepted graph names the responsible worker/harness/actor adapter from `../docs/app-worker-tool-model.md`, the governed-tool and capability contract from `../docs/capability-first-backend-architecture.md`, and this Akka component's role as implementation evidence. If AuthContext, tenant/customer scope, validation, idempotency, denial, audit/trace, side-effect, exposure, or test obligations are missing, repair the brief or block instead of guessing.
+
 ## Goal
 
 Generate or review event sourced entity code that is:

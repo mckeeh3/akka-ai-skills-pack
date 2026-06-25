@@ -9,6 +9,10 @@ Use this as the top-level skill for Akka Java SDK Consumer work when the consume
 
 For broad product, PRD, feature, or integration requests, route through `capability-first-backend` and `akka-solution-decomposition` before implementing consumers. Do not start from event glue when capability authority, provenance, tenant/customer scope, side effects, idempotency, and audit semantics are still unclear.
 
+## Compile contract gate
+
+Use this skill only for a compile-ready slice under `../docs/app-description-to-code-compile-contract.md`, except for explicitly scoped doc/example maintenance. Before changing generated runtime code, confirm the accepted graph names the responsible worker/harness/actor adapter from `../docs/app-worker-tool-model.md`, the governed-tool and capability contract from `../docs/capability-first-backend-architecture.md`, and this Akka component's role as implementation evidence. If AuthContext, tenant/customer scope, validation, idempotency, denial, audit/trace, side-effect, exposure, or test obligations are missing, repair the brief or block instead of guessing.
+
 ## Goal
 
 Generate or review Consumer code that is:

@@ -10,7 +10,7 @@ Use this skill when an HTTP endpoint calls Akka components.
 
 ## Capability-first exposure rule
 
-Treat every HTTP route as a selected exposure surface for a named backend capability, not as the capability itself. Before adding or changing a route, identify the capability id, allowed actors/callers, `AuthContext`, tenant/customer scope, input/output schema, side effects, idempotency, approval policy, audit/trace obligations, and tests.
+Treat every HTTP route as an `api_call` actor adapter for a named governed tool and backend capability, not as the governed tool or capability itself. Before adding or changing a route, identify the responsible worker/harness, governed tool id, capability id, allowed actors/callers, `AuthContext`, tenant/customer scope, input/output schema, side effects, idempotency, approval policy, audit/trace obligations, selected Akka implementation path, and tests.
 
 For protected routes, preserve the capability contract at the edge: authenticate the caller, resolve or receive the selected tenant/customer context, authorize the required role/scope/capability, validate and redact HTTP payloads, map denials to explicit `401`/`403` behavior, and record required audit/work-trace events before calling components. Browser actions, API paths, hidden fields, and route names are not authorization controls.
 
@@ -18,11 +18,13 @@ When the same capability is also exposed through UI, agent tools, workflows, gRP
 
 ## Generated SaaS input contract
 
-Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
+Use `../docs/app-worker-tool-model.md`, `../docs/app-description-to-code-compile-contract.md`, and `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the responsible worker, execution harness, actor adapter, governed tool, capability, AuthContext/scope, DTO, side-effect/idempotency policy, trace/result surface, selected Akka path, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
 Read these first if present:
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-to-code-compile-contract.md`
 - `akka-context/sdk/http-endpoints.html.md`
 - `akka-context/sdk/component-and-service-calls.html.md`
 - `../docs/workflow-endpoint-pattern.md`
@@ -36,12 +38,13 @@ Read these first if present:
 
 ## Core pattern
 
-1. Inject `ComponentClient` through the constructor.
-2. Define request and response records in the endpoint or `api` package.
-3. Map API request records to domain commands explicitly.
-4. Call the component with synchronous `.invoke()`.
-5. Map successful replies to API response records.
-6. When returning `HttpResponse`, convert validation or command failures into explicit HTTP responses.
+1. Confirm the compile chain for the route: worker → harness → `api_call` adapter → governed tool → capability → Akka implementation.
+2. Inject `ComponentClient` through the constructor.
+3. Define request and response records in the endpoint or `api` package.
+4. Map API request records to governed-tool/capability commands explicitly; do not expose raw component state as the public contract.
+5. Call the component with synchronous `.invoke()`.
+6. Map successful replies to API response records and browser-safe trace/status fields when required.
+7. When returning `HttpResponse`, convert validation, authorization, or command failures into explicit HTTP responses.
 
 ## Repository examples
 
@@ -77,6 +80,7 @@ Prefer:
 
 Avoid:
 - returning domain records directly from the endpoint
+- treating the endpoint path, HTTP method, or component method as the governed-tool contract
 - embedding component-specific logic in the public API shape
 - pushing HTTP concepts into the domain or entity code
 
@@ -94,9 +98,10 @@ If the endpoint returns `HttpResponse`, do not rely on uncaught generic exceptio
 ## Review checklist
 
 Before finishing, verify:
+- the route has an explicit compile chain: worker/harness, `api_call` adapter, governed tool, capability, Akka implementation path, trace, and tests
 - `ComponentClient` is injected only where needed
 - request/response records are endpoint-specific
 - `.invoke()` is used in endpoint code
-- command or validation failures are translated to HTTP behavior
+- command, authorization, or validation failures are translated to HTTP behavior
 - reads and writes use the correct component client selector
-- tests exercise the route through `httpClient`
+- tests exercise allowed, forbidden/tenant-isolation, validation failure, trace/audit, and result mapping through `httpClient`

@@ -7,6 +7,22 @@ description: Define and use Akka Autonomous Agent Task, TaskTemplate, TaskAccept
 
 Use this skill when the work is mainly about task definitions, task instances, rules, dependencies, attachments, task client calls, or lifecycle state.
 
+## Worker/tool/capability alignment
+
+For generated AI-first SaaS app work, treat the agent runtime, autonomous task loop, or governed artifact in scope as a software-worker harness concern, not as the product operation or authorization boundary. Keep the chain explicit:
+
+```text
+software worker
+→ Akka Agent/AutonomousAgent harness or focused governance artifact
+→ actor adapter (`agent_tool_call`, `human_chat_tool_plan`, workflow/timer/consumer/API/MCP/internal adapter as applicable)
+→ governed tool
+→ backend capability
+→ Akka/frontend implementation
+```
+
+Human surface availability, prompt/skill/reference text, model output, task instructions, and Akka tool registration do not grant tool authority. A model-facing tool, loader, or autonomous task action may be exposed only when the active workstream tool catalog, governed tool contract, backend `AuthContext`, and `ToolPermissionBoundary` explicitly allow that actor adapter; denials and approval-required paths must fail closed and be traced.
+
+
 ## Required reading
 
 Read before defining generated-app worker task contracts:
@@ -74,12 +90,12 @@ Task operations:
 
 ## Generated SaaS guardrails
 
-For worker-style generated-app tasks, apply `../docs/autonomous-agent-worker-runtime-pattern.md` before coding the task contract. Use the curated User Admin examples for concrete task shape and runtime boundaries: `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/UserAdminAccessReviewTasks.java`, `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/AccessReviewAutonomousAgentResultRule.java`, `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/ComponentClientAccessReviewAutonomousAgentRuntime.java`, and `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/FailClosedAccessReviewAutonomousAgentRuntime.java`. Every task operation exposed through HTTP, UI, workflow, tool, timer, consumer, or MCP is a governed capability. Preserve:
+For worker-style generated-app tasks, apply `../docs/autonomous-agent-worker-runtime-pattern.md` before coding the task contract. Use the curated User Admin examples for concrete task shape and runtime boundaries: `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/UserAdminAccessReviewTasks.java`, `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/AccessReviewAutonomousAgentResultRule.java`, `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/ComponentClientAccessReviewAutonomousAgentRuntime.java`, and `../examples/akka-components/src/main/java/ai/first/application/coreapp/useradmin/FailClosedAccessReviewAutonomousAgentRuntime.java`. Every task operation exposed through HTTP, UI, workflow, tool, timer, consumer, or MCP is a governed capability. Every autonomous task tool call is an AI-backed adapter for a governed tool; it does not inherit authority from prompt text, task instructions, skill/reference text, or a human chat request unless the backend capability, selected AuthContext, tool catalog, and `ToolPermissionBoundary` allow it. Preserve:
 - tenant/customer-scoped task ids and agent instance ids;
 - `AuthContext`, caller permission/capability, and active membership checks;
 - model policy and provider-secret boundaries;
 - approval gates for external completion/failure, high-risk handoff, or side effects;
-- audit/work traces for task creation, assignment, completion, failure, cancellation, dependency waits, and notification exposure;
+- audit/work traces for task creation, assignment, completion, failure, cancellation, dependency waits, notification exposure, governed-tool invocation, `requestedBy` when human-requested, and partial-failure outcomes;
 - typed `worker.task.*` workstream events, attention state, and structured backend-projected surfaces for visible worker progress/results;
 - provider/runtime fail-closed states and no fake success or model-less successful findings.
 

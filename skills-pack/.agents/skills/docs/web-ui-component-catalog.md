@@ -11,6 +11,7 @@ This catalog defines reusable AI-first SaaS UI components for generated Akka-hos
 - Replace demo names, counts, users, and labels with target-domain content.
 - Use selected style tokens and named themes; switching theme changes color tokens only, not component anatomy or behavior.
 - Every consequential action must map to a governed backend capability. UI visibility, disabled controls, prompt text, and route names are not authorization.
+- Component content is for SaaS users first. Translate internal capability, governed-tool, policy, trace, provider/model, prompt, event, and correlation/idempotency details into user-safe labels, summaries, recovery text, and role-gated drilldowns.
 
 ## Components
 
@@ -92,8 +93,8 @@ Anatomy:
 - severity and user-safe title
 - concise body explaining what happened
 - recovery or next action
-- related surface/action/capability ids when useful
-- trace/correlation id when visible
+- related surface/action/capability ids only in role-appropriate diagnostic contexts, otherwise user-safe labels
+- trace/correlation id only when useful and visible to the current role
 
 States:
 - success
@@ -124,13 +125,13 @@ Use inside decision, audit, queue, or detail surfaces where evidence and provena
 
 Anatomy:
 - evidence summary
-- policy/prompt/model/tool/data references where relevant and authorized
-- trace ids or citation links
+- policy/prompt/model/tool/data references where relevant and authorized, summarized in user language by default
+- trace ids or citation links only when the current role needs them; raw ids stay subordinate to readable labels
 - copy/open trace affordance
 
 Rules:
 - redact sensitive facts according to AuthContext
-- never expose backend secrets, prompt internals, or hidden tenant data
+- never expose backend secrets, prompt internals, raw provider/model data, hidden tenant data, or internal-only implementation metadata
 
 ### Named theme selector
 
@@ -156,7 +157,7 @@ Anatomy:
 - user-safe explanation
 - preserved-work note where relevant
 - retry/recover/request-access action when allowed
-- trace/correlation id where useful
+- trace/correlation id only where useful for the current role; ordinary users should get a readable support/reference label instead
 
 Rules:
 - avoid generic `No data`, `Error occurred`, or `Forbidden` copy without recovery guidance

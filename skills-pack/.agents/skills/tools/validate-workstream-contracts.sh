@@ -15,6 +15,7 @@ Checks:
   - machine-readable workstream-manifest.json exists and is internally consistent
   - functional agents, workstream ids, attention/dashboard, retention, surfaces, graph, deferred surface boundary, and expertise are present
   - surface and functional-agent traceability maps exist
+  - governed tool catalog, actor-adapter/exposure, confirmation/approval, idempotency/transaction, and trace-source terms are present where contracts model executable actions
   - each functional agent has a matching expertise bundle when workstream expertise is in scope
 EOF
 }
@@ -79,6 +80,8 @@ check_pattern "$WORKSTREAM_DIR/attention-and-dashboards.md" 'lifecycle|acknowled
 check_pattern "$WORKSTREAM_DIR/internal-agents.md" 'internal agent|worker' 'internal agent graph'
 check_pattern "$WORKSTREAM_DIR/internal-agents.md" 'AutonomousAgent|Agent' 'agent substrate guidance'
 check_pattern "$WORKSTREAM_DIR/internal-agents.md" 'capability|governed-tool|ToolPermissionBoundary' 'governed internal authority'
+check_pattern "$WORKSTREAM_DIR/internal-agents.md" 'actor adapter|actorAdapter|internal' 'internal actor adapter/source'
+check_pattern "$WORKSTREAM_DIR/internal-agents.md" 'idempotency|transaction' 'internal tool idempotency/transaction semantics'
 check_pattern "$WORKSTREAM_DIR/internal-agents.md" 'progress|result|surface' 'progress/result surface behavior'
 check_pattern "$WORKSTREAM_DIR/internal-agents.md" 'workerId|Worker id|worker id' 'internal worker id template'
 
@@ -93,6 +96,8 @@ check_pattern "$WORKSTREAM_DIR/surface-graph.md" 'ownerFunctionalAgentId|owner f
 check_pattern "$WORKSTREAM_DIR/deferred-typed-surfaces.md" 'App-level cleanup boundary|app-development' 'app-level cleanup boundary'
 check_pattern "$TRACE_DIR/functional-agent-to-capability-map.md" 'Capability|capability' 'functional-agent capability traceability'
 check_pattern "$TRACE_DIR/surface-to-capability-map.md" 'Capability|capability' 'surface capability traceability'
+check_pattern "$TRACE_DIR/surface-to-capability-map.md" 'governed-tool|governed tool' 'surface governed-tool traceability'
+check_pattern "$TRACE_DIR/surface-to-capability-map.md" 'surface_action|human_chat_tool_plan|agent_tool_call|actor adapter|actor-adapter' 'actor adapter/source traceability'
 
 if [[ -f "$WORKSTREAM_DIR/functional-agents.md" && -d "$WORKSTREAM_DIR/workstream-expertise" ]]; then
   mapfile -t agent_ids < <(grep -Eo '`[-a-z0-9]+-agent`' "$WORKSTREAM_DIR/functional-agents.md" | tr -d '`' | sort -u)

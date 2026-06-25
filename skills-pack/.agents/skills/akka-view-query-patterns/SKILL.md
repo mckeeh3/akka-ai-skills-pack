@@ -9,6 +9,10 @@ Use this skill when the main problem is shaping the query result and Java return
 
 In capability-first backend design, each protected query method should correspond to a named read/evidence capability or one explicit access path of that capability. Carry the capability's AuthContext, tenant/customer scope, redaction requirements, pagination/streaming contract, and exposure surface into the query shape instead of building one broad raw-data query for every caller.
 
+## Compile contract gate
+
+Use this skill only for a compile-ready slice under `../docs/app-description-to-code-compile-contract.md`, except for explicitly scoped doc/example maintenance. Before changing generated runtime code, confirm the accepted graph names the responsible worker/harness/actor adapter from `../docs/app-worker-tool-model.md`, the governed-tool and capability contract from `../docs/capability-first-backend-architecture.md`, and this Akka component's role as implementation evidence. If AuthContext, tenant/customer scope, validation, idempotency, denial, audit/trace, side-effect, exposure, or test obligations are missing, repair the brief or block instead of guessing.
+
 ## Required reading
 
 Read these first if present:

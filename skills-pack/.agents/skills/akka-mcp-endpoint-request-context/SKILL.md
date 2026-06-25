@@ -10,7 +10,7 @@ Use this skill when an MCP endpoint needs request metadata.
 
 ## Capability-first exposure rule
 
-Treat every MCP tool, resource, or prompt as a selected remote LLM-facing exposure surface for a named backend capability, not as the capability itself. Before adding or changing an MCP surface, identify the capability id, allowed callers, `AuthContext`, tenant/customer scope, input/output schema, data access, side effects, idempotency, approval policy, audit/trace obligations, and tests.
+Treat every MCP tool, resource, or prompt as an `mcp_tool_call`/remote-LLM actor adapter for a named governed tool inside a backend capability, not as the governed tool or capability itself. Before adding or changing an MCP surface, identify the calling worker/client, MCP exposure adapter, governed tool id, capability id, allowed callers, `AuthContext`, tenant/customer scope, input/output schema, data access, side effects, idempotency, approval policy, audit/trace obligations, selected Akka implementation path, and tests.
 
 For protected MCP surfaces, preserve the capability contract at the edge: enforce ACL/JWT or service identity, resolve caller and tenant/customer context, authorize the required role/scope/capability, validate tool parameters, redact resource/tool output, filter allowed tools/resources per caller, map denials to safe errors, and record required audit/work-trace events. Tool descriptions, prompt text, resource URIs, and model instructions are not authorization controls.
 

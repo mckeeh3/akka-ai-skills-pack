@@ -4,6 +4,7 @@ Use this contract when PRD/spec planning creates follow-on implementation work t
 
 Purpose:
 - persist follow-on work after decomposition, backlog creation, task-brief creation, and resolution or deferral of blocking questions
+- preserve lifecycle phase/readiness targets and the compile contract needed for one bounded build/compile run
 - preserve full-stack secure AI-first SaaS operating-model constraints in implementation tasks, including governance, supervision UI, audit, and outcomes
 - make the next runnable task obvious
 - keep each implementation run bounded to one task
@@ -28,7 +29,7 @@ If a project already has an equivalent issue tracker or task queue, the harness 
 2. Prefer a fresh context session for every task.
 3. Do not combine adjacent tasks just because their files are nearby.
 4. Select the first `pending` task whose dependencies are `done` or empty.
-5. Mark a task `done` only after its required checks pass and its done criteria are satisfied. A check that is not runnable blocks completion unless the task is explicitly non-runtime/docs-only, or the user/project has accepted the limitation and the task's notes say why the named feature still works.
+5. Mark a task `done` only after its required checks pass, its done criteria are satisfied, and any feature-bearing runtime path has explicit runtime evidence. A check that is not runnable blocks completion unless the task is explicitly non-runtime/docs-only, or the user/project has accepted the limitation and the task's notes say why the named feature still works without claiming `runtime-ready`.
 6. Mark a task `blocked` when required decisions, pending questions, inputs, dependencies, build/runtime preconditions, or local validation prerequisites are missing.
 7. For AI-first work, unresolved delegated authority, approval, policy/risk threshold, evidence, audit/trace, supervision UI, evaluation, or outcome decisions block only the affected tasks.
 8. Mark a task `deferred` only when the user or plan explicitly chooses to postpone it.
@@ -44,7 +45,7 @@ Use these exact status values:
 - `pending` — ready or potentially ready to execute when dependencies are satisfied
 - `in-progress` — currently being executed in this harness run
 - `blocked` — cannot proceed without a decision, dependency, missing input, or failed prerequisite
-- `done` — completed and validated as far as the task requires; for generated app implementation, the implemented behavior works through its intended local runtime/API/UI surface or the task is explicitly non-runtime/internal-only
+- `done` — completed and validated as far as the task requires; for generated app implementation, the implemented behavior works through its intended local runtime/API/UI surface with recorded evidence, or the task is explicitly non-runtime/internal-only. If the achieved level is only `surface-ready`, `backend-ready`, or `frontend-rendered`, say that in notes and do not call the feature `runtime-ready`.
 - `deferred` — intentionally postponed and not eligible for automatic next-task selection
 - `superseded` — replaced by a later requirement, spec, backlog, or task and not eligible for execution
 
@@ -111,9 +112,11 @@ Use this structure. For SaaS app queues, the first runnable tasks must cover the
   - <observable completion criterion>
 - notes:
   - <optional assumptions, constraints, provenance, or links>
+  - lifecycle/readiness: <build/compile phase target such as compile-ready -> manual-ready, runtime-ready for feature-bearing smoke, or docs-only/non-runtime exemption>
   - source requirement ids: <optional stable requirement IDs when available>
   - source capability ids: <optional app-description capability IDs when available>
-  - vertical contract: <workstreamId/functional agent or internal/foundation scope; attention category or non-attention reason; role-specific dashboard id/purpose; human surface graph node/state/action edge or non-UI trigger; governed-tool id/type/exposure (browser-tool, agent-tool, internal-tool, workflow/timer/consumer/MCP-tool); capability id/class; API/exposure channel; selected Akka substrate; internal workstream agent graph delegation/result surface when relevant; events/notifications/projections; audit/work trace; tests/local validation>
+  - vertical contract: <workstreamId/functional agent or internal/foundation scope; attention category or non-attention reason; role-specific dashboard id/purpose; human surface graph node/state/action edge or non-UI trigger; workstream tool catalog context; governed-tool id/type/exposure and actor adapter/source (surface_action/browser-tool, human_chat_tool_plan, agent_tool_call/agent-tool, internal-tool, workflow/timer/consumer/MCP-tool, API); capability id/class; confirmation/approval behavior; idempotency/transaction boundary; result/partial-failure surface; API/exposure channel; selected Akka substrate; internal workstream agent graph delegation/result surface when relevant; events/notifications/projections; audit/work trace; tests/local validation>
+  - runtime evidence: <required for feature-bearing `done` tasks: readiness level; real path tested browser/surface/action or non-UI trigger -> API/endpoint/client -> Akka component/service/substrate -> trace/audit/view; role/AuthContext/tenant setup; denial case; commands/manual smoke result; provider configured or fail-closed evidence>
   - autonomous task contract: <optional AutonomousAgent task definition, start/query/result/lifecycle capability ids, notification mapping, result/progress surface ids, failure/cancellation attention behavior, and lifecycle tests>
   - foundation scope: <optional AgentDefinition/PromptDocument/SkillDocument/AgentSkillManifest/readSkill/PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace scope for managed-agent foundation tasks>
   - supersedes: <optional task IDs this task replaces>
@@ -131,11 +134,13 @@ Use this section in task briefs:
 ```md
 ## Vertical workstream contract
 
+- Lifecycle / readiness target: <build/compile, manual-ready/runtime-ready target, or explicit docs-only/non-runtime exemption>
 - Workstream / functional agent: <workstream id and backing functional/context-area agent, or explicit internal-only/foundation/cross-cutting scope>
 - Attention category or non-attention reason: <approval/decision/exception/blocked/etc. or why no attention item applies>
 - Role-specific dashboard / surface: <dashboard or surface id/purpose and target role/AuthContext>
 - Surface graph node/action edge: <source surface, action, target/result/system-message surface, or non-UI trigger>
-- Governed-tool id and exposure: <governedToolId plus browser-tool/agent-tool/internal-tool/workflow-tool/timer-tool/consumer-tool/MCP-tool/API exposure, or explicit none for non-runtime/internal-only work>
+- Governed-tool id and exposure: <governedToolId plus actor adapter/source and exposure channel: surface_action/browser-tool, human_chat_tool_plan, agent_tool_call/agent-tool, internal-tool/workflow-tool/timer-tool/consumer-tool/MCP-tool/API, or explicit none for non-runtime/internal-only work>
+- Confirmation / approval / transaction: <confirmation binding, approval/decision-card policy, idempotency key, transaction boundary, partial-failure/result-surface behavior, or explicit none with reason>
 - Capability id: <capability id/class or explicit foundation scope>
 - AuthContext / roles / tenant scope: <actor/caller, roles/capabilities, tenant/customer/account scope, denial expectations>
 - Akka substrate: <entity/workflow/view/consumer/timed action/agent/autonomous agent/endpoint/frontend/test/docs-only>
@@ -160,6 +165,20 @@ bash .agents/skills/tools/validate-pending-task-workstream-contract.sh specs/pen
 
 In a downstream fork, use whichever path exists and pass the target queue path. The validator is intentionally conservative: it checks for the presence of the required contract vocabulary, not semantic correctness. Passing the script does not replace reading the task brief; failing it means repair the backlog/task brief/queue before coding.
 
+After marking feature-bearing tasks `done`, also run the runtime evidence validator when available:
+
+```bash
+python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/pending-tasks.md
+```
+
+From an installed skills library:
+
+```bash
+python3 .agents/skills/tools/validate-runtime-completion-evidence.py specs/pending-tasks.md
+```
+
+This validator checks `done` runtime-looking tasks for textual runtime evidence. Failing it means repair the task notes/status or add a remediation task before claiming the feature group is `runtime-ready`.
+
 ## Managed-agent and workstream expertise splitting guardrails
 
 Generated SaaS queues must never collapse governed runtime agent foundation work into one vague `agent governance`, `managed agents`, or `AI foundation` task. If a backlog item spans `AgentDefinition`, `PromptDocument`, `SkillDocument`, `ReferenceDocument`, `AgentSkillManifest`, `AgentReferenceManifest`, authorized `readSkill(skillId)`, authorized `readReferenceDoc(referenceId)`, `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, behavior editing agents, `ToolPermissionBoundary`, `AgentWorkTrace`, UI, and tests, the item is too broad and must be split or blocked for a task brief.
@@ -181,7 +200,7 @@ For every new or materially changed domain-specific functional agent with LLM be
 - expertise manifest and governance UI surfaces that show model aliases/policy summaries, compact manifests, evidence, denials, decisions, trace links, and review state without exposing full bodies or provider secrets by default
 - contract/runtime tests for model binding success/denial/fallback, provider-secret non-exposure, assigned skill/reference loads, denied loads, tool-boundary denial, no authority expansion from prompt/skill/reference text, tenant isolation, audit/work traces, and surface rendering
 
-Every generated queue entry should preserve source capability ids when available, actor/caller, `AuthContext`, required role/scope or permission, approval gate, audit/trace obligation, UI surface, required checks, and the exact managed-agent foundation or workstream expert bundle scope it covers. For generated full-stack AI-first SaaS, this is a vertical contract, not optional notes: name or inherit the workstream, attention category, role-specific dashboard purpose, human surface graph node/edge or surface action, governed-tool id and qualified exposure (`browser-tool`, `agent-tool`, `internal-tool`, workflow/timer/consumer/MCP-tool), capability id, API/exposure channel, Akka substrate, internal workstream agent graph delegation/result surface when relevant, events/notifications/projections, audit/work trace, and local validation path. A component-only, CRUD-only, page-only, or dashboard-only task is not runnable unless it explicitly states an internal-only, foundation, or cross-cutting scope that does not need a workstream/surface/action. For LLM-backed workstream-agent tasks, the queue entry must name or inherit the approved model binding (`ModelConfigRef`/`ModelPolicy` or explicit inherited governed default), fallback policy, provider secret boundary, and model-use trace requirement. For generated full-stack AI-first SaaS, each runnable implementation task must also carry its vertical workstream contract: functional agent or internal-only/foundation scope, structured surface/action or workstream event/non-UI trigger, capability id/class, selected Akka substrate, frontend/API/realtime work, expertise artifacts when relevant, and required tests. If the task is part of a sprint's named visible capability, include the local app-run, API call, browser/workstream action, or manual smoke path that will prove the feature works; otherwise state that the task is non-runtime/internal-only.
+Every generated queue entry should preserve source capability ids when available, actor/caller, `AuthContext`, required role/scope or permission, approval gate, audit/trace obligation, UI surface, required checks, and the exact managed-agent foundation or workstream expert bundle scope it covers. For generated full-stack AI-first SaaS, this is a vertical contract, not optional notes: name or inherit the workstream, attention category, role-specific dashboard purpose, human surface graph node/edge or surface action, workstream tool catalog context, governed-tool id and qualified actor adapter/exposure (`surface_action`/browser-tool, `human_chat_tool_plan`, `agent_tool_call`/agent-tool, `internal-tool`, workflow/timer/consumer/MCP-tool, API), confirmation/approval behavior, idempotency/transaction boundary, result/partial-failure surface, capability id, API/exposure channel, Akka substrate, internal workstream agent graph delegation/result surface when relevant, events/notifications/projections, audit/work trace, and local validation path. A component-only, CRUD-only, page-only, or dashboard-only task is not runnable unless it explicitly states an internal-only, foundation, or cross-cutting scope that does not need a workstream/surface/action. For LLM-backed workstream-agent tasks, the queue entry must name or inherit the approved model binding (`ModelConfigRef`/`ModelPolicy` or explicit inherited governed default), fallback policy, provider secret boundary, and model-use trace requirement. For generated full-stack AI-first SaaS, each runnable implementation task must also carry its vertical workstream contract: functional agent or internal-only/foundation scope, structured surface/action or workstream event/non-UI trigger, governed-tool actor adapter/exposure, capability id/class, selected Akka substrate, frontend/API/realtime work, expertise artifacts when relevant, and required tests. If the task is part of a sprint's named visible capability, include the local app-run, API call, browser/workstream action, or manual smoke path that will prove the feature works; otherwise state that the task is non-runtime/internal-only.
 
 ## Implementation-ready vertical task rule
 
@@ -191,13 +210,15 @@ Each runnable task should state or inherit from its task brief/backlog:
 
 - functional agent(s), or explicit internal-only/foundation/cross-cutting scope;
 - structured surface/action or workstream event, or explicit non-UI trigger;
+- workstream tool catalog context plus governed-tool id(s) and actor adapter/source such as `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API, workflow, timer, consumer, MCP, or internal;
+- confirmation binding, approval/decision-card policy, idempotency key, transaction boundary, partial-failure/result surface, or explicit none with reason;
 - capability id(s)/class(es), or explicit foundation scope;
 - `AuthContext`, tenant/customer scope, and role/capability rules;
 - selected Akka substrate and exposure surface such as HTTP/API, agent tool, workflow, timer, consumer, view, MCP, or internal method;
 - frontend/API/realtime work when user-facing;
-- success, validation, forbidden, tenant-isolation, idempotency, audit/trace, rendering/API/realtime, local-run/manual-smoke checks as applicable, or an explicit non-runtime/internal-only reason.
+- success, validation, forbidden, tenant-isolation, confirmation/approval, idempotency, transaction, audit/trace, rendering/API/realtime, local-run/manual-smoke checks as applicable, or an explicit non-runtime/internal-only reason.
 
-If this contract is missing, block the task for backlog/task-brief repair instead of guessing the missing workstream, attention semantics, dashboard/surface graph/action edge, governed-tool exposure, capability id, authority, notification/projection behavior, internal workstream agent graph result handling, autonomous task lifecycle, or component scope. If an LLM-backed functional agent is in scope, also block when the task does not name or inherit the workstream expert bundle, approved model binding, skill/reference manifests, authorized `readSkill`/`readReferenceDoc` loader behavior, `ToolPermissionBoundary`, prompt/skill/reference/work traces, expertise UI surfaces, and tests. If an AutonomousAgent is in scope, the task must state or inherit start/query/result/lifecycle capabilities, progress/result surfaces, task notifications, failure/cancellation attention behavior, and tests before execution.
+If this contract is missing, block the task for backlog/task-brief repair instead of guessing the missing workstream, attention semantics, dashboard/surface graph/action edge, workstream tool catalog, governed-tool exposure, actor adapter/source, confirmation/approval behavior, transaction/idempotency semantics, result/partial-failure surface, capability id, authority, notification/projection behavior, internal workstream agent graph result handling, autonomous task lifecycle, or component scope. If an LLM-backed functional agent is in scope, also block when the task does not name or inherit the workstream expert bundle, approved model binding, skill/reference manifests, authorized `readSkill`/`readReferenceDoc` loader behavior, `ToolPermissionBoundary`, prompt/skill/reference/work traces, expertise UI surfaces, and tests. If an AutonomousAgent is in scope, the task must state or inherit start/query/result/lifecycle capabilities, progress/result surfaces, task notifications, failure/cancellation attention behavior, and tests before execution.
 
 ## Selection algorithm
 

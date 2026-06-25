@@ -10,12 +10,20 @@ Use this skill when the user is starting a new app, a new app-description tree d
 This skill creates the **initial app-description current-intent graph** that later description skills will maintain.
 It is intent-compiler scaffolding for the authoritative current app definition rather than for code.
 
+## Lifecycle classification
+
+- Phase: interview.
+- Kind: focused bootstrap/current-intent capture.
+- Family: app-description.
+- Living-graph contract: bootstrap creates the initial app-description current-intent graph, including app, global, domain, workstream, worker, execution-harness, actor-adapter, governed-tool, capability, trace, test, and realization roots where the requested app scope requires them.
+- Build/compile handoff: bootstrap stops at description-ready graph structure; planning, code, tests, or validation must proceed through `../docs/app-description-to-code-compile-contract.md`.
+
 ## Goal
 
 Create a minimum viable internal app-description tree that:
 - gives the harness a stable root to maintain
 - establishes the mandatory secure SaaS foundation for Account/Profile/Settings/Membership/Tenant/Customer/admin/audit before app-specific features
-- establishes app/global/domain/workstream graph nodes for role-authorized functional-agent workstreams, workstream boundary/count decisions, per-workstream attention breakdowns, role-specific dashboard contracts, human surface graphs, governed surface actions, capability-contained governed-tools, AI-first operating model, behavior, tests, auth/security, observability, and required web UI for generated full-stack AI-first SaaS apps
+- establishes app/global/domain/workstream graph nodes for role-authorized functional-agent workstreams, workstream boundary/count decisions, per-workstream attention breakdowns, role-specific dashboard contracts, human surface graphs, deterministic surface intent routing for composer-enabled surfaces, governed surface actions, capability-contained governed-tools, AI-first operating model, behavior, tests, auth/security, observability, and required web UI for generated full-stack AI-first SaaS apps
 - records internal workstream agent graph candidates, internal worker delegations, autonomous task candidates, notification/projection implications, and trace expectations when durable internal/background agent work may be needed
 - records an initial readiness posture
 - defines a generation policy that labels scope as `SaaS Foundation App maintenance/extension`, `business-domain extension`, app-specific feature, or another explicit narrower scope

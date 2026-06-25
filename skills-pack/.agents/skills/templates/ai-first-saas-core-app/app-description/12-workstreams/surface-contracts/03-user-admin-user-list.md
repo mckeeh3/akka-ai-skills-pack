@@ -10,6 +10,11 @@
 
 This surface is a graph node reached from dashboard queues, prompt-entered requests such as `show users`, row/detail back links, and deep links through the shell request pipeline.
 
+
+## User-visible/internal metadata boundary
+
+Default rendering must use SaaS product language and show only information the current actor needs to decide, act, recover, or understand the business outcome. Internal ids, raw trace/event/correlation data, governed-tool/capability ids, backend component names, prompt/provider/model details, and policy implementation references are implementation metadata. Expose them only in authorized admin, support, auditor, or developer drilldowns, and keep them visually subordinate to user-meaningful labels.
+
 ## Payload summary
 
 Payload must include:
@@ -51,26 +56,28 @@ Allowed actions are display hints only; backend authorization remains authoritat
 
 ## Action mapping
 
-| actionId | browserToolId | governedToolId | capabilityId | exposure | resultSurfaceId | idempotency | traceRequired |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| `user-admin.search-users` | `user-admin.users.search` | `useradmin.users.search` | `secure-tenant-user-foundation` | browser-tool, agent-tool | `user-admin-user-list` | query fingerprint | true |
-| `user-admin.open-user-account` | `user-admin.user.open` | `useradmin.users.detail.read` | `secure-tenant-user-foundation` | browser-tool, surface-request | `user-admin-user-account` | target account id | true |
-| `user-admin.create-invitation` | `user-admin.invitation.create` | `useradmin.invitation.create` | `secure-tenant-user-foundation` | browser-tool, agent-tool | deferred `invitation-draft-form`, row update, or `decision-card` | client-generated invitation request id | true |
-| `user-admin.resend-invitation` | `user-admin.invitation.resend` | `useradmin.invitation.resend` | `secure-tenant-user-foundation` | browser-tool | `user-admin-user-list` or `system_message` | invitation id + client request id | true |
-| `user-admin.revoke-invitation` | `user-admin.invitation.revoke` | `useradmin.invitation.revoke` | `secure-tenant-user-foundation` | browser-tool | `user-admin-user-list` or `system_message` | invitation id + client request id | true |
-| `user-admin.add-membership` | `user-admin.membership.add` | `useradmin.membership.add` | `secure-tenant-user-foundation` | browser-tool | `user-admin-user-list` or `decision-card` | client-generated membership request id | true |
-| `user-admin.change-membership-status` | `user-admin.membership.change-status` | `useradmin.membership.change_status` | `secure-tenant-user-foundation` | browser-tool | `user-admin-user-list`, `decision-card`, or `system_message` | membership id + requested status | true |
-| `user-admin.change-role` | `user-admin.role.change` | `useradmin.role.change` | `secure-tenant-user-foundation` | browser-tool | `user-admin-user-list` or `decision-card` | membership id + target role + request id | true |
-| `user-admin.change-account-status` | `user-admin.account.change-status` | `useradmin.account.change_status` | `secure-tenant-user-foundation` | browser-tool | `user-admin-user-list` or `system_message` | account id + requested status | true |
-| `user-admin.change-support-access` | `user-admin.support-access.change` | `useradmin.support_access.change` | `secure-tenant-user-foundation` | browser-tool | `user-admin-user-list` or `decision-card` | support grant id + request id | true |
-| `user-admin.resolve-access-review` | `user-admin.access-review.resolve` | `useradmin.access_review.resolve` | `secure-tenant-user-foundation` | browser-tool | `user-admin-user-list`, `user-admin-user-account`, or `decision-card` | review item id + decision id | true |
-| `user-admin.open-list-audit` | `user-admin.audit.open` | `audit.traces.view` | `governance-decisions-audit` | browser-tool | `audit-trace-explorer` | trace id | true |
+This surface is the human `surface_action` / browser-tool adapter for shared governed tools. When the same governed tool is also available through `human_chat_tool_plan` or `agent_tool_call`, keep the same `governedToolId` and declare adapter-specific confirmation, approval, idempotency, result, partial-failure, and trace behavior in the workstream tool catalog.
+
+| actionId | browserToolId | governedToolId | capabilityId | exposure | actorAdapter | confirmationRequired | approvalPolicy | resultSurfaceId | idempotency | transactionBoundary | partialFailureBehavior | traceSource | traceRequired |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `user-admin.search-users` | `user-admin.users.search` | `useradmin.users.search` | `secure-tenant-user-foundation` | browser-tool, agent-tool | surface_action | false | none | `user-admin-user-list` | query fingerprint | read-only query transaction | show partial/redacted rows with trace link | surface_action | true |
+| `user-admin.open-user-account` | `user-admin.user.open` | `useradmin.users.detail.read` | `secure-tenant-user-foundation` | browser-tool, surface-request | surface_action | false | none | `user-admin-user-account` | target account id | read-only detail transaction | show forbidden/not-found system message | surface_action | true |
+| `user-admin.create-invitation` | `user-admin.invitation.create` | `useradmin.invitation.create` | `secure-tenant-user-foundation` | browser-tool, human_chat_tool_plan, agent-tool | surface_action; chat/agent adapters reuse same governed tool | true for chat plan and form submit | decision-card for risky role/scope expansion | deferred `invitation-draft-form`, row update, or `decision-card` | client-generated invitation request id | one invitation-create transaction per invite | per-invite success/failure result in `system_message` with trace links | surface_action or human_chat_tool_plan | true |
+| `user-admin.resend-invitation` | `user-admin.invitation.resend` | `useradmin.invitation.resend` | `secure-tenant-user-foundation` | browser-tool | surface_action | true | none unless risk policy requires review | `user-admin-user-list` or `system_message` | invitation id + client request id | one resend transaction | preserve existing invite and report send failure | surface_action | true |
+| `user-admin.revoke-invitation` | `user-admin.invitation.revoke` | `useradmin.invitation.revoke` | `secure-tenant-user-foundation` | browser-tool | surface_action | true | decision-card if revoke affects protected admin bootstrap | `user-admin-user-list` or `system_message` | invitation id + client request id | one revoke transaction | no-op if already revoked/expired, with trace | surface_action | true |
+| `user-admin.add-membership` | `user-admin.membership.add` | `useradmin.membership.add` | `secure-tenant-user-foundation` | browser-tool | surface_action | true | decision-card for elevated roles | `user-admin-user-list` or `decision-card` | client-generated membership request id | one membership-add transaction | partial-failure result preserves existing memberships | surface_action | true |
+| `user-admin.change-membership-status` | `user-admin.membership.change-status` | `useradmin.membership.change_status` | `secure-tenant-user-foundation` | browser-tool | surface_action | true | decision-card for suspend/remove protected admins | `user-admin-user-list`, `decision-card`, or `system_message` | membership id + requested status | one membership-status transaction | return denial/no-op/partial failure in system message | surface_action | true |
+| `user-admin.change-role` | `user-admin.role.change` | `useradmin.role.change` | `secure-tenant-user-foundation` | browser-tool | surface_action | true | decision-card for role escalation or last-admin risk | `user-admin-user-list` or `decision-card` | membership id + target role + request id | one role-change transaction | preserve prior role on denial/failure | surface_action | true |
+| `user-admin.change-account-status` | `user-admin.account.change-status` | `useradmin.account.change_status` | `secure-tenant-user-foundation` | browser-tool | surface_action | true | decision-card for disable/reactivate high-risk accounts | `user-admin-user-list` or `system_message` | account id + requested status | one account-status transaction | preserve prior status on denial/failure | surface_action | true |
+| `user-admin.change-support-access` | `user-admin.support-access.change` | `useradmin.support_access.change` | `secure-tenant-user-foundation` | browser-tool | surface_action | true | decision-card required for grants/extensions | `user-admin-user-list` or `decision-card` | support grant id + request id | one support-access transaction | partial-failure result with grant unchanged unless committed | surface_action | true |
+| `user-admin.resolve-access-review` | `user-admin.access-review.resolve` | `useradmin.access_review.resolve` | `secure-tenant-user-foundation` | browser-tool | surface_action | true | decision-card when risk threshold requires reviewer approval | `user-admin-user-list`, `user-admin-user-account`, or `decision-card` | review item id + decision id | one access-review transaction | leave review open on failure and show trace | surface_action | true |
+| `user-admin.open-list-audit` | `user-admin.audit.open` | `audit.traces.view` | `governance-decisions-audit` | browser-tool | surface_action | false | none | `audit-trace-explorer` | trace id | read-only trace query | show redacted/forbidden trace system message | surface_action | true |
 
 ## UI states
 
 - `loading`: preserve submitted filters and show table skeletons; disable mutation buttons.
 - `empty`: distinguish no users in scope, no search matches, no queue items, and redacted result set.
-- `error`: show retry with `correlationId`, submitted filters, and safe error category.
+- `error`: show retry, submitted filters, safe error category, and readable support/reference label; raw `correlationId` appears only in authorized diagnostic detail.
 - `forbidden`: show selected scope and denial category; do not show result counts or matched identities.
 - `stale`: show stale page token/reconnect banner; mutation actions disabled until fresh payload returns.
 
@@ -92,4 +99,4 @@ Allowed actions are display hints only; backend authorization remains authoritat
 - SaaS Owner Admin, Organization Admin, and Customer Admin variants show correct rows, redactions, allowed actions, and forbidden actions.
 - Loading, empty, error, forbidden, stale, and responsive table-to-card states preserve safe context.
 - Dashboard-origin filters open through the shell request pipeline without a page-first route dependency.
-- Row actions include capability ids, governed-tool ids, browser-tool ids, idempotency requirements, trace ids, and decision-card links when risky.
+- Row actions include capability ids, governed-tool ids, browser-tool ids, idempotency requirements, trace ids, and decision-card links for implementation/tests, while rendering user-safe labels and hiding diagnostic ids by default.

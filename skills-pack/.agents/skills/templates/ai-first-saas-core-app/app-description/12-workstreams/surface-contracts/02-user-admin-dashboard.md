@@ -9,6 +9,11 @@
 
 This dashboard is the User Admin human surface graph trunk. It answers what is happening in user and Organization administration, what needs this actor's attention, which Organization bootstrap/invitation/access-review/support-access work is blocked or risky, and what actions are authorized next.
 
+
+## User-visible/internal metadata boundary
+
+Default rendering must use SaaS product language and show only information the current actor needs to decide, act, recover, or understand the business outcome. Internal ids, raw trace/event/correlation data, governed-tool/capability ids, backend component names, prompt/provider/model details, and policy implementation references are implementation metadata. Expose them only in authorized admin, support, auditor, or developer drilldowns, and keep them visually subordinate to user-meaningful labels.
+
 ## Payload summary
 
 Payload must include:
@@ -55,11 +60,15 @@ type UserAdminDashboardData = {
 | `user-admin.open-audit-evidence` | `user-admin.audit.open` | `audit.traces.view` | `governance-decisions-audit` | browser-tool, agent-tool | `audit-trace-explorer` | trace id | true |
 | `user-admin.draft-invitation` | `user-admin.invitation.draft` | `useradmin.invitation.draft` | `secure-tenant-user-foundation` | browser-tool, agent-tool | deferred `invitation-draft-form`, `decision-card`, or `system_message` | client-generated draft id | true |
 
+
+
+Action mappings must preserve the shared tool-use contract: `governedToolId`, actor adapter/source (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/workflow/timer/consumer/MCP/internal), `confirmationRequired`, `approvalPolicy`, idempotency key, transaction boundary, result/partial-failure behavior, `traceSource`, and `traceRequired`. If this surface exposes only the browser-tool adapter, state `surface_action` and keep any chat/agent adapter in the workstream tool catalog instead of duplicating business semantics.
+
 ## UI states
 
 - `loading`: preserve current dashboard cards and show refreshing state.
 - `empty`: explicitly state no user-admin attention items for the selected context.
-- `error`: show retry, safe category, and `correlationId`; no counts from failed partial reads.
+- `error`: show retry, safe category, and readable support/reference label; raw `correlationId` appears only in authorized diagnostic detail, with no counts from failed partial reads.
 - `forbidden`: show selected context and denial category without queue counts or identity leakage.
 - `stale`: left rail and My Account counts remain marked stale until projection refresh succeeds.
 

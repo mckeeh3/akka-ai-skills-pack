@@ -29,7 +29,7 @@ Forward traceability should follow this chain:
 app objective
   -> domain
     -> workstream
-      -> actor adapter / surface action / agent tool / governed tool / policy / trace
+      -> actor adapter / surface action / human chat tool plan / agent tool / governed tool / policy / trace
         -> capability / API / Akka component / frontend route
           -> test
             -> runtime trace / audit / outcome
@@ -37,7 +37,7 @@ app objective
 
 Reverse traceability should make it possible to start from code, state, an event, an endpoint, a test, or a runtime trace and identify the intent artifact that justified it.
 
-When a human surface action and an AI agent tool perform the same consequential operation, the compiler should model them as actor-specific adapters of one governed workstream tool rather than as separate business semantics. The current-intent graph should preserve the shared governed tool id, the human-backed and AI-backed exposure adapters, their approval/denial behavior, and trace source such as `surface_action` or `agent_tool_call`.
+When a human surface action, confirmed human chat tool plan, and AI agent tool perform the same consequential operation, the compiler should model them as actor-specific adapters of one governed workstream tool rather than as separate business semantics. The current-intent graph should preserve the shared governed tool id, the surface/browser adapter, the `human_chat_tool_plan` adapter, the AI-backed agent-tool adapter, internal/API/MCP exposure channels when present, their confirmation/approval/denial behavior, and trace source such as `surface_action`, `human_chat_tool_plan`, or `agent_tool_call`. Model-generated plans are intent mediation only; they do not grant security authority.
 
 ## Canonical doc set
 
@@ -47,5 +47,7 @@ Use these documents as the active source of truth for intent-processing skills:
 - [Incremental intent processing](incremental-intent-processing.md)
 - [Intent to realization flow](intent-to-realization-flow.md)
 - [Intent compiler skill contracts](intent-compiler-skill-contracts.md)
+- [App-description component graph](app-description-component-graph.md)
+- [App-description to code compile contract](app-description-to-code-compile-contract.md)
 
 Legacy description-first or PRD-first documents may contain historical detail, but active skills should prefer this compiler model unless a focused implementation skill explicitly requires another reference.

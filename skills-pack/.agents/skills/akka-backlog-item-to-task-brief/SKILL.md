@@ -13,6 +13,7 @@ This is the **leaf planning skill** below `akka-prd-to-specs-backlog` and `akka-
 
 Create or update one small task brief under `specs/tasks/` that:
 - maps to exactly one slice, one backlog item, and the current-intent graph node(s) being realized
+- records lifecycle phase/readiness target and the compile-contract chain for one focused implementation run
 - narrows scope to one focused implementation run
 - names the smallest required reads
 - makes non-goals explicit
@@ -51,6 +52,10 @@ This skill should normally be used after:
 
 Read these first if present:
 - `../README.md`
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-to-code-compile-contract.md`
+- `../docs/manual-test-reconciliation.md` when the brief covers manual/runtime validation or remediation
 - `../akka-prd-to-specs-backlog/SKILL.md`
 - `../akka-slice-spec-to-backlog/SKILL.md`
 - `../docs/intent-compiler.md`
@@ -77,6 +82,8 @@ If a matching task brief already exists:
 - preserve numbering and naming consistency within the slice task directory
 
 ## What this skill must produce
+
+Use `../docs/app-description-to-code-compile-contract.md` as the minimum task-brief checklist. A feature-bearing brief must name the responsible worker, harness, actor adapter, governed-tool id, capability id, AuthContext/scope, selected substrates, trace obligations, required checks, and manual runtime scenario; otherwise mark the queue entry blocked for graph repair instead of making it runnable.
 
 Use `../docs/intent-compiler-skill-contracts.md` and `../docs/intent-to-realization-flow.md` for the detailed task-brief and queue output contract. Preserve generated-SaaS/SaaS Foundation App context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
 
@@ -134,6 +141,7 @@ Avoid:
 
 Before finishing, verify:
 - the task brief points to the correct slice, backlog, and current-intent graph node(s)
+- lifecycle phase/readiness target and compile-contract fields are present or explicitly non-runtime/docs-only
 - the scope is smaller than the backlog item, not larger
 - the reads are the minimum needed
 - non-goals are explicit
@@ -143,10 +151,12 @@ Before finishing, verify:
 - unresolved AI-first blockers are captured as pending questions and block only affected queue entries
 - required tests are named clearly
 - local app-run, endpoint smoke, browser/workstream smoke, or manual-test validation is named for tasks that implement runtime behavior, or the task explicitly says it is non-runtime/internal-only
+- feature-bearing task briefs name the target readiness level and canonical runtime path: browser/surface/action or confirmed chat tool-plan/non-UI trigger -> API/endpoint/client -> Akka component/service/substrate -> trace/audit/view
+- feature-bearing task briefs require runtime evidence in queue notes before `done`: role/AuthContext/tenant setup, governed-tool id and actor adapter exercised, confirmation/approval and idempotency/transaction evidence when consequential tool use is in scope, denial case, provider configured or fail-closed status, commands/manual-smoke result, and trace/audit evidence
 - the listed skills match the task's component type
 - done criteria define a clear stopping point and do not call a named feature implemented when required backend/API/UI/auth/audit/test pieces are deferred
 - `specs/pending-tasks.md` has a matching entry or updated existing entry for this task brief
-- the task brief and queue entry both carry the required vertical workstream contract, or an explicit internal/foundation/cross-cutting/docs-only/non-runtime exemption with non-attention/non-UI reason, trace expectations, and validation path
+- the task brief and queue entry both carry the required vertical workstream contract, including workstream tool catalog context, governed-tool id, actor adapter/exposure channel (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/workflow/timer/consumer/MCP/internal), confirmation/approval behavior, idempotency/transaction boundary, result/partial-failure surface, trace source/evidence, or an explicit internal/foundation/cross-cutting/docs-only/non-runtime exemption with non-attention/non-UI reason, trace expectations, and validation path
 - the pending-task validator passes when available: use `bash skills-pack/tools/validate-pending-task-workstream-contract.sh specs/pending-tasks.md` from a source attention, or `bash .agents/skills/tools/validate-pending-task-workstream-contract.sh specs/pending-tasks.md` from an installed skills library
 - existing queue task IDs and statuses are preserved
 

@@ -11,6 +11,7 @@ one workstream id
 → one dashboard/surface or explicit non-UI trigger
 → one attention category or explicit non-attention reason
 → one surface action/request or composer intent
+→ one deterministic surface-intent route or explicit no-route reason for composer-enabled slices
 → one governed capability and governed-tool exposure
 → one Akka/API/UI realization path
 → auth denial + trace/correlation evidence
@@ -26,6 +27,7 @@ one workstream id
 | Surface/dashboard | One dashboard, surface, system-message surface, or explicit non-UI trigger. |
 | Attention | One category/lifecycle effect, or an explicit `non-attention` reason. |
 | Action edge | One surface request, command, browser-tool, agent-tool, workflow/timer/consumer trigger, or API operation. |
+| Surface intent route | For composer-enabled workstreams, one high-confidence route to open/refresh/prepopulate the surface, including prompt examples, prefill fields, ambiguity behavior, and no-mutation guarantee; otherwise an explicit no-route reason. |
 | Capability | Capability id, governed-tool id, qualified exposure channel, schemas, side effects, idempotency, approval/policy if any. |
 | Backend authority | AuthContext checks, tenant/customer isolation, denial behavior, and redaction. |
 | Akka/API/UI path | Selected substrate and how the user/system reaches it. |
@@ -44,6 +46,7 @@ Vertical contract:
 - attention: `<category + lifecycle>` or `non-attention: <reason>`
 - dashboard/surface: `<surface-id>` or `non-ui trigger: <trigger>`
 - surface graph edge: `<source> -> <action> -> <result surface/system_message>`
+- surface intent route: `<prompt examples -> target surface + prefill + no-mutation>` or `not applicable: <reason>`
 - capability/governed-tool: `<capability-id>` / `<governed-tool-id>`
 - qualified exposure: `browser-tool|agent-tool|internal-tool|workflow-tool|timer-tool|consumer-tool|MCP-tool|API`
 - Akka substrate/API/UI path: `<entity/workflow/view/agent/autonomous agent/consumer/timed action/endpoint/frontend>`
@@ -68,7 +71,7 @@ Safe runtime behavior: composer/model request returns a typed system_message exp
 
 A minimum slice is done only when:
 
-- the manifest or task brief names the workstream, functional agent, surface/action, capability/governed-tool, scope, trace, validation, and readiness target;
+- the manifest or task brief names the workstream, functional agent, surface/action, composer surface-intent route or no-route reason, capability/governed-tool, scope, trace, validation, and readiness target;
 - success and forbidden behavior both use backend authority rather than frontend-only gating;
 - protected data is tenant/customer scoped and redacted;
 - any LLM-backed behavior uses the governed Akka Agent path or is explicitly deferred/fail-closed;

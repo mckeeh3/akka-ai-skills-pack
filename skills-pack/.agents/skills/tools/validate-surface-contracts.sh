@@ -22,6 +22,7 @@ Checks:
   - every surface-contract markdown file has core contract sections
   - every contract includes surface-id, type/version, a single owner functional agent, payload, action mapping,
     actions, states, auth/security, redaction, traces/correlation, and tests
+  - executable action mappings carry governed-tool id, actor adapter/source, confirmation/approval, idempotency/transaction, result surface, and trace source fields
   - surface graph and traceability surface-to-capability map exist and mention each contract surface id
   - template mode requires deferred typed surfaces file when deferred/fallback surfaces are referenced
 EOF
@@ -120,7 +121,12 @@ if [[ -d "$CONTRACT_DIR" ]]; then
     check_pattern "$file" 'governedToolId' 'governedToolId mapping'
     check_pattern "$file" 'capabilityId' 'capabilityId mapping'
     check_pattern "$file" 'resultSurfaceId' 'resultSurfaceId mapping'
+    check_pattern "$file" 'actorAdapter|actor adapter|actor source|traceSource|surface_action|human_chat_tool_plan|agent_tool_call' 'actor adapter/source mapping'
+    check_pattern "$file" 'confirmationRequired|confirmation|approvalPolicy|approval' 'confirmation/approval mapping'
     check_pattern "$file" 'idempotency' 'idempotency mapping'
+    check_pattern "$file" 'transactionBoundary|transaction boundary|transaction' 'transaction boundary mapping'
+    check_pattern "$file" 'partialFailureBehavior|partial failure|partial-failure' 'partial-failure/result behavior mapping'
+    check_pattern "$file" 'traceSource|trace source' 'trace source mapping'
     check_pattern "$file" 'traceRequired' 'traceRequired mapping'
     check_pattern "$file" 'Capability hint|capability id|capability links|Capability/action|capabilityId' 'capability mapping details'
     check_pattern "$file" 'Qualified exposure|browser-tool|agent-tool|governed-tool' 'qualified governed-tool exposure details'

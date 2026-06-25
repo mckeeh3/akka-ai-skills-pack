@@ -10,6 +10,14 @@ Use this skill when the harness needs to decide whether the current app descript
 This skill does not primarily change the app description.
 It evaluates the current description state and determines whether generation would be responsible, premature, or acceptable with assumptions.
 
+## Lifecycle classification
+
+- Phase: interview.
+- Kind: readiness assessor.
+- Family: app-description.
+- Living-graph contract: readiness evaluates the app-description current-intent graph for semantic sufficiency across workers, execution harnesses, actor adapters, governed tools, capabilities, behavior, tests, security, observability, UI, and realization links.
+- Build/compile handoff: only route to generation or implementation when the graph can safely proceed through `../docs/app-description-to-code-compile-contract.md`; otherwise return to focused description skills.
+
 ## Goal
 
 Assess whether the current application description is sufficiently complete to support reliable:
@@ -70,7 +78,7 @@ Readiness is about **semantic completeness**, not about whether code could be gu
 
 A description is ready only when it is clear enough that generation is likely to preserve intended behavior without hiding major unresolved decisions.
 
-This skill should resist premature generation when important agent workstream, role-specific dashboard attention, human surface graph, internal workstream agent graph, workstream expertise, governed-tool, structured surface action, autonomous task, notification/projection, capability contract, behavior, test, security, observability, in-scope frontend/UI, mandatory secure SaaS foundation, or AI-first operating-model semantics are still undefined.
+This skill should resist premature generation when important agent workstream, role-specific dashboard attention, human surface graph, internal workstream agent graph, workstream expertise, bounded workstream tool catalog, governed-tool, actor-adapter mapping, structured surface action, confirmed human chat tool-plan confirmation, AI agent-tool boundary, autonomous task, notification/projection, capability contract, behavior, test, security, observability/trace-source, in-scope frontend/UI, mandatory secure SaaS foundation, or AI-first operating-model semantics are still undefined.
 
 ## Readiness dimensions
 
@@ -114,7 +122,7 @@ If a critical area is underspecified, say so directly.
 Do not mark the description ready just because generation is technically possible.
 
 ### 2. Weight missing production concerns appropriately
-Missing secure SaaS foundation, agent workstream model, role-specific dashboard contracts, human surface graph nodes/edges, internal workstream agent graph delegation, governed-tool contracts, notification/projection semantics, autonomous task lifecycle semantics, capability contracts, auth/security, observability, operating-model, or AI-first UI details must block readiness when generation would otherwise invent Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, tenant isolation, functional agents, internal agents, structured surfaces, workstream shell behavior, actors/callers, AuthContext/scope, schemas, side effects, idempotency, exposure surfaces, browser-tool/agent-tool/internal-tool mappings, authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or supervision surfaces.
+Missing secure SaaS foundation, agent workstream model, role-specific dashboard contracts, human surface graph nodes/edges, internal workstream agent graph delegation, governed-tool contracts, workstream tool catalogs, actor-adapter mappings, confirmed human chat plan/confirmation semantics, notification/projection semantics, autonomous task lifecycle semantics, capability contracts, auth/security, observability, operating-model, or AI-first UI details must block readiness when generation would otherwise invent Account/Profile/Settings, Tenant/Customer, Membership/Role/Permission, `/api/me`, backend authorization, audit, tenant isolation, functional agents, internal agents, structured surfaces, workstream shell behavior, actors/callers, AuthContext/scope, schemas, side effects, idempotency, exposure surfaces, browser-tool/human_chat_tool_plan/agent-tool/internal-tool mappings, authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or supervision surfaces.
 
 ### 3. Allow limited assumptions only when localized and non-runtime
 `ready-with-assumptions` is valid only when the remaining assumptions are:
@@ -122,7 +130,7 @@ Missing secure SaaS foundation, agent workstream model, role-specific dashboard 
 - explicit
 - low-risk
 - unlikely to distort the app's core behavior
-- unrelated to runtime completion of named features, protected capabilities, agent/provider calls, UI action wiring, audit/work traces, tests, or local validation
+- unrelated to runtime completion of named features, protected capabilities, governed tool catalog membership, human chat confirmation, agent/provider calls, UI action wiring, audit/work traces, tests, or local validation
 
 If an assumption would change whether a user-visible/API/workstream feature works through the real local Akka runtime path, the description is `not-ready` for that feature or must be labeled as a narrower scope with executable follow-up tasks.
 
@@ -185,7 +193,7 @@ Before finishing, verify:
 - missing foundation/security blocks generation or marks the description `not-ready`
 - agent workstream application completeness was assessed explicitly for generated full-stack AI-first SaaS apps
 - workstream attention, dashboard, notification/projection, and autonomous task surface semantics were assessed explicitly
-- missing functional agents, attention/dashboard contracts, workstream expert bundles, or structured surfaces for authenticated consequential work blocks generation or marks the description `not-ready`
+- missing functional agents, attention/dashboard contracts, workstream expert bundles, bounded tool catalogs, adapter mappings, or structured surfaces for authenticated consequential work blocks generation or marks the description `not-ready`
 - missing User Admin or Agent Admin blocks SaaS Foundation App generation/maintenance unless narrower scope is explicit
 - AI-first operating-model completeness was assessed explicitly for generated AI-first SaaS
 - behavior completeness was assessed explicitly

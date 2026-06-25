@@ -7,6 +7,22 @@ description: Implement governed runtime skills for Akka agents with SkillDocumen
 
 Use this skill when model-loadable agent guidance must be tenant-scoped, versioned, reviewed, activated, authorized per agent, loaded through a governed tool, and traced. For small deploy-time packaged resources, prefer `akka-agent-harness-skills`.
 
+## Worker/tool/capability alignment
+
+For generated AI-first SaaS app work, treat the agent runtime, autonomous task loop, or governed artifact in scope as a software-worker harness concern, not as the product operation or authorization boundary. Keep the chain explicit:
+
+```text
+software worker
+→ Akka Agent/AutonomousAgent harness or focused governance artifact
+→ actor adapter (`agent_tool_call`, `human_chat_tool_plan`, workflow/timer/consumer/API/MCP/internal adapter as applicable)
+→ governed tool
+→ backend capability
+→ Akka/frontend implementation
+```
+
+Human surface availability, prompt/skill/reference text, model output, task instructions, and Akka tool registration do not grant tool authority. A model-facing tool, loader, or autonomous task action may be exposed only when the active workstream tool catalog, governed tool contract, backend `AuthContext`, and `ToolPermissionBoundary` explicitly allow that actor adapter; denials and approval-required paths must fail closed and be traced.
+
+
 ## Required reading
 
 - `../docs/governed-agent-substrate.md`
@@ -29,7 +45,7 @@ Lifecycle should include draft, in-review, approved, active, deprecated/archived
 
 ## Runtime loading
 
-Agents should receive only compact manifest context in the prompt. Full skill text is loaded through an authorized `readSkill(skillId)` function/tool when needed.
+Agents should receive only compact manifest context in the prompt. Full skill text is loaded through an authorized `readSkill(skillId)` function/tool when needed. Compact entries and loaded skill bodies may teach the model how to use surface actions, confirmed `human_chat_tool_plan` protocols, or AI-backed `agent_tool_call` tools, but they cannot grant governed tool access or bypass confirmation, approval, AuthContext, or `ToolPermissionBoundary` checks.
 
 `readSkill` must:
 
@@ -60,6 +76,7 @@ Cover:
 - allowed `readSkill` load with trace
 - denied load for unassigned, inactive/unapproved, cross-tenant, wrong agent/profile, wrong purpose, missing boundary, and token/redaction limits
 - safe test console cannot bypass governance
+- skill text that claims a new tool, broader tenant/customer scope, approval authority, or unconfirmed chat execution is denied by backend tool-boundary/capability checks and traced
 - runtime fail-closed behavior when active skill/config is missing
 
 Do not implement normal runtime by copying every skill into every prompt. Manifest-first context plus governed on-demand loading is the intended pattern.

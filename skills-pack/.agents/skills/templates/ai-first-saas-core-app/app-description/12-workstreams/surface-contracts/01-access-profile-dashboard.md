@@ -9,6 +9,11 @@
 
 The My Account dashboard is the current user's aggregate attention dashboard. It opens from the signed-in user tile/email in the lower-left rail, not from the top workstream rail. It is the graph trunk for self-service context, profile, settings, personal queue, and cross-workstream attention panels.
 
+
+## User-visible/internal metadata boundary
+
+Default rendering must use SaaS product language and show only information the current actor needs to decide, act, recover, or understand the business outcome. Internal ids, raw trace/event/correlation data, governed-tool/capability ids, backend component names, prompt/provider/model details, and policy implementation references are implementation metadata. Expose them only in authorized admin, support, auditor, or developer drilldowns, and keep them visually subordinate to user-meaningful labels.
+
 ## Payload summary
 
 Payload must include:
@@ -58,11 +63,15 @@ Allowed actions are display hints only; backend authorization remains authoritat
 | `my-account.open-workstream` | `my-account.workstream.open` | `workstream.open` | `frontend-shell-integration-patterns` | browser-tool, surface-request | target dashboard or `system_message` | target workstream id | true |
 | `my-account.open-trace` | `my-account.trace.open` | `audit.traces.view` | `governance-decisions-audit` | browser-tool, agent-tool | `audit-trace-explorer` | trace id | true |
 
+
+
+Action mappings must preserve the shared tool-use contract: `governedToolId`, actor adapter/source (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/workflow/timer/consumer/MCP/internal), `confirmationRequired`, `approvalPolicy`, idempotency key, transaction boundary, result/partial-failure behavior, `traceSource`, and `traceRequired`. If this surface exposes only the browser-tool adapter, state `surface_action` and keep any chat/agent adapter in the workstream tool catalog instead of duplicating business semantics.
+
 ## UI states
 
 - `loading`: show account/context skeletons and do not flash hidden workstreams.
 - `empty`: no personal attention items; still show profile/settings/context affordances.
-- `error`: safe error category and `correlationId`; no provider secrets or tokens.
+- `error`: safe error category and readable support/reference label; raw `correlationId` appears only in authorized diagnostic detail, with no provider secrets or tokens.
 - `forbidden`: disabled/no-membership recovery copy without leaking tenant/customer existence.
 - `stale`: attention panels marked stale until refreshed from backend projection.
 
@@ -79,4 +88,4 @@ Allowed actions are display hints only; backend authorization remains authoritat
 - Organization Admin, regular member, auditor/support-like viewer, disabled user, and no-membership variants render correct actions and denials.
 - Cross-workstream attention items use the shell request pipeline with canonical prompt feedback, origin metadata, and target-workstream-only request rendering.
 - Backend denial does not leak hidden workstream/surface existence.
-- Trace ids and correlation ids appear on protected payload reads and action results.
+- Trace ids and correlation ids are retained for protected payload reads and action results, but ordinary users see readable support/reference labels unless authorized for diagnostic detail.

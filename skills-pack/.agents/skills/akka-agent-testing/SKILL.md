@@ -10,13 +10,36 @@ Use this skill when testing request-based Akka `Agent` code or agent-driven flow
 Use `akka-autonomous-agent-testing` instead for `AutonomousAgent` task lifecycle, task rules, snapshots/results, notifications, delegation, handoff, teams, moderation, and `TestModelProvider.AutonomousAgentTools`.
 
 
+## Lifecycle and compile boundary
+
+Testing work belongs to the build/compile phase unless the selected task is explicitly runtime verification or manual-test reconciliation. Use this skill to prove the component-specific mechanics and the declared worker/harness/actor-adapter/governed-tool/capability path; do not widen a component-testing task into unrelated planning, product repair, or manual-failure triage. For feature-bearing generated SaaS work, passing component tests can support `manual-ready`; `runtime-ready` still requires the real local API/UI/agent path, provider/fail-closed evidence where relevant, and reconciliation of manual findings through `../docs/manual-test-reconciliation.md`.
+
 ## Generated SaaS input contract
 
 Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
+## Worker/tool/capability alignment
+
+For generated AI-first SaaS app work, treat the agent runtime, autonomous task loop, or governed artifact in scope as a software-worker harness concern, not as the product operation or authorization boundary. Keep the chain explicit:
+
+```text
+software worker
+→ Akka Agent/AutonomousAgent harness or focused governance artifact
+→ actor adapter (`agent_tool_call`, `human_chat_tool_plan`, workflow/timer/consumer/API/MCP/internal adapter as applicable)
+→ governed tool
+→ backend capability
+→ Akka/frontend implementation
+```
+
+Human surface availability, prompt/skill/reference text, model output, task instructions, and Akka tool registration do not grant tool authority. A model-facing tool, loader, or autonomous task action may be exposed only when the active workstream tool catalog, governed tool contract, backend `AuthContext`, and `ToolPermissionBoundary` explicitly allow that actor adapter; denials and approval-required paths must fail closed and be traced.
+
+
 ## Required reading
 
 Read these first if present:
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-description-to-code-compile-contract.md`
+- `../docs/manual-test-reconciliation.md` when tests are part of a manual/runtime readiness claim or remediation loop
 - `akka-context/sdk/agents/testing.html.md`
 - `akka-context/sdk/agents/llm_eval.html.md`
 
@@ -51,6 +74,8 @@ Read these first if present:
 ## Governed runtime agent tests
 
 Use this section when an agent is resolved from tenant-scoped runtime governance rather than being only a static Java class. Pair these tests with `akka-agent-behavior-profiles`, `akka-agent-prompt-governance`, `akka-agent-skill-governance`, `akka-agent-tool-boundaries`, and `akka-agent-work-trace`.
+
+For workstream agents, test the governed workstream tool contract rather than only the Java tool mechanism. A surface action, confirmed `human_chat_tool_plan`, and AI-backed `agent_tool_call` may adapt the same governed tool id, but each adapter needs separate authorization, confirmation/approval, idempotency, trace-source, result-surface, and denial assertions. TestModelProvider responses are allowed to drive model planning in tests, but prompt/skill text must not be treated as authority.
 
 ### Runtime resolution and lifecycle
 
@@ -98,12 +123,14 @@ Cover manifest and reference-loading behavior:
 
 Cover backend-enforced `ToolPermissionBoundary` semantics:
 
-- allowed read-only tool invocation succeeds and records tool id, capability id, boundary version, and safe data-access summary;
+- allowed read-only tool invocation succeeds and records governed tool id, adapter tool id, capability id, boundary version, source `agent_tool_call`, and safe data-access summary;
 - denied ungranted tool id/category, denied side-effecting operation under a read-only grant, and denied cross-customer or cross-tenant input all fail closed;
 - approval-required side effects return an approval-required result or decision-card request without executing the side effect;
 - side-effecting tools require idempotency keys where the capability contract says so;
+- confirmed human chat tool plans deny execution before confirmation, bind confirmation to the proposed plan, reauthorize every governed-tool step, record `requestedBy` and `confirmedBy`, and report partial failures/result surfaces safely;
+- AI-backed agent-tool calls are denied when the governed tool is absent from the active workstream tool catalog or `ToolPermissionBoundary`, even if prompt/skill/reference text asks for it;
 - MCP allowed-tool filters and component-tool `uniqueId` scope validation are exercised when those tool types are in scope;
-- all allowed, denied, and approval-required tool calls emit trace events referencing `ToolPermissionBoundary`.
+- all allowed, denied, approval-required, unconfirmed, and partial-failure tool calls emit trace events referencing `ToolPermissionBoundary`.
 
 ### Behavior-editing and authority-expansion tests
 
@@ -120,14 +147,14 @@ Cover `AgentBehaviorEditorAgent` or equivalent editing-agent flows:
 For consequential governed-agent behavior, assert trace facts rather than logs only:
 
 - allowed and denied runtime calls create `AgentWorkTrace`/audit events with correlation ids;
-- `PromptAssemblyTrace` links to any subsequent `SkillLoadTrace`, `ReferenceLoadTrace`, tool invocation trace, workflow step, decision card, or response summary;
+- `PromptAssemblyTrace` links to any subsequent `SkillLoadTrace`, `ReferenceLoadTrace`, tool invocation trace, human chat plan proposal/confirmation, workflow step, decision card, result surface, or response summary;
 - trace search/detail APIs are tenant-scoped and capability-protected;
 - sensitive prompt, skill, reference, input, output, and tool payload fields are summarized or redacted for normal readers;
-- forbidden, disabled-user, disabled-agent, unassigned skill, unassigned reference, missing `read_skill` or `read_reference` tool-boundary grant, tool-boundary denial, and cross-tenant tests include both denial response and trace emission assertions.
+- forbidden, disabled-user, disabled-agent, unassigned skill, unassigned reference, missing `read_skill` or `read_reference` tool-boundary grant, tool-boundary denial, missing chat confirmation, and cross-tenant tests include both denial response and trace emission assertions.
 
 ## Runtime completion rule
 
-For a named generated-app agent feature, completion also requires a local Akka invocation through the intended governed runtime path: active `AgentDefinition` resolution, approved prompt/skill/reference manifest assembly, `ToolPermissionBoundary` enforcement, `readSkill`/`readReferenceDoc` loader tools where assigned, `effects().tools(runtimeTools)` registration, provider/model configuration checks, trace emission, and the endpoint/workstream surface that users exercise. If a real provider/security configuration is unavailable, the runtime path must fail closed with an actionable error and the feature remains blocked/not complete; do not substitute `TestModelProvider` or canned responses as user-facing behavior.
+For a named generated-app agent feature, completion also requires a local Akka invocation through the intended governed runtime path: active `AgentDefinition` resolution, approved prompt/skill/reference manifest assembly, `ToolPermissionBoundary` enforcement, `readSkill`/`readReferenceDoc` loader tools where assigned, `effects().tools(runtimeTools)` registration, provider/model configuration checks, trace emission, and the endpoint/workstream surface that users exercise. For confirmed human chat tool execution, the smoke path must include the plan proposal, explicit confirmation, governed-tool execution/denial, trace facts, and result or partial-failure surface. If a real provider/security configuration is unavailable, the runtime path must fail closed with an actionable error and the feature remains blocked/not complete; do not substitute `TestModelProvider` or canned responses as user-facing behavior.
 
 ## Review checklist
 

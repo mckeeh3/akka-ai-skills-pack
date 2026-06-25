@@ -7,6 +7,22 @@ description: "Apply generated-app governance to Akka Autonomous Agents: capabili
 
 Use this skill when Autonomous Agents are part of a generated secure AI-first SaaS app or any runtime where tasks, tools, models, approvals, traces, or notification streams need backend governance.
 
+## Worker/tool/capability alignment
+
+For generated AI-first SaaS app work, treat the agent runtime, autonomous task loop, or governed artifact in scope as a software-worker harness concern, not as the product operation or authorization boundary. Keep the chain explicit:
+
+```text
+software worker
+→ Akka Agent/AutonomousAgent harness or focused governance artifact
+→ actor adapter (`agent_tool_call`, `human_chat_tool_plan`, workflow/timer/consumer/API/MCP/internal adapter as applicable)
+→ governed tool
+→ backend capability
+→ Akka/frontend implementation
+```
+
+Human surface availability, prompt/skill/reference text, model output, task instructions, and Akka tool registration do not grant tool authority. A model-facing tool, loader, or autonomous task action may be exposed only when the active workstream tool catalog, governed tool contract, backend `AuthContext`, and `ToolPermissionBoundary` explicitly allow that actor adapter; denials and approval-required paths must fail closed and be traced.
+
+
 ## Required reading
 
 Read before generated-app worker task implementation or review:
@@ -58,7 +74,7 @@ Before task start or assignment:
 
 For worker tasks, missing `ComponentClient`, provider/model configuration, governed profile, tool grants, evidence access, or runtime binding must fail closed with blocked/denied state, trace refs, typed workstream events/attention when appropriate, and actionable recovery text. Do not fabricate successful findings or use deterministic/demo/model-less runtime substitutes.
 
-For tool calls, use `akka-agent-tool-boundaries`: prompt text, task instructions, skill/reference text, and tool descriptions never grant authority.
+For tool calls, use `akka-agent-tool-boundaries`: prompt text, task instructions, skill/reference text, and tool descriptions never grant authority. Autonomous task tools are AI-backed `agent_tool_call` adapters for governed tools; if a human requested the task, preserve `requestedBy`, but do not treat that request as extra authority. Human chat tool-plan confirmation is a separate human-backed adapter and does not automatically grant autonomous agent tool access.
 
 For side effects:
 - default to proposal or approval-required;
@@ -86,4 +102,4 @@ Notification streams are progress surfaces, not business source of truth. Use ta
 - model policy and provider-secret boundaries are enforced before model invocation;
 - tool registration follows active `ToolPermissionBoundary` and registry entries;
 - approval gates exist for authority expansion, high-impact side effects, and higher-authority handoff;
-- tests cover allowed, denied, cross-tenant, approval-required, trace, and fail-closed paths.
+- tests cover allowed, denied, cross-tenant, approval-required, trace, partial-failure, and fail-closed paths, including prompt/skill/reference attempts to expand tool authority.

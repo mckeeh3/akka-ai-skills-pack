@@ -37,9 +37,42 @@ For this repository's runnable SaaS Foundation App and downstream forks that kee
 
 Do not place new product-specific Java code in legacy top-level `security`, `agentfoundation`, `admin`, or `workstream` packages when extending the SaaS Foundation App. Users extend the root app workspace with business-specific domains, workstreams, surfaces, agents, Akka components, frontend extensions, app-description extensions, specs, docs, and tests. Do not regenerate a parallel fresh app, replace existing foundation files, or use `.agents/` resources as writable project source unless explicitly requested.
 
+## Lifecycle-first skill routing
+
+Route every request through the smallest lifecycle phase that can make safe progress:
+
+1. **Interview phase** (`interview`): capture, normalize, or reconcile user/business intent until the app-description can represent the requested change. Typical skills: `business-intent-interview`, `business-intent-to-app-input`, `app-description-input-normalization`, `app-description-intake-router`, and focused app-description editors.
+2. **Build/compile phase** (`build-compile`): compile description-ready current intent or a selected queued task into docs, specs, code, tests, configuration, and validation evidence. Typical skills: app-description planning/generation skills, `akka-prd-to-specs-backlog`, `akka-solution-decomposition`, component/endpoint/web UI implementation skills, and queue execution skills.
+3. **Manual runtime test phase** (`manual-test`): exercise the real local/API/UI/agent path, classify failures, and reconcile findings into intent, tasks, code, or blockers. Typical skills: `akka-runtime-feature-verification` and `akka-manual-failure-reconciliation`.
+4. **Cross-phase** (`cross-phase`): broad routing, architecture, foundation, and maintenance skills that intentionally span phases. Typical skills: `ai-first-saas`, `agent-workstream-apps`, `core-saas-foundation`, `capability-first-backend`, `app-descriptions`, and pack-maintenance planning skills.
+
+Skill contracts use these classification fields when a task, skill header, spec, or manifest entry needs routing metadata: `phase`, `kind`, `family`, `consumes`, `produces`, and `routes-to`. The canonical semantics live in `docs/intent-compiler-skill-contracts.md`; the manifest remains backward compatible and may continue to use the existing `category` field until a later manifest migration validates any schema change.
+
+## Worker/tool/capability routing
+
+For feature-bearing generated-app work, route through the product chain before selecting Akka components or UI controls:
+
+```text
+worker
+  -> execution harness
+    -> actor adapter
+      -> governed tool
+        -> capability
+          -> Akka implementation
+```
+
+Use `docs/app-worker-tool-model.md` for the chain, `docs/app-description-component-graph.md` for graph nodes and links, and `docs/app-description-to-code-compile-contract.md` for build/compile task sufficiency. A surface action, confirmed human chat tool plan, AI agent tool call, workflow step, timer, consumer, API, MCP, or internal call is an actor adapter to a governed tool; it is not a separate business operation by default.
+
 ## AI-first SaaS entry routing
 
 For high-level product input, treat the target as a secure AI-first SaaS **agent workstream application** unless the user explicitly asks for repository-maintenance-only or non-SaaS reference material.
+
+For early SMB business discovery, use the Stage 1 interview skills before app-description decomposition:
+
+- `business-intent-interview` — guide an interactive interview with SMB owners or representatives, extrapolate likely business-specific processes and adjacent CRM/ERP/operations needs, and capture confirmed vs inferred input.
+- `business-intent-to-app-input` — turn interview notes, transcripts, emails, or messy stakeholder discussion into a clean `docs/input/**` artifact for later ingestion.
+
+Stage 1 output is business-authored / agent-assisted input. It is not app-description current intent or implementation design. For the shared doctrine, read `docs/business-intent-interview-process.md`.
 
 Security is mandatory. Load `core-saas-foundation` early whenever generated-app foundation rules are in scope. The mandatory secure SaaS foundation includes WorkOS/AuthKit browser authentication, local Akka-owned authorization state, account/profile/settings/membership/role/capability state, customer-facing Organization concepts backed by tenant isolation, `/api/me`, email-invite onboarding with Resend, backend authorization checks, tenant/customer scoping, support access, admin audit, audit/work traces, workstream UI surfaces, tenant-isolation tests, and frontend secret boundaries.
 
@@ -49,7 +82,14 @@ Scope control: load only the smallest companion set needed for the current user 
 
 Canonical doctrine:
 
+- `docs/app-development-lifecycle.md`
+- `docs/app-worker-tool-model.md`
+- `docs/app-description-component-graph.md`
+- `docs/app-description-to-code-compile-contract.md`
+- `docs/manual-test-reconciliation.md`
 - `docs/intent-compiler.md`
+- `docs/business-intent-interview-process.md`
+- `docs/business-extension-requirements-guidance.md`
 - `docs/current-intent-model.md`
 - `docs/incremental-intent-processing.md`
 - `docs/intent-to-realization-flow.md`
@@ -60,6 +100,7 @@ Canonical doctrine:
 - `docs/minimum-ai-first-saas-app.md`
 - `docs/requirements-to-workstream-development-process.md`
 - `docs/agent-workstream-application-architecture.md`
+- `docs/workforce-decomposition.md`
 - `docs/workstream-contract.md`
 - `docs/workstream-attention-contracts.md`
 - `docs/structured-surface-contracts.md`
@@ -72,8 +113,10 @@ Canonical doctrine:
 
 Top-level entry skills:
 
+- `app-development-lifecycle` — explain and apply the three-phase Interview → Build/compile → Manual runtime test loop and route lifecycle/process questions to the right phase.
 - `ai-first-saas` — interpret product intent as a secure AI-first SaaS operating model and route to app-description, decomposition, planning, or implementation.
 - `agent-workstream-apps` — interpret generated full-stack AI-first SaaS apps as role-authorized functional-agent workstream applications.
+- `ai-first-saas-worker-decomposition` — identify human, functional-agent, internal/autonomous/evaluator agent, and system workers before surfaces, capabilities, or components are selected.
 - `core-saas-foundation` — apply the non-optional secure SaaS baseline for every new project/app/PRD/spec/backlog unless the user explicitly asks for non-SaaS reference material.
 - `capability-first-backend` — model backend behavior as governed capabilities before choosing Akka components or exposure surfaces.
 
@@ -87,6 +130,7 @@ Mandatory foundation companions:
 AI-first companion skills:
 
 - `ai-first-saas-object-model`
+- `ai-first-saas-worker-decomposition`
 - `ai-first-saas-agent-team-design`
 - `ai-first-saas-admin-agents`
 - `akka-agent-governed-documents`
@@ -100,13 +144,15 @@ Use companion skills only for concerns actually in scope, except foundation/admi
 
 ## Canonical generated-app handoff order
 
-Secure AI-first SaaS interpretation → agent workstream model → mandatory core SaaS foundation verticals → affected workstreams → role-specific dashboard attention model → human surface graph → internal workstream agent graph → governed-tools in capability files and surface/action maps → capability-first backend substrate → description/decomposition/planning path → focused implementation.
+Secure AI-first SaaS interpretation → agent workstream model → mandatory core SaaS foundation verticals → affected workstreams → workforce decomposition and responsibility/authority/handoff map → role-specific dashboard attention model → human surface graph → deterministic surface intent routing for composer-enabled surfaces → internal workstream agent graph → governed-tools in capability files and surface/action maps → capability-first backend substrate → description/decomposition/planning path → focused implementation.
 
 For SaaS Foundation App, basic app, starter, or chatbot-like generated SaaS prompts, the first runnable target is the SaaS Foundation App domain with `markdown_response` for My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy. It is not a generic public chatbot or page-first CRUD shell.
 
 ## Implementation completion standard
 
-Generated Akka app features are complete only when they work at the stated scope through the intended local Akka/API/UI runtime path. For the canonical runtime-completion doctrine, including governed Akka `Agent` invocation, provider fail-closed behavior, and fixture/mock boundaries, read `references/generated-saas-runtime-completion.md`.
+Generated Akka app features are complete only when they work at the stated scope through the intended local Akka/API/UI runtime path. For the canonical runtime-completion doctrine, including governed Akka `Agent` invocation, provider fail-closed behavior, fixture/mock boundaries, readiness vocabulary, and required runtime evidence, read `references/generated-saas-runtime-completion.md`.
+
+Use `akka-runtime-feature-verification` before closing a feature group or when a completed slice may only be `surface-ready`, `backend-ready`, or `frontend-rendered`. Use `akka-manual-failure-reconciliation` when manual testing reports broken flows; it classifies each failure as an app-description gap, implementation gap, test gap, provider/config blocker, seed/demo-data gap, UX/state gap, or expectation change before creating remediation tasks.
 
 ## Description-first path
 
@@ -137,6 +183,8 @@ Start here when the user is primarily describing or revising the app before real
 - `akka-backlog-item-to-task-brief`
 - `akka-do-next-pending-task`
 - `akka-pending-task-queue-maintenance`
+- `akka-runtime-feature-verification`
+- `akka-manual-failure-reconciliation`
 - `akka-pending-question-generation`
 - `akka-do-next-pending-question`
 - `akka-pending-question-queue-maintenance`

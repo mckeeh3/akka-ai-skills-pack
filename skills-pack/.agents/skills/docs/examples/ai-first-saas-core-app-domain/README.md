@@ -112,7 +112,7 @@ Surface files in workstream PRDs must define payload, actions, capability ids, a
 
 ## Shared capability inventory and exposure channel contract
 
-Every capability referenced by a core workstream is a governed backend contract. APIs, tools, surface actions, workflow steps, timers, consumers, views, and internal methods are exposure or realization channels over that contract.
+Every capability referenced by a core workstream is a governed backend contract. APIs, tools, surface actions, confirmed human chat tool plans, AI-backed agent-tool calls, workflow steps, timers, consumers, views, and internal methods are exposure or realization channels over that contract.
 
 Every capability must define:
 
@@ -125,17 +125,18 @@ Every capability must define:
 - data access and side effects;
 - approval/escalation policy;
 - audit/work-trace fields;
-- exposure channels: surface action, browser API, workstream-agent tool, internal-agent tool, workflow step, timer, consumer, MCP tool/resource, view, internal method;
+- exposure channels/actor adapters: `surface_action`/browser API, `human_chat_tool_plan`, `agent_tool_call`/workstream-agent tool, internal-agent tool, workflow step, timer, consumer, MCP tool/resource, view, internal method;
 - tests.
 
 Exposure-channel rules:
 
 - Browser APIs are frontend exposures of capabilities.
-- Workstream-agent tools are conversational exposures of capabilities.
+- Confirmed `human_chat_tool_plan` adapters are conversational human-backed exposures: the workstream agent proposes a concrete plan, binds explicit confirmation to it, and execution reuses the governed capability/tool contract.
+- AI-backed workstream-agent tools (`agent_tool_call`) are model-facing exposures governed by the active workstream tool catalog and `ToolPermissionBoundary`.
 - Internal-agent tools are backend AI-worker exposures of capabilities.
 - Surface actions reference capabilities and usually invoke browser APIs.
-- Agent tools may invoke the same capabilities as surface actions when authority, required inputs, confirmation, approval, audit, and result surfaces are preserved.
-- Side-effecting tools default to draft/proposal/approval flows unless a bounded autonomous policy explicitly allows execution.
+- Chat plans and agent tools may invoke the same capabilities as surface actions when shared governed-tool ids, authority, required inputs, confirmation/approval, idempotency, audit/work traces, and result or partial-failure surfaces are preserved.
+- Side-effecting tools default to surface action, plan-bound human confirmation, draft/proposal, or approval flows unless a bounded autonomous policy explicitly allows execution.
 
 ## Shared Akka realization expectations
 

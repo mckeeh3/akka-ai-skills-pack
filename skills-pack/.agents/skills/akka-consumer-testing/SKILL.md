@@ -7,17 +7,24 @@ description: Write Akka Java SDK Consumer integration tests using TestKitSupport
 
 Use this skill when testing Consumer behavior.
 
+## Lifecycle and compile boundary
+
+Testing work belongs to the build/compile phase unless the selected task is explicitly runtime verification or manual-test reconciliation. Use this skill to prove the component-specific mechanics and the declared worker/harness/actor-adapter/governed-tool/capability path; do not widen a component-testing task into unrelated planning, product repair, or manual-failure triage. For feature-bearing generated SaaS work, passing component tests can support `manual-ready`; `runtime-ready` still requires the real local API/UI/agent path, provider/fail-closed evidence where relevant, and reconciliation of manual findings through `../docs/manual-test-reconciliation.md`.
+
 ## Capability-first test role
 
 Consumer tests should verify reactive capability behavior, not only that a handler runs. Cover authority/provenance, tenant/customer scope, idempotent duplicate delivery, retry versus terminal denial/no-op semantics, scoped publication, and audit/work-trace effects for protected or consequential reactions.
 
-## Generated SaaS input contract
+## Compile contract gate
 
-Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
+Use this skill only for a compile-ready slice under `../docs/app-description-to-code-compile-contract.md`, except for explicitly scoped doc/example maintenance. Before changing generated runtime code, confirm the accepted graph names the responsible worker/harness/actor adapter from `../docs/app-worker-tool-model.md`, the governed-tool and capability contract from `../docs/capability-first-backend-architecture.md`, and this Akka component's role as implementation evidence. If AuthContext, tenant/customer scope, validation, idempotency, denial, audit/trace, side-effect, exposure, or test obligations are missing, repair the brief or block instead of guessing.
 
 ## Required reading
 
 Read these first if present:
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-description-to-code-compile-contract.md`
+- `../docs/manual-test-reconciliation.md` when tests are part of a manual/runtime readiness claim or remediation loop
 - `akka-context/sdk/consuming-producing.html.md`
 
 ## Test modes
@@ -69,17 +76,9 @@ Pattern:
 8. Test invalid, unauthorized, stale, and cross-tenant messages as terminal audited denials/no-ops when that is the intended semantics.
 9. Test transient dependency failures only when retry semantics are part of the capability contract.
 
-## Generated SaaS consumer contract
+## Generated SaaS compile review
 
-For generated SaaS reactive capabilities, require:
-- reactive capability id, event provenance, correlation id, and tenant/customer scope;
-- system-principal or service-authority basis for downstream calls;
-- idempotency key/dedupe strategy for at-least-once delivery;
-- retry, poison, obsolete, forbidden, and no-op behavior;
-- scoped/redacted publication when producing topics or service streams;
-- audit/work-trace records for side effects, denials, retries, and emitted public events;
-- tests for duplicate delivery, cross-tenant/forbidden input, idempotent downstream effects, audit/trace, and surface/realtime/API outcomes where exposed.
-
+For generated SaaS runtime work, apply the canonical compile contract, worker/tool model, and capability-first backend docs rather than duplicating shared validation, scope, idempotency, audit, and exposure rules here. In this component-specific review, verify the Akka mechanics above preserve the accepted governed-tool context, caller/scope fields, idempotent or no-op behavior, denial/retry semantics, and required tests/traces for the selected exposure path.
 
 ## Review checklist
 

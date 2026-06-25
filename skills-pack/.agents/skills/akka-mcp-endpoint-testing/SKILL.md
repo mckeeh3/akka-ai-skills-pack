@@ -8,9 +8,13 @@ description: Write Akka Java SDK MCP endpoint tests using direct method calls, T
 Use this skill for MCP endpoint tests.
 
 
+## Lifecycle and compile boundary
+
+Testing work belongs to the build/compile phase unless the selected task is explicitly runtime verification or manual-test reconciliation. Use this skill to prove the component-specific mechanics and the declared worker/harness/actor-adapter/governed-tool/capability path; do not widen a component-testing task into unrelated planning, product repair, or manual-failure triage. For feature-bearing generated SaaS work, passing component tests can support `manual-ready`; `runtime-ready` still requires the real local API/UI/agent path, provider/fail-closed evidence where relevant, and reconciliation of manual findings through `../docs/manual-test-reconciliation.md`.
+
 ## Capability-first exposure rule
 
-Treat every MCP tool, resource, or prompt as a selected remote LLM-facing exposure surface for a named backend capability, not as the capability itself. Before adding or changing an MCP surface, identify the capability id, allowed callers, `AuthContext`, tenant/customer scope, input/output schema, data access, side effects, idempotency, approval policy, audit/trace obligations, and tests.
+Treat every MCP tool, resource, or prompt as an `mcp_tool_call`/remote-LLM actor adapter for a named governed tool inside a backend capability, not as the governed tool or capability itself. Before adding or changing an MCP surface, identify the calling worker/client, MCP exposure adapter, governed tool id, capability id, allowed callers, `AuthContext`, tenant/customer scope, input/output schema, data access, side effects, idempotency, approval policy, audit/trace obligations, selected Akka implementation path, and tests.
 
 For protected MCP surfaces, preserve the capability contract at the edge: enforce ACL/JWT or service identity, resolve caller and tenant/customer context, authorize the required role/scope/capability, validate tool parameters, redact resource/tool output, filter allowed tools/resources per caller, map denials to safe errors, and record required audit/work-trace events. Tool descriptions, prompt text, resource URIs, and model instructions are not authorization controls.
 
@@ -18,11 +22,14 @@ Expose read-only scoped evidence capabilities more readily than side-effecting c
 
 ## Generated SaaS input contract
 
-Use `../references/generated-saas-input-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the required capability, AuthContext/scope, DTO, side-effect, trace, and test inputs are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
+Use `../references/generated-saas-input-contract.md`, `../docs/app-worker-tool-model.md`, and `../docs/app-description-to-code-compile-contract.md` as the shared gate. Do not implement generated SaaS runtime code until the responsible worker, execution harness, actor adapter, governed tool, capability, AuthContext/scope, DTO, side-effect/idempotency policy, trace/result surface, selected implementation path, and tests are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
 
 ## Required reading
 
 Read these first if present:
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-description-to-code-compile-contract.md`
+- `../docs/manual-test-reconciliation.md` when tests are part of a manual/runtime readiness claim or remediation loop
 - `akka-context/sdk/mcp-endpoints.html.md`
 
 ## Default test harness rules
@@ -66,6 +73,7 @@ Use handcrafted MCP JSON-RPC payloads when protocol-level behavior matters; for 
 ## Generated SaaS test set
 
 When an endpoint exposes a generated SaaS capability, include or delegate tests for:
+- the full calling worker/client, MCP exposure adapter, governed-tool, capability, selected Akka path, trace, and result/denial shape rather than only annotated Java method output;
 - authorized success with selected `AuthContext` and tenant/customer scope;
 - validation and safe denial/status DTOs;
 - forbidden, disabled-user, missing role/scope, and cross-tenant access;

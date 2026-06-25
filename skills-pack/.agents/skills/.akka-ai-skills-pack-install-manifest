@@ -2,7 +2,7 @@
 pack	akka-ai-skills-pack
 source	/home/hxmc/ai/akka-ai-skills-pack/skills-pack
 mode	copy
-installed_at	2026-06-11T16:45:49Z
+installed_at	2026-06-25T10:00:02Z
 entry	file	README.md
 entry	dir	references
 entry	dir	docs
@@ -19,6 +19,7 @@ entry	dir	ai-first-saas-object-model
 entry	dir	ai-first-saas-outcomes-metrics
 entry	dir	ai-first-saas-policy-governance
 entry	dir	ai-first-saas-ui-surfaces
+entry	dir	ai-first-saas-worker-decomposition
 entry	dir	akka-agent-behavior-editing
 entry	dir	akka-agent-behavior-profiles
 entry	dir	akka-agent-closed-loop-improvement
@@ -102,6 +103,7 @@ entry	dir	akka-kve-notifications
 entry	dir	akka-kve-replication
 entry	dir	akka-kve-ttl
 entry	dir	akka-kve-unit-testing
+entry	dir	akka-manual-failure-reconciliation
 entry	dir	akka-mcp-endpoint-component-client
 entry	dir	akka-mcp-endpoint-request-context
 entry	dir	akka-mcp-endpoint-resources-prompts
@@ -113,6 +115,7 @@ entry	dir	akka-pending-task-queue-maintenance
 entry	dir	akka-prd-to-specs-backlog
 entry	dir	akka-resend-email-service
 entry	dir	akka-revised-prd-reconciliation
+entry	dir	akka-runtime-feature-verification
 entry	dir	akka-saas-invitation-onboarding
 entry	dir	akka-slice-spec-to-backlog
 entry	dir	akka-solution-decomposition
@@ -161,7 +164,10 @@ entry	dir	app-description-surface-modeling
 entry	dir	app-description-test-specification
 entry	dir	app-description-ui
 entry	dir	app-descriptions
+entry	dir	app-development-lifecycle
 entry	dir	app-generate-app
+entry	dir	business-intent-interview
+entry	dir	business-intent-to-app-input
 entry	dir	capability-first-backend
 entry	dir	core-saas-foundation
 entry	dir	project-discussed-idea-to-pending-project

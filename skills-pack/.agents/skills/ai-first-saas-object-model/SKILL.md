@@ -9,12 +9,26 @@ Use this companion after `ai-first-saas` when a product or feature needs durable
 
 This is a modeling and routing skill. It does not replace domain modeling inside Event Sourced Entity, Key Value Entity, Workflow, View, or endpoint skills.
 
+## Lifecycle classification
+
+- Phase role: Interview-phase durable object selection with Build/compile handoff constraints for realization, traces, and tests.
+- Graph layer: durable intent, execution, judgment, evidence/risk, governance, accountability, worker, governed-tool, capability, and trace nodes.
+- Canonical chain: `worker → execution harness → actor adapter → governed tool → capability → Akka implementation`.
+
 ## Required reading
 
 Read first:
 - `../docs/intent-compiler.md`
 - `../docs/current-intent-model.md`
 - `../docs/intent-to-realization-flow.md`
+- `../docs/app-development-lifecycle.md`
+- `../docs/app-worker-tool-model.md`
+- `../docs/app-description-component-graph.md`
+- `../docs/app-description-to-code-compile-contract.md`
+- `../docs/workforce-decomposition.md`
+- `../docs/agent-workstream-application-architecture.md`
+- `../docs/structured-surface-contracts.md`
+- `../docs/capability-first-backend-architecture.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../ai-first-saas/SKILL.md`
 
@@ -56,7 +70,7 @@ Route to:
 
 Typical objects:
 - `AgentDefinition`, `AgentSkillVersion`, `ExecutionPlan`, `Task`
-- `ToolInvocation`, `DataAccessEvent`, `WorkResult`
+- `GovernedToolInvocation`, `ActorAdapterInvocation`, `DataAccessEvent`, `WorkResult`
 
 Use when delegated work must be inspectable, resumable, recoverable, or explainable.
 
@@ -137,6 +151,8 @@ Route to:
 
 Produce a compact object model with:
 - selected objects and why each is durable
+- owning worker, workstream, or system-only scope for each object
+- execution harness, actor adapter, governed-tool, and capability links when the object is created or changed by app work
 - owning role or component for each object
 - event-history requirement: audit-grade, current-state only, or derived/read-model only
 - main relationships, such as goal → plan → tasks → decisions → traces → outcomes
