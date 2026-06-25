@@ -3,15 +3,16 @@
 ## Queue rules
 
 - Use `file-review-inventory.md` as the per-file task list.
-- Execute one inventory entry per fresh-context subagent.
+- Execute one small batch of inventory entries per fresh-context subagent; default batch size is 10 pending source-authoritative rows.
 - Do not run file-review subagents in parallel.
-- Mark the selected inventory entry `in-progress` before review edits.
-- Mark an inventory entry terminal only after checks pass or a clear blocker/follow-up is recorded.
-- Commit each completed inventory entry review and inventory update together.
+- Mark selected inventory entries `in-progress` before review edits.
+- Mark inventory entries terminal only after checks pass or a clear blocker/follow-up is recorded.
+- Commit each completed batch review and inventory update together.
+- The parent orchestrator must loop: after each batch subagent completes, inspect the result, select the next pending batch, and launch the next single subagent until the inventory has no `pending` or `in-progress` rows.
 
 ## Tasks
 
-### TASK-001: Review all inventory entries one file at a time
+### TASK-001: Review all inventory entries in sequential small batches
 
 - status: pending
 - source: specs/skills-pack-comprehensive-review/file-review-inventory.md
@@ -26,9 +27,9 @@
   - project-discussed-idea-to-pending-project
   - akka-pending-task-queue-maintenance
 - expected outputs:
-  - one reviewed inventory entry per fresh-context subagent run
-  - target file edits/archive/removal only when selected entry requires it
-  - committed inventory status/notes update per reviewed file
+  - up to 10 reviewed inventory entries per fresh-context subagent run by default
+  - target file edits/archive/removal only when selected entries require it
+  - committed inventory status/notes update per reviewed batch
 - required checks:
   - `git diff --check`
   - install/manifest/reference checks as required by the selected file decision
@@ -39,6 +40,7 @@
   - vertical contract: cross-cutting pack maintenance; docs/tools/examples/templates/metadata review; no root runtime feature
   - runtime evidence: not applicable; pack-maintenance review task
   - execution model: do not mark this task `done` until the inventory has no `pending` or `in-progress` rows
+  - batching: source-authoritative rows default to 10 per subagent; reduce to 1 for high-risk broad doctrine/installer/archive/removal work; installed-output mirror rows may use larger verification batches only after source review is complete
 
 ### TASK-002: Terminal verification after file inventory review
 

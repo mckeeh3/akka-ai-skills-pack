@@ -37,28 +37,31 @@ This mini-project is complete when:
 
 ## Non-goals
 
-- Do not review multiple inventory entries in one subagent task.
 - Do not edit root SaaS Foundation App runtime code as part of this skills-pack review.
 - Do not casually remove public skill names; prefer routing/deprecation unless the pruning rules are satisfied.
 - Do not hand-edit installed mirror doctrine under `skills-pack/.agents/skills/**` as if it were source truth.
 - Do not use examples or templates to reintroduce a competing app-description structure.
+- Do not let batching hide per-file decisions; every inventory row still needs its own terminal status and notes.
 
 ## Execution model
 
-Use `file-review-inventory.md` as the task list. A parent orchestrator should run exactly one fresh-context subagent for exactly one pending file entry, wait for that subagent to finish and commit or block, then select the next pending file.
+Use `file-review-inventory.md` as the task list. A parent orchestrator should run exactly one fresh-context subagent for a small batch of pending inventory entries, wait for that subagent to finish and commit or block, then continue launching one batch subagent at a time until no `pending` or `in-progress` entries remain.
 
-Each file-review subagent must:
+Default batch size is **10 consecutive pending source-authoritative entries**. The parent may reduce the batch size to 1 for high-risk top-level guidance, installer, manifest, archive/removal, or broad doctrine files. Installed-output mirror entries may be batched more aggressively only after source-authoritative review is complete and the task is just verifying installed output behavior.
 
-1. select the first `pending` inventory entry unless the parent names a specific entry;
-2. mark only that entry `in-progress` before reviewing;
-3. read `review-guide.md`, `subagent-file-review-brief.md`, and the target file;
-4. accept, revise, archive, remove, or block only that file's review scope;
-5. update `file-review-inventory.md` with status and review notes;
-6. run required checks proportional to the action;
-7. commit the file changes and inventory update together when the review completes;
-8. report the next pending inventory entry.
+Each batch-review subagent must:
 
-Do not run file-review subagents in parallel.
+1. select the first pending batch unless the parent names specific inventory ids/paths;
+2. mark only the selected rows `in-progress` before reviewing;
+3. read `review-guide.md`, `subagent-file-review-brief.md`, and each selected target file;
+4. make an independent decision for each row: accept, revise, archive, remove, verify installer output, supersede, or block;
+5. keep edits scoped to the selected batch and required reference/manifest/link repairs;
+6. update `file-review-inventory.md` with terminal status and review notes for every selected row;
+7. run required checks proportional to the batch actions;
+8. commit the batch changes and inventory updates together when the batch completes;
+9. report the next pending batch and whether any blocked follow-up needs parent attention.
+
+Do not run batch-review subagents in parallel.
 
 ## Supporting documents
 
