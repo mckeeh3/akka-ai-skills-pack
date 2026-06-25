@@ -22,10 +22,11 @@ Use this reference when implementing or reviewing Akka Java SDK gRPC endpoints s
 7. Use `pattern = ...` when allowed values are not fully known in advance.
 8. In tests, use an unsigned token with `alg=none`; claims are still enforced locally and in integration tests.
 
-## Two repository patterns
+## Two target-project patterns
+
+The current curated SaaS Foundation App examples do not include gRPC JWT runtime fixtures. Use these shapes when adding target-project endpoints and tests.
 
 ### 1. Fixed-value JWT validation
-Reference files:
 
 Use when:
 - issuer list is known
@@ -41,7 +42,6 @@ Pattern shape:
 ```
 
 ### 2. Regex-based JWT validation
-Reference files:
 
 Use when:
 - claim value is not fully known in advance
@@ -103,8 +103,8 @@ Avoid:
 - putting auth logic into domain or entity code
 - hand-parsing the bearer token inside the endpoint
 
-## Quick copy targets
+## Target-project implementation targets
 
-- fixed-value JWT example: a domain-specific JWT-secured gRPC endpoint implementation
-- regex-based JWT example: a domain-specific pattern-based JWT gRPC endpoint implementation
-- test helper and header injection: a domain-specific JWT gRPC endpoint integration test, a domain-specific pattern-based JWT gRPC endpoint integration test
+- fixed-value JWT endpoint: a domain-specific JWT-secured gRPC endpoint implementation
+- regex-based JWT endpoint: a domain-specific pattern-based JWT gRPC endpoint implementation
+- test helper and header injection: domain-specific JWT gRPC endpoint integration tests for both patterns

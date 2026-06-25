@@ -40,15 +40,11 @@ Read these first if present:
 5. Keep authentication and claim checks at the edge.
 6. In integration tests, inject a bearer token through `addRequestHeader("Authorization", "Bearer ...")` on the generated gRPC client.
 
-## Repository example
+## Target-project patterns
 
-- a domain-specific JWT-secured gRPC endpoint implementation
-  - validates bearer token issuers
-  - requires a static `role` claim
-  - reads issuer, subject, role, and optional audience from `requestContext().getJwtClaims()`
-- a domain-specific pattern-based JWT gRPC endpoint implementation
-  - validates regex-based claims with `@JWT.StaticClaim(pattern = ...)`
-  - demonstrates role, UUID subject, and non-blank name validation
+The current curated SaaS Foundation App examples do not include gRPC JWT runtime fixtures. When gRPC JWT is in scope for a target project, implement focused examples or tests for:
+- a JWT-secured gRPC endpoint that validates bearer token issuers, requires a static `role` claim, and reads issuer, subject, role, and optional audience from `requestContext().getJwtClaims()`
+- a pattern-based JWT gRPC endpoint that validates regex-based claims with `@JWT.StaticClaim(pattern = ...)`, such as role, UUID subject, and non-blank name validation
 
 ## Integration test rule
 

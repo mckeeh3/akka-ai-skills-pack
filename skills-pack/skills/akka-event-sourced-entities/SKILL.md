@@ -157,7 +157,7 @@ Prefer a minimal example per topic:
 - testing
 
 Pattern reference:
-- `ExpiringAgentDefinitionEntity`
+- Use a focused target-project TTL entity or snippet when expiry is in scope; the current curated examples do not include a dedicated expiring EventSourcedEntity fixture.
 
 ## Final review checklist
 
