@@ -6,7 +6,7 @@
 - **Backing functional agent:** `functional_agent.user_admin`
 - **Domain:** `ai_first_saas_core_app`
 - **Purpose:** tenant/customer-scoped user administration: user discovery, invitations, memberships, roles/capabilities, disabled access, access review, support-access visibility, and admin audit
-- **SaaS Foundation App role:** User Admin participates in the SaaS Foundation App domain; it is not a valid single-workstream SaaS Foundation App by itself, and complete User Admin behavior requires the surfaces/capabilities below
+- **SaaS Foundation App role:** User Admin participates in the SaaS Foundation App domain; it is not a valid single-workstream SaaS Foundation App by itself, and the full User Admin scope requires the surfaces/capabilities below
 
 ## Invariants
 
@@ -61,13 +61,13 @@ These surfaces inherit `ai-first-workstream-enterprise` from `../../../web-ui-st
 
 ## Capability inventory and exposure channels
 
-A capability is the governed backend contract. It may be exposed through one or more channels: surface action/browser-tool, confirmed `human_chat_tool_plan`, AI-backed `agent_tool_call`/workstream-agent tool, browser API, internal-agent tool, workflow step, timer, consumer, MCP tool, view, or internal method. Browser APIs, confirmed chat plans, and agent tools are exposure forms over the same capability; they do not redefine authorization, validation, idempotency, side effects, audit, approval, or denial behavior.
+A capability is the governed backend contract. It may be exposed through one or more actor adapters: human `surface_action`, confirmed `human_chat_tool_plan`, AI-backed `agent_tool_call`, browser/API `api_call`, internal-agent `internal_call`, `workflow_step`, `timer_invocation`, `consumer_reaction`, `mcp_tool_call`, view-backed evidence reads, or internal methods with provenance. Browser APIs, confirmed chat plans, and agent tools are exposure forms over the same capability; they do not redefine authorization, validation, idempotency, side effects, audit, approval, or denial behavior.
 
 For this workstream, the same invitation capability can support both classic surface submission and conversational operation:
 
 ```text
 invite-user form submit
-→ surface action / browser API
+→ `surface_action` / browser `api_call`
 → user_admin.invitations.create
 → InvitationWorkflow + result surface/system_message
 
@@ -78,7 +78,7 @@ invite-user form submit
 → InvitationWorkflow + result surface/system_message
 ```
 
-Read/evidence capabilities may be exposed as `human_chat_tool_plan` or AI-backed `agent_tool_call` adapters for search, user detail, roles, invitations, and audit summaries when the workstream catalog allows them. Side-effecting capabilities default to explicit surface action, plan-bound human confirmation, proposal, or approval flow unless a bounded autonomous policy explicitly allows tool execution.
+Read/evidence capabilities may be exposed as `human_chat_tool_plan` or AI-backed `agent_tool_call` adapters for search, user detail, roles, invitations, and audit summaries when the workstream catalog allows them. Side-effecting capabilities default to explicit `surface_action`, plan-bound human confirmation, proposal, or approval flow unless a bounded autonomous policy explicitly allows tool execution.
 
 | Capability id | Class | Purpose | Side effects |
 |---|---|---|---|
@@ -133,7 +133,7 @@ Runtime skills should cover user admin overview, user search/list, user detail/e
 - Views: `UserDirectoryView`, `InvitationView`, `MembershipView`, `AccessReviewQueueView`, `AdminAuditView`.
 - Consumer: email delivery/outbox, audit projection, access-review projection.
 - Timed Action: invitation expiry/reminders, stale access review reminders.
-- Agent: `UserAdminAgent` with read/proposal tools; side-effecting tools only through backend-authorized surface actions, modeled `human_chat_tool_plan` confirmation, approval flow, or explicitly bounded autonomous policy.
+- Agent: `UserAdminAgent` with read/proposal `agent_tool_call` adapters; side-effecting tools only through backend-authorized `surface_action`, modeled `human_chat_tool_plan` confirmation, approval flow, or explicitly bounded autonomous policy.
 - HTTP: `/api/user-admin/**` surface payload/action endpoints.
 
 ## Tests
