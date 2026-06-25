@@ -76,7 +76,7 @@ Current intent should drive implementation choices:
 - Capabilities map to HTTP/gRPC/MCP/API contracts, governed tool contracts, workflows, entities, consumers, timers, views, or agents.
 - Workstream surfaces map to frontend routes, structured panels/cards/forms, SSE/WebSocket subscriptions, browser API clients, and human-backed surface-action adapters for governed tools.
 - Worker bindings map human roles, functional agents, internal/autonomous/evaluator agents, and system workers to responsibilities, surfaces, capabilities, handoffs, and trace obligations.
-- Agent bindings map to concrete Akka `Agent` or `AutonomousAgent` components, model policy, governed prompts/skills/references, agent-tool adapters, tool boundaries, memory, guardrails, and traces.
+- Agent bindings map to concrete Akka `Agent` or `AutonomousAgent` components, model policy, governed prompts/skills/references, explicit `agent_tool_call` adapters, tool boundaries, memory, guardrails, and traces.
 - Data-state artifacts map to EventSourcedEntity or KeyValueEntity state, events/commands, views, retention, and tests.
 - Policies map to authorization checks, approval workflows, denial responses, audit events, and negative tests.
 - Trace bindings map to durable audit/work traces and investigation surfaces.
