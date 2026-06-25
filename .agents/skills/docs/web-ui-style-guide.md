@@ -23,10 +23,11 @@ Style and theme selection is intentionally narrow:
 
 ## Authoritative locations
 
-Record the selected style and available named themes in the smallest authoritative artifact available:
+Record the selected style and available named themes in the smallest authoritative artifact available in the current-intent UI/surface realization graph:
 
-- description-first apps: `app-description/55-ui/style-guide.md`
+- current-intent graph apps: a shared UI/style node such as `app-description/global/surfaces/web-ui-style.md`, a workstream realization file such as `app-description/domains/<domain>/workstreams/<workstream>/realization/frontend-routes.md`, or a linked domain/workstream UI style artifact referenced by every affected surface implementation task
 - specs/backlog apps: `specs/cross-cutting/NN-ui-style-guide.md` or an equivalent UI slice spec referenced by every web UI task
+- legacy/template compatibility trees: `app-description/55-ui/style-guide.md` only when that file is mapped back to the owning current-intent workstream surfaces
 
 A generated web UI must read from that style guide before producing HTML, CSS, TypeScript, or JavaScript. For generated full-stack AI-first SaaS, the browser UI is mandatory; if no style and named-theme contract has been selected, add a durable `category: ui` question to `specs/pending-questions.md` before creating or executing web UI implementation tasks.
 
@@ -140,7 +141,7 @@ Use this durable pending-question shape when style or named-theme selection is m
 - blocks:
   - web UI implementation and generation tasks only
 - source:
-  - app-description/55-ui/style-guide.md or specs/cross-cutting/NN-ui-style-guide.md is missing, unselected, or lacks a named-theme contract
+  - the current-intent UI/surface style artifact, legacy/template `app-description/55-ui/style-guide.md`, or specs/cross-cutting/NN-ui-style-guide.md is missing, unselected, or lacks a named-theme contract
 - question: >
     Which visual style and named theme contract should generated web UI content use?
 - why it matters: >
@@ -156,7 +157,7 @@ Use this durable pending-question shape when style or named-theme selection is m
   - none
 ```
 
-When answered, reconcile the decision into `app-description/55-ui/style-guide.md` and/or the relevant `specs/cross-cutting/*ui-style-guide*.md` before marking the question `resolved`.
+When answered, reconcile the decision into the current-intent UI/surface style artifact, a mapped legacy/template `app-description/55-ui/style-guide.md`, and/or the relevant `specs/cross-cutting/*ui-style-guide*.md` before marking the question `resolved`.
 
 ## Canonical AI-first style system: `ai-first-workstream-enterprise`
 

@@ -44,13 +44,15 @@ Read these first if present:
 ## Core pattern
 
 1. Treat the session id as a first-class design choice.
-2. Use `componentClient.forAgent().inSession(sessionId)` on every caller.
-3. Use `MemoryProvider.limitedWindow()` for bounded context.
-4. Use `readOnly()` when the agent should consume history without writing to it.
-5. Use `writeOnly()` when the agent should append interactions but not read prior context.
-6. Use `MemoryProvider.none()` for evaluators, compaction, or stateless judging agents.
-7. Use memory filters when a multi-agent session needs visibility rules.
-8. Prefer workflow id as session id when a workflow supervises agents.
+2. Bind session ids to tenant/customer, selected `AuthContext`, agent/workstream, and workflow or conversation scope; do not trust raw caller-supplied ids across tenants.
+3. Use `componentClient.forAgent().inSession(sessionId)` on every caller.
+4. Use `MemoryProvider.limitedWindow()` for bounded context.
+5. Use `readOnly()` when the agent should consume history without writing to it.
+6. Use `writeOnly()` when the agent should append interactions but not read prior context.
+7. Use `MemoryProvider.none()` for evaluators, compaction, or stateless judging agents.
+8. Use memory filters when a multi-agent session needs visibility rules.
+9. Prefer workflow id as session id when a workflow supervises agents.
+10. Treat memory as model context, not authorization or durable product evidence; redact secrets/sensitive fields and fail closed before memory read/write when scope cannot be verified.
 
 ## Pattern references
 
@@ -76,8 +78,9 @@ Read these first if present:
 ## Review checklist
 
 Before finishing, verify:
-- session ids are created or supplied at the caller boundary
-- memory reads and writes are intentional
+- session ids are created or supplied at the caller boundary and validated against tenant/customer, `AuthContext`, agent, and workflow/conversation scope
+- memory reads and writes are intentional and covered by provider/security fail-closed behavior
+- session memory never grants data/tool/capability authority and does not leak secrets or cross-tenant/customer context
 - evaluators or compaction agents do not accidentally retain session history
 - workflow-supervised agents reuse the same session id when collaboration is intended
 - filtered memory examples use `MemoryFilter` explicitly when visibility rules matter

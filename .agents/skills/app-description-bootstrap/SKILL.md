@@ -138,7 +138,7 @@ Avoid:
 - creating dozens of files from a vague one-paragraph idea
 - reducing delegated operational work to CRUD screens or a chatbot without durable goals, authority, policies, decisions, traces, and outcomes
 - marking a fresh bootstrap `ready` without substantial supporting detail
-- skipping the readiness-status or generation-policy files
+- skipping explicit readiness-state or generation-policy entries in the current-intent graph
 - leaving the first capability, operating-model artifacts when present, behavior, and test artifacts unlinked
 
 ## Final review checklist

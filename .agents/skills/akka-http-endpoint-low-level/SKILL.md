@@ -37,7 +37,9 @@ Read these first if present:
 4. Accept `HttpEntity.Strict` for custom payload handling with content-type checks.
 5. Keep advanced low-level request handling small and isolated.
 
-## Repository example
+## Target-project pattern
+
+Use this pattern in the target project when a normal typed JSON endpoint is not enough:
 
 - a domain-specific low-level HTTP endpoint
   - lower-level `HttpResponse.create()` response construction
@@ -70,3 +72,5 @@ Before finishing, verify:
 - content-type checks are explicit where relevant
 - response status and entity are both intentional
 - manual JSON serialization is limited to the advanced response path
+- low-level request handling does not bypass JWT/ACL checks, AuthContext resolution, tenant/customer scope enforcement, redaction, idempotency, or audit/work-trace obligations
+- tests cover rejected content types or malformed payloads plus protected-route denials where the low-level endpoint is not public

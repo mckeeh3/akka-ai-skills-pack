@@ -1,13 +1,13 @@
 # Structured Surface Rendering
 
-This UI layer realizes the surface contracts from `12-workstreams/**`; it does not redefine surface meaning, authority, or capability semantics.
+This UI layer realizes the surface contracts from legacy template `12-workstreams/**` or their mapped current-intent `app-description/domains/<domain>/workstreams/<workstream>/surfaces/**` artifacts; it does not redefine surface meaning, authority, or capability semantics.
 
 ## Required renderer behavior
 
 - Render every workstream response as a typed surface envelope or typed workstream request item, with at most one primary result surface for the same prompt/action content.
 - Do not render internal app activity records, generic agent-response detail cards, tool-call traces, or response metadata as additional sibling surfaces when a typed result surface such as `markdown_response` or `system_message` already represents the result. Keep those records collapsed behind trace/details affordances unless a typed progress/detail surface is explicitly requested.
 - Route prompt-entered requests, rail/My Account selection, dashboard buttons, row/card clicks, action results, and deep links through the unified shell request pipeline.
-- Use `SurfaceEnvelope` and `SurfaceAction` semantics from `docs/structured-surface-contracts.md`.
+- Use `SurfaceEnvelope` and `SurfaceAction` semantics from `docs/structured-surface-contracts.md` and preserve worker → execution harness → actor adapter → governed tool → capability links from the current-intent graph.
 - Render `markdown_response` through an approved markdown parser and sanitizer; never render raw model HTML.
 - Render `system_message` as a structured surface for denial, warning, validation, success, approval-required, stale/reconnect, background-work, deferred, no-op, and recovery feedback.
 - Preserve loading, empty, error, forbidden, conflict, stale, reconnecting, partial-data, submitting, success, pending, and approval-needed states.

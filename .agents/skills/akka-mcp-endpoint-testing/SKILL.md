@@ -39,7 +39,7 @@ Because there is no dedicated MCP test kit utility, prefer these test styles:
 - `TestKitSupport` when the MCP endpoint needs `ComponentClient`
 - stubbed `McpRequestContext` when the endpoint extends `AbstractMcpEndpoint`
 
-## Repository patterns
+## Target-project patterns
 
 ### Component-backed MCP endpoint tests
 Create a domain-specific endpoint test that:
@@ -50,7 +50,7 @@ Create a domain-specific endpoint test that:
 - verifies prompt and packaged-resource output
 
 ### Request-context MCP endpoint tests
-Create a request-context endpoint test that:
+Create a target-project request-context endpoint test that:
 - creates a direct endpoint instance
 - injects a stubbed request context with `_internalSetRequestContext(...)`
 - verifies JWT claims and headers influence tool and prompt output

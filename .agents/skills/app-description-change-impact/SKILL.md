@@ -106,7 +106,7 @@ For each change, determine as applicable:
 - which observability artifacts are impacted, especially audit/work/decision traces, policy invocations, tool/data-access events, and outcome metrics
 - which UI realization artifacts are impacted, especially workstream shell, functional-agent rail, composer, structured surface rendering, human surface graph realization, capability-backed browser-tool actions, frontend API contracts, supervision, decision-card, governance, digest, goal-to-execution, and audit/trace surfaces
 - which traceability maps must change, including functional-agent-to-dashboard, surface-to-capability/governed-tool, functional-agent-to-expertise, expertise-to-capability/surface, expertise-to-observability, and expertise-to-tests relationships when present
-- whether `00-system/readiness-status.md` must be updated
+- whether `app-description/app.md`, workstream readiness nodes, or maintained legacy readiness-status artifacts must be updated
 - which generation surfaces are likely affected, including default prompt/skill/reference resources, manifest fixtures, governed-document import code, loader/tool-boundary implementation, frontend governance surfaces, and tests when workstream expertise changed
 - which specs/backlogs/task briefs/pending tasks are likely affected when they already exist
 - whether realization can remain localized or should broaden

@@ -25,8 +25,8 @@ Use `../references/generated-saas-input-contract.md`, `../docs/app-worker-tool-m
 2. Every input needs an accessible label.
 3. Structured-surface forms, including `detail-edit` and settings surfaces, must render inputs/selects/textareas with the selected style guide's tokenized control styling; browser-default/native-looking controls are unacceptable.
 4. Validate required fields and simple format rules in the browser for fast feedback.
-5. Keep authoritative business validation on the backend.
-6. Map backend validation errors back to field-level or form-level messages.
+5. Keep authoritative authorization, tenant/customer scope, policy, idempotency, and business validation on the backend; hidden fields, disabled controls, route state, and client-side checks are never authority controls.
+6. Map backend validation, forbidden, conflict, stale, approval-required, and partial-failure results back to field-level or form-level messages.
 7. Disable submit buttons while submitting; show progress.
 8. Make success and failure outcomes visible.
 9. Do not lose user input after validation failure.

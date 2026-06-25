@@ -64,8 +64,8 @@ Use:
 - `ReadOnlyEffect<T>` for ordinary reads
 - `Effect<T>` for strongly consistent reads in replicated deployments
 
-Repository example:
-- a domain-specific strongly consistent read method
+Target-project pattern:
+- add a strongly consistent read method only when a replicated target-project feature requires it; do not cite or invent a repository example when the current snapshot has no such KVE method.
 
 ## Delete pattern
 
@@ -75,8 +75,8 @@ When deleting an entity:
 - do not call `updateState(...)` afterward
 - if the task only needs a reset, consider updating to empty state instead of deleting
 
-Repository example:
-- `DurableIdentityRepositoryEntity.delete(...)`
+Target-project pattern:
+- add a delete handler only when the selected capability requires deletion; do not cite `DurableIdentityRepositoryEntity` as a delete example because the current snapshot uses current-state repository writes instead.
 
 ## Agent tool exposure
 

@@ -47,6 +47,7 @@ Use WebSocket when:
 6. For WebSocket, define client and server message types explicitly.
 7. Clean up connections when navigating away from screens that no longer need them.
 8. Avoid duplicating events after reconnect; define merge/idempotency behavior.
+9. Treat stream/socket URLs and received event payloads as transport, not authorization; protected realtime endpoints must authorize before opening, filter by tenant/customer scope before emission, redact browser payloads, and expose stale/forbidden states safely.
 
 ## UI states to implement
 

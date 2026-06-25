@@ -28,8 +28,9 @@ specs/pending-questions.md
 The skill must:
 - select the next `answered` question needing reconciliation, or the next askable pending question
 - ask exactly one question when user input is needed
-- record the user's answer when provided
+- mark that question `asked` when it is sent to the user, or `answered` only when the user has provided an answer that still needs reconciliation
 - reconcile answered questions into relevant current-intent graph or planning artifacts when enough context exists
+- mark questions `resolved` only after the affected current-intent/planning artifacts have been updated, or `blocked`/`deferred`/`superseded` with explicit notes when appropriate
 - update the question status before finishing
 - report the next question or state that blocking questions are clear
 
@@ -69,7 +70,7 @@ Do **not** use this skill when:
 
 ## Selection algorithm
 
-Use `../docs/intent-compiler-skill-contracts.md` and `../docs/incremental-intent-processing.md` for the detailed one-question processing contract. Return only the actionable summary, affected graph nodes/artifacts, required edits or queue changes, assumptions/questions, and next step. Preserve secure SaaS foundation, generated-SaaS runtime completion, tenant/customer scoping, backend authorization, governed agents/tools, traces, and tests when in scope.
+Use `../docs/pending-question-queue.md`, `../docs/intent-compiler-skill-contracts.md`, and `../docs/incremental-intent-processing.md` for the detailed one-question processing contract. Process answered-but-unreconciled questions before asking another pending question so the current-intent graph stays authoritative. Return only the actionable summary, affected graph nodes/artifacts, required edits or queue changes, assumptions/questions, and next step. Preserve secure SaaS foundation, generated-SaaS runtime completion, tenant/customer scoping, backend authorization, governed agents/tools, traces, and tests when in scope.
 
 ## Final review checklist
 

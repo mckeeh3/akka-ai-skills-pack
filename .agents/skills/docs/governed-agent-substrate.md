@@ -29,6 +29,8 @@ software worker
 
 Resolve the active `AgentDefinition`, model policy, prompt, manifests, tool boundary, AuthContext, and selected workstream/capability scope. Assemble compact prompt context and expose only authorized loader tools such as `readSkill(skillId)` and `readReferenceDoc(referenceId)`.
 
+Normal model-backed workstream turns must invoke the concrete Akka `Agent`/`AutonomousAgent` runtime with registered governed tools and active provider configuration. Missing provider, model policy, security, loader-tool, or tool-boundary configuration fails closed with an actionable user-safe surface and trace; deterministic/model-less behavior is allowed only in explicit tests or fixture adapters, not as the normal user-facing runtime path.
+
 Prompt/skill/reference content is behavior guidance only. It must not grant authority, expand data scope, enable tools, bypass approval, or change provider secret access. Tool and data authority comes from backend authorization plus `ToolPermissionBoundary` enforcement.
 
 ## Trace requirements

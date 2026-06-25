@@ -13,8 +13,9 @@ Use this note to keep normal skills concise. Do not repeat long retired-content 
 
 ## Current replacements
 
+- Current-intent graph: `./current-intent-model.md`, `./app-description-component-graph.md`, and `./app-worker-tool-model.md`.
 - UI architecture: `./workstream-ui-reference-architecture.md` and target/root `frontend/src/workstream/**`.
-- Surface contracts/templates: `templates/ai-first-saas-core-app/app-description/**`.
+- Surface contracts/templates: `templates/ai-first-saas-core-app/app-description/**` only as template/legacy-compatibility source that must be reconciled into the current-intent graph; do not present numbered template folders as the canonical layout for new work.
 - Generated-app doctrine: `./generated-saas-canonical-doctrine.md`.
 - Akka mechanics: focused Akka skills plus external top-level `akka-context/**` docs when present.
 - Examples: curated `examples/akka-components/**` snippets for pattern lookup only; adapt behavior into the target project's root app workspace.

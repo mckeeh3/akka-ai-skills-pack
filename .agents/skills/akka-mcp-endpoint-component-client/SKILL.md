@@ -16,6 +16,10 @@ For protected MCP surfaces, preserve the capability contract at the edge: enforc
 
 Expose read-only scoped evidence capabilities more readily than side-effecting capabilities. Consequential MCP tools should default to proposal or approval-request capabilities unless an accepted policy grants bounded autonomous authority, and they must share the same authority, idempotency, approval, and audit semantics as any UI/API/workflow surface for the same capability.
 
+## Generated SaaS input contract
+
+Use `../references/generated-saas-input-contract.md`, `../docs/app-worker-tool-model.md`, and `../docs/app-description-to-code-compile-contract.md` as the shared gate. Do not implement generated SaaS runtime MCP code until the responsible worker/client, MCP actor adapter, governed tool, capability, AuthContext/scope, DTO, side-effect/idempotency policy, trace/result surface, selected component path, and tests are present or explicitly deferred; otherwise repair the brief or route back to `agent-workstream-apps` + `capability-first-backend`.
+
 ## Required reading
 
 Read these first if present:
@@ -39,17 +43,15 @@ Read these first if present:
 6. Serialize tool results with `JsonSupport.encodeToString(...)`.
 7. Reuse the same summary mapper for matching dynamic resources when helpful.
 
-## Pattern references
+## Target-project patterns
 
-- `CoreAppMcpEndpoint`
-  - a domain-specific summary tool calls a domain-specific component read method
-  - adapts state to a domain-specific summary DTO
-  - returns compact JSON for tool responses
-  - reuses the same mapping for `workstream eventSummaryResource`
-- a domain-specific governed MCP endpoint
-  - exposes a domain-specific governed action tool id as a side-effecting MCP tool for a domain-specific consequential capability
-  - calls backend-governed boundary logic before any consequential refund action
-  - returns safe `denied` or `approval_required` JSON and emits traces instead of relying on MCP tool descriptions for authorization
+- a domain-specific summary tool calls a domain-specific component read method
+- adapts state to a domain-specific summary DTO
+- returns compact JSON for tool responses
+- reuses the same mapping for a matching dynamic resource when helpful
+- a domain-specific governed MCP endpoint exposes a named governed action tool id as a side-effecting MCP tool only when the capability permits that MCP actor adapter
+- side-effecting MCP tools call backend-governed boundary logic before any consequential action
+- protected MCP tools return safe `denied` or `approval_required` JSON and emit traces instead of relying on MCP tool descriptions for authorization
 
 ## Mapping rules
 

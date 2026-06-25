@@ -30,8 +30,8 @@ Read these first if present:
 ### Static resource
 Use when the resource has a fixed URI and no parameters.
 
-Pattern reference:
-- `CoreAppMcpEndpoint#attentionGuidelines`
+Target-project pattern:
+- a packaged guidance resource such as workstream attention or policy guidance
 
 Rules:
 - use `@McpResource(uri = ...)`
@@ -43,8 +43,8 @@ Rules:
 ### Dynamic resource
 Use when the URI contains placeholders.
 
-Repository example:
-- `CoreAppMcpEndpoint#workstream eventSummaryResource`
+Target-project pattern:
+- a domain-specific event or state summary resource
 
 Rules:
 - use `@McpResource(uriTemplate = ...)`
@@ -54,13 +54,13 @@ Rules:
 
 ## Prompt patterns
 
-Repository example:
+Target-project pattern:
 - a domain-specific MCP prompt/resource responder
 
 Rules:
 - use `@McpPrompt(...)`
 - return `String`
-- prefer required `String` parameters in repository examples; verify optional prompt parameters against the exact SDK version before relying on them
+- prefer required `String` parameters in target-project examples; verify optional prompt parameters against the exact SDK version before relying on them
 - add `@Description` to every parameter
 - include only the context the LLM actually needs
 - keep prompts structured and easy to extend safely

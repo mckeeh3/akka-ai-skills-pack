@@ -44,10 +44,12 @@ Read these first if present:
 ## Core pattern
 
 1. The agent method returns `StreamEffect`.
-2. Use `streamEffects()` instead of `effects()`.
-3. Call the agent with `componentClient.forAgent().inSession(...).tokenStream(...)`.
-4. Convert the returned `Source<String, NotUsed>` into an HTTP response or notifications.
-5. Group tokens when you want fewer downstream events.
+2. Resolve the active agent, model/provider config, `AuthContext`, tenant/customer scope, and tool boundary before opening the stream; fail closed before any token is emitted when security or provider prerequisites are missing.
+3. Use `streamEffects()` instead of `effects()`.
+4. Call the agent with `componentClient.forAgent().inSession(...).tokenStream(...)`.
+5. Convert the returned `Source<String, NotUsed>` into an HTTP response or notifications.
+6. Group tokens when you want fewer downstream events.
+7. Emit trace/correlation facts for stream start, safe errors/cancellation, and final completion; do not treat partial tokens as runtime completion evidence for side effects or governed decisions.
 
 ## Pattern references
 
@@ -61,5 +63,6 @@ Read these first if present:
 Before finishing, verify:
 - the method really returns `StreamEffect`
 - callers use `tokenStream(...)`, not `method(...)`
-- the streaming API path and request shape are explicit
-- tests assert the streamed body or emitted chunks
+- the streaming API path and request shape are explicit and protected by backend authorization before stream start
+- safe error/cancellation behavior is user-visible without exposing provider secrets or hidden policy
+- tests assert the streamed body or emitted chunks plus fail-closed denial/provider-unconfigured paths when in scope

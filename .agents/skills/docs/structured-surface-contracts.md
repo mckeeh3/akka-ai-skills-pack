@@ -2,7 +2,7 @@
 
 Use this document when defining or implementing typed surfaces in an agent workstream application. It turns the surface guidance from `./agent-workstream-application-architecture.md`, the compact workstream fields in `./workstream-contract.md`, the attention contracts in `./workstream-attention-contracts.md`, the worker/tool layer separation in `./app-worker-tool-model.md`, and the requirements-to-workstream process in `./requirements-to-workstream-development-process.md` into an implementation contract for app descriptions, frontend code, HTTP APIs, realtime events, capability modeling, and tests.
 
-Source-controlled SaaS Foundation App assets live under `templates/ai-first-saas-core-app/app-description/**`. Use them as copy/adapt examples for the five-core workstream domain surface layer when a target project lacks an app-description surface baseline. Validate adapted target-project contracts with `tools/validate-surface-contracts.sh --mode template <app-description-dir>` for process/template baselines or `tools/validate-surface-contracts.sh --mode implementation <app-description-dir>` for app-level contracts. Implementation validation is readiness-aware; `capability-ready` and higher scopes must not rely on unresolved deferred result surfaces.
+Source-controlled template assets live under `templates/ai-first-saas-core-app/app-description/**` in the skills pack source and installed skills library. Use them as copy/adapt examples for the SaaS Foundation App surface layer when a target/root project lacks an app-description surface baseline, then reconcile the adapted files into that project's current-intent graph. Validate adapted target-project contracts with `tools/validate-surface-contracts.sh --mode template <app-description-dir>` for process/template baselines or `tools/validate-surface-contracts.sh --mode implementation <app-description-dir>` for app-level contracts. Implementation validation is readiness-aware; `capability-ready` and higher scopes must not rely on unresolved deferred result surfaces.
 
 A surface is a structured renderable artifact in a **functional/context-area agent** workstream; this document shortens the term to **functional agent** after first use. It is not a page, route, chat message, CRUD screen, endpoint, view, or Akka component. Routes, endpoints, views, tools, workflows, and frontend components realize or expose the surface after its contract is clear. All renderable system feedback in a workstream is also a surface, not an ad hoc UI string. Internal activity records, tool-call details, trace bookkeeping, and response metadata are not separate user-visible surfaces unless the product contract deliberately exposes them as a typed audit/progress/detail surface. Even then, the contract must distinguish default user-readable summaries from privileged raw audit/support diagnostics.
 
@@ -57,7 +57,7 @@ Define the graph explicitly enough that implementation can preserve navigation, 
 - **Role variants:** dashboard and graph edges may differ by role and selected `AuthContext`; the backend capability remains authoritative for allowed traversal and data access.
 - **Tests:** graph tests must cover dashboard-to-node traversal, action result surfaces, denial/system-message surfaces, stale/reconnect behavior, audit/trace links, and tenant-isolated deep links.
 
-In app-description trees, surface ownership belongs in `12-workstreams/`: surface index and contracts, reusable functional-agent placement, action-to-capability mappings, trace semantics, and surface/action tests. `55-ui/` owns browser realization of those contracts: shell placement, route/deep-link mappings, components, forms/interactions, frontend API contracts, state/realtime behavior, accessibility/responsive behavior, selected style guide, named-theme contract, and component-catalog application. Do not redefine surface purpose, authority, or capability semantics in `55-ui/`; link back to `12-workstreams/` and capability/security/test layers.
+In current-intent app-description trees, surface ownership belongs in the owning domain/workstream graph: surface index/contracts, reusable functional-agent placement, action-to-capability mappings, trace semantics, and surface/action tests live under `app-description/domains/<domain>/workstreams/<workstream>/surfaces/**` or explicit shared/global surface bindings. Browser realization belongs in workstream realization/frontend nodes such as `realization/frontend-routes.md` or an equivalent UI spec: shell placement, route/deep-link mappings, components, forms/interactions, frontend API contracts, state/realtime behavior, accessibility/responsive behavior, selected style guide, named-theme contract, and component-catalog application. Legacy/template compatibility trees may still use `12-workstreams/` and `55-ui/`, but they must map back to the current-intent graph and must not redefine surface purpose, authority, or capability semantics in UI-only files.
 
 A browser-rendered surface is not implementation-ready until its realization path names the selected app UI style artifact and the component-catalog anatomy it uses, or a blocking UI question records why that selection is missing. Intent-compiler planning must route such work through `app-description-ui` and `akka-web-ui-ux-design` before frontend implementation tasks.
 
@@ -358,7 +358,7 @@ Event rules:
 
 ## Capability mapping requirements
 
-For every surface action and payload-producing query, the capability inventory must specify the details below. For workstreams at `capability-ready` or higher, also add the lightweight `surfaceActionMappings` entry in `12-workstreams/workstream-manifest.json` so validators can check the surface/action/capability/governed-tool link without duplicating this full contract.
+For every surface action and payload-producing query, the capability inventory must specify the details below. For workstreams at `capability-ready` or higher, also add a lightweight `surfaceActionMappings` entry in the owning workstream manifest or surface index so validators can check the surface/action/capability/governed-tool link without duplicating this full contract. Legacy/template compatibility trees may keep this mapping in `12-workstreams/workstream-manifest.json` when that file is the selected manifest for the template.
 
 - capability id and class (`read/evidence`, `command`, `proposal`, `approval`, `workflow`, `autonomous task`, `governance`, `trace/audit`, `scheduled`, or `reactive`);
 - actors/callers, including human roles, functional agents, internal agents, workflows, services, timers, consumers, or support roles;
@@ -383,7 +383,7 @@ A structured surface is not implementable until tests are named for:
 
 ## Source template and validation support
 
-The source repository includes an app-description-only SaaS Foundation App template:
+The source repository includes an app-description-only SaaS Foundation App template that still uses legacy numbered directories for template compatibility:
 
 ```text
 templates/ai-first-saas-core-app/app-description/

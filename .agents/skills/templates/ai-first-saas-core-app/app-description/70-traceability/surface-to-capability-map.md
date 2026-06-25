@@ -1,5 +1,7 @@
 # Surface to Capability Map
 
+This legacy numbered-template map keeps each surface/action tied to backend capability authority. For new current-intent work, place or link the same mapping from the owning `app-description/domains/<domain>/workstreams/<workstream>/**` graph artifacts; surface visibility, route availability, hidden fields, prompt text, model output, and tool descriptions are not authorization.
+
 | Surface | Owner functional agent | Reusable by | Capability/action mapping |
 | --- | --- | --- | --- |
 | `my-account-dashboard` | `my-account-agent` | opens authorized target workstreams/surfaces | read account/profile/settings/context/attention → `secure-tenant-user-foundation`; surface requests/open workstream → `frontend-shell-integration-patterns`; trace reads → `governance-decisions-audit`. |
@@ -15,4 +17,4 @@
 
 ## Extension rule
 
-Every new domain surface action, including read/query and surface-request actions, must map to a governed capability id and governed-tool id before implementation. If the same operation is reachable through a structured surface, confirmed workstream chat, an AI agent tool, API, workflow, timer, consumer, MCP, or internal path, keep one governed-tool id and record separate actor adapters/exposure channels (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/workflow/timer/consumer/MCP/internal), confirmation/approval behavior, idempotency/transaction boundary, result/partial-failure surface, and audit/work trace source. Reusable surfaces retain one owner functional agent; reuse does not transfer authority.
+Every new domain surface action, including read/query and surface-request actions, must map to a governed capability id and governed-tool id before implementation. If the same operation is reachable through a structured surface, confirmed workstream chat, an AI agent tool, API, workflow, timer, consumer, MCP, or internal path, keep one governed-tool id and record separate actor adapters/exposure channels (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, `api`, `workflow`, `timer`, `consumer`, `mcp`, `internal`), confirmation/approval behavior, idempotency/transaction boundary, result/partial-failure surface, backend denial behavior, and audit/work trace source. Reusable surfaces retain one owner functional agent; reuse does not transfer authority.

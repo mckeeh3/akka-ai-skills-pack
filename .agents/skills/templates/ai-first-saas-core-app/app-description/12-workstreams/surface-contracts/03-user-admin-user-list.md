@@ -83,7 +83,7 @@ This surface is the human `surface_action` / browser-tool adapter for shared gov
 
 ## Scope-aware variants
 
-- SaaS Owner Admin: platform-safe rows only unless selected Organization/Tenant support-access context is active.
+- SaaS Owner Admin: platform-safe rows only unless an explicitly granted Organization support-access context is active.
 - Organization Admin: organization employees, Customer Admins/Users, scoped invitations, support-access memberships, and access-review rows.
 - Customer Admin: selected Customer users/invitations only; Organization-wide actions and support-access administration are forbidden.
 

@@ -72,18 +72,18 @@ secure SaaS foundation
 
 ### App-description layer ownership
 
-- [ ] `12-workstreams/` owns the application model: functional agents, workstream definitions vs instance semantics, retention/redaction, attention categories, role-specific dashboards, internal agents, human surface graph, internal workstream agent graph, workstream expertise links, surface index, surface contracts, reusable surface placement, action-to-governed-tool/capability mappings, trace semantics, readiness labels, and surface/action tests.
-- [ ] `10-capabilities/` owns capability groupings and governed-tool definitions; governed-tools are not placed in a separate top-level app-description layer unless a later accepted decision changes that rule.
-- [ ] `55-ui/` owns browser realization: shell rendering, rail, panel/composer, surface rendering, routes/deep links, interactions/forms, frontend API contracts, state/realtime, accessibility/responsive behavior, and style guide.
-- [ ] `55-ui/` does not redefine the application model that belongs in `12-workstreams/` and `10-capabilities/`; it links back to functional agents, surfaces, governed-tools/capabilities, security, observability, and tests.
-- [ ] `60-generation/` and realized frontend/backend files are downstream projections, not authoritative sources of product meaning.
+- [ ] `domains/<domain>/workstreams/<workstream>/**` owns the application model: functional agents, workstream definitions vs instance semantics, retention/redaction, attention categories, role-specific dashboards, internal agents, human surface graph, internal workstream agent graph, workstream expertise links, surface contracts/bindings, reusable surface placement, action-to-governed-tool/capability mappings, trace semantics, readiness labels, and surface/action tests.
+- [ ] `domains/<domain>/capabilities/**`, `domains/<domain>/data-state/**`, and `global/tools/**` own capability groupings, governed-tool definitions, durable state, and reusable tool semantics; governed tools are not treated as frontend actions, raw routes, or prompt-only operations.
+- [ ] Workstream realization files such as `realization/frontend-routes.md` and `realization/api-contracts.md`, plus target frontend source, own browser realization: shell rendering, rail, panel/composer, surface rendering, routes/deep links, interactions/forms, frontend API contracts, state/realtime, accessibility/responsive behavior, and style guide links.
+- [ ] Realization files do not redefine the application model owned by workstreams, capabilities, data-state, policies, traces, and tests; they link back to functional agents, surfaces, governed-tools/capabilities, security, observability, and tests.
+- [ ] Generated frontend/backend files are downstream projections, not authoritative sources of product meaning.
 
 ### Routes, UI realization, and style guide
 
 - [ ] Routes, pages, and deep links are implementation details for shell entry, selected functional agent, stream item, or direct surface access; they are not the primary decomposition.
-- [ ] New generated SaaS frontend realization points to the workstream reference architecture under `frontend/src/workstream/**` and the User Admin vertical contract tests, not `frontend/src/screens/**`.
-- [ ] `55-ui/routes-and-deep-links.md` maps each route/deep link to the selected functional agent, workstream item, structured surface, or surface graph edge it opens.
-- [ ] A `55-ui/style-guide.md` selection exists before web UI realization; if no style is selected, web UI implementation/generation is blocked by a pending style question rather than inventing visual styling.
+- [ ] New generated SaaS frontend realization points to the workstream reference architecture under `frontend/src/workstream/**` and vertical contract tests, not legacy `frontend/src/screens/**` page-first structure.
+- [ ] `realization/frontend-routes.md` maps each route/deep link to the selected functional agent, workstream item, structured surface, or surface graph edge it opens; legacy `55-ui/routes-and-deep-links.md` may remain only as a compatibility projection.
+- [ ] A style-guide selection exists in current-intent surface/frontend realization nodes before web UI realization; if no style is selected, web UI implementation/generation is blocked by a pending style question rather than inventing visual styling.
 - [ ] Frontend API contracts and realtime behavior preserve `/api/me`, selected AuthContext, `browserToolId`, `governedToolId`, `capabilityId`, denial/error DTOs, idempotency/correlation ids, trace links, and stale/reconnect behavior.
 
 ### Legacy and mechanics cleanup
@@ -91,7 +91,7 @@ secure SaaS foundation
 - [ ] Legacy page/screen/navigation examples are removed or explicitly migrated into current generated-SaaS architecture.
 - [ ] Static asset hosting and endpoint wiring examples are retained only when they directly support focused skills-pack code examples.
 - [ ] Historical domain-specific planning examples are not linked as generic description or queue mechanics.
-- [ ] Consolidated historical files are either migrated into `12-workstreams/` + `10-capabilities/` + split `55-ui/` ownership or removed.
+- [ ] Consolidated historical files are either migrated into current-intent domain/workstream/capability/realization ownership or explicitly labeled legacy compatibility; numbered `12-workstreams/`, `10-capabilities/`, `55-ui/`, and `60-generation/` paths are not canonical for new work.
 
 ### Validation tooling
 

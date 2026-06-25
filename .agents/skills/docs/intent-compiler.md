@@ -32,7 +32,7 @@ app objective
     -> workstream
       -> worker
         -> execution harness
-          -> actor adapter / surface action / human chat tool plan / agent tool / workflow step / timer / consumer / API / MCP / internal call
+          -> actor adapter / surface_action / human_chat_tool_plan / agent_tool_call / workflow_step / timer_invocation / consumer_reaction / api_call / mcp_tool_call / internal_call
             -> governed tool
               -> capability
                 -> API / Akka component / frontend route / agent runtime
@@ -42,7 +42,7 @@ app objective
 
 Reverse traceability should make it possible to start from code, state, an event, an endpoint, a test, or a runtime trace and identify the intent artifact that justified it.
 
-When a human surface action, confirmed human chat tool plan, and AI agent tool perform the same consequential operation, the compiler should model them as actor-specific adapters of one governed workstream tool rather than as separate business semantics. The current-intent graph should preserve the shared governed tool id, the surface/browser adapter, the `human_chat_tool_plan` adapter, the AI-backed agent-tool adapter, internal/API/MCP exposure channels when present, their confirmation/approval/denial behavior, and trace source such as `surface_action`, `human_chat_tool_plan`, or `agent_tool_call`. Model-generated plans are intent mediation only; they do not grant security authority.
+When a human surface action, confirmed human chat tool plan, and AI agent tool perform the same consequential operation, the compiler should model them as actor-specific adapters of one governed workstream tool rather than as separate business semantics. The current-intent graph should preserve the shared governed tool id; the `surface_action`, `human_chat_tool_plan`, and `agent_tool_call` adapters; internal/API/MCP/system exposure channels when present; their confirmation/approval/denial behavior; and trace sources such as `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, `workflow_step`, `timer_invocation`, `consumer_reaction`, `api_call`, `mcp_tool_call`, or `internal_call`. Model-generated plans are intent mediation only; they do not grant security authority.
 
 ## Canonical doc set
 

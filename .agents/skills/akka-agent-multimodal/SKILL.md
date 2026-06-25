@@ -43,10 +43,11 @@ Read these first if present:
 
 1. Build the user prompt with `UserMessage.from(...)`.
 2. Add text with `TextMessageContent.from(...)`.
-3. Add media with `ImageMessageContent.fromUrl(...)` and `PdfMessageContent.fromUrl(...)`.
+3. Add media with `ImageMessageContent.fromUrl(...)` and `PdfMessageContent.fromUrl(...)` only after backend authorization has resolved the caller, tenant/customer scope, and allowed document/media capability.
 4. Use `contentLoader(...)` when content is not publicly fetchable.
-5. Keep the loader deterministic and explicit about MIME types.
-6. Prefer a per-request loader when credentials vary by call.
+5. Keep the loader deterministic and explicit about MIME types, byte limits, and safe denials for unsupported media.
+6. Prefer a per-request loader when credentials vary by call; keep request credentials in backend runtime state, never in prompts, model-visible content, browser payloads, traces, or URLs returned to the model.
+7. Reject model- or caller-supplied arbitrary URLs, file paths, or resource ids that bypass governed media access.
 
 ## Pattern reference
 
@@ -58,7 +59,8 @@ Read these first if present:
 ## Review checklist
 
 Before finishing, verify:
-- the configured model supports the media types being sent
+- the configured model supports the media types being sent and provider-unconfigured behavior fails closed before media disclosure
 - the user message is actually multimodal, not plain text only
 - the content loader returns the correct MIME type when needed
 - the loader stays stateless or request-scoped when credentials differ
+- media fetches enforce tenant/customer scope, redaction/classification, size limits, and denial traces without leaking cross-tenant existence

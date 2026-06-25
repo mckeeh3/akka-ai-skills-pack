@@ -26,9 +26,9 @@ one workstream id
 | Scope | Selected tenant/customer/AuthContext semantics and the role/capability basis for the slice. |
 | Surface/dashboard | One dashboard, surface, system-message surface, or explicit non-UI trigger. |
 | Attention | One category/lifecycle effect, or an explicit `non-attention` reason. |
-| Action edge | One surface request, command, browser-tool, agent-tool, workflow/timer/consumer trigger, or API operation. |
+| Action edge | One surface request, command, or declared actor adapter such as `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, `workflow_step`, `timer_invocation`, `consumer_reaction`, `api_call`, `mcp_tool_call`, or `internal_call`. |
 | Surface intent route | For composer-enabled workstreams, one high-confidence route to open/refresh/prepopulate the surface, including prompt examples, prefill fields, ambiguity behavior, and no-mutation guarantee; otherwise an explicit no-route reason. |
-| Capability | Capability id, governed-tool id, qualified exposure channel, schemas, side effects, idempotency, approval/policy if any. |
+| Capability | Capability id, governed-tool id, actor adapter/exposure channel, schemas, side effects, idempotency, approval/policy if any. |
 | Backend authority | AuthContext checks, tenant/customer isolation, denial behavior, and redaction. |
 | Akka/API/UI path | Selected substrate and how the user/system reaches it. |
 | Trace evidence | Audit/work trace, correlation id, source refs, and visible trace link or explicit no-trace reason for non-runtime docs. |
@@ -48,12 +48,12 @@ Vertical contract:
 - surface graph edge: `<source> -> <action> -> <result surface/system_message>`
 - surface intent route: `<prompt examples -> target surface + prefill + no-mutation>` or `not applicable: <reason>`
 - capability/governed-tool: `<capability-id>` / `<governed-tool-id>`
-- qualified exposure: `browser-tool|agent-tool|internal-tool|workflow-tool|timer-tool|consumer-tool|MCP-tool|API`
+- actor adapter / exposure: `surface_action|human_chat_tool_plan|agent_tool_call|workflow_step|timer_invocation|consumer_reaction|api_call|mcp_tool_call|internal_call`
 - Akka substrate/API/UI path: `<entity/workflow/view/agent/autonomous agent/consumer/timed action/endpoint/frontend>`
 - auth/denial/redaction: `<expected forbidden and redacted behavior>`
 - trace/audit: `<trace records and correlation/source refs>`
 - local validation: `<mvn/npm/api/browser smoke/manual check>`
-- readiness target: `identified|described|surface-ready|capability-ready|expertise-ready|runtime-ready|production-ready`
+- readiness target: `described|surface-ready|backend-ready|frontend-rendered|api-smoked|browser-smoked|manual-ready|runtime-ready`
 ```
 
 ## Expertise deferral pattern
@@ -63,7 +63,7 @@ Use this when the slice does not yet implement model-backed workstream-agent beh
 ```text
 Expertise readiness: deferred.
 Reason: this slice implements backend-authorized surface/action behavior only.
-Blocked readiness levels: expertise-ready and runtime-ready for model-backed turns.
+Blocked readiness levels: model-backed `api-smoked`, `browser-smoked`, and `runtime-ready` for model-backed turns.
 Safe runtime behavior: composer/model request returns a typed system_message explaining that governed model configuration or expertise is unavailable, with trace/correlation id, and no provider bypass.
 ```
 

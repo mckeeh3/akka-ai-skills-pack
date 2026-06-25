@@ -1,6 +1,6 @@
 # Surfaces Index
 
-Structured surfaces are the browser/user-visible contract for workstream state. This skills-pack template is a process-oriented `surface-ready` baseline: it defines the shape, ownership, graph role, compact mappings, and user-visible/internal-metadata boundaries needed to guide app-development cleanup, but it does not claim that the foundation workstream surfaces are fully implemented or `capability-ready`.
+Structured surfaces are the browser/user-visible contract for workstream state. This skills-pack template is a process-oriented legacy-numbered `surface-ready` baseline: it defines the shape, ownership, graph role, compact mappings, and user-visible/internal-metadata boundaries needed to guide app-development cleanup, but it does not claim that the foundation workstream surfaces are fully implemented, `backend-ready`, `manual-ready`, or `runtime-ready`.
 
 Template contracts intentionally include internal ids for generation and traceability. Runtime surfaces must translate those ids into role-appropriate SaaS UX copy and expose raw diagnostic metadata only in authorized support, audit, admin, or developer drilldowns.
 
@@ -26,11 +26,11 @@ Template contracts intentionally include internal ids for generation and traceab
 
 ## Deferred typed surfaces
 
-Deferred typed result surfaces are listed in `deferred-typed-surfaces.md`. Template examples may reference them with a `markdown_response` or `system_message` first-slice fallback, but app-level implementation cleanup must replace consequential fallbacks with full contracts before claiming `capability-ready` for the relevant workstream/action scope. A fallback replaces the richer result surface for that slice; it must not be rendered in addition to a generic internal activity/detail surface for the same event.
+Deferred typed result surfaces are listed in `deferred-typed-surfaces.md`. Template examples may reference them with a `markdown_response` or `system_message` first-slice fallback, but app-level implementation cleanup must replace consequential fallbacks with full contracts before claiming `backend-ready`, `manual-ready`, or `runtime-ready` for the relevant workstream/action scope. A fallback replaces the richer result surface for that slice; it must not be rendered in addition to a generic internal activity/detail surface for the same event.
 
 ## Surface graph
 
-The explicit process-level graph is maintained in `surface-graph.md`. Keep graph nodes/edges aligned with this index, individual surface contracts, `70-traceability/surface-to-capability-map.md`, and future app-level capability mappings.
+The explicit process-level graph is maintained in `surface-graph.md`. Keep graph nodes/edges aligned with this index, individual surface contracts, `70-traceability/surface-to-capability-map.md`, and future app-level capability mappings. When using this legacy numbered template in new current-intent work, map reusable surface definitions into `app-description/global/surfaces/**` and workstream-specific bindings into `app-description/domains/<domain>/workstreams/<workstream>/surfaces/**`.
 
 ## Domain-specific surfaces
 

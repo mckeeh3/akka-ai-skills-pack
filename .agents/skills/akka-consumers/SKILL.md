@@ -47,8 +47,9 @@ Read these first if present:
 - existing project consumers under `src/main/java/**/application/*Consumer.java`
 - matching tests under `src/test/java/**`
 
-In this repository, prefer these examples:
-- `../docs/consumer-reference.md`
+In this repository, prefer these references:
+- `../docs/consumer-reference.md` for minimal Akka Consumer source/produce/test snippets
+- `../examples/akka-components/src/main/java/ai/first/application/foundation/workstream/WorkstreamEventAttentionConsumer.java` for the governed reactive-projection rules a concrete consumer path should preserve (allow-listed event types, scope checks, idempotency, redaction, and audit evidence)
 
 ## Companion skills
 
@@ -102,42 +103,40 @@ Load the companion skill that matches the current task:
 ### 1. Downstream reaction to event sourced facts
 Use `akka-consumer-from-event-sourced-entity`.
 
-Repository examples:
-- `WorkstreamEventAttentionConsumer`
-- `WorkstreamEventAttentionConsumer`
-- `WorkstreamEventAttentionConsumer`
+Reference:
+- `../docs/consumer-reference.md` for the source annotation and message shape
+- `WorkstreamEventAttentionConsumer` for governed projection/idempotency/audit rules to preserve
 
 ### 2. Downstream reaction to key value state snapshots
 Use `akka-consumer-from-key-value-entity`.
 
-Repository example:
-- `WorkstreamEventAttentionConsumer`
+Reference:
+- `../docs/consumer-reference.md` for the source annotation, delete handler, and latest-state semantics
 
 ### 3. Downstream reaction to workflow progress
 Use `akka-consumer-from-workflow`.
 
-Repository example:
-- a domain-specific workflow topic consumer
+Reference:
+- target-project workflow consumer tests or implementation when the selected feature already has one
 
 ### 4. Command ingestion from a broker topic
 Use `akka-consumer-from-topic`.
 
-Repository example:
-- `WorkstreamEventAttentionConsumer`
+Reference:
+- `../docs/consumer-reference.md` for topic message/`ce-subject` mechanics
 
 ### 5. Service-to-service subscription from another Akka service
 Use `akka-consumer-from-service-stream`.
 
 Repository references:
-- `WorkstreamEventAttentionConsumer` for the producer side
-- `../docs/consumer-reference.md` for the subscriber-side snippet
+- `../docs/consumer-reference.md` and `../docs/service-to-service-consumers.md` for subscriber-side snippets
+- `WorkstreamEventAttentionConsumer` only as an internal governed-reaction example, not as a service-stream annotation example
 
 ### 6. Event publication to topics or service streams
 Use `akka-consumer-producing`.
 
-Repository examples:
-- `WorkstreamEventAttentionConsumer`
-- a domain-specific workflow topic consumer
+Reference:
+- `../docs/consumer-reference.md` for `@Produce` and metadata snippets
 
 ### 7. Integration and eventing tests
 Use `akka-consumer-testing`.

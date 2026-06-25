@@ -3,7 +3,7 @@
   "$id": "https://example.invalid/akka-ai-skills-pack/workstream-manifest.schema.json",
   "title": "Akka AI Skills Pack Workstream Manifest",
   "type": "object",
-  "required": ["manifestVersion", "workstreams"],
+  "required": ["manifestVersion", "idConventions", "workstreams"],
   "properties": {
     "manifestVersion": { "const": "workstream-manifest/v1" },
     "idConventions": { "type": "object", "additionalProperties": { "type": "string" } },
@@ -16,6 +16,40 @@
   "additionalProperties": false,
   "$defs": {
     "nonEmptyString": { "type": "string", "minLength": 1 },
+    "actorAdapter": {
+      "enum": ["surface_action", "human_chat_tool_plan", "agent_tool_call", "api", "workflow", "timer", "consumer", "mcp", "internal"]
+    },
+    "exposureChannel": {
+      "enum": ["browser-tool", "agent-tool", "workflow-tool", "timer-tool", "consumer-tool", "MCP-tool", "internal-tool", "api", "surface-request", "human_chat_tool_plan"]
+    },
+    "workstreamToolCatalogEntry": {
+      "type": "object",
+      "required": [
+        "governedToolId",
+        "capabilityId",
+        "actorAdapters",
+        "confirmationRequired",
+        "approvalPolicy",
+        "idempotency",
+        "transactionBoundary",
+        "resultSurfaceId",
+        "partialFailureBehavior",
+        "traceSources"
+      ],
+      "properties": {
+        "governedToolId": { "$ref": "#/$defs/nonEmptyString" },
+        "capabilityId": { "$ref": "#/$defs/nonEmptyString" },
+        "actorAdapters": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/actorAdapter" } },
+        "confirmationRequired": { "type": "boolean" },
+        "approvalPolicy": { "$ref": "#/$defs/nonEmptyString" },
+        "idempotency": { "$ref": "#/$defs/nonEmptyString" },
+        "transactionBoundary": { "$ref": "#/$defs/nonEmptyString" },
+        "resultSurfaceId": { "$ref": "#/$defs/nonEmptyString" },
+        "partialFailureBehavior": { "$ref": "#/$defs/nonEmptyString" },
+        "traceSources": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/actorAdapter" } }
+      },
+      "additionalProperties": false
+    },
     "surfaceActionMapping": {
       "type": "object",
       "required": [
@@ -25,8 +59,14 @@
         "governedToolId",
         "exposureChannel",
         "authBasis",
+        "actorAdapter",
+        "confirmationRequired",
+        "approvalPolicy",
         "idempotency",
+        "transactionBoundary",
         "resultSurfaceId",
+        "partialFailureBehavior",
+        "traceSource",
         "traceRequired"
       ],
       "properties": {
@@ -34,12 +74,16 @@
         "actionId": { "$ref": "#/$defs/nonEmptyString" },
         "capabilityId": { "$ref": "#/$defs/nonEmptyString" },
         "governedToolId": { "$ref": "#/$defs/nonEmptyString" },
-        "exposureChannel": {
-          "enum": ["browser-tool", "agent-tool", "workflow-tool", "timer-tool", "consumer-tool", "MCP-tool", "internal-tool", "api", "surface-request"]
-        },
+        "exposureChannel": { "$ref": "#/$defs/exposureChannel" },
         "authBasis": { "$ref": "#/$defs/nonEmptyString" },
+        "actorAdapter": { "$ref": "#/$defs/actorAdapter" },
+        "confirmationRequired": { "type": "boolean" },
+        "approvalPolicy": { "$ref": "#/$defs/nonEmptyString" },
         "idempotency": { "$ref": "#/$defs/nonEmptyString" },
+        "transactionBoundary": { "$ref": "#/$defs/nonEmptyString" },
         "resultSurfaceId": { "$ref": "#/$defs/nonEmptyString" },
+        "partialFailureBehavior": { "$ref": "#/$defs/nonEmptyString" },
+        "traceSource": { "$ref": "#/$defs/actorAdapter" },
         "traceRequired": { "type": "boolean" }
       },
       "additionalProperties": false
@@ -88,6 +132,10 @@
         "authorityBasis",
         "capabilityId",
         "governedToolId",
+        "actorAdapter",
+        "idempotency",
+        "transactionBoundary",
+        "traceSource",
         "progressSurfaceId",
         "resultSurfaceId",
         "failureSurfaceId"
@@ -99,6 +147,10 @@
         "authorityBasis": { "$ref": "#/$defs/nonEmptyString" },
         "capabilityId": { "$ref": "#/$defs/nonEmptyString" },
         "governedToolId": { "$ref": "#/$defs/nonEmptyString" },
+        "actorAdapter": { "const": "internal" },
+        "idempotency": { "$ref": "#/$defs/nonEmptyString" },
+        "transactionBoundary": { "$ref": "#/$defs/nonEmptyString" },
+        "traceSource": { "const": "internal" },
         "progressSurfaceId": { "$ref": "#/$defs/nonEmptyString" },
         "resultSurfaceId": { "$ref": "#/$defs/nonEmptyString" },
         "failureSurfaceId": { "$ref": "#/$defs/nonEmptyString" }
@@ -150,6 +202,7 @@
         "attentionCategories": { "type": "array", "items": { "$ref": "#/$defs/nonEmptyString" } },
         "surfaces": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/nonEmptyString" } },
         "capabilities": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/nonEmptyString" } },
+        "workstreamToolCatalog": { "type": "array", "items": { "$ref": "#/$defs/workstreamToolCatalogEntry" } },
         "surfaceActionMappings": { "type": "array", "items": { "$ref": "#/$defs/surfaceActionMapping" } },
         "surfaceIntentRoutes": { "type": "array", "items": { "$ref": "#/$defs/surfaceIntentRoute" } },
         "readinessEvidence": { "$ref": "#/$defs/readinessEvidence" },
@@ -161,7 +214,13 @@
       "allOf": [
         {
           "if": { "properties": { "readiness": { "enum": ["capability-ready", "expertise-ready", "runtime-ready", "production-ready"] } }, "required": ["readiness"] },
-          "then": { "required": ["surfaceActionMappings"], "properties": { "surfaceActionMappings": { "minItems": 1 } } }
+          "then": {
+            "required": ["workstreamToolCatalog", "surfaceActionMappings"],
+            "properties": {
+              "workstreamToolCatalog": { "minItems": 1 },
+              "surfaceActionMappings": { "minItems": 1 }
+            }
+          }
         },
         {
           "if": { "properties": { "readiness": { "enum": ["runtime-ready", "production-ready"] } }, "required": ["readiness"] },

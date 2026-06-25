@@ -2,7 +2,7 @@
 
 This compatibility document replaces the old readiness-tier split. The current repository model is simpler:
 
-- the repository ships a fully functional **SaaS Foundation App** out of the box;
+- the repository ships a runnable **SaaS Foundation App** out of the box, with production/provider readiness still governed by recorded runtime evidence and fail-closed configuration checks;
 - that app contains the built-in SaaS foundation domain with five workstreams: My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy;
 - users clone or fork the repository and extend the app with business-specific domains, workstreams, surfaces, agents, capabilities, Akka components, frontend assets, app-description artifacts, specs, docs, and tests;
 - the foundation domain can be changed like any other domain when product needs require it, while preserving tenant/customer scope, backend authorization, durable traces, and merge-friendly extension seams.

@@ -8,7 +8,7 @@ Primary official semantics:
 - `akka-context/reference/views/concepts/table-updaters.html.md`
 - `akka-context/sdk/running-locally.html.md`
 
-Local related examples:
+Local related examples (not a full two-service executable fixture):
 - `../examples/akka-components/src/main/java/ai/first/application/foundation/workstream/WorkstreamEventAttentionConsumer.java`
 - `../examples/akka-components/src/main/java/ai/first/application/foundation/agent/AgentRuntimeTraceView.java`
 
@@ -34,28 +34,29 @@ A publisher is usually a Consumer that reads local entity events or state change
 Rules:
 - publish a public contract, not internal entity events
 - use `@Produce.ServiceStream(id = "...")`
-- add `@Acl` so subscriber services can connect
+- add `@Acl` for the intended subscriber service names; avoid wildcard service ACLs except in explicitly bounded local fixtures
 - filter internal-only events with `effects().ignore()`
+- include tenant/customer scope, provenance, correlation, and subject metadata when subscriber query authorization or row idempotency depends on it
 
 Example producer:
 
 ```java
-@Component(id = "workstream-event-public-events-consumer")
-@Consume.FromEventSourcedEntity(AgentDefinitionEntity.class)
-@Produce.ServiceStream(id = "workstream_event_public_events")
-@Acl(allow = @Acl.Matcher(service = "*"))
-public class WorkstreamEventAttentionConsumer extends Consumer {
+@Component(id = "order-public-events-consumer")
+@Consume.FromEventSourcedEntity(OrderEntity.class)
+@Produce.ServiceStream(id = "order_public_events")
+@Acl(allow = @Acl.Matcher(service = "order-read-side-service"))
+public class OrderPublicEventsConsumer extends Consumer {
 
   public sealed interface PublicEvent {
     record ItemAdded(String productId, int quantity) implements PublicEvent {}
     record CheckedOut() implements PublicEvent {}
   }
 
-  public Effect onEvent(WorkstreamEvent.Event event) {
+  public Effect onEvent(OrderEvent event) {
     return switch (event) {
-      case WorkstreamEvent.Event.ItemAdded added ->
+      case OrderEvent.ItemAdded added ->
           effects().produce(new PublicEvent.ItemAdded(added.item().productId(), added.item().quantity()));
-      case WorkstreamEvent.Event.CheckedOut ignored -> effects().produce(new PublicEvent.CheckedOut());
+      case OrderEvent.CheckedOut ignored -> effects().produce(new PublicEvent.CheckedOut());
       default -> effects().ignore();
     };
   }
@@ -72,48 +73,49 @@ Rules:
 - use `updateContext().eventSubject()` when the publisher includes subject metadata
 - use `effects().updateRow(...)`, `deleteRow()`, or `ignore()` explicitly
 - remember eventual consistency for queries
+- enforce tenant/customer scope and backend authorization in the API/query surface that exposes the view; the stream subscription itself is not user authorization
 
 Minimal subscriber example:
 
 ```java
-@Component(id = "workstream-event-public-view")
-public class WorkstreamEventPublicView extends View {
+@Component(id = "order-public-view")
+public class OrderPublicView extends View {
 
-  public sealed interface WorkstreamEventPublicEvent {
-    record ItemAdded(String productId, int quantity) implements WorkstreamEventPublicEvent {}
-    record CheckedOut() implements WorkstreamEventPublicEvent {}
+  public sealed interface OrderPublicEvent {
+    record ItemAdded(String productId, int quantity) implements OrderPublicEvent {}
+    record CheckedOut() implements OrderPublicEvent {}
   }
 
-  public record WorkstreamSummary(String workstreamId, int itemCount, String status) {}
-  public record WorkstreamSummaries(List<WorkstreamSummary> entries) {}
-  public record FindByStatus(String status, String minWorkstreamId) {}
+  public record OrderSummary(String orderId, int itemCount, String status) {}
+  public record OrderSummaries(List<OrderSummary> entries) {}
+  public record FindByStatus(String status, String minOrderId) {}
 
   @Consume.FromServiceStream(
-      service = "workstream-event-service",
-      id = "workstream_event_public_events")
-  public static class WorkstreamUpdater extends TableUpdater<WorkstreamSummary> {
+      service = "order-service",
+      id = "order_public_events")
+  public static class OrderUpdater extends TableUpdater<OrderSummary> {
 
-    public Effect<WorkstreamSummary> onEvent(WorkstreamEventPublicEvent.ItemAdded event) {
-      var workstreamId = updateContext().eventSubject().orElse("");
-      var current = rowState() == null ? new WorkstreamSummary(workstreamId, 0, "ACTIVE") : rowState();
-      return effects().updateRow(new WorkstreamSummary(workstreamId, current.itemCount() + event.quantity(), "ACTIVE"));
+    public Effect<OrderSummary> onEvent(OrderPublicEvent.ItemAdded event) {
+      var orderId = updateContext().eventSubject().orElse("");
+      var current = rowState() == null ? new OrderSummary(orderId, 0, "ACTIVE") : rowState();
+      return effects().updateRow(new OrderSummary(orderId, current.itemCount() + event.quantity(), "ACTIVE"));
     }
 
-    public Effect<WorkstreamSummary> onEvent(WorkstreamEventPublicEvent.CheckedOut event) {
+    public Effect<OrderSummary> onEvent(OrderPublicEvent.CheckedOut event) {
       var current = rowState();
-      return effects().updateRow(new WorkstreamSummary(current.workstreamId(), current.itemCount(), "CHECKED_OUT"));
+      return effects().updateRow(new OrderSummary(current.orderId(), current.itemCount(), "CHECKED_OUT"));
     }
   }
 
   @Query(
       """
       SELECT * AS entries
-      FROM workstream_event_public_view
+      FROM order_public_view
       WHERE status = :status
-        AND workstreamId >= :minWorkstreamId
-      ORDER BY workstreamId
+        AND orderId >= :minOrderId
+      ORDER BY orderId
       """)
-  public QueryEffect<WorkstreamSummaries> getByStatus(FindByStatus request) {
+  public QueryEffect<OrderSummaries> getByStatus(FindByStatus request) {
     return queryResult();
   }
 }
@@ -125,8 +127,8 @@ For service-stream views:
 - use `onEvent(...)` for event-style public stream messages
 - keep one handler per public message type when that is clearer
 - use `rowState()` for incremental projections
-- use a wrapper record such as `WorkstreamSummaries(List<WorkstreamSummary> entries)` for multi-row queries
-- include every `ORDER BY` column in the same query's `WHERE` conditions, for example `workstreamId >= :minWorkstreamId` when ordering by `workstreamId`
+- use a wrapper record such as `OrderSummaries(List<OrderSummary> entries)` for multi-row queries
+- include every `ORDER BY` column in the same query's `WHERE` conditions, for example `orderId >= :minOrderId` when ordering by `orderId`
 
 ## Contract rules
 
@@ -134,8 +136,8 @@ Treat these as the stable cross-service boundary:
 - producer service name
 - stream id
 - public event types
-- any required metadata such as `ce-subject`
-- ACL policy
+- any required metadata such as `ce-subject`, scope, provenance, correlation, and audit/work-trace identifiers
+- ACL policy for intended subscriber services
 
 Do not couple the subscriber view to:
 - producer internal entity event classes
@@ -149,9 +151,9 @@ If each event belongs to a stable aggregate or business id, include `ce-subject`
 Producer snippet:
 
 ```java
-public Effect onEvent(WorkstreamEvent.Event event) {
-  var workstreamId = messageContext().eventSubject().orElseThrow();
-  Metadata metadata = Metadata.EMPTY.add("ce-subject", workstreamId);
+public Effect onEvent(OrderEvent event) {
+  var orderId = messageContext().eventSubject().orElseThrow();
+  Metadata metadata = Metadata.EMPTY.add("ce-subject", orderId);
   return effects().produce(new PublicEvent.CheckedOut(), metadata);
 }
 ```
@@ -159,10 +161,10 @@ public Effect onEvent(WorkstreamEvent.Event event) {
 Subscriber snippet:
 
 ```java
-public Effect<WorkstreamSummary> onEvent(WorkstreamEventPublicEvent.CheckedOut event) {
-  var workstreamId = updateContext().eventSubject().orElseThrow();
-  var current = rowState() == null ? new WorkstreamSummary(workstreamId, 0, "ACTIVE") : rowState();
-  return effects().updateRow(new WorkstreamSummary(workstreamId, current.itemCount(), "CHECKED_OUT"));
+public Effect<OrderSummary> onEvent(OrderPublicEvent.CheckedOut event) {
+  var orderId = updateContext().eventSubject().orElseThrow();
+  var current = rowState() == null ? new OrderSummary(orderId, 0, "ACTIVE") : rowState();
+  return effects().updateRow(new OrderSummary(orderId, current.itemCount(), "CHECKED_OUT"));
 }
 ```
 
@@ -196,9 +198,10 @@ Read:
 
 Before finishing, verify:
 - producer uses `@Produce.ServiceStream(id = "...")`
-- producer `@Acl` allows the intended subscriber services
+- producer `@Acl` allows only the intended subscriber services
 - subscriber updater uses `@Consume.FromServiceStream(service = "...", id = "...")`
 - subscriber consumes only public event types
 - row key selection is explicit, typically via `updateContext().eventSubject()`
-- query methods use wrapper aliases correctly
+- query methods use wrapper aliases correctly and exposed query APIs enforce AuthContext plus tenant/customer scope
 - view behavior assumes eventual consistency
+- real local producer/subscriber smoke evidence is recorded before claiming runtime-ready service-to-service behavior

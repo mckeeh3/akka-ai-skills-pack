@@ -57,9 +57,8 @@ Typical traits:
 - command handler returns `Done`
 - one command often results in one full-state replacement and separate audit/trace recording when consequential
 
-Repository example:
-- a domain-specific key value entity
-- `WorkstreamEventAttentionConsumer`
+Repository/target-project pattern:
+- use an actual target-project KVE selected by the capability, with `WorkstreamEventAttentionConsumer` as a current example of preserving tenant/customer scope and correlation in a consumer-driven flow
 
 ## Endpoint rules
 
@@ -73,9 +72,9 @@ For HTTP or gRPC endpoints that call entities:
 - use `HttpResponses.created(...)` for create operations
 - use `HttpResponses.badRequest(...)` for business validation failures when returning `HttpResponse`
 
-Repository example:
-- `MeEndpoint`
-- a domain-specific admin endpoint
+Repository/target-project pattern:
+- `MeEndpoint` for protected endpoint/request-context mapping
+- a target-project admin endpoint only when the selected capability includes one
 
 ## Consumer and workflow rules
 

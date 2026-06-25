@@ -16,7 +16,7 @@ This example shows the expected shape for a non-foundation domain workstream. It
 | Instance scope | `tenantId + selectedContextId + functionalAgentId`; customer scope only when selected customer context is active. |
 | Authorized actors | Sales Rep, Sales Manager, Revenue Ops, Auditor read-only; disabled users and cross-customer actors receive `system_message` denials. |
 | Default surface | `sales-pipeline-dashboard` |
-| Readiness level | `described` until surfaces/capabilities/tests are completed. |
+| Readiness level | `described` until surfaces/capabilities/tests are implemented and runtime evidence raises the stated readiness level. |
 
 ## Attention categories
 
@@ -72,13 +72,13 @@ sales-pipeline-dashboard
 
 Every edge is a governed surface request or action:
 
-| Source → target | Action | Capability/governed-tool | Exposure | Result |
+| Source → target | Action | Capability/governed-tool | Actor adapter(s) | Result |
 |---|---|---|---|---|
-| dashboard → opportunity-list | `show_surface` | `sales.pipeline.read` / `pipeline.opportunities.search` | browser-tool/API | table surface or denial `system_message` |
-| opportunity-detail → stage-change-form | `open_stage_change` | `sales.pipeline.manage` / `opportunity.stage_change.prepare` | browser-tool/API | form surface |
-| stage-change-form → decision-card | `submit_stage_change` | `sales.pipeline.manage` / `opportunity.stage_change.submit` | browser-tool/workflow-tool | success, validation, approval-needed, or workflow status surface |
-| risk-card → investigation-progress | `start_investigation` | `sales.pipeline.investigate` / `pipeline.risk.investigate` | browser-tool + internal-tool | AutonomousAgent task progress/result surface |
-| decision-card → approve/reject | `approve_discount` / `reject_discount` | `sales.approvals` / `discount_exception.decide` | browser-tool/workflow-tool | updated decision card and audit trace |
+| dashboard → opportunity-list | `show_surface` | `sales.pipeline.read` / `pipeline.opportunities.search` | `surface_action` plus browser `api_call` | table surface or denial `system_message` |
+| opportunity-detail → stage-change-form | `open_stage_change` | `sales.pipeline.manage` / `opportunity.stage_change.prepare` | `surface_action` plus browser `api_call` | form surface |
+| stage-change-form → decision-card | `submit_stage_change` | `sales.pipeline.manage` / `opportunity.stage_change.submit` | `surface_action` invoking a governed workflow/API path | success, validation, approval-needed, or workflow status surface |
+| risk-card → investigation-progress | `start_investigation` | `sales.pipeline.investigate` / `pipeline.risk.investigate` | `surface_action` plus `internal_call`/AutonomousAgent task start | AutonomousAgent task progress/result surface |
+| decision-card → approve/reject | `approve_discount` / `reject_discount` | `sales.approvals` / `discount_exception.decide` | `surface_action` invoking a governed workflow/API path | updated decision card and audit trace |
 
 ## Capability inventory
 
