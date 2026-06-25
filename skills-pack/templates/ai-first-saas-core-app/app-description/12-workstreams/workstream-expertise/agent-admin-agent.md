@@ -4,6 +4,7 @@
 - owning functional agent: `agent-admin-agent`
 - workstream id: `agent-admin`
 - scope: governed AgentDefinition records, prompts, skills, references, manifests, model refs, tool boundaries, behavior proposals, lifecycle, tests, and traces
+- model binding: inherited governed default or explicit `ModelConfigRef`/`ModelPolicy`; missing provider/security configuration fails closed with an actionable `system_message` and AgentWorkTrace, and no provider secrets appear in prompt, skill, reference, trace, or browser payloads
 - primary surfaces: `agent-governance-center`, `decision-card`, `audit-trace-explorer`, `markdown_response`, `system_message`
 
 ## Prompt intent

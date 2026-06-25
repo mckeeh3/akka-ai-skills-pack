@@ -1,6 +1,6 @@
 # Foundation Surface Graph
 
-This file makes the template surface graph explicit for process guidance. It is a surface-ready baseline only: concrete app implementations must complete typed payloads, action mappings, capability contracts, governed-tool ids, and runtime validation before claiming `capability-ready` or higher.
+This file makes the legacy-numbered template surface graph explicit for process guidance. It is a surface-ready baseline only: concrete app implementations must map the graph into current-intent surface/workstream nodes, complete typed payloads, action mappings, capability contracts, governed-tool ids, and runtime validation before claiming `backend-ready`, `manual-ready`, or `runtime-ready` behavior.
 
 ## Graph node rules
 
@@ -57,8 +57,8 @@ This file makes the template surface graph explicit for process guidance. It is 
 
 ## Domain-specific graph edge template
 
-| edgeId | Source surface | Action/request | Target/result surface | Capability id | Governed-tool id | Exposure | Auth basis | Idempotency | Trace required | Notes |
+| edgeId | Source surface | Action/request | Target/result surface | Capability id | Governed-tool id | Actor adapter / edge type | Auth basis | Idempotency | Trace required | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `<domain>.<verb>` | `<domain-dashboard-or-surface>` | `<surface action or prompt request>` | `<surface-id or system_message>` | `<capability-id>` | `<governed-tool-id>` | `browser-tool|agent-tool|surface-request|workflow-tool|internal-tool` | `<role/AuthContext/scope>` | `<key strategy>` | `true|false` | `<result, stale, denial, approval behavior>` |
+| `<domain>.<verb>` | `<domain-dashboard-or-surface>` | `<surface action or prompt request>` | `<surface-id or system_message>` | `<capability-id>` | `<governed-tool-id>` | `surface_action|human_chat_tool_plan|agent_tool_call|workflow_step|timer_invocation|consumer_reaction|api_call|mcp_tool_call|internal_call|surface_request` | `<role/AuthContext/scope>` | `<key strategy>` | `true|false` | `<result, stale, denial, approval behavior>` |
 
 Do not invent stable action, capability, or governed-tool ids during implementation when the product authority is unclear. Ask or queue the blocking question; template examples may propose candidate ids only when clearly marked provisional.
