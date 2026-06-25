@@ -46,11 +46,12 @@ Read these first if present:
 
 1. Use the built-in `PromptTemplate` entity for simple runtime-managed prompts.
 2. Use `systemMessageFromTemplate(...)` in the agent when prompt text should be mutable without review/approval/version activation semantics.
-3. Build views from `PromptTemplate` or `SessionMemoryEntity` with `@Consume.FromEventSourcedEntity(...)`.
-4. Expose prompt-template or session-memory views through HTTP endpoints using API-specific response records.
-5. Treat `SessionMemoryEntity` as built-in event-sourced state that can trigger consumers.
-6. Use a dedicated compaction agent with `MemoryProvider.none()` when summarizing history.
-7. Keep audit publication separate from compaction logic when you need topic output.
+3. Keep prompt-template and session-memory ids stable, tenant/customer scoped, and explicit at the caller boundary; built-in runtime state must not become a hidden authorization or governance store.
+4. Build views from `PromptTemplate` or `SessionMemoryEntity` with `@Consume.FromEventSourcedEntity(...)`.
+5. Expose prompt-template or session-memory views through HTTP endpoints using API-specific response records protected by backend authorization and redaction.
+6. Treat `SessionMemoryEntity` as built-in event-sourced state that can trigger consumers.
+7. Use a dedicated compaction agent with `MemoryProvider.none()` when summarizing history.
+8. Keep audit publication separate from compaction logic when you need topic output.
 
 ## Pattern references
 
@@ -86,8 +87,9 @@ Read these first if present:
 ## Review checklist
 
 Before finishing, verify:
-- prompt-template ids are stable and explicit
+- prompt-template ids are stable, explicit, and scoped to the correct tenant/customer, agent, and mode
 - governed prompt needs have been routed to `akka-agent-prompt-governance` instead of overloading simple `PromptTemplate` guidance
+- built-in runtime-state views and endpoints enforce `AuthContext`, tenant/customer scope, redaction, and safe non-enumerating denials
 - views return wrapper records for multi-row queries
 - endpoints expose API-facing types rather than view rows directly when appropriate
 - compaction consumers avoid recursive compaction loops

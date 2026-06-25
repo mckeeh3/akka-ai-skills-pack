@@ -49,6 +49,8 @@ Read these first if present:
 4. Use `responseAs(...)` only when you must manually instruct JSON format.
 5. Add `.onFailure(...)` if malformed JSON should become a fallback value.
 6. Keep reply types narrow and purpose-built.
+7. Treat the typed reply as model output, not authorization, policy approval, or durable product state until backend validation and governed-tool/capability checks accept it.
+8. Map malformed, missing, or policy-incompatible fields to safe fallback/denial surfaces and traces before any side effect.
 
 ## Repository examples
 
@@ -66,3 +68,4 @@ Before finishing, verify:
 - the system prompt does not conflict with the structured schema
 - endpoint APIs do not expose raw model JSON strings
 - fallback behavior is explicit if invalid JSON is possible
+- structured outputs are validated against `AuthContext`, tenant/customer scope, approval/tool-boundary policy, and trace requirements before driving consequential behavior
