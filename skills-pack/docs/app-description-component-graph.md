@@ -19,7 +19,7 @@ Use the component graph to keep product semantics ahead of implementation mechan
 | Actor and role | `global/actors/**`, `global/roles/**` | Human, AI-backed, service, or system caller identity and role semantics. | Workstream access, workers, AuthContext, capability permissions. |
 | Worker | `global/workers/**`, `domains/<domain>/workstreams/<workstream>/workers/**` | Human, functional-agent, internal-agent, autonomous-agent, evaluator-agent, or system participant with responsibility, authority, evidence, tools, supervision, handoffs, and traces. | Harnesses, actor adapters, governed tools, surfaces/agents/workflows/timers/consumers, policies, traces, tests. |
 | Execution harness | Surface, agent, workflow, timer, consumer, endpoint, MCP, or internal implementation binding. | How a worker receives context and performs work. | Worker, actor adapter, governed tool, AuthContext, trace source. |
-| Workstream | `domains/<domain>/workstreams/<workstream>/**` | Operational binding for access, workers, surfaces, agents, tools, policies, traces, tests, and realization. | Domain, workers, surfaces, tools, agents, capabilities, traces, tests, realization maps. |
+| Workstream | `domains/<domain>/workstreams/<workstream>/**` | Operational binding for lifecycle/alignment state, access, workers, surfaces, agents, tools, policies, traces, tests, and realization. | Domain, lifecycle state, workers, surfaces, tools, agents, capabilities, traces, tests, realization maps. |
 | Surface | `global/surfaces/**`, `workstreams/<workstream>/surfaces/**` | Human-facing structured payload, route/panel/card/form, states, actions, result surfaces, and system messages. | Human worker, `surface_action` adapter, governed tool, capability, frontend route/component, trace, rendering tests. |
 | Agent | `global/agents/**`, `workstreams/<workstream>/agents/**` | Functional/internal/autonomous/evaluator agent purpose, prompts, skills/references, model policy, memory, tool boundary, supervision, and failure behavior. | Agent worker, Akka Agent/AutonomousAgent substrate, `agent_tool_call` adapters, governed tools, traces, tests. |
 | Governed tool | `global/tools/**`, `workstreams/<workstream>/tools/**` | Semantic app operation or governed evidence read with stable id, schemas, authority, adapters, idempotency, policy, side effects, result surfaces, audit, and tests. | Workers, actor adapters, capability, policies, traces, result surfaces/events, Akka/API/frontend implementation. |
@@ -34,7 +34,7 @@ Use the component graph to keep product semantics ahead of implementation mechan
 
 ## Required graph links
 
-Feature-bearing graph updates should preserve these edges. If a link is intentionally absent, the node should say why.
+Feature-bearing graph updates should preserve these edges. If a link is intentionally absent, the node should say why. The owning workstream lifecycle record must also be updated when the graph change affects feature-bearing intent or implementation alignment.
 
 ```text
 app objective
@@ -112,6 +112,7 @@ Realization nodes describe how graph semantics compile to repository artifacts. 
 Before a feature-bearing slice can be compiled, verify:
 
 - [ ] The owning app/domain/workstream or valid cross-cutting/system-only scope is named.
+- [ ] The owning workstream has lifecycle/alignment state, including whether implementation is aligned, stale, partially aligned, not started, blocked, or unknown.
 - [ ] Responsible workers and worker types are explicit.
 - [ ] Harnesses and actor adapters are declared for every exposure path.
 - [ ] Consequential operations and governed evidence reads have stable governed tool ids.
@@ -131,6 +132,7 @@ Avoid compiling or accepting graph updates that:
 - define an agent tool as a separate business operation from the matching human surface action;
 - grant agent authority because a human has a visible browser action;
 - omit system workers and provenance for workflows, timers, consumers, projections, integrations, and internal calls;
-- skip negative, tenant-isolation, approval/confirmation, idempotency, trace, or manual runtime validation expectations.
+- skip negative, tenant-isolation, approval/confirmation, idempotency, trace, or manual runtime validation expectations;
+- change feature-bearing workstream intent without flagging the related implementation as stale or recording an explicit no-code-impact alignment decision.
 
 See also [App-description to code compile contract](app-description-to-code-compile-contract.md) and [Intent to realization flow](intent-to-realization-flow.md).

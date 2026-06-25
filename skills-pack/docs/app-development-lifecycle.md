@@ -68,6 +68,26 @@ The app-description is the durable current-intent graph, not a disposable scaffo
 - avoid treating generated code as the only source of truth when the app-description has not been reconciled;
 - make each pending task small enough to compile one coherent slice of the graph into repository changes.
 
+## Workstream lifecycle state and stale-code flagging
+
+Track lifecycle state per workstream, not only per task. A workstream lifecycle record should summarize the current app-description readiness, implementation alignment, evidence, blockers, and next action for that workstream.
+
+Recommended alignment states:
+
+- `not-started`: intent exists, but no implementation evidence is known.
+- `aligned`: implementation and tests reflect the current app-description intent at the stated readiness level.
+- `stale-description-changed`: app-description intent changed after the last compile/alignment review, so related code may be stale.
+- `stale-code-changed`: code changed without a matching app-description reconciliation.
+- `partially-aligned`: some affected paths are aligned, but known gaps remain.
+- `unknown`: evidence is insufficient to decide.
+
+Default rule: when a feature-bearing app-description node under a workstream changes, mark that workstream's implementation alignment as `stale-description-changed` and reduce readiness to no higher than `compile-ready` until either:
+
+1. an alignment review proves the change is description-only or no-code-impact; or
+2. the affected workstream slice is compiled, checked, and then manually verified as needed.
+
+This makes queries such as "which workstreams are stale relative to current intent?" first-class lifecycle operations.
+
 ## Readiness vocabulary
 
 Use these readiness terms consistently:
@@ -77,7 +97,7 @@ Use these readiness terms consistently:
 - **Manual-ready:** automated checks required by the task pass and the real runtime path or explicit non-runtime validation path is known.
 - **Runtime-ready:** the real local runtime/API/UI/agent path works at the claimed scope, or the task is explicitly non-runtime and has satisfied its stated checks.
 
-These terms are evidence levels, not labels for skipping phases. A change can move backward from manual-ready to description-ready when runtime testing reveals a missing decision or an incorrect model.
+These terms are evidence levels, not labels for skipping phases. A change can move backward from manual-ready to description-ready when runtime testing reveals a missing decision or an incorrect model. A workstream can also move backward from runtime-ready/manual-ready to compile-ready when its app-description changes and the implementation is flagged `stale-description-changed`.
 
 ## Skills-pack task implications
 
