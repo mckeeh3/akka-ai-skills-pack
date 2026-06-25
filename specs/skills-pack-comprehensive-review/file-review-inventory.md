@@ -8,7 +8,7 @@ Review one row per fresh-context subagent. Do not run rows in parallel. Source-a
 
 | ID | Status | File | Class | Review notes |
 |---|---|---|---|---|
-| FILE-0001 | pending | `skills-pack/AGENTS.md` | top-level-guidance | source-authoritative review pending |
+| FILE-0001 | accepted | `skills-pack/AGENTS.md` | top-level-guidance | accepted: aligns with lifecycle, worker/tool spine, install/source boundary, and runtime completion doctrine; no stale numbered layout guidance found. |
 | FILE-0002 | pending | `skills-pack/README.md` | top-level-guidance | source-authoritative review pending |
 | FILE-0003 | pending | `skills-pack/install-skills.sh` | installer | source-authoritative review pending |
 | FILE-0004 | pending | `skills-pack/skills/README.md` | skill-source | source-authoritative review pending |
