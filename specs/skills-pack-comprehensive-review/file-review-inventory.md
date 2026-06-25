@@ -233,16 +233,16 @@ Review one row per fresh-context subagent. Do not run rows in parallel. Source-a
 | FILE-0223 | revised | `skills-pack/docs/service-to-service-views.md` | doc-source | revised: tightened service-stream View ACL guidance, public-contract snippets, scope/provenance metadata, exposed-query authorization, eventual consistency, and runtime-ready smoke evidence. |
 | FILE-0224 | accepted | `skills-pack/docs/skill-consolidation-and-pruning.md` | doc-source | accepted: maintains source/install boundary, public skill-name caution, broad-skill trimming policy, and curated-example pruning without reintroducing duplicate doctrine. |
 | FILE-0225 | accepted | `skills-pack/docs/skills-pack-user-guide.md` | doc-source | accepted: user guide preserves root app as implementation baseline, installed `.agents/skills` as support library, source/install boundaries, current manifest, and real-runtime completion expectations. |
-| FILE-0226 | pending | `skills-pack/docs/solution-plan-to-implementation-queue.md` | doc-source | source-authoritative review pending |
-| FILE-0227 | pending | `skills-pack/docs/structured-surface-contracts.md` | doc-source | source-authoritative review pending |
-| FILE-0228 | pending | `skills-pack/docs/timer-pattern-selection.md` | doc-source | source-authoritative review pending |
-| FILE-0229 | pending | `skills-pack/docs/web-ui-api-contract-patterns.md` | doc-source | source-authoritative review pending |
-| FILE-0230 | pending | `skills-pack/docs/web-ui-component-catalog.md` | doc-source | source-authoritative review pending |
-| FILE-0231 | pending | `skills-pack/docs/web-ui-docs-index.md` | doc-source | source-authoritative review pending |
-| FILE-0232 | pending | `skills-pack/docs/web-ui-frontend-decomposition.md` | doc-source | source-authoritative review pending |
-| FILE-0233 | pending | `skills-pack/docs/web-ui-frontend-project-integration.md` | doc-source | source-authoritative review pending |
-| FILE-0234 | pending | `skills-pack/docs/web-ui-pattern-selection.md` | doc-source | source-authoritative review pending |
-| FILE-0235 | pending | `skills-pack/docs/web-ui-quality-checklist.md` | doc-source | source-authoritative review pending |
+| FILE-0226 | revised | `skills-pack/docs/solution-plan-to-implementation-queue.md` | doc-source | revised: tied queue transformation to accepted current-intent slices and explicit readiness evidence; preserved vertical work, capability authority, tests, and local runtime validation. |
+| FILE-0227 | revised | `skills-pack/docs/structured-surface-contracts.md` | doc-source | revised: mapped surface ownership and UI realization to the current-intent domain/workstream graph while qualifying numbered directories as legacy/template compatibility; preserved backend capability authority. |
+| FILE-0228 | revised | `skills-pack/docs/timer-pattern-selection.md` | doc-source | revised: added timer authority rule treating timers as deterministic system worker adapters to governed capabilities with scope, idempotency, audit, and fail-closed behavior. |
+| FILE-0229 | accepted | `skills-pack/docs/web-ui-api-contract-patterns.md` | doc-source | accepted: API contracts transport structured surfaces/actions and require backend AuthContext, tenant/customer scoping, capability authority, audit, fail-closed behavior, and contract tests. |
+| FILE-0230 | accepted | `skills-pack/docs/web-ui-component-catalog.md` | doc-source | accepted: component catalog treats UI components as surface building blocks only, keeps governed capabilities/backend authorization authoritative, and forbids demo-content/runtime-proof shortcuts. |
+| FILE-0231 | accepted | `skills-pack/docs/web-ui-docs-index.md` | doc-source | accepted: UI index routes to focused docs/skills, centers workstream shell and structured surfaces, and preserves root project/app-code versus installed pack-example boundary. |
+| FILE-0232 | accepted | `skills-pack/docs/web-ui-frontend-decomposition.md` | doc-source | accepted: decomposition starts from users, authority, workstream shell, structured surfaces, APIs/realtime, validation, and states that routes/visibility are not authorization. |
+| FILE-0233 | accepted | `skills-pack/docs/web-ui-frontend-project-integration.md` | doc-source | accepted: integration guidance keeps frontend source, Akka static assets, API routes, build output, and generated-asset ownership separated without authorization overreach. |
+| FILE-0234 | accepted | `skills-pack/docs/web-ui-pattern-selection.md` | doc-source | accepted: pattern selector defaults to workstream shell over page-first console, separates static assets/protected APIs, and states route shape/client checks are never authorization. |
+| FILE-0235 | revised | `skills-pack/docs/web-ui-quality-checklist.md` | doc-source | revised: mapped style-guide evidence to current-intent UI/surface realization and qualified `55-ui` as legacy/template compatibility; checklist already preserves backend authority and runtime/build evidence. |
 | FILE-0236 | pending | `skills-pack/docs/web-ui-style-guide.md` | doc-source | source-authoritative review pending |
 | FILE-0237 | pending | `skills-pack/docs/web-ui-ux-patterns.md` | doc-source | source-authoritative review pending |
 | FILE-0238 | pending | `skills-pack/docs/workflow-endpoint-pattern.md` | doc-source | source-authoritative review pending |
