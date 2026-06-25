@@ -10,7 +10,7 @@ Review one row per fresh-context subagent. Do not run rows in parallel. Source-a
 |---|---|---|---|---|
 | FILE-0001 | accepted | `skills-pack/AGENTS.md` | top-level-guidance | accepted: aligns with lifecycle, worker/tool spine, install/source boundary, and runtime completion doctrine; no stale numbered layout guidance found. |
 | FILE-0002 | revised | `skills-pack/README.md` | top-level-guidance | revised: added current-intent and runtime-completion reference pointers and corrected installed asset list to include `references/`; aligns with lifecycle, worker/tool spine, install/source boundary, and runtime fail-closed doctrine. |
-| FILE-0003 | pending | `skills-pack/install-skills.sh` | installer | source-authoritative review pending |
+| FILE-0003 | accepted | `skills-pack/install-skills.sh` | installer | accepted: installer copies/symlinks only skills plus README, references, docs, examples, templates, and tools into `.agents/skills/**`; excludes pack manifests, `akka-context/**`, and duplicate app baseline; dry-run, prune install, `--check`, and git diff checks passed. |
 | FILE-0004 | pending | `skills-pack/skills/README.md` | skill-source | source-authoritative review pending |
 | FILE-0005 | pending | `skills-pack/skills/agent-workstream-apps/SKILL.md` | skill-source | source-authoritative review pending |
 | FILE-0006 | pending | `skills-pack/skills/ai-first-saas-admin-agents/SKILL.md` | skill-source | source-authoritative review pending |
