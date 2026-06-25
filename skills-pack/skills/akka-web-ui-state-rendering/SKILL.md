@@ -48,6 +48,7 @@ Do not hide these states in booleans such as `isLoading` plus nullable data unle
 5. Escape user-provided content: use safe component text binding in frontend frameworks or `textContent` for direct DOM updates.
 6. Avoid unsafe HTML injection; keep `innerHTML`/dangerous HTML APIs only for static trusted templates or avoid them entirely.
 7. Disable controls while submitting and make progress visible.
+8. Treat disabled/hidden controls, route state, and visible capability labels as UX hints only; backend authorization, tenant/customer scope, policy checks, and redacted DTOs remain authoritative.
 
 ## Workstream and deep-link state
 

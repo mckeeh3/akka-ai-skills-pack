@@ -22,7 +22,7 @@ Use `../references/generated-saas-input-contract.md`, `../docs/app-worker-tool-m
 
 - `../docs/web-ui-quality-checklist.md`
 - `../docs/web-ui-style-guide.md`
-- the selected `app-description/55-ui/style-guide.md` or `specs/cross-cutting/*ui-style-guide*.md` when present, including available named themes and default theme id
+- the selected current-intent UI style contract when present, such as `app-description/global/surfaces/**`, `app-description/domains/<domain>/workstreams/<workstream>/surfaces/**`, `app-description/domains/<domain>/workstreams/<workstream>/realization/frontend-routes.md`, or `specs/cross-cutting/*ui-style-guide*.md`, including available named themes and default theme id; read legacy `app-description/55-ui/style-guide.md` only when the target project already maintains it as compatibility mapping
 - existing frontend source under `frontend/src/**`
 
 ## Accessibility rules
