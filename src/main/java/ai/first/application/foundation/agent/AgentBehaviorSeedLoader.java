@@ -6,6 +6,7 @@ import ai.first.domain.foundation.identity.AuthContext;
 import ai.first.domain.foundation.identity.Tenant;
 import ai.first.domain.foundation.invitation.Invitation;
 import ai.first.application.coreapp.myaccount.MyAccountService;
+import ai.first.application.foundation.notification.NotificationService;
 import ai.first.domain.foundation.agent.AgentDefinition;
 import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import ai.first.domain.foundation.agent.AgentReferenceManifest;
@@ -307,6 +308,12 @@ public final class AgentBehaviorSeedLoader {
     grants.add(new ToolPermissionBoundary.ToolGrant("readReferenceDoc", ToolPermissionBoundary.Category.READ_REFERENCE, "agent.references.read", List.of("READ"), List.of("runtime", "test", "replay"), "none", "bounded_autonomous", false, "ReferenceLoadTrace"));
     if (MY_ACCOUNT_AGENT_ID.equals(seed.agentDefinitionId())) {
       grants.add(new ToolPermissionBoundary.ToolGrant("myAccountEvidence.read", ToolPermissionBoundary.Category.DATA_LOOKUP, MyAccountEvidenceTools.CAPABILITY_ID, List.of("READ"), List.of("runtime", "test"), "none", "bounded_autonomous", false, "AgentWorkTrace"));
+      grants.add(new ToolPermissionBoundary.ToolGrant(MyAccountService.UPDATE_PROFILE_SETTINGS_CAPABILITY, ToolPermissionBoundary.Category.COMPONENT, MyAccountService.UPDATE_PROFILE_SETTINGS_CAPABILITY, List.of("WRITE"), List.of("human_chat_tool_plan"), "self_profile_settings", "human_confirmed", true, "AgentWorkTrace"));
+      grants.add(new ToolPermissionBoundary.ToolGrant(NotificationService.MARK_READ_TOOL, ToolPermissionBoundary.Category.COMPONENT, NotificationService.MARK_READ_TOOL, List.of("WRITE"), List.of("human_chat_tool_plan"), "personal_notification_lifecycle", "human_confirmed", true, "AgentWorkTrace"));
+      grants.add(new ToolPermissionBoundary.ToolGrant(NotificationService.DISMISS_TOOL, ToolPermissionBoundary.Category.COMPONENT, NotificationService.DISMISS_TOOL, List.of("WRITE"), List.of("human_chat_tool_plan"), "personal_notification_lifecycle", "human_confirmed", true, "AgentWorkTrace"));
+      grants.add(new ToolPermissionBoundary.ToolGrant(NotificationService.ARCHIVE_TOOL, ToolPermissionBoundary.Category.COMPONENT, NotificationService.ARCHIVE_TOOL, List.of("WRITE"), List.of("human_chat_tool_plan"), "personal_notification_lifecycle", "human_confirmed", true, "AgentWorkTrace"));
+      grants.add(new ToolPermissionBoundary.ToolGrant(NotificationService.SNOOZE_TOOL, ToolPermissionBoundary.Category.COMPONENT, NotificationService.SNOOZE_TOOL, List.of("WRITE"), List.of("human_chat_tool_plan"), "personal_notification_lifecycle", "human_confirmed", true, "AgentWorkTrace"));
+      grants.add(new ToolPermissionBoundary.ToolGrant(NotificationService.UPDATE_PREFERENCES_TOOL, ToolPermissionBoundary.Category.COMPONENT, NotificationService.UPDATE_PREFERENCES_TOOL, List.of("WRITE"), List.of("human_chat_tool_plan"), "personal_notification_preferences", "human_confirmed", true, "AgentWorkTrace"));
     }
     if (AGENT_ADMIN_AGENT_ID.equals(seed.agentDefinitionId())) {
       grants.add(new ToolPermissionBoundary.ToolGrant("agentAdminEvidence.read", ToolPermissionBoundary.Category.DATA_LOOKUP, AgentAdminService.LIST_DEFINITIONS, List.of("READ"), List.of("runtime", "test"), "none", "bounded_autonomous", false, "AgentWorkTrace"));

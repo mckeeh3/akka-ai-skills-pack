@@ -205,6 +205,7 @@ public final class WorkstreamService {
   private static final String MY_ACCOUNT_DIGEST_ACCEPT_CAPABILITY = MyAccountPersonalAttentionDigestService.ACCEPT_RESULT_CAPABILITY;
   private static final String MY_ACCOUNT_DIGEST_REJECT_CAPABILITY = MyAccountPersonalAttentionDigestService.REJECT_RESULT_CAPABILITY;
   private static final String NOTIFICATION_LIST_CAPABILITY = NotificationService.LIST_MY_ACCOUNT_CENTER_TOOL;
+  private static final String NOTIFICATION_GET_CAPABILITY = NotificationService.GET_NOTIFICATION_TOOL;
   private static final String NOTIFICATION_MARK_READ_CAPABILITY = NotificationService.MARK_READ_TOOL;
   private static final String NOTIFICATION_DISMISS_CAPABILITY = NotificationService.DISMISS_TOOL;
   private static final String NOTIFICATION_ARCHIVE_CAPABILITY = NotificationService.ARCHIVE_TOOL;
@@ -1246,6 +1247,8 @@ public final class WorkstreamService {
     } else if ("action-notification-update-preferences".equals(request.actionId())) {
       var pref = notificationService.updatePreference(actor, notificationCategoryInput(request.input(), "category", NotificationCategory.ALL), booleanInput(request.input(), "enabled", true), notificationPriorityInput(request.input(), "minimumPriority", NotificationPriority.INFO), instantInput(request.input(), "muteUntil", null), booleanInput(request.input(), "includeReadInCenter", false), request.correlationId());
       result = new CapabilityActionResult("accepted", "In-app notification preferences updated by backend authority; email delivery remains a separate governed channel.", request.correlationId(), List.of(pref.correlationId()), myAccountNotificationCenterSurface(actor, request.correlationId()));
+    } else if ("action-notification-open-source".equals(request.actionId())) {
+      result = openNotificationSourceResult(actor, request);
     } else if ("action-open-user-admin".equals(request.actionId()) || "action-open-agent-admin".equals(request.actionId()) || "action-open-audit-trace".equals(request.actionId()) || "action-open-governance-policy".equals(request.actionId())) {
       var open = myAccountService.openAuthorizedWorkstream(actor, request.actionId(), request.correlationId());
       result = "accepted".equals(open.status())
@@ -1576,6 +1579,7 @@ public final class WorkstreamService {
     var now = Instant.now();
     var traceIds = List.of("trace-human-chat-tool-plan-proposed-" + stableSuffix(responseSeed));
     var proposal = chatToolPlanProposal(actor, request, now, traceIds, responseSeed);
+    traceChatToolPlan(actor, "human_chat_tool_plan.proposed", request.functionalAgentId() + ":" + proposal.planId() + ":no-mutation", correlationId);
     var confirmationSnapshot = chatToolPlanConfirmationSnapshot(proposal);
     var userItemId = "item-chat-tool-plan-user-" + stableSuffix(responseSeed + ":user");
     var agentItemId = "item-chat-tool-plan-proposal-" + stableSuffix(responseSeed + ":proposal");
@@ -1612,6 +1616,7 @@ public final class WorkstreamService {
     }
     var expectedSnapshot = chatToolPlanConfirmationSnapshot(proposal);
     validateChatToolPlanConfirmationSnapshot(actor, request, proposal, expectedSnapshot);
+    traceChatToolPlan(actor, "human_chat_tool_plan.confirmed", proposal.functionalAgentId() + ":" + proposal.planId() + ":" + proposal.planSnapshotId(), correlationId);
     var result = dispatchConfirmedChatToolPlanSteps(identity, selectedContextId, new ChatToolPlanDispatchRequest(
         selectedContextId,
         proposal.functionalAgentId(),
@@ -1688,6 +1693,7 @@ public final class WorkstreamService {
       var startedAt = Instant.now();
       var dependencyBlocked = step.dependsOnStepIds().stream().anyMatch(failedOrSkippedStepIds::contains) || step.dependsOnStepIds().stream().anyMatch(dependency -> !completedStepIds.contains(dependency));
       if (dependencyBlocked) {
+        traceChatToolPlan(actor, "human_chat_tool_plan.step_skipped", request.functionalAgentId() + ":" + request.planId() + ":" + stepId + ":dependency_not_completed", correlationId + ":" + stepId);
         var stepTraceIds = List.of("trace-human-chat-tool-plan-step-skipped-" + stableSuffix(correlationId + ":" + stepId));
         traceIds.addAll(stepTraceIds);
         var skippedResult = new ChatToolPlanStepResult(stepId, "skipped", "Skipped because a dependency failed, was skipped, or did not complete.", step.actionId(), step.governedToolId(), step.capabilityId(), null, stepTraceIds, startedAt.toString(), Instant.now().toString(), "dependency_not_completed");
@@ -1697,6 +1703,7 @@ public final class WorkstreamService {
       }
       var entry = chatToolCatalogEntry(request.functionalAgentId(), step).orElseThrow();
       if (entry.requiresApproval()) {
+        traceChatToolPlan(actor, "human_chat_tool_plan.step_failed", request.functionalAgentId() + ":" + request.planId() + ":" + stepId + ":approval_required", correlationId + ":" + stepId);
         var stepTraceIds = List.of("trace-human-chat-tool-plan-step-approval-required-" + stableSuffix(correlationId + ":" + stepId));
         traceIds.addAll(stepTraceIds);
         var failedResult = new ChatToolPlanStepResult(stepId, "failed", "Step requires a separate approval policy before dispatcher execution.", step.actionId(), step.governedToolId(), step.capabilityId(), null, stepTraceIds, startedAt.toString(), Instant.now().toString(), "approval_required");
@@ -1706,6 +1713,7 @@ public final class WorkstreamService {
       }
       var stepCorrelationId = correlationId + ":" + stepId;
       try {
+        traceChatToolPlan(actor, "human_chat_tool_plan.step_started", request.functionalAgentId() + ":" + request.planId() + ":" + stepId + ":" + step.governedToolId(), stepCorrelationId);
         var resolvedInput = resolveChatToolStepInput(step.input(), stepOutputs);
         var actionResult = runAction(identity, selectedContextId, new CapabilityActionRequest(
             step.actionId(),
@@ -1726,14 +1734,17 @@ public final class WorkstreamService {
         var completedStatus = chatToolStepCompleted(entry, actionResult);
         var stepResult = new ChatToolPlanStepResult(stepId, completedStatus ? "completed" : "failed", actionResult.message(), step.actionId(), step.governedToolId(), step.capabilityId(), resultSurfaceId, List.copyOf(stepTraceIds), startedAt.toString(), Instant.now().toString(), completedStatus ? null : firstNonBlank(actionResult.status(), "action_failed"));
         if (completedStatus) {
+          traceChatToolPlan(actor, "human_chat_tool_plan.step_completed", request.functionalAgentId() + ":" + request.planId() + ":" + stepId + ":" + resultSurfaceId, stepCorrelationId);
           completed.add(stepResult);
           completedStepIds.add(stepId);
           stepOutputs.put(stepId, chatToolStepOutput(step, actionResult));
         } else {
+          traceChatToolPlan(actor, "human_chat_tool_plan.step_failed", request.functionalAgentId() + ":" + request.planId() + ":" + stepId + ":" + firstNonBlank(actionResult.status(), "action_failed"), stepCorrelationId);
           failed.add(stepResult);
           failedOrSkippedStepIds.add(stepId);
         }
       } catch (AuthorizationException denied) {
+        traceChatToolPlan(actor, "human_chat_tool_plan.denied", request.functionalAgentId() + ":" + request.planId() + ":" + stepId + ":" + firstNonBlank(denied.getMessage(), "authorization_denied"), stepCorrelationId);
         var stepTraceIds = List.of("trace-human-chat-tool-plan-step-denied-" + stableSuffix(stepCorrelationId));
         traceIds.addAll(stepTraceIds);
         var failedResult = new ChatToolPlanStepResult(stepId, "failed", "Step failed closed through the existing governed action path.", step.actionId(), step.governedToolId(), step.capabilityId(), null, stepTraceIds, startedAt.toString(), Instant.now().toString(), firstNonBlank(denied.getMessage(), "authorization_denied"));
@@ -1869,6 +1880,7 @@ public final class WorkstreamService {
       var boundary = activeChatToolBoundary(actor, request.functionalAgentId(), correlationId);
       canonicalSteps.forEach(step -> validateChatToolStepAgainstCatalog(actor, boundary, request.functionalAgentId(), step));
     } catch (AuthorizationException denied) {
+      traceChatToolPlan(actor, "human_chat_tool_plan.denied", request.functionalAgentId() + ":proposal:" + denied.reasonCode(), correlationId);
       return persistChatToolPlanSystemMessage(actor, functionalAgent, workstreamScopeId, request, correlationId, responseSeed, userItem, "CHAT_TOOL_PLAN_UNAVAILABLE", "Chat tool plan proposal is unavailable because backend authorization or tool-boundary checks failed closed for this selected AuthContext.", List.of("trace-human-chat-tool-plan-denied-" + stableSuffix(correlationId + ":" + denied.reasonCode())));
     }
 
@@ -1885,6 +1897,7 @@ public final class WorkstreamService {
     var runtimeResponse = runtime.response();
     var unavailable = chatToolPlanUnavailableMessage(runtime, runtimeResponse, canonicalSteps, workstreamLabel(request.functionalAgentId()));
     if (unavailable != null) {
+      traceChatToolPlan(actor, "human_chat_tool_plan.provider_blocked", request.functionalAgentId() + ":" + unavailable.code(), correlationId);
       return persistChatToolPlanSystemMessage(actor, functionalAgent, workstreamScopeId, request, correlationId, responseSeed, userItem, unavailable.code(), unavailable.message(), unavailable.traceIds());
     }
 
@@ -1902,6 +1915,7 @@ public final class WorkstreamService {
         canonicalSteps,
         firstNonBlank(runtimeResponse.approvalSummary(), candidate.defaultApprovalSummary()));
     var proposal = chatToolPlanProposal(actor, proposalRequest, now, traceIds, responseSeed);
+    traceChatToolPlan(actor, "human_chat_tool_plan.proposed", request.functionalAgentId() + ":" + proposal.planId() + ":runtime-proposed:no-mutation", correlationId);
     var confirmationSnapshot = chatToolPlanConfirmationSnapshot(proposal);
     var agentItemId = "item-chat-tool-plan-proposal-" + stableSuffix(responseSeed + ":proposal");
     var surface = chatToolPlanProposalSurface(proposal, confirmationSnapshot, actor, agentItemId, correlationId, traceIds, now);
@@ -3132,11 +3146,23 @@ public final class WorkstreamService {
     if (step.requiresApproval() != entry.requiresApproval()) throw new AuthorizationException(403, "CHAT_TOOL_APPROVAL_POLICY_MISMATCH");
     if (!step.requiresConfirmation() || !entry.requiresConfirmation()) throw new AuthorizationException(403, "CHAT_TOOL_CONFIRMATION_REQUIRED");
     if (boundary.allowedToolGrants().isEmpty()) throw new AuthorizationException(403, "CHAT_TOOL_BOUNDARY_EMPTY");
+    if (MY_ACCOUNT_AGENT_ID.equals(workstreamId)) requireChatToolBoundaryGrant(boundary, step);
     if (MY_ACCOUNT_AGENT_ID.equals(workstreamId)) validateMyAccountChatToolStepInput(step);
     if (USER_ADMIN_AGENT_ID.equals(workstreamId)) validateUserAdminChatToolStepInput(step);
     if (AGENT_ADMIN_AGENT_ID.equals(workstreamId)) validateAgentAdminChatToolStepInput(actor, step);
     if (AUDIT_TRACE_AGENT_ID.equals(workstreamId)) validateAuditTraceChatToolStepInput(step);
     if (GOVERNANCE_POLICY_AGENT_ID.equals(workstreamId)) validateGovernancePolicyChatToolStepInput(step);
+  }
+
+  private void requireChatToolBoundaryGrant(ToolPermissionBoundary boundary, ChatToolPlanStep step) {
+    var granted = boundary.allowedToolGrants().stream()
+        .filter(grant -> grant.allowedModes().contains("human_chat_tool_plan"))
+        .anyMatch(grant -> Objects.equals(grant.toolId(), step.governedToolId()) || Objects.equals(grant.capabilityId(), step.capabilityId()) || Objects.equals(grant.toolId(), step.browserToolId()));
+    if (!granted) throw new AuthorizationException(403, "CHAT_TOOL_BOUNDARY_TOOL_NOT_GRANTED:" + step.governedToolId());
+  }
+
+  private void traceChatToolPlan(AuthContextResolver.ResolvedMe actor, String eventType, String detail, String correlationId) {
+    authContextResolver.appendProtectedReadTrace(actor, eventType, detail, correlationId);
   }
 
   private void validateAgentAdminChatToolStepInput(AuthContextResolver.ResolvedMe actor, ChatToolPlanStep step) {
@@ -3592,7 +3618,7 @@ public final class WorkstreamService {
     var itemMaps = center.items().stream().map(this::notificationItemMap).toList();
     return envelope("surface-my-account-notification-center", "notification-center", "In-app notifications", actor, correlationId,
         mapOf("surfaceContract", center.surfaceContract(), "channel", "in_app", "accountContext", mapOf("accountId", actor.account().accountId(), "email", actor.account().displayEmail(), "displayName", actor.profile().displayName(), "tenantId", actor.selectedContext().tenantId(), "customerId", actor.selectedContext().customerId(), "selectedContextId", actor.selectedContext().membershipId(), "redactionLevel", "browser-safe"), "notificationSummary", mapOf("unreadCount", center.unreadCount(), "visibleCount", center.visibleCount(), "channel", "in_app"), "unreadCount", center.unreadCount(), "visibleCount", center.visibleCount(), "triageSections", notificationTriageSections(itemMaps), "items", itemMaps, "preferencesSummary", center.preferencesSummary().stream().map(this::notificationPreferenceMap).toList(), "sourceSummary", center.sourceSummary(), "redaction", center.redaction().name().toLowerCase(Locale.ROOT), "traceRefs", center.traceRefs(), "correlationId", center.correlationId(), "capabilityIds", List.of(NOTIFICATION_LIST_CAPABILITY, NOTIFICATION_MARK_READ_CAPABILITY, NOTIFICATION_DISMISS_CAPABILITY, NOTIFICATION_ARCHIVE_CAPABILITY, NOTIFICATION_SNOOZE_CAPABILITY, NOTIFICATION_UPDATE_PREFERENCES_CAPABILITY)),
-        List.of(showNotificationCenterAction(), markNotificationReadAction(), dismissNotificationAction(), archiveNotificationAction(), snoozeNotificationAction(), updateNotificationPreferencesAction(), openAuditAction()));
+        List.of(showNotificationCenterAction(), markNotificationReadAction(), dismissNotificationAction(), archiveNotificationAction(), snoozeNotificationAction(), updateNotificationPreferencesAction(), openNotificationSourceAction(), openAuditAction()));
   }
 
   private MyAccountNotificationCenter myAccountNotificationCenterData(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -3618,8 +3644,25 @@ public final class WorkstreamService {
             mapOf("actionId", "action-notification-mark-read", "label", "Mark read", "capabilityId", NOTIFICATION_MARK_READ_CAPABILITY, "enabled", !"read".equals(status) && !"archived".equals(status), "disabledReason", "read".equals(status) ? "Already read." : "archived".equals(status) ? "Archived notifications are terminal in this center." : "", "resultSurfaceId", "surface-my-account-notification-center"),
             mapOf("actionId", "action-notification-dismiss", "label", "Dismiss", "capabilityId", NOTIFICATION_DISMISS_CAPABILITY, "enabled", !"dismissed".equals(status) && !"archived".equals(status), "disabledReason", "dismissed".equals(status) ? "Already dismissed." : "archived".equals(status) ? "Archived notifications are terminal in this center." : "", "resultSurfaceId", "surface-my-account-notification-center"),
             mapOf("actionId", "action-notification-archive", "label", "Archive", "capabilityId", NOTIFICATION_ARCHIVE_CAPABILITY, "enabled", !"archived".equals(status), "disabledReason", "archived".equals(status) ? "Already archived." : "", "resultSurfaceId", "surface-my-account-notification-center"),
-            mapOf("actionId", "action-notification-snooze", "label", "Snooze", "capabilityId", NOTIFICATION_SNOOZE_CAPABILITY, "enabled", !"archived".equals(status) && !"dismissed".equals(status), "disabledReason", "archived".equals(status) || "dismissed".equals(status) ? "Handled notifications cannot be snoozed." : "", "resultSurfaceId", "surface-my-account-notification-center"))
+            mapOf("actionId", "action-notification-snooze", "label", "Snooze", "capabilityId", NOTIFICATION_SNOOZE_CAPABILITY, "enabled", !"archived".equals(status) && !"dismissed".equals(status), "disabledReason", "archived".equals(status) || "dismissed".equals(status) ? "Handled notifications cannot be snoozed." : "", "resultSurfaceId", "surface-my-account-notification-center"),
+            mapOf("actionId", "action-notification-open-source", "label", "Open source", "capabilityId", item.requiredCapabilityId(), "enabled", item.surfaceRef() != null, "disabledReason", item.surfaceRef() == null ? "No authorized source surface is available for this notification." : "", "resultSurfaceId", item.surfaceRef() == null ? "surface-my-account-open-denied" : item.surfaceRef().surfaceId()))
         .toList();
+  }
+
+  private CapabilityActionResult openNotificationSourceResult(AuthContextResolver.ResolvedMe actor, CapabilityActionRequest request) {
+    var item = notificationService.getNotification(actor, notificationIdInput(actor, request.input(), request.correlationId()), request.correlationId());
+    var ref = item.surfaceRef();
+    if (ref == null || ref.surfaceId() == null || ref.surfaceId().isBlank()) {
+      return new CapabilityActionResult("denied", "Notification source surface is unavailable or redacted for this item.", request.correlationId(), item.traceRefs(), myAccountOpenDeniedSurface(actor, new MyAccountService.OpenWorkstreamDecision("denied", "Notification source surface is unavailable or redacted for this item.", "surface-my-account-open-denied", MY_ACCOUNT_AGENT_ID, "Notification source unavailable", null, request.correlationId(), item.traceRefs(), "source_surface_unavailable"), request.correlationId(), request.actionId()));
+    }
+    try {
+      authContextResolver.requireCapability(actor.selectedContext(), firstNonBlank(ref.requiredCapabilityId(), item.requiredCapabilityId()));
+      authContextResolver.appendProtectedReadTrace(actor, firstNonBlank(ref.requiredCapabilityId(), item.requiredCapabilityId()), "notification.source_open.v1 notificationId=" + item.notificationId() + " surfaceId=" + ref.surfaceId(), request.correlationId());
+      var surface = dynamicSurface(actor, ref.surfaceId(), request.correlationId());
+      return new CapabilityActionResult("accepted", "Notification source opened after backend reauthorization for the selected context.", request.correlationId(), item.traceRefs(), surface);
+    } catch (AuthorizationException denied) {
+      return new CapabilityActionResult("denied", "Notification source is no longer authorized for the selected context.", request.correlationId(), item.traceRefs(), myAccountOpenDeniedSurface(actor, new MyAccountService.OpenWorkstreamDecision("denied", "Notification source is no longer authorized for the selected context.", "surface-my-account-open-denied", MY_ACCOUNT_AGENT_ID, "Notification source access denied", null, request.correlationId(), item.traceRefs(), denied.reasonCode()), request.correlationId(), request.actionId()));
+    }
   }
 
   private List<Map<String, Object>> notificationTriageSections(List<Map<String, Object>> items) {
@@ -8300,6 +8343,7 @@ public final class WorkstreamService {
   private SurfaceAction archiveNotificationAction() { return new SurfaceAction("action-notification-archive", "Archive notification", "command", browserToolId("action-notification-archive"), governedToolId(NOTIFICATION_ARCHIVE_CAPABILITY), NOTIFICATION_ARCHIVE_CAPABILITY, "schema.notification.archive.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-account-notification-center", "inline"), new Audit("NotificationArchived", true)); }
   private SurfaceAction snoozeNotificationAction() { return new SurfaceAction("action-notification-snooze", "Snooze notification", "command", browserToolId("action-notification-snooze"), governedToolId(NOTIFICATION_SNOOZE_CAPABILITY), NOTIFICATION_SNOOZE_CAPABILITY, "schema.notification.snooze.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-account-notification-center", "inline"), new Audit("NotificationSnoozed", true)); }
   private SurfaceAction updateNotificationPreferencesAction() { return new SurfaceAction("action-notification-update-preferences", "Update in-app notification preferences", "command", browserToolId("action-notification-update-preferences"), governedToolId(NOTIFICATION_UPDATE_PREFERENCES_CAPABILITY), NOTIFICATION_UPDATE_PREFERENCES_CAPABILITY, "schema.notification.preferences.update.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-account-notification-center", "inline"), new Audit("NotificationPreferencesUpdated", true)); }
+  private SurfaceAction openNotificationSourceAction() { return new SurfaceAction("action-notification-open-source", "Open notification source", "open", browserToolId("action-notification-open-source"), governedToolId(NOTIFICATION_GET_CAPABILITY), NOTIFICATION_GET_CAPABILITY, "schema.notification.open-source.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-account-open-denied", "replace"), new Audit("NotificationSourceOpened", true)); }
   private SurfaceAction updateEmailNotificationPreferencesAction() { return new SurfaceAction("action-notification-email-update-preferences", "Update email notification preferences", "command", browserToolId("action-notification-email-update-preferences"), governedToolId(NOTIFICATION_EMAIL_UPDATE_PREFERENCES_CAPABILITY), NOTIFICATION_EMAIL_UPDATE_PREFERENCES_CAPABILITY, "schema.notification.email.preferences.update.v1", false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-account-notification-center", "inline"), new Audit("EmailNotificationPreferencesUpdated", true)); }
   private SurfaceAction externalNotificationFailClosedAction() { return new SurfaceAction("action-notification-external-fail-closed-check", "Check external delivery fail-closed seam", "command", browserToolId("action-notification-external-fail-closed-check"), governedToolId(NOTIFICATION_DELIVERY_EVALUATE_EXTERNAL_CAPABILITY), NOTIFICATION_DELIVERY_EVALUATE_EXTERNAL_CAPABILITY, "schema.notification.external.fail-closed-check.v1", false, false, null, new Idempotency(true, "channel+notificationId"), new ResultSurface(null, "surface-my-account-notification-center", "inline"), new Audit("NotificationExternalDeliveryBlockedProviderUnconfigured", true)); }
   private SurfaceAction showProfileAction() { return new SurfaceAction("action-show-my-profile", "Show user profile", "read", browserToolId("action-show-my-profile"), governedToolId(MY_ACCOUNT_VIEW_SUMMARY_CAPABILITY), MY_ACCOUNT_VIEW_SUMMARY_CAPABILITY, null, false, false, null, new Idempotency(false, null), new ResultSurface(null, "surface-my-profile", "inline"), new Audit("UserProfileDisplayed", true)); }

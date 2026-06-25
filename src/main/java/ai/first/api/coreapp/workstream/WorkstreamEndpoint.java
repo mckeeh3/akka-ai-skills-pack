@@ -27,6 +27,8 @@ import ai.first.application.coreapp.workstream.WorkstreamService.WorkstreamMessa
 import ai.first.application.coreapp.workstream.WorkstreamService.WorkstreamShellRequest;
 import ai.first.domain.foundation.identity.WorkosIdentity;
 import ai.first.application.foundation.invitation.InvitationService;
+import java.util.List;
+import java.util.Map;
 
 /** Workstream shell API endpoints for User Admin structured surfaces and capability actions. */
 @Acl(allow = @Acl.Matcher(principal = Acl.Principal.INTERNET))
@@ -125,9 +127,45 @@ public class WorkstreamEndpoint extends AbstractHttpEndpoint {
       return call.invoke(identity, selectedContextId, correlationId);
     } catch (AuthorizationException error) {
       if (error.httpStatus() == 401) throw unauthorized(error.reasonCode());
+      if ("account-disabled".equals(error.reasonCode()) || "no-active-membership".equals(error.reasonCode())) {
+        return HttpResponses.ok(noAccessRecovery(correlationId(), error.reasonCode()));
+      }
       if (error.httpStatus() == 404) throw notFound();
       throw forbidden(error.reasonCode());
     }
+  }
+
+  private Map<String, Object> noAccessRecovery(String correlationId, String reasonCode) {
+    var data = Map.ofEntries(
+        Map.entry("surfaceContract", "my_account.open_denied.v1"),
+        Map.entry("decision", "account-disabled".equals(reasonCode) ? "disabled_account" : "inactive_membership"),
+        Map.entry("safeReasonCode", reasonCode),
+        Map.entry("severity", "warning"),
+        Map.entry("title", "My Account recovery"),
+        Map.entry("message", "Your signed-in account was recognized, but no active application context is available. My Account can only show safe profile/session recovery guidance until an administrator restores access."),
+        Map.entry("accountContext", Map.of("selectedContextId", "not_available", "redactionLevel", "browser-safe")),
+        Map.entry("recoverySteps", List.of("Sign out and try another account if appropriate.", "Contact an administrator to restore an active membership or account state.")),
+        Map.entry("traceRefs", List.of("trace-workstream-no-access-recovery")),
+        Map.entry("redaction", "No tenant, customer, membership, workstream, capability, provider, or hidden context details are enumerated."),
+        Map.entry("noEnumeration", true));
+    var surface = Map.ofEntries(
+        Map.entry("surfaceId", "surface-my-account-open-denied"),
+        Map.entry("surfaceType", "system_message"),
+        Map.entry("surfaceVersion", "v1"),
+        Map.entry("title", "Account access unavailable"),
+        Map.entry("ownerFunctionalAgentId", "my-account-agent"),
+        Map.entry("correlationId", correlationId),
+        Map.entry("traceIds", List.of("trace-workstream-no-access-recovery")),
+        Map.entry("data", data));
+    return Map.ofEntries(
+        Map.entry("status", "no_access_recovery"),
+        Map.entry("reasonCode", reasonCode),
+        Map.entry("correlationId", correlationId),
+        Map.entry("surface", surface),
+        Map.entry("surfaces", List.of(surface)),
+        Map.entry("items", List.of()),
+        Map.entry("functionalAgents", List.of()),
+        Map.entry("availableActions", List.of("sign_out", "contact_admin")));
   }
 
   private HttpResponse authorizedIdentityOnly(IdentityOnlyCall call) {
