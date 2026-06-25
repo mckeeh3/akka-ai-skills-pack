@@ -10,7 +10,8 @@ A bootstrap output creates the smallest authoritative `app-description/**` tree 
 - `global/actors/**`, `global/roles/**`, `global/policies/**`, `global/surfaces/**`, `global/agents/**`, `global/tools/**`, and `global/traces/**` for reusable definitions;
 - `domains/<domain>/domain.md`, `capabilities/**`, and `data-state/**` for domain-owned capability and state contracts;
 - `domains/<domain>/workstreams/<workstream>/**` for access, behavior, surface/agent/tool/policy/trace bindings, tests, and realization maps;
-- `domains/<domain>/workstreams/<workstream>/realization/{akka-components.md,frontend-routes.md,api-contracts.md}` sufficient for the declared scope;
+- `domains/<domain>/workstreams/<workstream>/realization/{akka-components.md,frontend-routes.md,api-contracts.md,source-alignment.md}` sufficient for the declared scope;
+- source-alignment entries that map feature-bearing app-description files to expected or known source/frontend/API/test/validation artifacts, or explicitly mark entries `not-started`, `description-only`, `blocked`, or `unknown`;
 - readiness status that distinguishes ready, ready-with-assumptions, not-ready, blocked, and explicitly deferred areas.
 
 Use `current-intent-model.md`, `intent-compiler-skill-contracts.md`, templates under `templates/ai-first-saas-core-app/app-description/**`, and the target project's existing `app-description/**` as structure references. If an existing target still uses legacy numbered directories, update it in place only for the selected scope and map the change back to app/global/domain/workstream nodes rather than introducing a parallel tree.
@@ -21,7 +22,7 @@ A readiness assessment must report:
 
 - scope label: SaaS Foundation App maintenance/extension, business-domain extension, app-specific feature, or named narrower scope;
 - overall state: `ready`, `ready-with-assumptions`, `not-ready`, or `blocked`;
-- blocking gaps by current-intent graph area: app/global definitions, domain capabilities/data-state, workstream access/behavior/surfaces/agents/tools/policies/traces/tests, and realization maps;
+- blocking gaps by current-intent graph area: app/global definitions, domain capabilities/data-state, workstream access/behavior/surfaces/agents/tools/policies/traces/tests, realization maps, and source-alignment coverage;
 - assumptions that are acceptable for the declared scope;
 - unsafe assumptions that must become pending questions or description updates;
 - recommended next skill or action.
@@ -39,7 +40,7 @@ For capability, behavior, test, auth/security, observability, UI, surface, funct
 - authority, AuthContext/scope, capability/tool ids, DTOs or payload contracts where relevant;
 - side effects, idempotency/no-op behavior, policy/approval/escalation, denial behavior, redaction, and traces;
 - tests and linked graph nodes that must be updated next;
-- realization impact for Akka components, frontend routes, API contracts, specs/backlogs/tasks, and runtime validation when relevant;
+- realization impact for Akka components, frontend routes, API contracts, source-alignment entries, specs/backlogs/tasks, and runtime validation when relevant;
 - open questions and assumptions.
 
 ## Intake/normalization contract

@@ -37,6 +37,7 @@ app-description/
       realization/akka-components.md
       realization/frontend-routes.md
       realization/api-contracts.md
+      realization/source-alignment.md
 ```
 
 This hierarchy expresses primary ownership, not exclusive reuse. Cross-links are expected when a workstream uses global definitions or shared domain capabilities.
@@ -95,7 +96,7 @@ Workstreams are the main operational unit for generated AI-first SaaS apps. They
 - governed tools and capability APIs;
 - policies, approvals, and exception paths;
 - traces, audit, and outcome metrics;
-- Akka components, frontend routes, API contracts, and tests.
+- Akka components, frontend routes, API contracts, source-alignment evidence, and tests.
 
 Access should be modeled at workstream level first, then compiled into surface visibility, capability permission, tool permission, endpoint/component authorization, and trace obligations.
 
@@ -107,13 +108,13 @@ Each feature-bearing workstream should include a lifecycle state artifact, typic
 app-description/domains/<domain>/workstreams/<workstream>/lifecycle.md
 ```
 
-The lifecycle artifact records whether the workstream's current intent is aligned with implementation evidence. It should capture at minimum:
+The lifecycle artifact records whether the workstream's current intent is aligned with implementation evidence. The file-level evidence should live in `realization/source-alignment.md` when the workstream has or expects implementation. The lifecycle artifact should capture at minimum:
 
 - workstream id and owning domain;
 - current readiness: `draft`, `description-ready`, `compile-ready`, `manual-ready`, `runtime-ready`, or `blocked`;
 - implementation alignment: `not-started`, `aligned`, `stale-description-changed`, `stale-code-changed`, `partially-aligned`, or `unknown`;
 - app-description version, digest, or changed-node list used for the latest alignment decision;
-- implementation evidence, such as touched source/spec/test paths, commit id, or code digest when available;
+- implementation evidence, usually by linking to `realization/source-alignment.md` entries plus touched source/spec/test paths, commit id, or code digest when available;
 - last description change, last alignment review, last compile, and last manual runtime test timestamps or notes;
 - blockers, assumptions, and next recommended action.
 
@@ -126,6 +127,18 @@ nextRecommendedAction: alignment-review or compile selected workstream slice
 ```
 
 A later compile may move the workstream to `manual-ready` only after required checks pass and the real runtime path is known. A manual runtime test may move it to `runtime-ready` only when the real API/UI/agent path works at the claimed scope.
+
+## Source alignment realization artifact
+
+New feature-bearing app-description workstreams should include:
+
+```text
+app-description/domains/<domain>/workstreams/<workstream>/realization/source-alignment.md
+```
+
+This file maps app-description graph files to the source, frontend, resources, tests, specs, and manual validation evidence that realize them. If a mapped app-description file changes after its mapped implementation files, default the owning workstream to `stale-description-changed` unless an explicit no-code-impact alignment review says otherwise. If mapped implementation changes without description reconciliation, default to `stale-code-changed` or `partially-aligned`.
+
+See [App-description source alignment](app-description-source-alignment.md) for the required Markdown contract, optional JSON shape, and staleness rules.
 
 ## Editing principle
 

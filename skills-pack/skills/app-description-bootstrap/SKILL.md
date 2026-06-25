@@ -40,6 +40,7 @@ Read these first if present:
 - `../docs/incremental-intent-processing.md`
 - `../docs/intent-compiler-skill-contracts.md`
 - `../docs/app-description-skill-output-contracts.md`
+- `../docs/app-description-source-alignment.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/requirements-to-workstream-development-process.md` for the canonical input → workstreams → attention → dashboards → surfaces/actions → capabilities/APIs → Akka substrate → agent/autonomous task → notifications/projections/traces process
 - `../docs/minimum-ai-first-saas-app.md` for SaaS Foundation App, basic app, starter, or chatbot-like generated SaaS scope: SaaS Foundation App domain with `markdown_response`, not a single-workstream or generic chatbot slice
@@ -93,9 +94,9 @@ If the repository already has a different stable internal root for app descripti
 
 ## Minimum required outputs
 
-Use `../docs/app-description-skill-output-contracts.md` for the shared bootstrap contract. Create only the smallest truthful `app-description/**` current-intent graph for the declared scope, normally covering `app.md`, reusable `global/**` definitions, `domains/<domain>/**` capability/data-state artifacts, workstream access/behavior/surface/agent/tool/policy/trace/test bindings, realization maps, readiness, and traceability.
+Use `../docs/app-description-skill-output-contracts.md` for the shared bootstrap contract. Create only the smallest truthful `app-description/**` current-intent graph for the declared scope, normally covering `app.md`, reusable `global/**` definitions, `domains/<domain>/**` capability/data-state artifacts, workstream access/behavior/surface/agent/tool/policy/trace/test bindings, realization maps, `realization/source-alignment.md`, readiness, and traceability.
 
-For generated SaaS, start from target-project `app-description/**` when present or `../templates/ai-first-saas-core-app/app-description/**` for initial structure. Record explicit deferrals instead of inventing SaaS Foundation App details.
+For generated SaaS, start from target-project `app-description/**` when present, `../templates/current-intent-app-description/**` for canonical current-intent scaffolding such as `source-alignment.md`, or `../templates/ai-first-saas-core-app/app-description/**` for legacy foundation content that must be mapped into the current graph. Record explicit deferrals instead of inventing SaaS Foundation App details.
 
 ## Scope gates
 
@@ -149,6 +150,7 @@ Before finishing, verify:
 - the mandatory secure SaaS foundation capability, AI-first operating model, behavior, auth/security, observability, web UI, and test artifacts exist or the task is explicitly non-SaaS reference material
 - the initial capability, operating-model artifacts when present, behavior, and test artifacts are cross-linked
 - readiness state is explicit
+- each feature-bearing workstream has a `realization/source-alignment.md` artifact or an explicit deferral explaining why source alignment is not applicable yet
 - generation policy is explicit
 - major assumptions are recorded
 - the next recommended description-maintenance skill is clear

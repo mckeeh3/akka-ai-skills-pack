@@ -19,6 +19,7 @@ A compile task starts only when the requested slice has enough current-intent pr
 - security, AuthContext, tenant/customer scope, confirmation/approval, idempotency, and denial semantics;
 - trace/audit/work events and outcome evidence;
 - implementation target area and selected or candidate Akka/frontend/API/agent substrates;
+- source-alignment artifact or planned alignment entry mapping app-description files to source/frontend/API/test/validation files;
 - required automated checks and manual runtime scenario, or an explicit docs-only/non-runtime exemption.
 
 If a feature-bearing task only names a page, route, endpoint, component, or agent tool, repair the graph/task brief or block with a pending question before implementation.
@@ -35,6 +36,7 @@ accepted intent delta
   -> policies, traces, tests, and manual scenarios
   -> selected Akka substrates
   -> frontend/API/agent/runtime adapters
+  -> source-alignment entries
   -> bounded repository changes
   -> automated checks
   -> manual runtime test scenario
@@ -53,6 +55,7 @@ Every item downstream should cite or inherit the upstream graph node that justif
 - If the app-description changed since the last compile/alignment review, treat related implementation as `stale-description-changed` unless an explicit no-code-impact review says otherwise.
 - Confirm the task is one bounded slice and does not start later queued work.
 - List affected current-intent, spec, task, implementation, test, and validation artifacts.
+- Read or create the owning workstream `realization/source-alignment.md` entry for the selected slice. If the app-description files are newer than mapped implementation files, begin from `stale-description-changed` unless a no-code-impact review is recorded.
 
 ### 2. Derive the worker/tool contract
 
@@ -110,12 +113,24 @@ The implementation slice should include or update the smallest tests that prove:
 - component-level behavior and endpoint/API/frontend wiring;
 - manual runtime path at the claimed readiness level.
 
-### 6. Reconcile outcomes
+### 6. Update source alignment
+
+Before final reconciliation, update the owning workstream `realization/source-alignment.md` so the implemented slice records:
+
+- the app-description files that drove the change;
+- backend, frontend, resources, specs, tests, and validation files that realize the slice;
+- checks and manual runtime scenario evidence used for the latest alignment decision;
+- unmapped feature-bearing description files or implementation files, with `not-started`, `description-only`, `blocked`, `generated-output`, or `unknown` reasons;
+- no-code-impact review notes when description files changed but implementation did not need to.
+
+If a machine-readable checker exists, update the optional `source-alignment.json` consistently with the Markdown artifact. See [App-description source alignment](app-description-source-alignment.md).
+
+### 7. Reconcile outcomes
 
 After automated checks and manual/runtime validation when applicable:
 
 - update task status and validation evidence;
-- update workstream lifecycle/alignment state, including last compile, last alignment review, last manual runtime test, blockers, and next action;
+- update workstream lifecycle/alignment state, including links to source-alignment entries, last compile, last alignment review, last manual runtime test, blockers, and next action;
 - reconcile review or runtime findings as current-intent updates, implementation repairs, test repairs, follow-up tasks, or blockers;
 - never let implementation details silently supersede app-description intent.
 
@@ -132,6 +147,7 @@ A queued build/compile task or task brief should include:
 - [ ] Governed tool id(s), capability id(s), and selected exposure channels.
 - [ ] AuthContext, tenant/customer scope, authorization, denial, confirmation/approval, idempotency, side-effect, partial-failure, and trace obligations.
 - [ ] Selected Akka/frontend/API/agent/runtime substrates or a docs-only/non-runtime exemption.
+- [ ] Source-alignment entry to create/update, including mapped app-description files and expected source/frontend/API/test/validation files.
 - [ ] Expected outputs and changed artifact categories.
 - [ ] Required automated checks.
 - [ ] Manual runtime scenario or explicit statement that runtime evidence is not applicable.
@@ -192,4 +208,4 @@ Block or create a pending question when safe compilation would require guessing:
 - Runtime completion claimed from fixture/demo/mock behavior for normal app paths.
 - Missing denial, approval, idempotency, tenant-isolation, trace, or manual runtime expectations.
 
-See also [Intent to realization flow](intent-to-realization-flow.md) and [Intent compiler skill contracts](intent-compiler-skill-contracts.md).
+See also [App-description source alignment](app-description-source-alignment.md), [Intent to realization flow](intent-to-realization-flow.md), and [Intent compiler skill contracts](intent-compiler-skill-contracts.md).

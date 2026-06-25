@@ -15,14 +15,14 @@ It helps the harness keep the internal app-description system consistent and dec
 - Phase: interview.
 - Kind: impact assessor.
 - Family: app-description.
-- Living-graph contract: impact analysis treats app-description as the current-intent graph and checks worker, execution-harness, actor-adapter, governed-tool, capability, trace, test, readiness, and realization edges before declaring a change local.
+- Living-graph contract: impact analysis treats app-description as the current-intent graph and checks worker, execution-harness, actor-adapter, governed-tool, capability, trace, test, readiness, realization, and source-alignment edges before declaring a change local.
 - Build/compile handoff: realization scope and queue/spec recommendations must point to `../docs/app-description-to-code-compile-contract.md` when planning, code, tests, or validation are affected.
 
 ## Goal
 
 Analyze a requested or completed description change and produce an impact result that:
 - identifies impacted authoritative graph nodes, including global definitions, domain capabilities/data-state, workstream access/behavior/surfaces/agents/tools/policies/traces/tests, and workstream realization maps for generated AI-first SaaS apps
-- identifies impacted traceability artifacts
+- identifies impacted traceability and `realization/source-alignment.md` artifacts
 - identifies whether readiness must be reassessed
 - identifies likely affected implementation areas and generated/derived output areas
 - treats role-specific dashboard attention, human surface graph nodes/edges, internal workstream agent graph delegation, workstream expertise, and governed-tool exposure mappings as first-class impact drivers
@@ -40,6 +40,7 @@ Read these first if present:
 - `../docs/incremental-intent-processing.md`
 - `../docs/intent-compiler-skill-contracts.md`
 - `../docs/app-description-skill-output-contracts.md`
+- `../docs/app-description-source-alignment.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/capability-first-backend-architecture.md` for tracing capability contract changes across linked graph nodes and exposure surfaces
 - `../docs/workstream-expertise-model.md` for tracing per-functional-agent expert bundle changes across skills, references, manifests, boundaries, traces, and tests
@@ -108,6 +109,7 @@ For each change, determine as applicable:
 - which traceability maps must change, including functional-agent-to-dashboard, surface-to-capability/governed-tool, functional-agent-to-expertise, expertise-to-capability/surface, expertise-to-observability, and expertise-to-tests relationships when present
 - whether `app-description/app.md`, workstream readiness nodes, or maintained legacy readiness-status artifacts must be updated
 - which generation surfaces are likely affected, including default prompt/skill/reference resources, manifest fixtures, governed-document import code, loader/tool-boundary implementation, frontend governance surfaces, and tests when workstream expertise changed
+- which `realization/source-alignment.md` entries are affected, including app-description files that may now be newer than mapped source/test files, source files that need description reconciliation, and missing mappings that make alignment `unknown`
 - which specs/backlogs/task briefs/pending tasks are likely affected when they already exist
 - whether realization can remain localized or should broaden
 
@@ -117,7 +119,7 @@ Use `../docs/app-description-skill-output-contracts.md` for the detailed output 
 
 ## Impact analysis rules
 
-Use `../docs/app-description-skill-output-contracts.md` to keep impact analysis concise. Identify authoritative graph nodes, derived artifacts, implementation outputs, readiness implications, required next updates, and whether realization can stay localized. Escalate scope only when the change affects secure foundation, functional-agent/workstream boundaries, capability/tool authority, data scope, tests, traces, UI contract, or generation policy.
+Use `../docs/app-description-skill-output-contracts.md` to keep impact analysis concise. Identify authoritative graph nodes, source-alignment entries, derived artifacts, implementation outputs, readiness implications, required next updates, and whether realization can stay localized. Escalate scope only when the change affects secure foundation, functional-agent/workstream boundaries, capability/tool authority, data scope, tests, traces, UI contract, source-alignment validity, or generation policy.
 
 ## Handoff rules
 

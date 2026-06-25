@@ -29,6 +29,7 @@ Use the component graph to keep product semantics ahead of implementation mechan
 | Trace/observability | `global/traces/**`, `workstreams/<workstream>/traces/**` | Audit/work trace events, correlation, source, visibility, outcome metrics, and investigation surfaces. | Worker, adapter, tool, capability, Akka component, tests, manual scenarios. |
 | Akka component | `workstreams/<workstream>/realization/akka-components.md` or capability realization section | Selected implementation substrates: Entity, Workflow, View, Consumer, Timed Action, Agent, AutonomousAgent, endpoint, MCP, service. | Capability and governed tool, package path, component tests, runtime path. |
 | Frontend/API realization | `realization/frontend-routes.md`, `realization/api-contracts.md` | Browser routes/components, structured surface renderer bindings, endpoint contracts, API clients, subscriptions. | Surface, actor adapter, governed tool, capability, AuthContext, UI/API tests. |
+| Source alignment | `realization/source-alignment.md` and optional `source-alignment.json` | File-level mapping from app-description graph files to implementation, frontend, test, spec, and manual validation evidence; staleness signal for lifecycle state. | Workstream lifecycle, graph nodes, realization files, source/test/frontend paths, commits/checks/manual scenarios. |
 | Test expectation | `workstreams/<workstream>/tests/**`, specs/tasks | Acceptance, regression, negative, idempotency, tenant-isolation, approval/confirmation, trace, UI, and component tests. | Worker + adapter + governed tool + capability + Akka/frontend path. |
 | Manual scenario | Workstream tests, specs, task briefs, or manual verification notes | Real local runtime/API/UI path to exercise after automated checks. | Role/AuthContext/tenant setup, surface or trigger, governed tool, expected trace/outcome, reconciliation result. |
 
@@ -99,6 +100,8 @@ A capability node should remain the backend product contract. It should not be r
 
 Realization nodes describe how graph semantics compile to repository artifacts. They should identify selected Akka components only after the worker, adapter, governed tool, capability, authority, side effects, and trace contracts are clear.
 
+Every feature-bearing workstream should include `realization/source-alignment.md` once it has or expects implementation. That artifact maps app-description files to source, frontend, test, spec, and manual-validation files so lifecycle alignment can be checked mechanically. If mapped app-description files are newer than mapped source/test files, treat implementation as stale unless an explicit no-code-impact review is recorded. See [App-description source alignment](app-description-source-alignment.md).
+
 ## Adapter consistency rules
 
 - A human surface action, confirmed human chat plan, and AI agent tool that perform the same operation must share one governed tool id unless their authority, inputs, side effects, or approval semantics truly differ.
@@ -121,6 +124,7 @@ Before a feature-bearing slice can be compiled, verify:
 - [ ] Human-backed, AI-backed, and system-backed adapters share the governed tool when they share semantics.
 - [ ] Authorization, tenant/customer scope, confirmation/approval, idempotency, denial, trace, and partial-failure behavior are captured.
 - [ ] Akka substrates are justified by capability shape.
+- [ ] Source-alignment entries map feature-bearing app-description files to source/frontend/API/test/validation artifacts or explicitly mark them not-started, description-only, blocked, or unknown.
 - [ ] Automated tests and at least one manual runtime scenario identify the worker + adapter + governed tool + capability + implementation path.
 
 ## Anti-patterns
@@ -133,6 +137,6 @@ Avoid compiling or accepting graph updates that:
 - grant agent authority because a human has a visible browser action;
 - omit system workers and provenance for workflows, timers, consumers, projections, integrations, and internal calls;
 - skip negative, tenant-isolation, approval/confirmation, idempotency, trace, or manual runtime validation expectations;
-- change feature-bearing workstream intent without flagging the related implementation as stale or recording an explicit no-code-impact alignment decision.
+- change feature-bearing workstream intent without updating `realization/source-alignment.md`, flagging the related implementation as stale, or recording an explicit no-code-impact alignment decision.
 
-See also [App-description to code compile contract](app-description-to-code-compile-contract.md) and [Intent to realization flow](intent-to-realization-flow.md).
+See also [App-description source alignment](app-description-source-alignment.md), [App-description to code compile contract](app-description-to-code-compile-contract.md), and [Intent to realization flow](intent-to-realization-flow.md).
