@@ -1,6 +1,6 @@
 ---
 name: app-development-lifecycle
-description: Explain and apply the canonical three-phase app development lifecycle for continuous app evolution: interview, build/compile, and manual runtime test. Use when users ask about the app development process, lifecycle phases, request-stream handling, readiness levels, or how app-description changes become implemented and manually verified behavior.
+description: "Explain and apply the canonical three-phase app development lifecycle for continuous app evolution: interview, build/compile, and manual runtime test. Use when users ask about the app development process, lifecycle phases, request-stream handling, readiness levels, or how app-description changes become implemented and manually verified behavior."
 ---
 
 # App Development Lifecycle

@@ -2,7 +2,7 @@
 pack	akka-ai-skills-pack
 source	/home/hxmc/ai/akka-ai-skills-pack/skills-pack
 mode	copy
-installed_at	2026-06-24T23:02:43Z
+installed_at	2026-06-25T10:12:23Z
 entry	file	README.md
 entry	dir	references
 entry	dir	docs
@@ -164,6 +164,7 @@ entry	dir	app-description-surface-modeling
 entry	dir	app-description-test-specification
 entry	dir	app-description-ui
 entry	dir	app-descriptions
+entry	dir	app-development-lifecycle
 entry	dir	app-generate-app
 entry	dir	business-intent-interview
 entry	dir	business-intent-to-app-input
