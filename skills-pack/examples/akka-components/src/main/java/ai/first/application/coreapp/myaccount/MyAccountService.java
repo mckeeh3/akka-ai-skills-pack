@@ -2,12 +2,14 @@ package ai.first.application.coreapp.myaccount;
 
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AuthContext;
+import ai.first.domain.foundation.identity.FoundationRole;
 import ai.first.domain.foundation.attention.AttentionCategory;
 import ai.first.domain.foundation.attention.AttentionItem;
 import ai.first.domain.foundation.attention.AttentionItemStatus;
 import ai.first.domain.foundation.attention.AttentionSeverity;
 import ai.first.domain.foundation.attention.AttentionSourceRef;
 import ai.first.domain.foundation.attention.AttentionSurfaceRef;
+import ai.first.domain.foundation.identity.ScopeType;
 import ai.first.domain.foundation.identity.UserSettings;
 import java.time.Instant;
 import java.util.LinkedHashMap;
@@ -18,6 +20,7 @@ import ai.first.application.foundation.attention.AttentionService;
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.MeResponse;
 import ai.first.application.foundation.identity.StarterSecurityComponents;
+import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
 
 /** Deterministic My Account boundary for browser-safe account, context, settings, trace, and navigation data. */
 public final class MyAccountService {
@@ -57,9 +60,11 @@ public final class MyAccountService {
       AuthContextResolver.ResolvedMe actor,
       String displayName,
       UserSettings.ThemeId themeId,
+      String locale,
+      String timeZone,
       String idempotencyKey,
       String correlationId) {
-    return authContextResolver.updateOwnProfileSettings(actor, displayName, themeId, idempotencyKey, correlationId);
+    return authContextResolver.updateOwnProfileSettings(actor, displayName, themeId, locale, timeZone, idempotencyKey, correlationId);
   }
 
   public OpenWorkstreamDecision openAuthorizedWorkstream(
@@ -68,24 +73,33 @@ public final class MyAccountService {
       String correlationId) {
     authContextResolver.requireCapability(actor.selectedContext(), OPEN_AUTHORIZED_WORKSTREAM_CAPABILITY);
     var target = switch (actionId) {
-      case "action-open-user-admin" -> target("agent-user-admin", "User Admin", "secure-tenant-user-foundation", "surface-user-admin-dashboard");
-      case "action-open-agent-admin" -> target("agent-agent-admin", "Agent Admin", "agent_admin.list_definitions", "surface-agent-admin-catalog");
-      case "action-open-audit-trace" -> target("agent-audit-trace", "Audit/Trace", "audit.trace.read", "surface-audit-trace-dashboard");
-      case "action-open-governance-policy" -> target("agent-governance-policy", "Governance/Policy", "governance.policy.read", "surface-governance-policy-dashboard");
+      case "action-open-user-admin" -> target("user-admin-agent", "User Admin", List.of("user_admin.view_overview", "saas_owner.admin.manage", "tenant.user.read", "tenant.user.manage", "customer.user.read", "customer.user.manage"), "surface-user-admin-dashboard");
+      case "action-open-agent-admin" -> target("agent-admin-agent", "Agent Admin", List.of("agent_admin.list_definitions"), "surface-agent-admin-dashboard");
+      case "action-open-audit-trace" -> target("audit-trace-agent", "Audit/Trace", List.of("audit.trace.read", "saas_owner.audit.read", "tenant.audit.read", "customer.audit.read"), "surface-audit-trace-dashboard");
+      case "action-open-governance-policy" -> target("governance-policy-agent", "Governance/Policy", List.of("governance.policy.read"), "surface-governance-policy-dashboard");
       default -> null;
     };
     if (target == null) {
       authContextResolver.appendDeniedTrace(actor, "MY_ACCOUNT_OPEN_AUTHORIZED_WORKSTREAM", "target-not-found-or-redacted", correlationId);
       return OpenWorkstreamDecision.denied("not_found_or_redacted", "The requested workstream is unavailable or redacted for this context.", correlationId);
     }
-    var allowed = actor.selectedContext().capabilities().contains(target.requiredCapabilityId())
-        || ("secure-tenant-user-foundation".equals(target.requiredCapabilityId()) && actor.selectedContext().capabilities().contains("secure-tenant-user-foundation"));
+    if ("action-open-agent-admin".equals(actionId) && !isSaasOwnerAdmin(actor)) {
+      authContextResolver.appendDeniedTrace(actor, "MY_ACCOUNT_OPEN_AUTHORIZED_WORKSTREAM", "not_found_or_redacted", correlationId);
+      return OpenWorkstreamDecision.denied("not_found_or_redacted", "That workstream cannot be opened from this selected context. It may be unavailable or redacted.", correlationId);
+    }
+    var allowed = target.requiredCapabilityIds().stream().anyMatch(actor.selectedContext().capabilities()::contains);
     if (!allowed) {
       authContextResolver.appendDeniedTrace(actor, "MY_ACCOUNT_OPEN_AUTHORIZED_WORKSTREAM", "not_found_or_redacted", correlationId);
       return OpenWorkstreamDecision.denied("not_found_or_redacted", "That workstream cannot be opened from this selected context. It may be unavailable or redacted.", correlationId);
     }
     authContextResolver.appendProtectedReadTrace(actor, "MY_ACCOUNT_OPEN_AUTHORIZED_WORKSTREAM", target.functionalAgentId(), correlationId);
-    return new OpenWorkstreamDecision("accepted", "Opened authorized workstream through backend authority checks.", target.surfaceId(), target.functionalAgentId(), target.label(), target.requiredCapabilityId(), correlationId, List.of("trace-my-account-open-" + target.functionalAgentId()), null);
+    var grantedCapability = target.requiredCapabilityIds().stream().filter(actor.selectedContext().capabilities()::contains).findFirst().orElse(target.requiredCapabilityIds().get(0));
+    return new OpenWorkstreamDecision("accepted", "Opened authorized workstream through backend authority checks.", target.surfaceId(), target.functionalAgentId(), target.label(), grantedCapability, correlationId, List.of("trace-my-account-open-" + target.functionalAgentId()), null);
+  }
+
+  private boolean isSaasOwnerAdmin(AuthContextResolver.ResolvedMe actor) {
+    return actor.selectedContext().scopeType() == ScopeType.SAAS_OWNER
+        && actor.selectedContext().roles().contains(FoundationRole.SAAS_OWNER_ADMIN);
   }
 
   public DashboardData dashboardData(AuthContextResolver.ResolvedMe actor, String correlationId) {
@@ -110,19 +124,25 @@ public final class MyAccountService {
 
   private void seedStarterCoreAttention(AuthContextResolver.ResolvedMe actor, String correlationId) {
     if (actor.selectedContext().capabilities().contains("agent_admin.list_definitions")) {
-      attentionService.upsertItem(actor, attentionItem(actor, "attention-agent-admin-readiness", "agent-agent-admin", "Agent Admin provider readiness is blocked", "Model/runtime provider readiness is blocked until governed provider configuration is available.", AttentionCategory.PROVIDER_READINESS, AttentionSeverity.BLOCKED, "agent_admin.list_definitions", "surface-agent-admin-catalog", "agent-admin-provider-readiness", correlationId), correlationId);
+      attentionService.upsertItem(actor, attentionItem(actor, "attention-agent-admin-readiness", "agent-admin-agent", "Agent Admin provider readiness is blocked", "Model/runtime provider readiness is blocked until governed provider configuration is available.", AttentionCategory.PROVIDER_READINESS, AttentionSeverity.BLOCKED, "agent_admin.list_definitions", "surface-agent-admin-catalog", "agent-admin-provider-readiness", correlationId), correlationId);
     }
     if (actor.selectedContext().capabilities().contains("governance.policy.read")) {
-      attentionService.upsertItem(actor, attentionItem(actor, "attention-governance-policy-approval", "agent-governance-policy", "Governance policy decision awaits authorized review", "Governance/Policy has reviewable policy approval evidence for this selected context.", AttentionCategory.GOVERNANCE_APPROVAL, AttentionSeverity.URGENT, "governance.policy.read", "surface-governance-policy-dashboard", "governance-policy-approval", correlationId), correlationId);
+      attentionService.upsertItem(actor, attentionItem(actor, "attention-governance-policy-approval", "governance-policy-agent", "Governance policy decision awaits authorized review", "Governance/Policy has reviewable policy approval evidence for this selected context.", AttentionCategory.GOVERNANCE_APPROVAL, AttentionSeverity.URGENT, "governance.policy.read", "surface-governance-policy-dashboard", "governance-policy-approval", correlationId), correlationId);
     }
     if (actor.selectedContext().capabilities().contains("audit.trace.read")) {
-      attentionService.upsertItem(actor, attentionItem(actor, "attention-audit-trace-failure-evidence", "agent-audit-trace", "Audit/Trace has provider failure evidence available", "Audit/Trace has provider failure or denial evidence available for authorized investigation.", AttentionCategory.AUDIT_FAILURE_EVIDENCE, AttentionSeverity.WARNING, "audit.trace.read", "surface-audit-trace-dashboard", "audit-trace-failure-evidence", correlationId), correlationId);
+      attentionService.upsertItem(actor, attentionItem(actor, "attention-audit-trace-failure-evidence", "audit-trace-agent", "Audit/Trace has provider failure evidence available", "Audit/Trace has provider failure or denial evidence available for authorized investigation.", AttentionCategory.AUDIT_FAILURE_EVIDENCE, AttentionSeverity.WARNING, "audit.trace.read", "surface-audit-trace-dashboard", "audit-trace-failure-evidence", correlationId), correlationId);
     }
   }
 
   private AttentionItem attentionItem(AuthContextResolver.ResolvedMe actor, String itemId, String workstreamId, String title, String summary, AttentionCategory category, AttentionSeverity severity, String capabilityId, String surfaceId, String sourceId, String correlationId) {
     var now = Instant.now();
-    return new AttentionItem(itemId, actor.selectedContext().tenantId(), actor.selectedContext().customerId(), workstreamId, title, summary, category, severity, AttentionItemStatus.OPEN, AttentionItem.AssigneeKind.CAPABILITY, capabilityId, capabilityId, new AttentionSurfaceRef(workstreamId, surfaceId, "dashboard", itemId, AttentionService.OPEN_ATTENTION_ITEM_TOOL, capabilityId), List.of(new AttentionSourceRef("capability", sourceId, title, capabilityId, "trace-" + sourceId, correlationId)), null, now, now, now, null, null, null, null, correlationId);
+    return new AttentionItem(itemId, selectedScopeTenantId(actor.selectedContext()), actor.selectedContext().customerId(), workstreamId, title, summary, category, severity, AttentionItemStatus.OPEN, AttentionItem.AssigneeKind.CAPABILITY, capabilityId, capabilityId, new AttentionSurfaceRef(workstreamId, surfaceId, "dashboard", itemId, actionIdForWorkstream(workstreamId), capabilityId), List.of(new AttentionSourceRef("capability", sourceId, title, capabilityId, "trace-" + sourceId, correlationId)), null, now, now, now, null, null, null, null, correlationId);
+  }
+
+  private static String selectedScopeTenantId(AuthContext authContext) {
+    return authContext.scopeType() == ScopeType.SAAS_OWNER && (authContext.tenantId() == null || authContext.tenantId().isBlank())
+        ? WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID
+        : authContext.tenantId();
   }
 
   private Map<String, Object> attentionItemMap(AttentionItem item) {
@@ -144,7 +164,7 @@ public final class MyAccountService {
 
   public List<Map<String, Object>> nextSteps(AuthContextResolver.ResolvedMe actor) {
     return MeResponse.FunctionalAgentSummary.fromCapabilities(actor.selectedContext().capabilities()).stream()
-        .filter(agent -> !"agent-my-account".equals(agent.functionalAgentId()))
+        .filter(agent -> !"my-account-agent".equals(agent.functionalAgentId()))
         .filter(agent -> "visible".equals(agent.availability()))
         .map(agent -> mapOf(
             "workstreamId", agent.functionalAgentId(),
@@ -161,7 +181,7 @@ public final class MyAccountService {
     var summaryByWorkstream = attentionService.listMyAccountItems(actor, correlationId).workstreams().stream()
         .collect(java.util.stream.Collectors.toMap(AttentionService.WorkstreamAttentionSummary::workstreamId, summary -> summary, (left, right) -> left, LinkedHashMap::new));
     return MeResponse.FunctionalAgentSummary.fromCapabilities(actor.selectedContext().capabilities()).stream()
-        .filter(agent -> !"agent-my-account".equals(agent.functionalAgentId()))
+        .filter(agent -> !"my-account-agent".equals(agent.functionalAgentId()))
         .filter(agent -> "visible".equals(agent.availability()))
         .map(agent -> {
           var summary = summaryByWorkstream.get(agent.functionalAgentId());
@@ -178,6 +198,8 @@ public final class MyAccountService {
               "description", agent.purpose(),
               "severity", severity,
               "surfaceId", surfaceIdForWorkstream(agent.functionalAgentId()),
+              "requiredCapabilityId", agent.requiredCapabilityIds().isEmpty() ? "" : agent.requiredCapabilityIds().get(0),
+              "redaction", "authorized selected-context summary",
               "actionId", actionIdForWorkstream(agent.functionalAgentId()));
         })
         .toList();
@@ -185,20 +207,20 @@ public final class MyAccountService {
 
   private String actionIdForWorkstream(String functionalAgentId) {
     return switch (functionalAgentId) {
-      case "agent-user-admin" -> "action-open-user-admin";
-      case "agent-agent-admin" -> "action-open-agent-admin";
-      case "agent-audit-trace" -> "action-open-audit-trace";
-      case "agent-governance-policy" -> "action-open-governance-policy";
+      case "user-admin-agent" -> "action-open-user-admin";
+      case "agent-admin-agent" -> "action-open-agent-admin";
+      case "audit-trace-agent" -> "action-open-audit-trace";
+      case "governance-policy-agent" -> "action-open-governance-policy";
       default -> "action-show-my-account-dashboard";
     };
   }
 
   private String surfaceIdForWorkstream(String functionalAgentId) {
     return switch (functionalAgentId) {
-      case "agent-agent-admin" -> "surface-agent-admin-catalog";
-      case "agent-audit-trace" -> "surface-audit-trace-dashboard";
-      case "agent-governance-policy" -> "surface-governance-policy-dashboard";
-      case "agent-user-admin" -> "surface-user-admin-dashboard";
+      case "agent-admin-agent" -> "surface-agent-admin-catalog";
+      case "audit-trace-agent" -> "surface-audit-trace-dashboard";
+      case "governance-policy-agent" -> "surface-governance-policy-dashboard";
+      case "user-admin-agent" -> "surface-user-admin-dashboard";
       default -> "surface-my-account-dashboard";
     };
   }
@@ -227,7 +249,7 @@ public final class MyAccountService {
     return List.of(
         new CapabilityGroupSummary("my_account", "My Account", capabilities.stream().filter(capability -> capability.startsWith("my_account.")).sorted().toList()),
         new CapabilityGroupSummary("core_access_profile", "Core access/profile aliases", List.of(CORE_ACCESS_ME_CAPABILITY, CORE_PROFILE_UPDATE_CAPABILITY, CORE_ACCESS_CONTEXT_SELECT_CAPABILITY)),
-        new CapabilityGroupSummary("workstreams", "Authorized workstream navigation", capabilities.stream().filter(capability -> capability.startsWith("agent_admin.") || capability.startsWith("audit.trace") || capability.startsWith("governance.") || capability.equals("secure-tenant-user-foundation")).sorted().toList()));
+        new CapabilityGroupSummary("workstreams", "Authorized workstream navigation", capabilities.stream().filter(capability -> capability.startsWith("agent_admin.") || capability.startsWith("audit.trace") || capability.startsWith("governance.") || capability.equals("user_admin.view_overview")).sorted().toList()));
   }
 
   private List<String> myAccountAndCoreCapabilities(AuthContextResolver.ResolvedMe actor) {
@@ -238,8 +260,8 @@ public final class MyAccountService {
     return List.copyOf(ids);
   }
 
-  private Target target(String functionalAgentId, String label, String requiredCapabilityId, String surfaceId) {
-    return new Target(functionalAgentId, label, requiredCapabilityId, surfaceId);
+  private Target target(String functionalAgentId, String label, List<String> requiredCapabilityIds, String surfaceId) {
+    return new Target(functionalAgentId, label, requiredCapabilityIds, surfaceId);
   }
 
   private static Map<String, Object> mapOf(Object... values) {
@@ -248,7 +270,7 @@ public final class MyAccountService {
     return map;
   }
 
-  private record Target(String functionalAgentId, String label, String requiredCapabilityId, String surfaceId) {}
+  private record Target(String functionalAgentId, String label, List<String> requiredCapabilityIds, String surfaceId) {}
 
   public record Summary(AuthorityBasisSummary authorityBasis, List<CapabilityGroupSummary> capabilityGroups, List<TraceRef> traceRefs) {}
   public record AuthorityBasisSummary(String selectedContextId, String tenantId, String customerId, List<String> roleIds, String primaryRoleBasis, List<String> myAccountCapabilityIds) {}
@@ -257,7 +279,7 @@ public final class MyAccountService {
   public record DashboardData(String surfaceContract, List<Map<String, Object>> cards, List<Map<String, Object>> sections, List<Map<String, Object>> attentionItems, List<Map<String, Object>> nextSteps, List<TraceRef> traceRefs, AuthorityBasisSummary authorityBasis, List<CapabilityGroupSummary> capabilityGroups) {}
   public record OpenWorkstreamDecision(String status, String message, String surfaceId, String functionalAgentId, String label, String requiredCapabilityId, String correlationId, List<String> traceIds, String safeReasonCode) {
     static OpenWorkstreamDecision denied(String safeReasonCode, String message, String correlationId) {
-      return new OpenWorkstreamDecision("denied", message, "surface-my-account-open-denied", "agent-my-account", "Workstream unavailable", null, correlationId, List.of("trace-my-account-open-denied"), safeReasonCode);
+      return new OpenWorkstreamDecision("denied", message, "surface-my-account-open-denied", "my-account-agent", "Workstream unavailable", null, correlationId, List.of("trace-my-account-open-denied"), safeReasonCode);
     }
   }
 }
