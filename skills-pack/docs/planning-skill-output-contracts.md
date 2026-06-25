@@ -6,11 +6,12 @@ Use this shared reference to keep planning and queue skills concise.
 
 Every implementation task must be runnable by one focused harness session and include:
 
-- task id, title, status, source backlog/spec reference, and dependency/blocker status;
-- exact files or package zones expected to change;
-- capability/workstream/surface/agent context when generated SaaS behavior is in scope;
-- AuthContext/scope, authorization, traces, idempotency, and tests required for the slice;
-- acceptance checks and commands;
+- task id, title, status, source backlog/spec/current-intent reference, and dependency/blocker status;
+- lifecycle phase and readiness target, such as `build-compile` to `manual-ready`, or an explicit docs-only/non-runtime exemption;
+- exact files, app-description nodes, specs, package zones, or frontend zones expected to change;
+- capability/workstream/worker/execution-harness/actor-adapter/governed-tool context when generated SaaS behavior is in scope;
+- AuthContext/scope, authorization, approval/confirmation, traces, idempotency, denial behavior, and tests required for the slice;
+- acceptance checks and commands, plus the real local Akka/API/UI/agent validation path when runtime evidence is applicable;
 - explicit out-of-scope items.
 
 For secure SaaS Foundation App planning, preserve invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage in the relevant task sequence.

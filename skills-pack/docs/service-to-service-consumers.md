@@ -7,7 +7,7 @@ Primary official semantics:
 - `akka-context/sdk/access-control.html.md`
 - `akka-context/sdk/running-locally.html.md`
 
-Local producer-side executable example:
+Local governed projection example (not a full two-service executable fixture):
 - `../examples/akka-components/src/main/java/ai/first/application/foundation/workstream/WorkstreamEventAttentionConsumer.java`
 
 ## Related references
@@ -33,30 +33,31 @@ Rules:
 - consume local internal events or state
 - map them into a public event contract
 - publish with `@Produce.ServiceStream(id = "...")`
-- add `@Acl` so the subscriber service is allowed to connect
+- add `@Acl` for the intended subscriber service names; avoid wildcard service ACLs except in explicitly bounded local fixtures
 - filter internal-only events with `effects().ignore()`
+- include tenant/customer scope, provenance, correlation, and subject metadata when downstream authorization or idempotency depends on it
 
 Example:
 
 ```java
-@Component(id = "workstream-event-public-events-consumer")
-@Consume.FromEventSourcedEntity(AgentDefinitionEntity.class)
-@Produce.ServiceStream(id = "workstream_event_public_events")
-@Acl(allow = @Acl.Matcher(service = "*"))
-public class WorkstreamEventAttentionConsumer extends Consumer {
+@Component(id = "order-public-events-consumer")
+@Consume.FromEventSourcedEntity(OrderEntity.class)
+@Produce.ServiceStream(id = "order_public_events")
+@Acl(allow = @Acl.Matcher(service = "order-read-side-service"))
+public class OrderPublicEventsConsumer extends Consumer {
 
   public sealed interface PublicEvent {
     record ItemAdded(String productId, int quantity) implements PublicEvent {}
     record CheckedOut() implements PublicEvent {}
   }
 
-  public Effect onEvent(WorkstreamEvent.Event event) {
+  public Effect onEvent(OrderEvent event) {
     return switch (event) {
-      case WorkstreamEvent.Event.ItemAdded added ->
+      case OrderEvent.ItemAdded added ->
           effects().produce(new PublicEvent.ItemAdded(added.item().productId(), added.item().quantity()));
-      case WorkstreamEvent.Event.CheckedOut ignored -> effects().produce(new PublicEvent.CheckedOut());
-      case WorkstreamEvent.Event.ItemRemoved ignored -> effects().ignore();
-      case WorkstreamEvent.Event.Deleted ignored -> effects().ignore();
+      case OrderEvent.CheckedOut ignored -> effects().produce(new PublicEvent.CheckedOut());
+      case OrderEvent.ItemRemoved ignored -> effects().ignore();
+      case OrderEvent.Deleted ignored -> effects().ignore();
     };
   }
 }
@@ -75,23 +76,23 @@ Rules:
 Minimal subscriber example:
 
 ```java
-public sealed interface WorkstreamEventPublicEvent {
-  record ItemAdded(String productId, int quantity) implements WorkstreamEventPublicEvent {}
-  record CheckedOut() implements WorkstreamEventPublicEvent {}
+public sealed interface OrderPublicEvent {
+  record ItemAdded(String productId, int quantity) implements OrderPublicEvent {}
+  record CheckedOut() implements OrderPublicEvent {}
 }
 
-@Component(id = "workstream-event-public-events-subscriber")
+@Component(id = "order-public-events-subscriber")
 @Consume.FromServiceStream(
-    service = "workstream-event-service",
-    id = "workstream_event_public_events")
-public class WorkstreamEventPublicEventsSubscriberConsumer extends Consumer {
+    service = "order-service",
+    id = "order_public_events")
+public class OrderPublicEventsSubscriberConsumer extends Consumer {
 
-  public Effect onEvent(WorkstreamEventPublicEvent.ItemAdded event) {
-    // write to another component, send a notification, or publish to another topic
+  public Effect onEvent(OrderPublicEvent.ItemAdded event) {
+    // Use a governed downstream capability path for writes, notifications, or republishing.
     return effects().done();
   }
 
-  public Effect onEvent(WorkstreamEventPublicEvent.CheckedOut event) {
+  public Effect onEvent(OrderPublicEvent.CheckedOut event) {
     return effects().done();
   }
 }
@@ -104,6 +105,7 @@ Treat these as part of the cross-service API:
 - stream id
 - public message types
 - ACL policy allowing subscriber services
+- metadata needed for scope, provenance, correlation, idempotency, and audit/work traces
 
 Avoid coupling subscribers to:
 - producer internal entity event types
@@ -141,9 +143,9 @@ If downstream routing or ordering depends on a stable subject, include it on the
 Example producer snippet:
 
 ```java
-public Effect onEvent(WorkstreamEvent.Event event) {
-  var workstreamId = messageContext().eventSubject().orElseThrow();
-  Metadata metadata = Metadata.EMPTY.add("ce-subject", workstreamId);
+public Effect onEvent(OrderEvent event) {
+  var orderId = messageContext().eventSubject().orElseThrow();
+  Metadata metadata = Metadata.EMPTY.add("ce-subject", orderId);
   return effects().produce(new PublicEvent.CheckedOut(), metadata);
 }
 ```
@@ -151,8 +153,8 @@ public Effect onEvent(WorkstreamEvent.Event event) {
 Example subscriber snippet:
 
 ```java
-public Effect onEvent(WorkstreamEventPublicEvent.CheckedOut event) {
-  var workstreamId = messageContext().eventSubject().orElseThrow();
+public Effect onEvent(OrderPublicEvent.CheckedOut event) {
+  var orderId = messageContext().eventSubject().orElseThrow();
   return effects().done();
 }
 ```
@@ -174,8 +176,9 @@ Read:
 
 Before finishing, verify:
 - producer uses `@Produce.ServiceStream(id = "...")`
-- producer uses `@Acl` for the intended subscriber services
+- producer uses specific `@Acl` entries for the intended subscriber services
 - subscriber uses `@Consume.FromServiceStream(service = "...", id = "...")`
 - subscriber handles only the public contract
-- downstream subscriber behavior is idempotent
-- subject metadata is included only when needed
+- downstream subscriber behavior is idempotent and goes through governed capability paths for protected side effects
+- subject metadata is included when routing, scope, idempotency, or audit depends on it
+- real local producer/subscriber smoke evidence is recorded before claiming runtime-ready service-to-service behavior
