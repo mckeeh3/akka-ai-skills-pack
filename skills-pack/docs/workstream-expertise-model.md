@@ -133,26 +133,28 @@ The model must not receive all skill/reference bodies by default. Full content i
 
 ## App-description ownership
 
-In an app-description tree, workstream expertise belongs under `12-workstreams/` because it defines functional-agent application meaning:
+In the current-intent app-description graph, workstream expertise belongs to the owning domain/workstream because it defines functional-agent application meaning:
 
 ```text
-app-description/12-workstreams/
-  functional-agents.md
-  workstream-expertise/
-    README.md
-    <functional-agent-id>.md
+app-description/domains/<domain>/workstreams/<workstream>/
+  agents/<functional-agent-id>.md
+  tools/<governed-tool-binding>.md
+  surfaces/<surface-or-graph>.md
+  traces/<trace-binding>.md
 ```
 
-Each `<functional-agent-id>.md` should capture the bundle contract: role-specific dashboard semantics, surface graph help, deterministic surface intent routes and no-mutation prefill behavior, prompt intent, model binding, skills, references, manifests, capability map, governed-tool map, tool boundary, surfaces, denials/user help, traces, governance owner, default-content policy, and tests. Cross-layer files should link to it rather than redefining it:
+Legacy/template compatibility trees may keep the established `app-description/12-workstreams/workstream-expertise/<functional-agent-id>.md` index, but that file must map back to the owning current-intent workstream and must not become a competing app-description structure.
 
-- `10-capabilities/**` owns detailed capability contracts.
-- `15-operating-model/**` owns governed runtime agent behavior and lifecycle rules.
-- `20-behavior/**` owns business behavior and acceptance semantics.
-- `25-auth-security/**` owns roles, scopes, tenant isolation, and authorization policy.
-- `30-tests/**` owns test cases and coverage status.
-- `40-observability/**` owns audit and trace schemas.
-- `55-ui/**` owns browser realization of manifests, surfaces, trace links, and governance screens.
-- `70-traceability/**` maps functional agents, expertise artifacts, surfaces, capabilities, tests, and observability.
+Each functional-agent expertise artifact should capture the bundle contract: role-specific dashboard semantics, surface graph help, deterministic surface intent routes and no-mutation prefill behavior, prompt intent, model binding, skills, references, manifests, capability map, governed-tool map, tool boundary, surfaces, denials/user help, traces, governance owner, default-content policy, and tests. Cross-layer files should link to it rather than redefining it:
+
+- `domains/<domain>/capabilities/**` owns detailed capability contracts.
+- workstream `agents/**` owns governed runtime agent behavior and lifecycle bindings.
+- domain/workstream behavior artifacts own business behavior and acceptance semantics.
+- global/domain/workstream access and policy artifacts own roles, scopes, tenant isolation, and authorization policy.
+- workstream `tests/**` owns test cases and coverage status.
+- global/domain/workstream trace artifacts own audit and trace schemas.
+- workstream realization/frontend artifacts own browser realization of manifests, surfaces, trace links, and governance screens.
+- traceability artifacts map functional agents, expertise artifacts, surfaces, capabilities, tests, and observability.
 
 ## Readiness checklist
 
