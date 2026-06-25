@@ -41,7 +41,7 @@ Do not hide consequential AI behavior behind generic dashboards, page-first CRUD
 - `../docs/web-ui-component-catalog.md`
 - `../docs/web-ui-quality-checklist.md`
 - `../examples/web-ui/ai-first-workstream-enterprise/README.md`, `../examples/web-ui/ai-first-workstream-enterprise/component-catalog.html`, and the static mockups there when using the canonical style
-- relevant app-description UI files under `app-description/55-ui/**` or specs under `specs/**` when present
+- relevant current-intent surface, frontend-realization, style, and test nodes under `app-description/global/surfaces/**`, `app-description/domains/<domain>/workstreams/<workstream>/surfaces/**`, `app-description/domains/<domain>/workstreams/<workstream>/realization/frontend-routes.md`, and `specs/**` when present; read legacy numbered UI folders such as `app-description/55-ui/**` only when the target project still maintains them as compatibility inputs mapped into the current-intent graph
 
 ## Use this skill when
 

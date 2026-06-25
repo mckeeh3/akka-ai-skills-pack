@@ -28,9 +28,9 @@ Implement:
 - Akka endpoint JWT validation with `@JWT` / request context claims
 - `/api/me` bootstrap that links WorkOS subject/email to local Account/Profile/Membership state
 - browser-safe response containing identity, selected/available scopes, capability hints, and UI bootstrap data
-- fail-closed behavior for missing/invalid JWT, unknown local account, disabled account, missing membership, or unsupported selected scope
+- fail-closed behavior for missing WorkOS/AuthKit or JWT verifier configuration, missing/invalid JWT, unknown local account, disabled account, missing membership, or unsupported selected scope
 
-Do not put WorkOS secrets in frontend code, built static assets, `.env.local` committed files, logs, DTOs, or trace payloads. Only `VITE_` public config may be embedded in frontend builds.
+Do not put WorkOS secrets in frontend code, built static assets, `.env.local` committed files, logs, DTOs, or trace payloads. Only `VITE_` public config may be embedded in frontend builds. Missing backend WorkOS/JWT configuration must not fall back to anonymous, fixture, unsigned-token, or frontend-only authorization; protected API calls should return safe setup/denial responses with actionable server-side diagnostics.
 
 ## Typical route shape
 
@@ -69,6 +69,7 @@ Do not return provider tokens, raw JWTs, secrets, hidden roles, cross-tenant mem
 
 Cover:
 
+- missing WorkOS/AuthKit or JWT verifier configuration fails closed for protected API calls
 - no token, invalid token, expired token, malformed claims
 - valid WorkOS identity with active local account
 - unknown identity recovery/denial path
