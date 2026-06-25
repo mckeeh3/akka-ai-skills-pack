@@ -33,6 +33,99 @@ forbid_rg() {
   fi
 }
 
+check_manifest_skill_consistency() {
+  python3 - "$PACK_ROOT" <<'PY'
+from pathlib import Path
+import re
+import sys
+
+root = Path(sys.argv[1])
+manifest_path = root / "pack/manifest.yaml"
+lines = manifest_path.read_text().splitlines()
+
+content_entries = []
+in_content_skills = False
+current = None
+for line in lines:
+    if line == "  skills:" and not content_entries:
+        in_content_skills = True
+        continue
+    if in_content_skills and line == "  examples:":
+        in_content_skills = False
+        current = None
+        continue
+    if not in_content_skills:
+        continue
+    match = re.fullmatch(r"    - id: ([A-Za-z0-9_-]+)", line)
+    if match:
+        current = {"id": match.group(1), "path": None}
+        content_entries.append(current)
+        continue
+    if current is not None:
+        match = re.fullmatch(r"      path: skills/([A-Za-z0-9_-]+)", line)
+        if match:
+            current["path"] = match.group(1)
+
+content_ids = [entry["id"] for entry in content_entries]
+skill_dirs = sorted(
+    path.parent.name for path in (root / "skills").glob("*/SKILL.md") if path.is_file()
+)
+
+bundle_all = []
+in_bundles = False
+in_all_bundle = False
+in_all_skills = False
+for line in lines:
+    if line == "bundles:":
+        in_bundles = True
+        continue
+    if in_bundles and line == "transforms:":
+        break
+    if not in_bundles:
+        continue
+    if line == "  - id: all":
+        in_all_bundle = True
+        in_all_skills = False
+        continue
+    if in_all_bundle and re.fullmatch(r"  - id: .+", line):
+        break
+    if in_all_bundle and line == "    skills:":
+        in_all_skills = True
+        continue
+    if in_all_skills:
+        match = re.fullmatch(r"      - ([A-Za-z0-9_-]+)", line)
+        if match:
+            bundle_all.append(match.group(1))
+        elif line and not line.startswith("      "):
+            in_all_skills = False
+
+errors = []
+if len(content_ids) != len(set(content_ids)):
+    errors.append("content.skills contains duplicate ids")
+if len(bundle_all) != len(set(bundle_all)):
+    errors.append("bundle all contains duplicate skill ids")
+for entry in content_entries:
+    if entry["path"] != entry["id"]:
+        errors.append(
+            f"content.skills entry {entry['id']} has path skills/{entry['path']}, expected skills/{entry['id']}"
+        )
+for missing in sorted(set(skill_dirs) - set(content_ids)):
+    errors.append(f"skill directory missing from content.skills: {missing}")
+for extra in sorted(set(content_ids) - set(skill_dirs)):
+    errors.append(f"content.skills references missing skill directory: {extra}")
+for missing in sorted(set(content_ids) - set(bundle_all)):
+    errors.append(f"content.skills id missing from bundle all: {missing}")
+for extra in sorted(set(bundle_all) - set(content_ids)):
+    errors.append(f"bundle all references missing content.skills id: {extra}")
+
+if errors:
+    print("[verify-opinionated-ai-first-saas][error] Manifest skill consistency check failed:", file=sys.stderr)
+    for error in errors:
+        print(f"- {error}", file=sys.stderr)
+    sys.exit(1)
+PY
+}
+
 cd "$PACK_ROOT"
 
 log "checking manifest directory-level install contract"
@@ -43,6 +136,7 @@ require_rg "- examples" pack/manifest.yaml
 require_rg "- templates" pack/manifest.yaml
 require_rg "- tools" pack/manifest.yaml
 require_rg "- skills/\*" pack/manifest.yaml
+check_manifest_skill_consistency
 
 log "checking core foundation skill and manifest routing"
 require_file "skills/core-saas-foundation/SKILL.md"

@@ -370,6 +370,9 @@ content:
     - id: akka-kve-unit-testing
       path: skills/akka-kve-unit-testing
       category: testing
+    - id: akka-manual-failure-reconciliation
+      path: skills/akka-manual-failure-reconciliation
+      category: focused
     - id: akka-mcp-endpoint-component-client
       path: skills/akka-mcp-endpoint-component-client
       category: focused
@@ -415,6 +418,9 @@ content:
     - id: akka-revised-prd-reconciliation
       path: skills/akka-revised-prd-reconciliation
       category: planning
+    - id: akka-runtime-feature-verification
+      path: skills/akka-runtime-feature-verification
+      category: focused
     - id: akka-pending-question-generation
       path: skills/akka-pending-question-generation
       category: planning
@@ -551,6 +557,8 @@ bundles:
     includeReferences: true
     includeExamples: true
     skills:
+      - business-intent-interview
+      - business-intent-to-app-input
       - app-description-auth-security
       - app-description-behavior-specification
       - app-description-bootstrap
@@ -568,6 +576,7 @@ bundles:
       - app-description-ui
       - app-descriptions
       - app-generate-app
+      - app-development-lifecycle
       - ai-first-saas
       - agent-workstream-apps
       - capability-first-backend
@@ -660,6 +669,7 @@ bundles:
       - akka-kve-replication
       - akka-kve-ttl
       - akka-kve-unit-testing
+      - akka-manual-failure-reconciliation
       - akka-mcp-endpoint-component-client
       - akka-mcp-endpoint-request-context
       - akka-mcp-endpoint-resources-prompts
@@ -674,6 +684,7 @@ bundles:
       - akka-resend-email-service
       - akka-change-request-to-spec-update
       - akka-revised-prd-reconciliation
+      - akka-runtime-feature-verification
       - project-discussed-idea-to-pending-project
       - akka-pending-question-generation
       - akka-pending-question-queue-maintenance

@@ -197,4 +197,5 @@ validationRules:
   - content.skills ids must match skills/*/SKILL.md directories
   - content.installedDirectories.paths must match the directory-level payload managed by install-skills.sh
   - bundles[].includeExamples is metadata only; install-skills.sh installs pack examples when present
+  - the bundle with id `all` must include every content.skills id unless the install model is intentionally changed in the same release
   - manifests must not define installed application source paths or bundled akka-context paths unless install-skills.sh is intentionally changed in the same release

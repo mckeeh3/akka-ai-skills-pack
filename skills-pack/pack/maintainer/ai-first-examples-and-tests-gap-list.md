@@ -52,19 +52,18 @@ Canonical routing rule: for new full-core generated apps that need an implementa
 
 ### Secure AI-first SaaS core app-description
 
-Status: **canonical app-description baseline in the target/core app workspace**.
+Status: **canonical current-intent app-description baseline in the target/core app workspace**.
 
 Reference: target project `app-description/`.
 
-Distinction: this tree is a description/reference contract for generated-app meaning, structure, UI style, readiness, and review. The canonical runnable implementation baseline is the root core app itself.
+Distinction: this tree is a description/reference contract for generated-app meaning, structure, UI style, readiness, and review. The canonical runnable implementation baseline is the root core app itself. New work should model the current-intent graph first; legacy numbered directories in templates or maintained app descriptions are compatibility assets only when mapped back to the current-intent graph.
 
 Covered coverage:
 
 - secure SaaS foundation and generated-app structure;
 - functional/context-area agents and workstream shell semantics;
-- split `12-workstreams/` application-model layer;
-- split `55-ui/` browser-realization layer;
-- capability maps, Akka realization maps, readiness, and review posture.
+- current-intent workstream, surface, capability, frontend-realization, trace, readiness, and review nodes;
+- legacy `12-workstreams/`, `55-ui/`, and related numbered compatibility mappings where still maintained.
 
 ## Required executable gaps
 
