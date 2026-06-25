@@ -127,7 +127,7 @@ Choose one of these modes before coding:
 | Low-level HTTP endpoint | Need `HttpResponse`, `HttpEntity.Strict`, or advanced HTTP model control. | Domain-specific low-level endpoint. |
 | HTTP client provider endpoint | Delegate to another HTTP service through `HttpClientProvider`. | Domain-specific HTTP-client endpoint. |
 | SSE endpoint | Stream updates and optionally resume from the last seen event id. | `WorkstreamEndpoint#events` or domain-specific workstream log streams. |
-| WebSocket endpoint | Support bidirectional streaming over a socket. | Domain-specific WebSocket endpoint. |
+| WebSocket endpoint | Support bidirectional streaming over a socket. | Target-project WebSocket endpoint tied to a named capability and protected message contract. |
 | JWT-secured endpoint | Bearer token validation and local `/api/me`/membership authorization are required; this is the generated-SaaS `/api/...` default. | JWT-secured generated-SaaS routes such as `MeEndpoint`. |
 | Internal-only ACL endpoint | Route should be callable only by other services or needs method-level ACL overrides. | Domain-specific internal status endpoint. |
 

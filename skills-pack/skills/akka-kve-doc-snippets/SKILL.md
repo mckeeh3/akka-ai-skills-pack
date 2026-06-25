@@ -67,13 +67,14 @@ When rewriting or extending KVE documentation, prefer a separate snippet for eac
 
 ## Mapping to repository references
 
-Use these as source material, but simplify aggressively for docs:
-- `DurableIdentityRepositoryEntity` -> edge-facing write/read/delete/notifications
-- a domain-specific key value entity -> downstream/internal no-op, consistent read, replication
-- `DurableNotificationRepositoryEntity` -> TTL
-- `MeEndpoint` -> SSE mapping
-- `DurableIdentityRepositoryEntityTest` -> unit test shape
-- `DurableNotificationRepositoryEntityTest` -> TTL assertion shape
+Use real current snapshot references as source material, and simplify aggressively for docs:
+- `DurableIdentityRepositoryEntity` -> edge-facing current-state write/read patterns and audit repository writes
+- `DurableNotificationRepositoryEntity` -> tenant-scoped notification item, preference, outbox, and digest current-state repository patterns
+- `MeEndpoint` -> protected endpoint/API mapping patterns that preserve AuthContext and tenant/customer scope
+- `DurableIdentityRepositoryEntityTest` -> unit test shape for KVE current-state reads/writes
+- `DurableNotificationRepositoryEntityTest` -> unit test shape for tenant-scoped notification repository behavior
+
+For delete, TTL, NotificationStream, strongly consistent read, replication, or SSE snippets, use the Akka SDK docs or a target-project implementation that actually contains the selected concept. Do not imply the current SaaS Foundation App snapshot includes a KVE delete, TTL, `NotificationPublisher`/`NotificationStream`, or replication example unless one has been added.
 
 ## What to trim out of docs
 
