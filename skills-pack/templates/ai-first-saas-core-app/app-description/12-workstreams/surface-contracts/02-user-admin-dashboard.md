@@ -41,7 +41,7 @@ type UserAdminDashboardData = {
 | Action | Capability hint | Qualified exposure | Result surface |
 |---|---|---|---|
 | Refresh dashboard | `admin.users.dashboard.read` | browser-tool, agent-tool | update `user-admin-dashboard` |
-| Open SaaS Owner Organization Administration | `tenant:list` / `tenant:create` / `tenant:update_status` | browser-tool surface-request | `saas-owner-organization-admin` |
+| Open SaaS Owner Organization Administration | `tenant:list` / `tenant:create` / `tenant:update_status` (internal tenant-boundary capability hints) | browser-tool surface-request | `saas-owner-organization-admin` |
 | Open invitation queue | `admin.users.search` | browser-tool surface-request | `user-admin-user-list[filter=invitations]` |
 | Open access review queue | `admin.access_review.read` | browser-tool surface-request | `user-admin-user-list[filter=access_review]` or `decision-card` |
 | Start access-risk investigation | `admin.access_review.investigate` | browser-tool, internal-tool | autonomous task progress/result surface or `system_message` SaaS Foundation App fallback |
