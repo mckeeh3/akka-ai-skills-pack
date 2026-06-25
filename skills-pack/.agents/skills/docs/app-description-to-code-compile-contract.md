@@ -12,6 +12,7 @@ A compile task starts only when the requested slice has enough current-intent pr
 
 - accepted current-intent delta or existing app-description graph node(s);
 - impacted app/domain/workstream or explicit cross-cutting/foundation/system-only scope;
+- owning workstream lifecycle/alignment state, including whether implementation is already aligned, stale, partially aligned, not started, blocked, or unknown;
 - responsible workers and worker types;
 - harnesses and actor adapters for each exposure path;
 - governed tools and capability contracts;
@@ -48,6 +49,8 @@ Every item downstream should cite or inherit the upstream graph node that justif
 
 - Identify the accepted intent delta or graph nodes being compiled.
 - Name the lifecycle phase and readiness target: usually `compile-ready` before edits and `manual-ready` after checks pass.
+- Read and update the owning workstream lifecycle/alignment record.
+- If the app-description changed since the last compile/alignment review, treat related implementation as `stale-description-changed` unless an explicit no-code-impact review says otherwise.
 - Confirm the task is one bounded slice and does not start later queued work.
 - List affected current-intent, spec, task, implementation, test, and validation artifacts.
 
@@ -112,6 +115,7 @@ The implementation slice should include or update the smallest tests that prove:
 After automated checks and manual/runtime validation when applicable:
 
 - update task status and validation evidence;
+- update workstream lifecycle/alignment state, including last compile, last alignment review, last manual runtime test, blockers, and next action;
 - reconcile review or runtime findings as current-intent updates, implementation repairs, test repairs, follow-up tasks, or blockers;
 - never let implementation details silently supersede app-description intent.
 
@@ -123,6 +127,7 @@ A queued build/compile task or task brief should include:
 - [ ] Required reads and focused skills.
 - [ ] Lifecycle phase and readiness target.
 - [ ] Current-intent provenance: app/domain/workstream/global graph nodes or explicit cross-cutting docs-only scope.
+- [ ] Workstream lifecycle/alignment state and expected state transition for this task.
 - [ ] Responsible worker(s), worker type(s), harnesses, and actor adapters.
 - [ ] Governed tool id(s), capability id(s), and selected exposure channels.
 - [ ] AuthContext, tenant/customer scope, authorization, denial, confirmation/approval, idempotency, side-effect, partial-failure, and trace obligations.
@@ -173,6 +178,7 @@ Block or create a pending question when safe compilation would require guessing:
 - approval/confirmation/autonomy threshold;
 - side effects, idempotency, transaction boundary, or partial-failure behavior;
 - trace/audit/outcome visibility;
+- whether a workstream app-description change is no-code-impact or requires stale implementation to be recompiled;
 - selected capability contract or Akka substrate;
 - required runtime validation path.
 
