@@ -1,5 +1,7 @@
 # Functional Agent to Capability Map
 
+This legacy numbered-template map preserves traceability from each functional agent/workstream to backend capability families. For new current-intent work, place or link the same mapping from the owning `app-description/domains/<domain>/workstreams/<workstream>/**` graph artifacts; the backend capability contract remains authoritative over frontend visibility, prompts, and tool descriptions.
+
 | Functional agent | Workstream id | Primary surfaces | Capability families | Required trace/test focus |
 |---|---|---|---|---|
 | `my-account-agent` | `my-account` | `my-account-dashboard`, `markdown_response`, `system_message` | `secure-tenant-user-foundation`, `frontend-shell-integration-patterns`, `governance-decisions-audit` | own-scope, context selection, disabled-user denial, aggregate attention, trace links. |
@@ -10,4 +12,4 @@
 
 ## Extension rule
 
-Every domain-specific functional agent must map to at least one workstream id, one default dashboard/surface, one capability family, auth/security expectations, trace expectations, and tests before runtime implementation.
+Every domain-specific functional agent must map to at least one workstream id, one default dashboard/surface, one backend capability family, AuthContext/tenant/customer authorization expectations, trace expectations, provider/security fail-closed behavior when model-backed, and tests before runtime implementation.

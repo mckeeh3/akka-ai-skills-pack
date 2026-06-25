@@ -1,5 +1,7 @@
 # Web UI Style Guide
 
+This style guide is visual and interaction guidance for the legacy numbered template UI layer and any mapped current-intent `realization/frontend-routes.md` work. It must not change workstream ownership, governed-tool/capability authority, backend authorization, audit behavior, or readiness evidence requirements.
+
 ## Selection
 
 - selected style: `ai-first-workstream-enterprise`

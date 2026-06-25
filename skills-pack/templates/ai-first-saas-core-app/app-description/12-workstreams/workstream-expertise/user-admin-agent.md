@@ -5,7 +5,7 @@
 - workstream id: `user-admin`
 - scope: SaaS Owner Organization/Tenant administration, Organization Admin bootstrap, invitations, users, memberships, roles/capabilities, access review, support-access visibility, and admin audit in the selected `AuthContext`
 - primary surfaces: `user-admin-dashboard`, `saas-owner-organization-admin`, `user-admin-user-list`, `user-admin-user-account`, `decision-card`, `audit-trace-explorer`
-- model binding: inherited governed default or explicit `ModelConfigRef`/`ModelPolicy`; no provider secrets in prompt, skill, reference, trace, or browser payloads
+- model binding: inherited governed default or explicit `ModelConfigRef`/`ModelPolicy`; missing provider/security configuration fails closed with an actionable `system_message` and AgentWorkTrace, and no provider secrets appear in prompt, skill, reference, trace, or browser payloads
 
 ## Prompt intent
 
@@ -24,4 +24,4 @@ Read scoped dashboard/list/detail/audit evidence where authorized. SaaS Owner Or
 
 ## Tests
 
-Cover assigned/unassigned skill and reference loads, tool-boundary denial, capability authorization, SaaS Owner Organization/Tenant create/list/profile/status/admin-bootstrap boundaries, tenant/customer isolation, last-admin protection, support-access rules, no raw invitation token exposure, decision-card routing, PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace, and surface rendering.
+Cover assigned/unassigned skill and reference loads, tool-boundary denial, capability authorization, SaaS Owner Organization/Tenant create/list/profile/status/admin-bootstrap boundaries, tenant/customer isolation, last-admin protection, support-access rules, no raw invitation token exposure, decision-card routing, provider/model fail-closed behavior, PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace, and surface rendering.

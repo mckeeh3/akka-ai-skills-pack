@@ -1,5 +1,7 @@
 # Workstreams and Retention
 
+This file is part of the legacy numbered app-description template. For new current-intent work, map these definition/instance and retention rules into `app-description/domains/<domain>/workstreams/<workstream>/**`, with reusable retention, trace, and policy concepts linked from `app-description/global/**`.
+
 ## Workstream definition vs runtime instance
 
 A workstream definition is the product vertical such as `user-admin`. A workstream instance is the durable runtime timeline/log for a selected scope such as `tenantId + selectedContextId + functionalAgentId` and optional customer/subthread keys when a capability explicitly creates them.
@@ -31,4 +33,4 @@ A workstream definition is the product vertical such as `user-admin`. A workstre
 
 ## Readiness labels
 
-Use readiness labels from `docs/workstream-contract.md`: `identified`, `described`, `surface-ready`, `capability-ready`, `expertise-ready`, `runtime-ready`, and `production-ready`. Do not mark a workstream runtime-ready from fixtures, static markdown, or provider-bypassing service calls.
+Use workstream readiness labels from `docs/workstream-contract.md`: `identified`, `described`, `surface-ready`, `capability-ready`, `expertise-ready`, `runtime-ready`, and `production-ready`. Use runtime evidence vocabulary from `references/generated-saas-runtime-completion.md` when recording implementation proof. Do not mark a workstream `runtime-ready` from fixtures, static markdown, provider-bypassing service calls, or any path that skips backend authorization, tenant/customer scope, governed Akka Agent/provider execution, audit/work traces, or provider/security fail-closed behavior.
