@@ -20,7 +20,8 @@ Use this reference when implementing or reviewing Akka Java SDK gRPC endpoints s
 5. Use `bearerTokenIssuers` for `iss`, not a static claim.
 6. Use `values = ...` when allowed values are fixed.
 7. Use `pattern = ...` when allowed values are not fully known in advance.
-8. In tests, use an unsigned token with `alg=none`; claims are still enforced locally and in integration tests.
+8. Treat JWT validation as authentication only. Generated SaaS endpoints must still resolve service/user identity, selected `AuthContext`, tenant/customer scope, membership/status, role/scope/capability authorization, redaction, denial responses, and audit/work traces before calling components.
+9. In tests only, use an unsigned token with `alg=none`; claims are still enforced locally and in integration tests.
 
 ## Two target-project patterns
 
@@ -64,16 +65,17 @@ Pattern shape:
 
 1. let Akka validate the bearer token through `@JWT`
 2. read validated claims from `requestContext().getJwtClaims()`
-3. map claims into a protobuf response
-4. do not re-implement token parsing or validation in endpoint code
+3. resolve the local AuthContext/service authority and enforce tenant/customer/capability checks for the governed tool or read capability
+4. map authorized results or safe denials into protobuf responses
+5. do not re-implement token parsing or validation in endpoint code
 
 ## Minimal test algorithm
 
 1. create client with `getGrpcEndpointClient(GeneratedClient.class, Principal.INTERNET)`
-2. create unsigned token from header + payload
+2. create a test-only unsigned token from header + payload
 3. attach header with `.addRequestHeader("Authorization", "Bearer " + token)`
 4. call endpoint
-5. assert success or `StatusRuntimeException`
+5. assert success, local authorization denial, missing/invalid token denial, or `StatusRuntimeException` as appropriate
 
 Token helper shape:
 ```java
