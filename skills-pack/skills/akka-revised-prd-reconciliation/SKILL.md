@@ -64,9 +64,9 @@ Read these first if present:
 - `../akka-change-request-to-spec-update/SKILL.md`
 - `../app-description-change-impact/SKILL.md`
 - `../ai-first-saas/SKILL.md`
-- target project path: app-description/00-system/app-manifest.md if present
-- target project path: app-description/10-capabilities/capabilities-index.md if present
-- target project path: app-description/20-behavior/behavior-index.md if present
+- target project path: app-description/app.md if present
+- target project path: relevant app-description/global/** and app-description/domains/** current-intent graph nodes
+- target project path: legacy numbered app-description files such as app-description/00-system/app-manifest.md, app-description/10-capabilities/capabilities-index.md, or app-description/20-behavior/behavior-index.md only when the target project still maintains them
 - target project path: specs/README.md if present
 - target project path: specs/akka-solution-plan.md if present
 - target project path: specs/pending-tasks.md if present
