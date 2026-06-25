@@ -14,7 +14,7 @@
 
 ### TASK-001: Review all inventory entries in sequential small batches
 
-- status: pending
+- status: done
 - source: specs/skills-pack-comprehensive-review/file-review-inventory.md
 - task brief: specs/skills-pack-comprehensive-review/subagent-file-review-brief.md
 - depends on: []
