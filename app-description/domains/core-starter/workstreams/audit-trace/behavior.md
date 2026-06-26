@@ -2,7 +2,7 @@
 
 ## Current-state behavior
 
-Audit/Trace v1 provides a tenant-admin searchable activity log for immutable audit records answering **"who did what?"**.
+The Audit/Trace tenant-admin activity-log scope provides a searchable tenant-admin activity log for immutable audit records answering **"who did what?"**.
 
 The workstream records and exposes these trace families:
 
@@ -25,7 +25,7 @@ Tenant admins can filter the activity log by:
 - customer/account;
 - status: success, failure, or denied.
 
-Keyword search is limited to deterministic app-generated metadata and summary fields. Full request, response, and tool payloads are not indexed for keyword search in v1.
+Keyword search is limited to deterministic app-generated metadata and summary fields. Full request, response, and tool payloads are not indexed for keyword search in the tenant-admin activity-log scope.
 
 Default activity log rows show:
 
@@ -61,13 +61,13 @@ Audit trace records are immutable and are removed only by retention expiry. Rete
 - Backend authorization is required for every search, detail read, tool-call detail read, and retention configuration change.
 - Browser route visibility or frontend state never grants trace access.
 - Tenant admins cannot edit or delete audit records.
-- Retention expiry is the only v1 record-removal mechanism.
+- Retention expiry is the only tenant-admin activity-log scope record-removal mechanism.
 - Full payloads are visible only in authorized detail views, not in list rows or keyword search indexes.
 - Search summaries are deterministic app-generated summaries only.
 
 ## Forbidden behavior
 
-V1 must not:
+The tenant-admin activity-log scope must not:
 
 - provide export or compliance bundles;
 - provide investigation notes or acknowledgements;

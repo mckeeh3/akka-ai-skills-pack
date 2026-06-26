@@ -14,11 +14,11 @@ Durable workstream logs, stream items, attention items, notifications, audit/adm
 - SaaS owner default updates must not overwrite tenant overrides.
 - Hard platform security controls such as tenant isolation, backend authorization, secret protection, redaction boundaries, audit trace integrity, and platform integrity are not overrideable.
 - Export/digest requests are governed and never bypass data visibility rules.
-- Audit/work trace records are immutable evidence. Correction or cleanup is represented by new linked facts rather than mutation of original evidence; for the Audit/Trace v1 activity-log scope, removal occurs only by retention expiry.
-- Trace-gap, investigation-note, and export-request lifecycle state are not part of the Audit/Trace v1 activity-log build scope unless a later current-intent change reintroduces those features.
+- Audit/work trace records are immutable evidence. Correction or cleanup is represented by new linked facts rather than mutation of original evidence; for the Audit/Trace tenant-admin activity-log scope, removal occurs only by retention expiry.
+- Trace-gap, investigation-note, and export-request lifecycle state are not part of the Audit/Trace tenant-admin activity-log scope unless a later current-intent change reintroduces those features.
 
 ## Retention and traces
 
 Trace records must answer who or what acted, under which tenant/customer context and authority, which policy/tool/data/model was used, what was denied or allowed, which effective policy source applied, and what outcome evidence followed.
 
-For the Audit/Trace v1 activity-log scope, tenant audit trace retention defaults to 90 days and is tenant-admin configurable from 30 to 365 days. Retention changes are audit-traced and must not expose hidden records across scopes. Records are immutable until retention expiry. Browser export links, generated export bundles, legal hold, account erasure, provider-side deletion reconciliation, and bulk purge are out of scope for Audit/Trace v1 until explicitly described with authorization, redaction, audit, tests, and provider-boundary contracts.
+For the Audit/Trace tenant-admin activity-log scope, tenant audit trace retention defaults to 90 days and is tenant-admin configurable from 30 to 365 days. Retention changes are audit-traced and must not expose hidden records across scopes. Records are immutable until retention expiry. Browser export links, generated export bundles, legal hold, account erasure, provider-side deletion reconciliation, and bulk purge are out of scope for Audit/Trace tenant-admin activity-log scope until explicitly described with authorization, redaction, audit, tests, and provider-boundary contracts.

@@ -1,6 +1,6 @@
 # Surfaces: Audit/Trace
 
-Audit/Trace v1 is a tenant-admin activity-log workstream. It owns browser surfaces for searching audit traces, viewing authorized trace detail/full payloads, and configuring tenant retention.
+The Audit/Trace tenant-admin activity-log scope owns browser surfaces for searching audit traces, viewing authorized trace detail/full payloads, and configuring tenant retention.
 
 ## Surface bindings
 
@@ -14,7 +14,7 @@ Audit/Trace v1 is a tenant-admin activity-log workstream. It owns browser surfac
 ## `surface-audit-trace-activity-log` contract details
 
 - Surface role: list/search surface for tenant-scoped audit records.
-- Owner: Audit/Trace workstream; exactly-one functional-agent binding is `audit-trace-agent`, but v1 search/detail actions are browser surface actions only.
+- Owner: Audit/Trace workstream; exactly-one functional-agent binding is `audit-trace-agent`, but tenant-admin activity-log scope search/detail actions are browser surface actions only.
 - Actor: `tenant-admin` with selected backend-owned `AuthContext` and active membership.
 - User goal: find the human worker, agent worker, or tool call that performed an action.
 - Primary action: run or refine a backend-authorized search. Success returns rows for the selected tenant only.
@@ -43,7 +43,7 @@ Keyword search applies only to deterministic metadata/summary fields and never t
 - States: loading, empty authorized result set, ready, submitting, validation-error, forbidden, partial-data/redacted, stale/reconnect, and failure.
 - Every search, validation failure, denial, empty result, partial/redacted result, and detail-open attempt emits trace evidence with tenant, actor, selected filters, status, and correlation id.
 - Rows and controls are keyboard-operable, have visible focus, use accessible table/list semantics, and do not rely on color alone for status.
-- Surface-description sufficiency review: sufficient for v1 implementation without inventing payload fields, actions, auth/tenant behavior, trace links, tests, or component semantics.
+- Surface-description sufficiency review: sufficient for tenant-admin activity-log scope implementation without inventing payload fields, actions, auth/tenant behavior, trace links, tests, or component semantics.
 
 ## `surface-audit-trace-detail` contract details
 
@@ -79,7 +79,7 @@ Internal-only metadata includes secrets, bearer/session tokens, provider credent
 - States: loading, ready, forbidden, `not_found_or_redacted`, retention-expired, partial-data/redacted, stale/reconnect, and failure.
 - Every detail read, linked trace open, denial, not-found/redacted result, and retention-expired result emits trace evidence.
 - Full payload sections are visually subordinate to the sensitive warning and are not copied into list rows or keyword search.
-- Surface-description sufficiency review: sufficient for v1 implementation without inventing payload fields, actions, auth/tenant behavior, trace links, tests, or component semantics.
+- Surface-description sufficiency review: sufficient for tenant-admin activity-log scope implementation without inventing payload fields, actions, auth/tenant behavior, trace links, tests, or component semantics.
 
 ## `surface-audit-trace-retention-settings` contract details
 
@@ -109,11 +109,11 @@ Default retention is 90 days. Allowed values are 30 through 365 days.
 - Saving a valid changed value emits an immutable audit trace recording old value, new value, actor email/role/org, tenant, timestamp, status, and correlation id.
 - Submitting the same value is an idempotent no-op with a diagnosable outcome trace.
 - Values below 30 or above 365 are rejected with validation feedback and no configuration change.
-- Surface-description sufficiency review: sufficient for v1 implementation without inventing payload fields, actions, auth/tenant behavior, trace links, tests, or component semantics.
+- Surface-description sufficiency review: sufficient for tenant-admin activity-log scope implementation without inventing payload fields, actions, auth/tenant behavior, trace links, tests, or component semantics.
 
-## Explicit v1 exclusions
+## Explicit tenant-admin activity-log scope exclusions
 
-The following previously discussed or candidate surfaces are out of scope for v1 and must not be generated as working features from this workstream description:
+The following previously discussed or candidate surfaces are out of scope for the tenant-admin activity-log scope and must not be generated as working features from this workstream description:
 
 - export request or compliance bundle surfaces;
 - investigation note surfaces;

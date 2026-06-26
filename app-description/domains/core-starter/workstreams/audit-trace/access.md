@@ -4,7 +4,7 @@
 
 - `tenant-admin`: may search and view tenant-scoped audit trace records, open full-payload trace details, and configure the tenant's audit retention setting.
 
-V1 does not grant audit trace access to customer admins, auditors, support operators, SaaS-owner admins, agents, or non-admin tenant members unless a future app-description change explicitly adds those roles.
+The tenant-admin activity-log scope does not grant audit trace access to customer admins, auditors, support operators, SaaS-owner admins, agents, or non-admin tenant members unless a future app-description change explicitly adds those roles.
 
 ## Scope rules
 

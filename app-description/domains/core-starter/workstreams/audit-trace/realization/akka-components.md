@@ -2,7 +2,7 @@
 
 Capability: `audit-and-trace-investigation`.
 
-This map is docs-only. It states the v1 component responsibilities implied by current intent and does not prove implementation alignment.
+This map is docs-only. It states the tenant-admin activity-log scope component responsibilities implied by current intent and does not prove implementation alignment.
 
 ## Required component responsibilities
 
@@ -22,6 +22,6 @@ This map is docs-only. It states the v1 component responsibilities implied by cu
 - Component/API tests for retention setting default, valid update, invalid bounds, same-value no-op, and audit trace emission.
 - Component/API tests for tenant isolation, disabled/inactive user denial, non-admin denial, hidden/expired trace non-enumeration, and secret omission.
 
-## Explicit v1 component exclusions
+## Explicit tenant-admin activity-log scope component exclusions
 
-Do not include export bundle generation, investigation notes, suspicious-activity review state, autonomous audit summaries, or agent-tool trace search authority in this v1 build slice unless later current intent adds them.
+Do not include export bundle generation, investigation notes, suspicious-activity review state, autonomous audit summaries, or agent-tool trace search authority in this tenant-admin activity-log scope build slice unless later current intent adds them.

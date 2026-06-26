@@ -4,9 +4,9 @@
 
 Global traces: `../../../../../global/traces/foundation-trace-patterns.md`.
 
-## Required v1 evidence
+## Required tenant-admin activity-log scope evidence
 
-Audit/Trace v1 uses durable audit trace records as product data, not merely operational logs. Trace records are immutable until retention expiry.
+Audit/Trace tenant-admin activity-log scope uses durable audit trace records as product data, not merely operational logs. Trace records are immutable until retention expiry.
 
 Required event families:
 
@@ -58,7 +58,7 @@ Retention configuration change traces include old value, new value, tenant, acto
 
 Tenant admins can view full payloads in authorized detail surfaces. The detail UI must display **"Sensitive full payload — tenant admin access only."**
 
-Search rows and keyword indexes use deterministic metadata/summary fields only. Full payloads are not indexed for keyword search in v1.
+Search rows and keyword indexes use deterministic metadata/summary fields only. Full payloads are not indexed for keyword search in the tenant-admin activity-log scope.
 
 Trace views must not expose secrets, bearer/session tokens, provider credentials, hidden cross-tenant identifiers, frontend-secret material, or raw implementation internals.
 

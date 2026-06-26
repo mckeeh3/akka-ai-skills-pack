@@ -2,7 +2,7 @@
 
 Capability: `audit-and-trace-investigation`.
 
-This file records the v1 build contract implied by current intent. It is not runtime proof.
+This file records the tenant-admin activity-log scope build contract implied by current intent. It is not runtime proof.
 
 ## Browser/API contract obligations
 
@@ -22,6 +22,6 @@ This file records the v1 build contract implied by current intent. It is not run
 - Backend/API tests that denied trace detail includes denial reason and policy reference when authorized.
 - Backend/API tests that retention changes emit immutable audit trace evidence.
 
-## Explicit v1 API exclusions
+## Explicit tenant-admin activity-log scope API exclusions
 
-Do not implement export, investigation-note, acknowledgement, AI-summary, support-operator, customer-admin, auditor, SaaS-owner, or agent-tool APIs as part of this v1 build slice unless a later current-intent change adds them.
+Do not implement export, investigation-note, acknowledgement, AI-summary, support-operator, customer-admin, auditor, SaaS-owner, or agent-tool APIs as part of this tenant-admin activity-log scope build slice unless a later current-intent change adds them.

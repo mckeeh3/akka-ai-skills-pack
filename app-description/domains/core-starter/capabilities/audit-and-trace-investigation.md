@@ -4,7 +4,7 @@
 
 Let tenant admins answer **"who did what?"** by searching and inspecting immutable, tenant-scoped audit trace records for human workers, agent workers, and tool calls.
 
-This v1 capability is an activity-log and trace-detail capability. It is not an export, investigation-notes, acknowledgement, or AI-generated summary capability.
+This tenant-admin activity-log scope capability is an activity-log and trace-detail capability. It is not an export, investigation-notes, acknowledgement, or AI-generated summary capability.
 
 ## Actors and scope
 
@@ -21,7 +21,7 @@ All capability calls require selected backend-owned `AuthContext`, active member
 - `read-trace-tool-call-detail` (`browser-tool` read): opens tool-call evidence linked to a parent request/response trace.
 - `update-audit-retention-setting` (`browser-tool` mutation): updates tenant audit retention between 30 and 365 days and emits its own audit trace.
 
-No v1 agent-tool authority is granted for this capability. Agents may produce audited activity, but they may not use this v1 capability to search or reveal traces. Browser visibility never grants backend authorization.
+No tenant-admin activity-log scope agent-tool authority is granted for this capability. Agents may produce audited activity, but they may not use this tenant-admin activity-log scope capability to search or reveal traces. Browser visibility never grants backend authorization.
 
 ## Authorization and denials
 
@@ -40,7 +40,7 @@ Search supports these required filters:
 - customer/account;
 - status: success, failure, or denied.
 
-Keyword search applies only to deterministic app-generated metadata and summary fields. Full payloads are not indexed for keyword search in v1.
+Keyword search applies only to deterministic app-generated metadata and summary fields. Full payloads are not indexed for keyword search in the tenant-admin activity-log scope.
 
 Trace detail exposes full payloads to tenant admins only and displays the warning: **"Sensitive full payload — tenant admin access only."**
 
@@ -50,7 +50,7 @@ Default retention is 90 days. Tenant admins may configure retention from 30 to 3
 
 ## Outcomes
 
-In scope for v1:
+In scope for the tenant-admin activity-log scope:
 
 - searchable activity log;
 - trace detail with full payloads for tenant admins;
@@ -61,14 +61,14 @@ In scope for v1:
 - configurable tenant retention from 30 to 365 days;
 - immutable records until retention expiry.
 
-Out of scope for v1:
+Out of scope for the tenant-admin activity-log scope:
 
 - export or compliance bundles;
 - investigation notes;
 - suspicious-activity acknowledgement workflows;
 - agent-generated audit summaries;
 - full-payload keyword search;
-- customer-admin, auditor, support-operator, or SaaS-owner trace access beyond tenant-admin v1 access.
+- customer-admin, auditor, support-operator, or SaaS-owner trace access beyond the tenant-admin activity-log scope.
 
 ## Linked graph nodes
 

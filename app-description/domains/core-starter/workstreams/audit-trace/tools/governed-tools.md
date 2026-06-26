@@ -4,9 +4,9 @@
 
 Global tool inventory: `../../../../../global/tools/foundation-governed-tools.md`.
 
-## V1 workstream exposure
+## Tenant-admin activity-log scope workstream exposure
 
-Allowed governed tools for the tenant-admin audit trace v1 build scope:
+Allowed governed tools for the tenant-admin activity-log scope:
 
 - `search-audit-traces`
 - `read-trace-detail`
@@ -24,9 +24,9 @@ Action-to-tool aliases are canonical:
 
 ## Tool authority boundaries
 
-All v1 tools are browser surface actions requiring backend-owned selected `AuthContext`, active membership, tenant-admin role/capability, tenant scope, and server-side authorization.
+All tenant-admin activity-log scope tools are browser surface actions requiring backend-owned selected `AuthContext`, active membership, tenant-admin role/capability, tenant scope, and server-side authorization.
 
-No v1 `agent_tool_call`, `human_chat_tool_plan`, export, investigation-note, summary-task, support-operator, customer-admin, SaaS-owner, or auditor tool authority is granted by this workstream description.
+No tenant-admin activity-log scope `agent_tool_call`, `human_chat_tool_plan`, export, investigation-note, summary-task, support-operator, customer-admin, SaaS-owner, or auditor tool authority is granted by this workstream description.
 
 `update-audit-retention-setting` is side-effecting and requires idempotency, correlation, validation of the 30–365 day range, and audit trace emission. Replaying the same value with the same idempotency context returns a no-op result without duplicate configuration changes.
 

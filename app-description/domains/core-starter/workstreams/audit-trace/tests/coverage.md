@@ -11,16 +11,16 @@
 - Given a tenant admin opens retention settings, then the default is 90 days and the allowed range is shown as 30 to 365 days.
 - Given a tenant admin saves a valid changed retention value, then the tenant setting changes and a retention configuration change trace records old value, new value, actor, tenant, timestamp, status, and correlation id.
 
-## Regression and explicit v1 exclusions
+## Regression and explicit tenant-admin activity-log scope exclusions
 
 - Given a user searches by keyword, then the search matches deterministic metadata/summary fields only and never full request/response/tool payload text.
 - Given the app renders activity rows, then full payloads do not appear in rows, filter chips, summaries, or browser-visible search indexes.
-- Given a tenant admin uses Audit/Trace v1, then export/compliance bundles, investigation notes, suspicious-activity acknowledgements, and agent-generated summaries are not available as working v1 features.
+- Given a tenant admin uses Audit/Trace tenant-admin activity-log scope, then export/compliance bundles, investigation notes, suspicious-activity acknowledgements, and agent-generated summaries are not available as working tenant-admin activity-log scope features.
 
 ## Security and negative
 
 - Given a non-tenant-admin authenticated user, when they open, search, view detail, or configure retention, then the action is denied server-side and no protected trace data is exposed.
-- Given a disabled user or inactive membership, when they attempt any Audit/Trace v1 action, then the action is denied and emits denial trace evidence.
+- Given a disabled user or inactive membership, when they attempt any Audit/Trace tenant-admin activity-log scope action, then the action is denied and emits denial trace evidence.
 - Given a tenant admin from tenant A, when they request tenant B traces or a cross-tenant customer/account filter, then the action is denied or returns no authorized rows without hidden target enumeration.
 - Given a hidden, expired, or malformed trace reference, when detail is opened, then the response is `not_found_or_redacted` or validation-error without confirming protected record existence.
 - Given a retention value below 30 or above 365 days, when it is submitted, then validation fails, no setting changes, and trace evidence records the failed attempt.

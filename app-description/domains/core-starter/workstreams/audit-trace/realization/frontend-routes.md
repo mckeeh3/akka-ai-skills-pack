@@ -2,7 +2,7 @@
 
 Capability: `audit-and-trace-investigation`.
 
-This file records the v1 frontend realization contract implied by current intent. It is not runtime proof.
+This file records the tenant-admin activity-log scope frontend realization contract implied by current intent. It is not runtime proof.
 
 ## Frontend surface obligations
 
@@ -21,6 +21,6 @@ This file records the v1 frontend realization contract implied by current intent
 - Full payloads are never rendered in activity rows, filter chips, summaries, or client-side search indexes.
 - Browser assets and API payloads never expose provider/server secrets, bearer/session tokens, hidden cross-tenant identifiers, or frontend-secret material.
 
-## Explicit v1 frontend exclusions
+## Explicit tenant-admin activity-log scope frontend exclusions
 
-Do not render export/compliance bundle flows, investigation notes, suspicious-activity acknowledgement/review, AI-generated summary progress/review, or full-payload keyword search as working v1 features.
+Do not render export/compliance bundle flows, investigation notes, suspicious-activity acknowledgement/review, AI-generated summary progress/review, or full-payload keyword search as working tenant-admin activity-log scope features.
