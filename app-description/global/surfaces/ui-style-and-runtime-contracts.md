@@ -14,7 +14,8 @@ Surface descriptions may refer to the selected web UI style guide, named-theme t
 
 ## Runtime source of truth
 
-- Workstream bootstrap, actions, messages, shell requests, and realtime events come from protected backend endpoints described in `workstream-shell.md` and `../../55-ui/frontend-api-contracts.md`.
+- Workstream bootstrap, actions, messages, streaming message responses, shell requests, and realtime events come from protected backend endpoints described in `workstream-shell.md` and `../../55-ui/frontend-api-contracts.md`.
+- Streaming markdown agent responses must use the same markdown renderer/sanitizer as completed `markdown-response` items, rendering the full accumulated markdown buffer on a throttled cadence rather than rendering individual token chunks independently.
 - Test fixtures may live only under test assets and must not be importable or selectable by the normal runtime path.
 - Browser route state, deep links, local storage, disabled controls, compatibility endpoints, and fixture data never grant authority or imply a missing workstream/surface contract.
 - Provider/model/outbox unavailable states render fail-closed typed surfaces; no fake success or canned model/provider result is normal runtime behavior.

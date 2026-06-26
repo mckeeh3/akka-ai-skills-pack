@@ -86,6 +86,19 @@ The composer is an entry point into the selected workstream, not an authority so
 - Ambiguous requests ask clarifying questions or return safe fallback surfaces.
 - Shell-level commands, rail selection, My Account panels, dashboard cards, deep links, and surface links normalize to shell requests with origin, display text, target, scope, correlation id, and backend reauthorization.
 
+### Streaming markdown agent responses
+
+The shell should support low-latency functional-agent turns by streaming markdown text before the final `markdown-response` item is complete. This is an incremental rendering enhancement to the existing markdown response contract, not a separate authority path.
+
+- The backend resolves selected `AuthContext`, workstream authorization, governed agent behavior, model/provider readiness, tool boundaries, trace/correlation metadata, and fail-closed blockers before opening any token stream.
+- When prerequisites pass, the backend appends the user request item, opens a streaming assistant response item in `working` state, invokes the configured Akka Agent through token streaming, and emits browser-safe markdown text chunks plus stream lifecycle events.
+- The browser accumulates the raw markdown chunks into the response item's markdown buffer and renders HTML from the full accumulated markdown document, preferably throttled to roughly 50-150ms batches. It must not render each token as an independent markdown document because markdown constructs can span chunks.
+- The same markdown renderer, sanitizer, link policy, code-block handling, and forbidden-content boundaries used for completed `markdown-response` items apply during streaming and after completion.
+- The streaming item shows visible in-progress affordances such as typing/cursor, live/streaming status, cancellation or disconnect state when supported, and safe retry/recovery guidance on failure.
+- On completion, the backend records the final response/work trace and emits a final event or response metadata that marks the item complete. The final persisted markdown is authoritative for refresh/reconnect; partial tokens are not trusted product state and never trigger approvals, side effects, or governed actions by themselves.
+- On provider/model/tool/security failure, cancellation, malformed stream events, or disconnect, the browser preserves any authorized partial text as partial output, marks the item `failed`, `disconnected`, `provider_blocked`, `model_blocked`, or `tool_boundary_denied` as appropriate, and shows safe recovery without exposing provider payloads, prompts, hidden policy, stack traces, or secrets.
+- If streaming is unavailable for a workstream, agent, provider, browser, or deployment, the shell falls back to the existing non-streaming `/api/workstream/messages` behavior without fake partial output.
+
 ## Capability-backed actions and result surfaces
 
 Every consequential button, link, row activation, form submit, confirmation, retry, refresh, context switch, attention open, trace open, and shell request is a browser-tool exposure of a governed backend capability/tool.
@@ -98,11 +111,11 @@ Every consequential button, link, row activation, form submit, confirmation, ret
 
 ## Realtime and stale behavior
 
-The shell uses server-sent events by default for workstream updates. WebSockets are reserved for explicitly bidirectional low-latency behavior.
+The shell uses server-sent events by default for workstream updates. WebSockets are reserved for explicitly bidirectional low-latency behavior. Agent response token streaming may use a dedicated protected message-stream endpoint when request-body submission is required; it follows the same stale, redaction, authorization, and recovery principles as shell realtime events.
 
-Realtime events may append or update workstream items, surfaces, attention counts, workflow progress, action outcomes, stale markers, reconnect markers, and projection refresh notices. The browser must safely ignore malformed, duplicate, replayed, out-of-order, cross-context, unauthorized, or stale events. Reconnect resumes from bounded replay metadata when available; otherwise affected surfaces are marked stale and can be refreshed through protected shell/actions APIs.
+Realtime events may append or update workstream items, surfaces, attention counts, workflow progress, action outcomes, stale markers, reconnect markers, projection refresh notices, and stream lifecycle state for in-progress agent responses. The browser must safely ignore malformed, duplicate, replayed, out-of-order, cross-context, unauthorized, stale, or stream-chunk events that do not match the active authorized workstream item. Reconnect resumes from bounded replay metadata when available; otherwise affected surfaces or streaming items are marked stale/disconnected and can be refreshed through protected shell/actions/messages APIs.
 
-Realtime events never grant authority and never expose raw backend event ids, secrets, hidden object names, or unredacted evidence.
+Realtime and stream events never grant authority and never expose raw backend event ids, secrets, prompts, provider payloads, hidden object names, or unredacted evidence.
 
 ## Attention, dashboards, and My Account aggregation
 
@@ -151,6 +164,7 @@ The shell is realized through protected backend calls documented in `app-descrip
 - `POST /api/workstream/bootstrap`
 - `POST /api/workstream/actions`
 - `POST /api/workstream/messages`
+- `POST /api/workstream/messages/stream`
 - `POST /api/workstream/shell-requests`
 - `GET /api/workstream/events`
 
@@ -163,7 +177,7 @@ Generated/runtime work that changes the shell must include tests or manual runti
 - `/api/me` and shell bootstrap active, disabled, no-membership, missing bearer, and safe recovery states.
 - rail visibility, hidden/denied non-enumeration, attention counts, My Account placement, keyboard behavior, and focus return.
 - selected-context display, context switch/refresh, stale surface marking, and tenant/customer isolation.
-- composer deterministic route, unmatched governed-agent path, provider/model fail-closed state, and no canned/model-less success.
+- composer deterministic route, unmatched governed-agent path, provider/model fail-closed state, streaming markdown response start/chunk/final/error states, non-streaming fallback, and no canned/model-less success.
 - action authorization, validation, approval-required, conflict, stale, no-op, denial, provider/outbox/tool blocked, idempotency, trace, and result-surface mapping.
 - deep-link reauthorization, opaque refs, forbidden/not-found recovery, and compatibility-route non-authority.
 - realtime update, duplicate/replay/out-of-order/malformed/cross-context event safe handling, reconnect, and stale markers.
