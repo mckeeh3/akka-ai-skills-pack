@@ -1,6 +1,8 @@
 package ai.first.api.coreapp.workstream;
 
 import ai.first.domain.foundation.identity.Membership;
+import akka.http.javadsl.model.ContentTypes;
+import akka.http.javadsl.model.HttpEntities;
 import akka.http.javadsl.model.HttpResponse;
 import akka.javasdk.annotations.Acl;
 import akka.javasdk.annotations.JWT;
@@ -27,14 +29,18 @@ import ai.first.application.coreapp.workstream.WorkstreamService.WorkstreamMessa
 import ai.first.application.coreapp.workstream.WorkstreamService.WorkstreamShellRequest;
 import ai.first.domain.foundation.identity.WorkosIdentity;
 import ai.first.application.foundation.invitation.InvitationService;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /** Workstream shell API endpoints for User Admin structured surfaces and capability actions. */
 @Acl(allow = @Acl.Matcher(principal = Acl.Principal.INTERNET))
 @JWT(validate = JWT.JwtMethodMode.BEARER_TOKEN)
 @HttpEndpoint("/api/workstream")
 public class WorkstreamEndpoint extends AbstractHttpEndpoint {
+  private static final ObjectMapper JSON = new ObjectMapper();
   private final ComponentClient componentClient;
   private final WorkstreamService workstreamService;
 
@@ -79,6 +85,16 @@ public class WorkstreamEndpoint extends AbstractHttpEndpoint {
     return authorized((identity, selectedContextId, correlationId) -> HttpResponses.ok(workstreamService.submitMessage(identity, selectedContextId, request, correlationId)));
   }
 
+  @Post("/messages/stream")
+  public HttpResponse messageStream(WorkstreamMessageRequest request) {
+    return authorized((identity, selectedContextId, correlationId) -> {
+      var events = workstreamService.submitMessageStream(identity, selectedContextId, request, correlationId).stream()
+          .map(this::sseEvent)
+          .collect(java.util.stream.Collectors.joining());
+      return HttpResponse.create().withEntity(HttpEntities.create(ContentTypes.parse("text/event-stream; charset=UTF-8"), events.getBytes(StandardCharsets.UTF_8)));
+    });
+  }
+
   @Post("/chat-tool-plans/confirm")
   public HttpResponse confirmChatToolPlan(ChatToolPlanConfirmationRequest request) {
     return authorized((identity, selectedContextId, correlationId) -> HttpResponses.ok(workstreamService.confirmChatToolPlan(identity, selectedContextId, request)));
@@ -113,6 +129,15 @@ public class WorkstreamEndpoint extends AbstractHttpEndpoint {
               .entriesSource(new WorkstreamEventBackboneView.FunctionalAgentQuery(tenantId, customerId, functionalAgentId), lastSeen);
       return HttpResponses.serverSentEventsForView(source);
     });
+  }
+
+  private String sseEvent(Object event) {
+    try {
+      return "event: " + ((ai.first.application.coreapp.workstream.WorkstreamService.WorkstreamMessageStreamEvent) event).eventType() + "\n"
+          + "data: " + JSON.writeValueAsString(event) + "\n\n";
+    } catch (JsonProcessingException error) {
+      throw new IllegalStateException("workstream-stream-event-serialization-failed", error);
+    }
   }
 
   private HttpResponse authorized(AuthorizedCall call) {

@@ -641,10 +641,36 @@ function WorkstreamApp({ tokenProvider, onSignOut, clients }: WorkstreamAppProps
       ? { ...current, items: pruneWorkstreamItems([...current.items, userRequestItem]) }
       : current);
 
-    const result = await workstreamClient.submitWorkstreamMessage({
-      ...request,
-      correlationId
-    });
+    let streamedMarkdown = '';
+    const result = workstreamClient.submitWorkstreamMessageStream
+      ? await workstreamClient.submitWorkstreamMessageStream({
+        ...request,
+        correlationId
+      }, {
+        onEvent: (event) => {
+          if (event.eventType !== 'start' || !event.agentItem) return;
+          const streamingItem: WorkstreamItem = {
+            ...event.agentItem,
+            kind: event.agentItem.kind === 'markdown_response' ? 'markdown_response' : event.agentItem.kind,
+            body: '',
+            status: 'working'
+          };
+          setBootstrap((current) => current.status === 'ready'
+            ? { ...current, items: pruneWorkstreamItems([...current.items.filter((item) => item.itemId !== userRequestItem.itemId && item.itemId !== streamingItem.itemId), userRequestItem, streamingItem]) }
+            : current);
+        },
+        onToken: (event) => {
+          if (!event.markdownChunk) return;
+          streamedMarkdown += event.markdownChunk;
+          setBootstrap((current) => current.status === 'ready'
+            ? { ...current, items: current.items.map((item) => item.itemId === event.responseItemId ? { ...item, body: streamedMarkdown, status: 'working' as const } : item) }
+            : current);
+        }
+      })
+      : await workstreamClient.submitWorkstreamMessage({
+        ...request,
+        correlationId
+      });
 
     setSubmittingFunctionalAgentId(undefined);
 

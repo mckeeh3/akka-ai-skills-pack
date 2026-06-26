@@ -1,4 +1,4 @@
-import type { WorkstreamClient, WorkstreamBootstrapResponse, WorkstreamMessageRequest, WorkstreamMessageResponse } from '../../../api/WorkstreamApiClient';
+import type { WorkstreamClient, WorkstreamBootstrapResponse, WorkstreamMessageRequest, WorkstreamMessageResponse, WorkstreamMessageStreamHandlers } from '../../../api/WorkstreamApiClient';
 import type { ApiError, ApiResult } from '../../../api/types';
 import type { CapabilityActionRequest, CapabilityActionResult, ChatToolPlanConfirmationRequest, ChatToolPlanExecutionResult, ChatToolPlanSurfaceData, MarkdownResponseData, SurfaceEnvelope, WorkstreamItem, WorkstreamShellRequest, WorkstreamShellResponse } from '../../../workstream/types';
 import {
@@ -85,6 +85,17 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
   getSurface(surfaceId: string) {
     const surface = this.surfaces.find((candidate) => candidate.surfaceId === surfaceId);
     return surface ? delayedOk(surface) : delayedError('not_found', 'The requested workstream surface is not available in this context.');
+  }
+
+  async submitWorkstreamMessageStream(request: WorkstreamMessageRequest, handlers: WorkstreamMessageStreamHandlers = {}): Promise<ApiResult<WorkstreamMessageResponse>> {
+    const result = await this.submitWorkstreamMessage(request);
+    if (!result.ok) return result;
+    const response = result.value;
+    handlers.onEvent?.({ eventType: 'start', workstreamId: response.agentItem.functionalAgentId, responseItemId: response.agentItem.itemId, sequence: 0, status: 'working', traceRefs: response.agentItem.traceIds, correlationId: response.correlationId, redaction: ['fixture-provider-payload-redacted'], userItem: response.userItem, agentItem: { ...response.agentItem, status: 'working' } });
+    const markdown = typeof (response.surface.data as { markdown?: unknown }).markdown === 'string' ? (response.surface.data as { markdown: string }).markdown : '';
+    handlers.onToken?.({ eventType: 'token', workstreamId: response.agentItem.functionalAgentId, responseItemId: response.agentItem.itemId, sequence: 1, markdownChunk: markdown, status: 'working', traceRefs: response.agentItem.traceIds, correlationId: response.correlationId, redaction: ['fixture-provider-payload-redacted'] });
+    handlers.onEvent?.({ eventType: 'final', workstreamId: response.agentItem.functionalAgentId, responseItemId: response.agentItem.itemId, sequence: 2, status: response.agentItem.status, traceRefs: response.agentItem.traceIds, correlationId: response.correlationId, redaction: ['fixture-provider-payload-redacted'], userItem: response.userItem, agentItem: response.agentItem, surface: response.surface });
+    return result;
   }
 
   submitWorkstreamMessage(request: WorkstreamMessageRequest): Promise<ApiResult<WorkstreamMessageResponse>> {

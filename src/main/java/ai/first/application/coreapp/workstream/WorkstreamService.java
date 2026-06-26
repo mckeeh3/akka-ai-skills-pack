@@ -1497,6 +1497,34 @@ public final class WorkstreamService {
         || actionId.startsWith("action-governance-policy-"));
   }
 
+  public List<WorkstreamMessageStreamEvent> submitMessageStream(WorkosIdentity identity, String selectedContextId, WorkstreamMessageRequest request, String fallbackCorrelationId) {
+    var response = submitMessage(identity, selectedContextId, request, fallbackCorrelationId);
+    var events = new ArrayList<WorkstreamMessageStreamEvent>();
+    var redaction = List.of("raw-prompts-redacted", "provider-payload-redacted", "tool-payload-redacted", "hidden-ids-redacted", "secrets-redacted");
+    events.add(new WorkstreamMessageStreamEvent("start", response.agentItem().functionalAgentId(), response.agentItem().itemId(), 0, null, "working", response.agentItem().traceIds(), response.correlationId(), redaction, response.userItem(), response.agentItem(), null));
+    if ("markdown_response".equals(response.agentItem().kind()) && response.surface() != null && response.surface().data().get("markdown") != null) {
+      var markdown = response.surface().data().get("markdown").toString();
+      var sequence = 1;
+      for (var chunk : markdownChunks(markdown)) {
+        events.add(new WorkstreamMessageStreamEvent("token", response.agentItem().functionalAgentId(), response.agentItem().itemId(), sequence++, chunk, "working", response.agentItem().traceIds(), response.correlationId(), redaction, null, null, null));
+      }
+    } else if ("system_message".equals(response.agentItem().kind())) {
+      events.add(new WorkstreamMessageStreamEvent("blocked", response.agentItem().functionalAgentId(), response.agentItem().itemId(), 1, null, response.agentItem().status(), response.agentItem().traceIds(), response.correlationId(), redaction, null, response.agentItem(), response.surface()));
+    }
+    events.add(new WorkstreamMessageStreamEvent("final", response.agentItem().functionalAgentId(), response.agentItem().itemId(), events.size(), null, response.agentItem().status(), response.agentItem().traceIds(), response.correlationId(), redaction, response.userItem(), response.agentItem(), response.surface()));
+    return events;
+  }
+
+  private List<String> markdownChunks(String markdown) {
+    if (markdown == null || markdown.isBlank()) return List.of("");
+    var chunks = new ArrayList<String>();
+    var chunkSize = 96;
+    for (int offset = 0; offset < markdown.length(); offset += chunkSize) {
+      chunks.add(markdown.substring(offset, Math.min(markdown.length(), offset + chunkSize)));
+    }
+    return chunks;
+  }
+
   public WorkstreamMessageResponse submitMessage(WorkosIdentity identity, String selectedContextId, WorkstreamMessageRequest request, String fallbackCorrelationId) {
     var requestCorrelationId = firstNonBlank(request.correlationId(), fallbackCorrelationId, "workstream-message");
     if (request.selectedContextId() == null || request.selectedContextId().isBlank() || !Objects.equals(selectedContextId, request.selectedContextId())) throw new AuthorizationException(403, "CONTEXT_FORBIDDEN");
@@ -8923,6 +8951,7 @@ public final class WorkstreamService {
   public record CapabilityActionResult(String status, String message, String correlationId, List<String> traceIds, SurfaceEnvelope resultSurface) {}
   public record WorkstreamShellRequest(String requestType, String origin, String displayText, String canonicalPrompt, String targetFunctionalAgentId, String targetSurfaceId, String targetItemId, String sourceFunctionalAgentId, String sourceSurfaceId, String sourceActionId, String scope, String correlationId, String selectedContextId) {}
   public record WorkstreamShellResponse(WorkstreamShellRequest request, String status, String message, String correlationId, List<String> traceIds, WorkstreamItem requestItem, SurfaceEnvelope resultSurface) {}
+  public record WorkstreamMessageStreamEvent(String eventType, String workstreamId, String responseItemId, Integer sequence, String markdownChunk, String status, List<String> traceRefs, String correlationId, List<String> redaction, WorkstreamItem userItem, WorkstreamItem agentItem, SurfaceEnvelope surface) {}
   public record WorkstreamMessageRequest(String selectedContextId, String functionalAgentId, String prompt, String correlationId, String idempotencyKey) {}
   public record WorkstreamMessageResponse(String correlationId, String idempotencyKey, WorkstreamItem userItem, WorkstreamItem agentItem, SurfaceEnvelope surface) {}
   public record ChatToolPlanProposalRequest(String selectedContextId, String functionalAgentId, String prompt, String correlationId, String idempotencyKey, String attachedSurfaceId, String summary, List<ChatToolPlanStep> steps, String approvalSummary) {}

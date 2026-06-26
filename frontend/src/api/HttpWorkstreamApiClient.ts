@@ -1,4 +1,4 @@
-import type { WorkstreamBootstrapResponse, WorkstreamClient, WorkstreamMessageRequest, WorkstreamMessageResponse } from './WorkstreamApiClient';
+import type { WorkstreamBootstrapResponse, WorkstreamClient, WorkstreamMessageRequest, WorkstreamMessageResponse, WorkstreamMessageStreamEvent, WorkstreamMessageStreamHandlers } from './WorkstreamApiClient';
 import type { ApiError, ApiResult } from './types';
 import type {
   CapabilityActionRequest,
@@ -58,6 +58,21 @@ export class HttpWorkstreamApiClient implements WorkstreamClient {
     return this.post('/api/workstream/messages', request);
   }
 
+  async submitWorkstreamMessageStream(request: WorkstreamMessageRequest, handlers: WorkstreamMessageStreamHandlers = {}): Promise<ApiResult<WorkstreamMessageResponse>> {
+    if (request.selectedContextId) this.selectedContextId = request.selectedContextId;
+    let finalEvent: WorkstreamMessageStreamEvent | undefined;
+    const streamResult = await this.requestEventStream('/api/workstream/messages/stream', { method: 'POST', body: JSON.stringify(request), headers: { Accept: 'text/event-stream' } }, (event) => {
+      handlers.onEvent?.(event);
+      if (event.eventType === 'token') handlers.onToken?.(event);
+      if (event.eventType === 'final') finalEvent = event;
+    });
+    if (!streamResult.ok) return streamResult;
+    if (finalEvent?.userItem && finalEvent.agentItem && finalEvent.surface) {
+      return { ok: true, value: { correlationId: finalEvent.correlationId ?? request.correlationId ?? 'stream-final', idempotencyKey: request.idempotencyKey, userItem: finalEvent.userItem, agentItem: finalEvent.agentItem, surface: finalEvent.surface } };
+    }
+    return { ok: false, error: { code: 'stream_final_missing', message: 'The workstream stream ended without a final response.', correlationId: request.correlationId ?? 'stream-final-missing' } };
+  }
+
   async confirmChatToolPlan(request: ChatToolPlanConfirmationRequest): Promise<ApiResult<WorkstreamMessageResponse>> {
     if (request.selectedContextId) this.selectedContextId = request.selectedContextId;
     return this.post('/api/workstream/chat-tool-plans/confirm', request);
@@ -72,29 +87,77 @@ export class HttpWorkstreamApiClient implements WorkstreamClient {
   }
 
   private async request<T>(path: string, init: RequestInit = {}): Promise<ApiResult<T>> {
+    const result = await this.requestText(path, init);
+    if (!result.ok) return result;
+    const value = result.value ? JSON.parse(result.value) : undefined;
+    return { ok: true, value: value as T };
+  }
+
+  private async requestText(path: string, init: RequestInit = {}): Promise<ApiResult<string>> {
     try {
-      const token = await this.tokenProvider?.();
-      const headers = new Headers(init.headers);
-      headers.set('Accept', 'application/json');
-      if (init.body) headers.set('Content-Type', 'application/json');
-      if (token) headers.set('Authorization', `Bearer ${token}`);
-      if (this.selectedContextId) headers.set('X-Selected-Context-Id', this.selectedContextId);
-      headers.set('X-Correlation-Id', `corr-browser-${Date.now().toString(36)}`);
-      const response = await fetch(path, { ...init, headers });
+      const response = await this.fetchWithWorkstreamHeaders(path, init);
       if (!response.ok) return { ok: false, error: await mapWorkstreamApiError(response) };
-      const value = response.status === 204 ? undefined : await response.json();
-      return { ok: true, value: value as T };
+      return { ok: true, value: response.status === 204 ? '' : await response.text() };
     } catch (error) {
-      return {
-        ok: false,
-        error: {
-          code: 'network',
-          message: error instanceof Error ? error.message : String(error),
-          correlationId: 'client-network-error'
-        }
-      };
+      return networkError(error);
     }
   }
+
+  private async requestEventStream(path: string, init: RequestInit, onEvent: (event: WorkstreamMessageStreamEvent) => void): Promise<ApiResult<void>> {
+    try {
+      const response = await this.fetchWithWorkstreamHeaders(path, init);
+      if (!response.ok) return { ok: false, error: await mapWorkstreamApiError(response) };
+      if (!response.body) {
+        parseWorkstreamMessageStreamFrames(await response.text()).forEach(onEvent);
+        return { ok: true, value: undefined };
+      }
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const parts = buffer.split(/\n\n+/);
+        buffer = parts.pop() ?? '';
+        parts.flatMap(parseWorkstreamMessageStreamFrames).forEach(onEvent);
+      }
+      buffer += decoder.decode();
+      parseWorkstreamMessageStreamFrames(buffer).forEach(onEvent);
+      return { ok: true, value: undefined };
+    } catch (error) {
+      return networkError(error);
+    }
+  }
+
+  private async fetchWithWorkstreamHeaders(path: string, init: RequestInit = {}): Promise<Response> {
+    const token = await this.tokenProvider?.();
+    const headers = new Headers(init.headers);
+    if (!headers.has('Accept')) headers.set('Accept', 'application/json');
+    if (init.body) headers.set('Content-Type', 'application/json');
+    if (token) headers.set('Authorization', `Bearer ${token}`);
+    if (this.selectedContextId) headers.set('X-Selected-Context-Id', this.selectedContextId);
+    headers.set('X-Correlation-Id', `corr-browser-${Date.now().toString(36)}`);
+    return fetch(path, { ...init, headers });
+  }
+}
+
+function parseWorkstreamMessageStreamFrames(body: string): WorkstreamMessageStreamEvent[] {
+  return body.split(/\n\n+/)
+    .map((frame) => frame.split(/\n/).find((line) => line.startsWith('data: '))?.slice(6))
+    .filter((line): line is string => Boolean(line))
+    .map((line) => JSON.parse(line) as WorkstreamMessageStreamEvent);
+}
+
+function networkError(error: unknown): ApiResult<never> {
+  return {
+    ok: false,
+    error: {
+      code: 'network',
+      message: error instanceof Error ? error.message : String(error),
+      correlationId: 'client-network-error'
+    }
+  };
 }
 
 async function mapWorkstreamApiError(response: Response): Promise<ApiError> {

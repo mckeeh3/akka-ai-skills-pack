@@ -31,6 +31,26 @@ export type WorkstreamMessageResponse = {
   surface: SurfaceEnvelope<unknown>;
 };
 
+export type WorkstreamMessageStreamEvent = {
+  eventType: 'start' | 'token' | 'final' | 'error' | 'blocked' | 'cancelled';
+  workstreamId: string;
+  responseItemId: string;
+  sequence?: number;
+  markdownChunk?: string;
+  status?: WorkstreamItem['status'];
+  traceRefs?: string[];
+  correlationId?: string;
+  redaction?: string[];
+  userItem?: WorkstreamItem;
+  agentItem?: WorkstreamItem;
+  surface?: SurfaceEnvelope<unknown>;
+};
+
+export type WorkstreamMessageStreamHandlers = {
+  onEvent?: (event: WorkstreamMessageStreamEvent) => void;
+  onToken?: (event: WorkstreamMessageStreamEvent) => void;
+};
+
 export type WorkstreamClient = {
   bootstrap(): Promise<ApiResult<WorkstreamBootstrapResponse>>;
   getMe(): Promise<ApiResult<WorkstreamMeResponse>>;
@@ -40,5 +60,6 @@ export type WorkstreamClient = {
   runCapabilityAction(request: CapabilityActionRequest): Promise<ApiResult<CapabilityActionResult>>;
   runShellRequest(request: WorkstreamShellRequest): Promise<ApiResult<WorkstreamShellResponse>>;
   submitWorkstreamMessage(request: WorkstreamMessageRequest): Promise<ApiResult<WorkstreamMessageResponse>>;
+  submitWorkstreamMessageStream(request: WorkstreamMessageRequest, handlers?: WorkstreamMessageStreamHandlers): Promise<ApiResult<WorkstreamMessageResponse>>;
   confirmChatToolPlan(request: ChatToolPlanConfirmationRequest): Promise<ApiResult<WorkstreamMessageResponse>>;
 };

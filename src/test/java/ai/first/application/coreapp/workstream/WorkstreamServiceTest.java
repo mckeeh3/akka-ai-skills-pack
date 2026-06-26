@@ -2840,6 +2840,24 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void submitMessageStreamEmitsBrowserSafeStartTokenAndFinalEvents() {
+    var events = service.submitMessageStream(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
+        "membership-admin", "user-admin-agent", "Stream a markdown answer", "corr-message-stream", "idem-message-stream-1"), "corr-header");
+
+    assertEquals("start", events.get(0).eventType());
+    assertTrue(events.stream().anyMatch(event -> "token".equals(event.eventType()) && event.markdownChunk() != null && event.markdownChunk().contains("user-admin-agent model response")));
+    var last = events.get(events.size() - 1);
+    assertEquals("final", last.eventType());
+    assertEquals("corr-message-stream", last.correlationId());
+    assertNotNull(last.userItem());
+    assertNotNull(last.agentItem());
+    assertNotNull(last.surface());
+    assertEquals("markdown_response", last.surface().surfaceType());
+    assertTrue(last.redaction().contains("provider-payload-redacted"));
+    assertFalse(events.toString().contains("fake-response-id"), "Stream events must not expose provider response ids or raw provider payloads.");
+  }
+
+  @Test
   void submitMessageRoutesMatchedSurfaceIntentBeforeModelInvocation() {
     var response = service.submitMessage(identity(), "membership-admin", new WorkstreamService.WorkstreamMessageRequest(
         "membership-admin", "my-account-agent", "open my account dashboard", "corr-route-my-account", "idem-route-my-account"), "corr-header");
