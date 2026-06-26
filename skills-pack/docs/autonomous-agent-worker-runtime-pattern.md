@@ -1,6 +1,6 @@
 # AutonomousAgent worker runtime pattern
 
-Use this pattern for generated secure AI-first SaaS workstreams that need durable internal/background model-driven work with a real Akka `AutonomousAgent` task lifecycle. It is extracted from the SaaS Foundation App User Admin access-review worker, Agent Admin prompt-risk review worker, Audit/Trace summary worker, Governance/Policy impact-analysis worker, and My Account personal attention digest worker.
+Use this pattern for generated secure AI-first SaaS workstreams that need durable internal/background model-driven work with a real Akka `AutonomousAgent` task lifecycle. Every generated-app `AutonomousAgent` worker also uses the shared governed managed-agent runtime model: active managed `AgentDefinition`, runtime prompt resolution, compact skill manifest appended to instructions/system context, mandatory `readSkill(skillId)` tool registration, runtime tool resolution, model config policy, tool boundary, and traces. It is extracted from the SaaS Foundation App User Admin access-review worker, Agent Admin prompt-risk review worker, Audit/Trace summary worker, Governance/Policy impact-analysis worker, and My Account personal attention digest worker.
 
 This is a runtime completion pattern, not only a design pattern: a worker is done only when the normal local runtime path starts and observes a concrete Akka `AutonomousAgent` task, projects backend-owned state, emits workstream events/attention, renders governed surfaces, and fails closed when provider or governed runtime configuration is missing.
 
@@ -23,7 +23,7 @@ Every generated-app worker task must preserve these contracts before coding star
 | Owning workstream | Functional/context-area agent id, role-specific dashboard, attention category, internal workstream agent graph placement, result/escalation surface, and retained human authority. |
 | Governed capabilities | Capability family for start/read/cancel/accept/reject or task-specific equivalents, governed-tool ids, actor/caller, `AuthContext`, tenant/customer scope, required roles/capabilities, idempotency key, policy/approval rules, audit/work traces, and exposure channels. |
 | Task contract | Typed task input, task name/description, instruction builder inputs, result schema, result rules, max iterations, evidence/tool references, forbidden effects, and browser-safe summary fields. |
-| Runtime boundary | ComponentClient start/read calls, governed managed-agent runtime resolution, model/provider/profile checks, `ToolPermissionBoundary` checks, authorized read-only evidence tools, `readSkill`/`readReferenceDoc` grants when needed, trace refs, and fail-closed adapter behavior. |
+| Runtime boundary | ComponentClient start/read calls, governed managed-agent runtime resolution, active prompt/profile checks, compact skill manifest assembly, model/provider checks, `ToolPermissionBoundary` checks, authorized read-only evidence tools, mandatory `readSkill(skillId)` registration, `readReferenceDoc` grants when needed, trace refs, and fail-closed adapter behavior. |
 | Durable projection | SaaS Foundation App/domain task id, optional Akka autonomous task id, status/progress/result/blocker fields, correlation/idempotency keys, source refs, and terminal human disposition. |
 | Events/attention/surfaces | typed workstream events, shared `worker.task.*` events, attention upsert/resolve rules, structured progress/result surfaces, capability-backed actions, and frontend reload from backend projections. |
 | Tests/checks | Unit/integration tests for lifecycle, authorization, idempotency, fail-closed states, typed result validation, event/attention projection, surface/API contracts, and focused scans for fake-success regressions. |
@@ -50,7 +50,7 @@ The Akka component should:
 2. implement `definition()` returning the Akka autonomous `AgentDefinition` from `define()`;
 3. accept one bounded task family with `TaskAcceptance.of(<typed task>).maxIterationsPerTask(3)` unless a different bounded limit is justified;
 4. define a typed `Task<R>` with stable name, description, `resultConformsTo(...)`, task-specific instructions, and `TaskRule<R>` validation;
-5. keep instructions scoped and explicit: tenant/customer scope, capability id, correlation id, evidence refs, governed runtime context, advisory-only authority, forbidden effects, and fail-closed behavior;
+5. keep instructions scoped and explicit: tenant/customer scope, capability id, correlation id, evidence refs, governed runtime context, compact assigned skill names/descriptions/hints, advisory-only authority, forbidden effects, and fail-closed behavior;
 6. return a typed result record, not generic markdown, for findings/recommendations/reasons/evidence refs.
 
 Terminology guardrail: the Akka autonomous `AgentDefinition` returned by `AutonomousAgent.definition()` is distinct from the skills pack's governed managed-agent `AgentDefinition` domain record. Qualify which one is meant whenever both appear.
@@ -64,8 +64,8 @@ The normal adapter must:
 - call `ComponentClient.forAutonomousAgent(WorkerClass.class, agentInstanceId).runSingleTask(task)` for single bounded work;
 - call `ComponentClient.forTask(autonomousAgentTaskId).get(taskDefinition)` to project snapshots/results;
 - map Akka task statuses to domain projection statuses without fabricating findings;
-- resolve governed runtime context before task start, including model/provider/profile configuration, active managed-agent configuration where applicable, prompt/skill/reference traces, evidence tools, and tool-boundary grants;
-- register only authorized read-only tools/evidence loaders for the worker slice.
+- resolve governed runtime context before task start, including active managed `AgentDefinition`, prompt, compact skill manifest, mandatory `readSkill(skillId)`, model/provider/profile configuration, prompt/skill/reference traces, evidence tools, and tool-boundary grants;
+- register only authorized tools/evidence loaders for the worker slice, resolved from governed logical tool/capability ids and/or approved backend-owned Java binding ids/classes.
 
 The fail-closed adapter must produce a blocked provider/runtime state when `ComponentClient`, provider/model config, governed profile, tool grants, evidence access, or runtime binding is unavailable. The blocked state must include actionable browser-safe recovery text, correlation/trace refs, typed workstream events, and attention. It must not return a deterministic successful review or canned recommendations. For governance/policy impact analysis, deterministic simulation output may be cited only as scoped evidence; it is not a substitute for a real model-backed `AutonomousAgent` impact result and must never become fake success. For My Account personal attention digest, backend attention evidence may be collected deterministically and redacted before the task, but a normal successful digest summary must still come from the concrete model-backed `AutonomousAgent` path; collected evidence is not a canned/model-less digest result.
 
@@ -144,7 +144,7 @@ A generated-app AutonomousAgent worker is incomplete if normal runtime success d
 - human accept/reject actions that directly perform separate protected mutations;
 - successful results when provider/model/governed runtime/tool/evidence configuration is missing.
 
-Missing authorization, disabled user, tenant/customer mismatch, provider/model config, governed runtime profile, tool grants, evidence access, or `ComponentClient` binding must fail closed with safe blocked/denied state, audit/work traces, typed workstream events when appropriate, and actionable recovery text.
+Missing authorization, disabled user, tenant/customer mismatch, governed `AgentDefinition`, active prompt, skill manifest, provider/model config, governed runtime profile, tool grants, evidence access, mandatory `readSkill(skillId)` binding, or `ComponentClient` binding must fail closed with safe blocked/denied state, audit/work traces, typed workstream events when appropriate, and actionable recovery text.
 
 ## Required tests and validation scans
 
@@ -152,7 +152,7 @@ At minimum, test:
 
 - start/read/cancel/accept/reject authorization, disabled-user denial, tenant/customer isolation, and support-access limits where relevant;
 - start idempotency and duplicate idempotency-key reuse;
-- governed runtime resolution and `ToolPermissionBoundary` denial for ungranted tools, `readSkill`, `readReferenceDoc`, or evidence readers;
+- governed runtime resolution and `ToolPermissionBoundary` denial for ungranted tools, mandatory `readSkill`, `readReferenceDoc`, or evidence readers;
 - provider/model/runtime missing configuration maps to blocked provider/runtime state with event and attention;
 - typed task result validation and invalid-result rejection through `TaskRule`;
 - Akka task snapshots/results are the source of truth for completed findings;

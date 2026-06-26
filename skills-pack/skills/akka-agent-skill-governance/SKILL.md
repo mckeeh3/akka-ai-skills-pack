@@ -45,7 +45,7 @@ Lifecycle should include draft, in-review, approved, active, deprecated/archived
 
 ## Runtime loading
 
-Agents should receive only compact manifest context in the prompt. Full skill text is loaded through an authorized `readSkill(skillId)` function/tool when needed. Compact entries and loaded skill bodies may teach the model how to use surface actions, confirmed `human_chat_tool_plan` protocols, or AI-backed `agent_tool_call` tools, but they cannot grant governed tool access or bypass confirmation, approval, AuthContext, or `ToolPermissionBoundary` checks.
+Agents should receive only compact manifest context in the prompt. Full skill text is loaded through an authorized `readSkill(skillId)` function/tool when needed. `readSkill(skillId)` is registered for every generated-app managed Agent and AutonomousAgent, even when the current manifest is empty; empty or unassigned loads deny safely and emit trace. Compact entries and loaded skill bodies may teach the model how to use surface actions, confirmed `human_chat_tool_plan` protocols, or AI-backed `agent_tool_call` tools, but they cannot grant governed tool access or bypass confirmation, approval, AuthContext, or `ToolPermissionBoundary` checks.
 
 `readSkill` must:
 
@@ -73,8 +73,9 @@ Cover:
 - create draft, review, approve, activate, deprecate/archive flows
 - immutable versions and checksum/diff behavior
 - manifest assignment/removal and compact prompt context
+- mandatory `readSkill` registration for every managed agent, including empty-manifest denial behavior
 - allowed `readSkill` load with trace
-- denied load for unassigned, inactive/unapproved, cross-tenant, wrong agent/profile, wrong purpose, missing boundary, and token/redaction limits
+- denied load for unassigned, inactive/unapproved, empty manifest, cross-tenant, wrong agent/profile, wrong purpose, missing boundary, and token/redaction limits
 - safe test console cannot bypass governance
 - skill text that claims a new tool, broader tenant/customer scope, approval authority, or unconfirmed chat execution is denied by backend tool-boundary/capability checks and traced
 - runtime fail-closed behavior when active skill/config is missing

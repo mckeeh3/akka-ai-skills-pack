@@ -84,7 +84,7 @@ Treat local/external Akka function tools as **AI-backed agent-tool adapters** fo
 13. Use `akka-agent-component-tools` for `.tools(ComponentClass.class)` only when a component method is intentionally exposed as the `agent_tool_call` adapter for a governed tool; the component method is still not the product contract.
 14. Use `akka-agent-mcp-tools` for `.mcpTools(...)`.
 15. Use `akka-agent-harness-skills` when tools return skill-like guidance from whitelisted `src/main/resources` content.
-16. Use `akka-agent-skill-governance` when tools return tenant-managed SkillDocument/SkillVersion content through `readSkill(skillId)`; managed agents must register this as a normal Akka `@FunctionTool` so Akka injects it with the rest of the allowed tool list.
+16. Use `akka-agent-skill-governance` when tools return tenant-managed SkillDocument/SkillVersion content through `readSkill(skillId)`; every generated-app managed Agent and AutonomousAgent must register this as a normal Akka `@FunctionTool` so Akka injects it with the rest of the allowed tool list where supported. Empty or unassigned skill manifests deny safely and trace.
 17. Do not try to use one agent as a tool for another agent.
 18. Tool descriptions must state side effects, required permissions, tenant/customer scope, policy/approval gates, and audit behavior when consequential.
 19. Email-sending tools must route through `akka-resend-email-service`: Resend is the only supported production email service, local/dev/test uses captured outbox behavior, and sending external email is a side-effecting capability that requires `ToolPermissionBoundary`, idempotency, approval/autonomy policy, and traces.

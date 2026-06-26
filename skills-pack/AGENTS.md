@@ -33,7 +33,7 @@ The install step copies or symlinks `skills-pack/skills/**`, shared `skills-pack
 
 Do not teach downstream harnesses to count deterministic/demo/mock/simulated/model-less normal runtime behavior as implemented for generated-app auth, durability, provider calls, protected capabilities, authorization denials, audit/work traces, or workstream agents. Skills, docs, and templates must distinguish `surface-ready`, `backend-ready`, `frontend-rendered`, `api-smoked`, `browser-smoked`, `manual-ready`, and `runtime-ready`; only the last level may close a user-visible runtime feature without qualification.
 
-Model-backed workstream agents must invoke a concrete Akka `Agent` component through the governed runtime path with active configuration, governed loader tools, tool permission boundaries, registered runtime tools, and durable traces. Missing provider or security configuration should fail closed with actionable errors.
+All generated-app model-backed Akka Agents and AutonomousAgents must invoke a concrete Akka `Agent`/`AutonomousAgent` component through the governed runtime path with a governed `AgentDefinition`, runtime-loaded prompt, compact assigned skill list in the system prompt, mandatory `readSkill(skillId)` tool registration, governed loader tools, tool permission boundaries, registered runtime tools resolved from governed logical ids and/or approved Java bindings, and durable traces. Missing provider, security, prompt, skill-manifest, tool-boundary, or runtime configuration should fail closed with actionable errors.
 
 ## Required checks
 

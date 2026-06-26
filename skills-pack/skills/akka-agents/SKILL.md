@@ -52,12 +52,14 @@ Human surface availability, prompt/skill/reference text, model output, task inst
 
 ## Generated SaaS requirements
 
-For model-backed workstream behavior, normal runtime must use a concrete Akka `Agent` path with:
+For all generated-app model-backed agent behavior, normal runtime must use a concrete Akka `Agent` or `AutonomousAgent` path with:
 
 - backend-selected `AuthContext` and authorization
-- active `AgentDefinition`/behavior profile when managed agents are in scope
-- governed prompt/skill/reference/model/tool-boundary resolution where applicable
-- registered tools via the Akka Agent effect APIs
+- active governed `AgentDefinition`/behavior profile for every agent, including internal helpers, evaluators, replay/test-console agents, and autonomous workers
+- governed prompt/skill/reference/model/tool-boundary resolution
+- compact per-agent skill names/descriptions/hints appended to the assembled system prompt
+- `readSkill(skillId)` registered for every managed agent and authorized/traced at call time
+- registered tools via the Akka Agent effect APIs or equivalent autonomous-agent setup, resolved from governed logical tool/capability ids and/or approved backend-owned Java binding ids/classes
 - provider/model configuration fail-closed behavior
 - durable work/audit traces
 - tests that prove allowed, denied, and failure paths
@@ -75,9 +77,11 @@ Human-requested chat execution is a separate human-backed adapter: the selected 
 Before implementation, decide:
 
 - request-based Agent vs AutonomousAgent vs Workflow + Agent
+- governed managed `AgentDefinition` identity for the agent, regardless of component type
 - input/output contract and fallback/error shape
 - prompt layers and governed document refs
-- tool set and tool permission boundary
+- compact skill manifest entries and mandatory `readSkill(skillId)` loader behavior
+- tool set, stored logical tool ids / Java binding ids or classes, and tool permission boundary
 - memory/session behavior
 - AuthContext, tenant/customer/data scope, approval gates, and side-effect authority
 - trace facts and redaction rules
