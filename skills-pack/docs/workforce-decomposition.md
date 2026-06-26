@@ -17,13 +17,15 @@ Use it with:
 
 Workforce decomposition fills the gap between identifying workstreams and selecting surfaces, capabilities, agents, workflows, or Akka components. It answers the product question:
 
-> Who or what does the work, with what authority, evidence, tools, supervision, handoffs, traces, and failure behavior?
+> Who or what does the work, with which behavior profile, reasoning/execution engine, authority, evidence, tools, supervision, handoffs, traces, and failure behavior?
 
 ## Core rule
 
 Generated AI-first SaaS applications must identify the workforce before capability or component selection. The workforce includes human workers, user-facing functional-agent workers, internal specialist agent workers, durable autonomous/background agent workers, and deterministic system workers.
 
-Do not treat agent workers as generic AI helpers. Each agent worker is a bounded worker with explicit responsibility, authority, evidence needs, execution harnesses, actor adapters, governed tools, capabilities, supervision, handoffs, and traces.
+Do not treat agent workers as generic AI helpers. Each agent worker is a bounded worker with explicit responsibility, behavior profile, authority, evidence needs, execution harnesses, actor adapters, governed tools, capabilities, supervision, handoffs, and traces.
+
+Every worker type has a behavior profile: instructions/prompt, skills, tools, policies/rubrics/examples, evidence profile, assistance mode, and governance/version state. The differences between humans, model-backed agents, and deterministic system participants are captured as reasoning/execution engine differences, not as absence of a behavior profile. A human worker's prompt is a role/workstream operating brief; a model-backed worker's prompt is runtime model instruction; a system worker's instructions are deterministic policy/trigger semantics.
 
 Default order:
 
@@ -46,7 +48,7 @@ A planning output is incomplete if it names a workstream, agent, capability, wor
 
 | Worker type | Meaning | Typical realization |
 |---|---|---|
-| `human` | Authenticated person or organizational role responsible for doing, deciding, approving, supervising, or auditing work. | Role/AuthContext, workstream access, dashboards, surfaces, forms, approvals, trace visibility. |
+| `human` | Authenticated person or organizational role responsible for doing, deciding, approving, supervising, or auditing work. | Role/AuthContext, human-operating prompt, role skills, workstream access, dashboards, surfaces, forms, governed tools, approvals, trace visibility. |
 | `functional-agent` | User-facing functional/context-area agent that owns exactly one role-authorized workstream. | Managed AgentDefinition, workstream shell, composer, structured surfaces, governed tools, Akka Agent when model-backed. |
 | `internal-agent` | Bounded specialist agent invoked by a functional agent, workflow, timer, consumer, endpoint, or internal tool. Not a rail/workstream entry. | Akka Agent, governed prompt/skill/reference/tool boundary, structured response, traces. |
 | `autonomous-agent` | Durable background model-driven worker with task lifecycle, progress, notifications, cancellation/failure, and acceptance/rejection semantics. | Akka AutonomousAgent tasks, workflow or capability wrappers, task/progress/result surfaces. |
@@ -73,10 +75,12 @@ Name human workers in product language. Examples: Sales Rep, Sales Manager, Inve
 For each human worker, record:
 
 - organizational responsibility and non-responsibilities;
+- behavior profile: human-operating prompt, role skills, governed tools, policies/rubrics/examples, evidence profile, and assistance mode;
 - selected AuthContext scope: organization/tenant/customer/member/role/capability basis;
 - workstreams they can enter and default dashboard needs;
 - surfaces they use to inspect, decide, approve, repair, or supervise;
 - actions they can execute directly versus actions requiring approval/escalation;
+- whether the workstream agent may interpret human text requests through the human worker's behavior profile, propose confirmed tool plans, or only answer guidance questions;
 - evidence and trace visibility;
 - denied/hidden behavior and tenant-isolation expectations.
 
@@ -94,6 +98,7 @@ Classify each as:
 For each agent worker, record:
 
 - single responsibility and explicit non-responsibilities;
+- behavior profile: prompt/instructions, skills, references, governed/runtime tools, policies/rubrics/examples, evidence profile, model/tool-boundary governance, and assistance/delegation mode;
 - worker owner/steward and supervising human role;
 - allowed evidence/data and redaction profile;
 - allowed governed tools, capability ids, actor adapters, and exposure channels, if any;
@@ -116,7 +121,7 @@ Record deterministic participants when they perform work without model reasoning
 - views/projections that produce dashboards, attention summaries, lists, searches, or evidence;
 - external integrations and service identities.
 
-System workers still need authority basis at their invocation boundary, idempotency, provenance/correlation, audit/work traces, and failure behavior.
+System workers still need a behavior profile for deterministic instructions, policy/rule references, allowed governed tools, trigger/provenance rules, idempotency, authority basis at their invocation boundary, audit/work traces, and failure behavior.
 
 ### 5. Build the responsibility and handoff map
 
@@ -143,11 +148,20 @@ Use this minimum contract in app-description, specs, backlogs, and decomposition
 workerId:
 displayName:
 workerType: human | functional-agent | internal-agent | autonomous-agent | evaluator-agent | system
+reasoningEngine: human | model | deterministic | external-service | mixed
 owningWorkstreamId:
 responsibility:
 nonResponsibilities:
 supervisingHumanWorkerIds:
 authContextScope:
+behaviorProfile:
+  instructionsPrompt:
+  skills:
+  tools:
+  policiesRubricsExamples:
+  evidenceProfile:
+  assistanceMode:
+  governanceVersionState:
 authorityLevel: observe | recommend | draft | evaluate | propose | execute | approve | administer
 allowedDecisions:
 requiresApprovalWhen:
@@ -167,7 +181,7 @@ failureAndDenialBehavior:
 runtimeReadiness:
 ```
 
-Keep the contract proportional. A planning artifact may summarize low-risk deterministic system workers, but agent workers and consequential human workers need explicit authority, tool, trace, and handoff fields.
+Keep the contract proportional. A planning artifact may summarize low-risk deterministic system workers, but every feature-bearing worker needs enough behavior-profile detail to constrain prompts/instructions, skills, tools, evidence, assistance, authority, traces, and tests. Agent workers and consequential human workers need explicit authority, tool, trace, and handoff fields.
 
 ## Relationship to workstreams, surfaces, and capabilities
 

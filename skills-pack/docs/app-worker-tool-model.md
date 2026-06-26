@@ -28,7 +28,9 @@ Do not collapse these layers. A worker is not a tool. A surface is not authoriza
 
 | Term | Canonical meaning | Not the same as |
 |---|---|---|
-| Worker | Human, AI-backed software, or deterministic system participant that does app work under explicit responsibility, authority, evidence, tools, supervision, handoffs, and trace obligations. | A UI page, route, component, endpoint, or generic assistant. |
+| Worker | Human, AI-backed software, or deterministic system participant that does app work under explicit responsibility, behavior profile, authority, evidence, tools, supervision, handoffs, and trace obligations. | A UI page, route, component, endpoint, or generic assistant. |
+| Behavior profile | The worker's instructions/prompt, skills, tools, policies, rubrics/examples, evidence profile, assistance mode, and governance/version state. Every worker type has one. | Authorization by itself, a model-only prompt, a UI label, or a raw SDK tool list. |
+| Reasoning/execution engine | The substrate that performs the worker's reasoning or deterministic execution: human, model, deterministic logic, external service, or mixed. | Product authority or the worker contract itself. |
 | Execution harness | Runtime or interface that shapes how a worker receives context and performs work. | The authority model itself. |
 | Actor adapter | Declared exposure path from a worker/harness to a governed tool, with input mediation, confirmation/approval behavior, trace source, and result semantics. | A duplicate business operation. |
 | Governed tool | First-class semantic app operation or governed evidence read with actors, AuthContext, schemas, policy, idempotency, side effects, audit, tests, and selected adapters. | A UI button, prompt phrase, raw API route, raw Akka component method, or implicit permission. |
@@ -37,13 +39,13 @@ Do not collapse these layers. A worker is not a tool. A surface is not authoriza
 
 ## Conceptual clarification: workers, models, harnesses, and tools
 
-An app worker is the participant that does work in the product model. For AI-first SaaS modeling, workers are intentionally comparable even when their reasoning substrates differ:
+An app worker is the participant that does work in the product model. For AI-first SaaS modeling, workers are intentionally comparable because every worker has a behavior profile, even when their reasoning or execution engines differ:
 
-- a **human worker** reasons with human judgment; the browser workstream shell and structured surfaces are that worker's execution harnesses;
-- an **AI-backed software worker** reasons through an AI model inside a governed agent runtime; prompts, skills, references, memory, model policy, guardrails, and tool boundaries are its execution harness;
-- a **system worker** acts through deterministic logic, schedules, event handling, integrations, or persisted workflows.
+- a **human worker** reasons with human judgment; the browser workstream shell, structured surfaces, human-operating prompt, role skills, and governed tools are that worker's execution harness/profile;
+- an **AI-backed software worker** reasons through an AI model inside a governed agent runtime; prompts, skills, references, memory, model policy, guardrails, and tool boundaries are its execution harness/profile;
+- a **system worker** acts through deterministic logic, schedules, event handling, integrations, or persisted workflows; deterministic instructions, policies, allowed tools, provenance, and failure semantics are its behavior profile.
 
-Surfaces are therefore not merely UI pages. They are the structured harnesses that let a human worker inspect evidence, choose actions, supply input, confirm consequences, see denials, and receive result surfaces. In the same way, an agent runtime is the structured harness that lets an AI model receive context, select allowed tools, and return bounded outputs. This symmetry is useful for app modeling, but it does not make humans, AI models, and deterministic systems identical.
+Surfaces are therefore not merely UI pages. They are the structured harnesses that let a human worker inspect evidence, receive role guidance, choose actions, supply input, confirm consequences, see denials, and receive result surfaces. In the same way, an agent runtime is the structured harness that lets an AI model receive context, select allowed tools, and return bounded outputs. This symmetry is useful for app modeling, but it does not make humans, AI models, and deterministic systems identical.
 
 The shared abstraction between all workers and the backend is the **governed tool**. A governed tool is the app-building-block contract for one semantic operation or evidence read. Human surface actions, confirmed human chat plans, AI `agent_tool_call`s, workflow steps, timer invocations, consumer reactions, APIs, MCP calls, and internal calls are actor adapters or exposure paths to governed tools; they are not separate business operations by default.
 
@@ -54,6 +56,7 @@ Generated AI-first SaaS apps model work through structurally comparable worker c
 | Dimension | Human worker | Software agent worker | System worker |
 |---|---|---|---|
 | Reasoning basis | Human judgment. | AI model reasoning through a governed agent runtime. | Deterministic logic, schedule, event handling, or integration code. |
+| Behavior profile | Human-operating prompt, role skills, governed tools, policies/rubrics, examples, evidence profile, assistance mode. | Agent prompt, skills, references, governed/runtime tools, model policy, guardrails, examples, evidence profile. | Deterministic instructions, policy/rules, allowed governed tools, trigger/provenance rules, failure/idempotency profile. |
 | Typical harness | Browser workstream shell, structured surfaces, forms, dashboards, decision cards, confirmations, optional confirmed chat-plan adapter. | Akka `Agent`, Akka `AutonomousAgent`, governed prompts, skills, references, memory, tool boundaries, model policy, guardrails, traces. | Workflow, timer, consumer, projection/view, endpoint, policy engine, internal service, integration. |
 | Context | Surface payloads, evidence, labels, validation, disabled/denied states, help copy, visible traces. | Prompt/context window, retrieved references, memory, tool results, structured responses, policy/guardrail outputs. | Persisted state, event payloads, schedules, service identity, configuration, correlation/provenance. |
 | Governed-tool use through actor adapters | `surface_action` browser adapters and, when explicitly modeled, confirmed `human_chat_tool_plan`. | `agent_tool_call` through a bounded tool catalog and explicit tool boundary. | `workflow_step`, `timer_invocation`, `consumer_reaction`, `api_call`, `mcp_tool_call`, or `internal_call` with provenance. |
@@ -67,7 +70,7 @@ Use the worker taxonomy from workforce decomposition and keep each worker bounde
 
 | Worker type | Canonical role | Required contract focus |
 |---|---|---|
-| `human` | Authenticated person or organizational role that inspects, decides, approves, supervises, or audits work. | AuthContext, workstream/surface access, direct actions, approval duties, evidence/trace visibility, denial behavior. |
+| `human` | Authenticated person or organizational role that inspects, decides, approves, supervises, or audits work. | AuthContext, human-operating prompt, role skills, governed tools, workstream/surface access, direct actions, approval duties, evidence/trace visibility, assistance mode, denial behavior. |
 | `functional-agent` | User-facing functional/context-area AI-backed worker for exactly one durable workstream. | Owning workstream, selected human supervisor, prompts/skills/references, allowed tools, result surfaces, traces, fail-closed runtime behavior. |
 | `internal-agent` | Bounded specialist AI worker invoked by another worker or component. | Single responsibility, non-responsibilities, allowed evidence/tools, caller boundary, structured output, escalation/failure behavior. |
 | `autonomous-agent` | Durable background AI worker with task lifecycle, progress, notifications, cancellation/failure, and acceptance/rejection. | Task start/read/cancel/accept/reject governed tools, progress/result surfaces, attention events, provider fail-closed behavior. |
@@ -78,7 +81,7 @@ Use the worker taxonomy from workforce decomposition and keep each worker bounde
 
 An execution harness shapes how a worker acts, but the backend capability/governed-tool contract remains authoritative.
 
-- Human harnesses include the browser shell, structured surfaces, forms, decision cards, dashboards, inspection surfaces, action result surfaces, and explicit chat-plan confirmation UX. They help human workers understand and submit work; they do not authorize it by themselves.
+- Human harnesses include the browser shell, structured surfaces, forms, decision cards, dashboards, inspection surfaces, action result surfaces, human-operating prompts/role guidance, role skills, and explicit chat-plan confirmation UX. They help human workers understand and submit work; they do not authorize it by themselves.
 - AI-agent harnesses include Akka `Agent`, Akka `AutonomousAgent`, prompts, skills, reference documents, memory, model policy, guardrails, tool schemas, and runtime tool registration. They instruct and constrain model behavior; they do not grant product authority by themselves.
 - System harnesses include workflows, timers, consumers, views/projections, endpoints, integrations, and internal service methods. They execute deterministic work; they still need caller authority, provenance, idempotency, policy, and audit at the boundary.
 
@@ -91,7 +94,7 @@ Declare the actor adapter for every governed-tool exposure. The adapter records 
 | Adapter | Caller/harness | Required semantics |
 |---|---|---|
 | `surface_action` | Human worker using structured surface/browser shell. | Human-facing labels, fields, validation, confirmation UX, disabled/denied states, idempotency key source, result surface/system message, trace source `surface_action`. |
-| `human_chat_tool_plan` | Human worker asking in natural language through the selected workstream agent. | Proposed tool plan, explicit confirmation bound to that plan, per-tool backend authorization, idempotency/transaction behavior, partial-failure surfaces, `confirmedBy`, trace source `human_chat_tool_plan`. |
+| `human_chat_tool_plan` | Human worker asking in natural language through the selected workstream agent. | Interpret the request through the human worker's behavior profile; proposed tool plan; explicit confirmation bound to that plan; per-tool backend authorization; idempotency/transaction behavior; partial-failure surfaces; `confirmedBy`; trace source `human_chat_tool_plan`. |
 | `agent_tool_call` | AI-backed functional/internal/autonomous/evaluator agent through an agent runtime. | Explicit tool-boundary membership, model-facing schema/description, AuthContext or service authority, autonomy/approval policy, safe DTOs, trace source `agent_tool_call`, fail-closed provider/runtime behavior. |
 | `workflow_step` | Workflow or process orchestration. | Persisted step state, retry/compensation behavior, approval waits, provenance/correlation, trace source `workflow_step`. |
 | `timer_invocation` | Timed action, scheduled job, expiry, reminder, digest, or replay. | Stored authority basis, schedule provenance, idempotent retries, safe no-op behavior, trace source `timer_invocation`. |

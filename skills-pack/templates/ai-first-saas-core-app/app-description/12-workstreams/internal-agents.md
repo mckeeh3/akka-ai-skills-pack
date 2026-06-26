@@ -4,7 +4,7 @@ Internal agents are backend/supporting workers. They are not left-rail workstrea
 
 ## Foundation internal graph examples
 
-Each row is a compact worker contract. Expand a row into a dedicated section before implementation when the worker becomes runtime scope. Internal workers use actor adapter/source `internal_call` (or the manifest short form `internal` where required by schema); each governed-tool invocation still needs idempotency, a transaction boundary, a result/partial-failure surface, and an audit/work trace source.
+Each row is a compact worker contract. Expand a row into a dedicated worker artifact before implementation when the worker becomes runtime scope. Every internal worker has a behavior profile: instructions/prompt, skills, tools, policies/rubrics/examples, evidence profile, model/provider constraints when applicable, and fail-closed behavior. Internal workers use actor adapter/source `internal_call` (or the manifest short form `internal` where required by schema); each governed-tool invocation still needs idempotency, a transaction boundary, a result/partial-failure surface, and an audit/work trace source.
 
 | workerId | Owning workstream | Virtual dashboard agent view | Trigger/source | Substrate | Capability/governed-tool | Authority boundary | Progress/result/failure surfaces |
 |---|---|---|---|---|---|---|---|
@@ -20,6 +20,8 @@ Each row is a compact worker contract. Expand a row into a dedicated section bef
 - worker id and owning workstream;
 - trigger/event/source surface;
 - selected Akka substrate, usually `AutonomousAgent` when durable lifecycle, progress, cancellation, delegation, or result snapshots matter;
+- behavior profile id/path and summary: instructions/prompt, skills, tools, policies/rubrics/examples, evidence profile, and governance/version state;
+- reasoning/execution engine, usually `model` for model-backed internal workers or `deterministic` for pure backend workers;
 - input/output schema;
 - capability ids and governed-tool ids;
 - actor adapter/source, normally `internal_call` (manifest short form `internal`), plus any originating surface/chat/API/workflow/timer/consumer/MCP trigger context;

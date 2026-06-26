@@ -40,6 +40,19 @@ Prevent stockouts by monitoring inventory risk, recommending replenishment, comp
 | Daily Risk Timer | system | Starts periodic Stockout Monitor tasks. |
 | Inventory Event Consumer | system | Updates attention/projections from stock movement and replenishment events. |
 
+## Behavior profile examples
+
+Every worker has a behavior profile. The profile shape is the same across worker types, but the reasoning/execution engine differs.
+
+| Worker | Reasoning/execution engine | Instructions/prompt | Skills | Tools/adapters |
+|---|---|---|---|---|
+| Inventory Manager | human | Human-operating brief for supervising inventory risk, reviewing recommendations, and approving policy-compliant replenishment. | stockout-risk review, reorder adjustment, approval policy, exception escalation | `inventory.replenishment.recommend` via `surface_action` and confirmed `human_chat_tool_plan`; `inventory.replenishment.approve` via `surface_action` only unless chat-plan approval is explicitly accepted. |
+| Inventory Operations Agent | model | Workstream agent prompt for explaining inventory state, opening surfaces, interpreting human requests, and proposing safe tool plans. | inventory dashboard navigation, evidence explanation, denial explanation, tool-plan drafting | allowed read/proposal tools through `agent_tool_call`; consequential human-backed execution only through confirmed `human_chat_tool_plan`. |
+| Stockout Monitor Agent | model | Background monitoring prompt for finding stockout risks and creating recommendation tasks. | risk detection, trend summarization, attention drafting | risk scan/proposal tools via `agent_tool_call`; no purchase/approval tools. |
+| Daily Risk Timer | deterministic | Deterministic instruction to trigger scoped stockout monitoring on the accepted schedule with stale-safe idempotency. | schedule policy, trigger provenance, retry/no-op behavior | `inventory.stockout.scan.start` via `timer_invocation`. |
+
+A human text request such as “prepare a reorder for SKU-123” is interpreted by the Inventory Operations Agent through the Inventory Manager behavior profile when the signed-in user is acting as Inventory Manager. The agent may propose a tool plan using the human worker's skills and tools, but consequential governed-tool execution remains human-backed and confirmation-bound.
+
 ## Responsibility matrix
 
 | Work unit | Primary worker | Supporting workers | Reviewer/approver | Result surface/event |
@@ -55,13 +68,14 @@ Prevent stockouts by monitoring inventory risk, recommending replenishment, comp
 
 | Governed-tool | Human adapter | Agent adapter | Notes |
 |---|---|---|---|
-| `inventory.replenishment.recommend` | Inventory Manager clicks `Generate recommendation` on risk detail. | Inventory Operations Agent may request a recommendation when asked. | Same capability, separate trace source. |
+| `inventory.replenishment.recommend` | Inventory Manager clicks `Generate recommendation` on risk detail; optional confirmed `human_chat_tool_plan` when the manager asks the workstream agent to prepare it. | Inventory Operations Agent may request a recommendation when allowed by tool boundary. | Same capability, separate trace source; human chat-plan execution uses the human worker behavior profile. |
 | `inventory.replenishment.approve` | Inventory Manager or Finance Approver submits approval surface. | Not exposed to AI workers by default. | Agent can draft or route, not approve. |
 | `inventory.policy.evaluateDeviation` | Human opens policy check from recommendation. | Policy Deviation Reviewer invokes as evaluator/internal tool. | Produces evidence and escalation result. |
 | `inventory.audit.openTrace` | Auditor opens audit timeline. | Inventory Operations Agent may summarize allowed trace evidence. | Redaction differs by actor. |
 
 ## Authority and runtime boundaries
 
+- All workers have behavior profiles: instructions/prompt, skills, tools, policies/rubrics/examples, evidence profile, assistance mode, and trace obligations.
 - Human surface availability does not grant AI tool authority. Each `agent_tool_call` needs an explicit tool-boundary entry, scoped AuthContext or service authority, approval/autonomy policy, and trace source.
 - Workflow, timer, consumer, and internal paths should be modeled as system-worker actor adapters (`workflow_step`, `timer_invocation`, `consumer_reaction`, `internal_call`) that invoke the same governed tools with provenance and idempotency.
 - Provider or security configuration gaps fail closed with actionable user/system messages and audit/work traces; they are not replaced by mock/model-less normal runtime behavior.

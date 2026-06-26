@@ -162,6 +162,8 @@ When `internalWorkers` is non-empty, each manifest entry is structured and the c
   "substrate": "AutonomousAgent task",
   "trigger": "user-admin-dashboard access review action or scheduled stale-access signal",
   "authorityBasis": "service actor constrained to secure-tenant-user-foundation within selected tenant/context",
+  "behaviorProfile": "workers/access-review-triage-worker.md#behavior-profile",
+  "reasoningEngine": "model",
   "capabilityId": "secure-tenant-user-foundation",
   "governedToolId": "useradmin.access_review.triage",
   "actorAdapter": "internal",
@@ -174,7 +176,7 @@ When `internalWorkers` is non-empty, each manifest entry is structured and the c
 }
 ```
 
-Omit `internalWorkers` or use `[]` when the workstream has no internal/background worker behavior. A string-only worker id is not enough once internal work is claimed.
+`behaviorProfile` and `reasoningEngine` are optional compatibility fields in the compact manifest, but the matching worker artifact should define them before implementation scope. Omit `internalWorkers` or use `[]` when the workstream has no internal/background worker behavior. A string-only worker id is not enough once internal work is claimed.
 
 ## Attention producer template
 

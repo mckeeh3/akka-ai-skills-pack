@@ -145,6 +145,8 @@
         "substrate": { "$ref": "#/$defs/nonEmptyString" },
         "trigger": { "$ref": "#/$defs/nonEmptyString" },
         "authorityBasis": { "$ref": "#/$defs/nonEmptyString" },
+        "behaviorProfile": { "$ref": "#/$defs/nonEmptyString" },
+        "reasoningEngine": { "enum": ["human", "model", "deterministic", "external-service", "mixed"] },
         "capabilityId": { "$ref": "#/$defs/nonEmptyString" },
         "governedToolId": { "$ref": "#/$defs/nonEmptyString" },
         "actorAdapter": { "const": "internal" },

@@ -46,7 +46,7 @@ This hierarchy expresses primary ownership, not exclusive reuse. Cross-links are
 
 - `app.md`: objective, operating model, tenant/customer assumptions, global non-goals, and cross-domain outcomes.
 - `global/actors` and `global/roles`: canonical actor and role definitions reused across domains and workstreams, including human-backed actors, AI-backed actors, and service actors where applicable.
-- `global/workers`: canonical worker definitions reused across domains and workstreams, including human workers, functional-agent workers, internal-agent workers, autonomous-agent workers, evaluator-agent workers, and deterministic system workers. Use `worker-artifact-contract.md` for the reusable Markdown shape.
+- `global/workers`: canonical worker definitions reused across domains and workstreams, including human workers, functional-agent workers, internal-agent workers, autonomous-agent workers, evaluator-agent workers, and deterministic system workers. Use `worker-artifact-contract.md` for the reusable Markdown shape, including behavior profiles for instructions/prompts, skills, tools, policies, evidence, assistance mode, and governance/version state.
 - `global/policies`, `global/surfaces`, `global/agents`, `global/tools`, `global/traces`: reusable definitions that answer "what is this artifact?". Global tools define governed workstream operations; surface actions, confirmed human chat tool plans, agent tools, APIs, workflows, timers, consumers, MCP-tools, and internal calls are actor- or caller-specific exposure adapters unless explicitly local-only.
 - `domains/<domain>/domain.md`: domain purpose, boundaries, owned capabilities, and data/state responsibilities.
 - `capabilities/<capability>.md`: business capability contract, actors, outcomes, authorization, and realization references.
@@ -89,7 +89,7 @@ Workstreams are the main operational unit for generated AI-first SaaS apps. They
 - purpose and desired outcomes;
 - authorized roles and access state;
 - worker roster, including human, functional-agent, internal/autonomous/evaluator agent, and system workers, preferably as `workers/<worker>.md` artifacts or bindings using `worker-artifact-contract.md`;
-- worker responsibilities, authority, supervision, handoffs, and failure behavior;
+- worker behavior profiles, responsibilities, reasoning/execution engines, authority, supervision, handoffs, and failure behavior;
 - human surfaces and action edges;
 - functional agents and authority limits;
 - human-backed and AI-backed actor adapters;

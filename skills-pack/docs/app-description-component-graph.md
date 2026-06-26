@@ -17,7 +17,7 @@ Use the component graph to keep product semantics ahead of implementation mechan
 |---|---|---|---|
 | App | `app-description/app.md` | Objective, operating model, tenant/customer assumptions, global non-goals, cross-domain outcomes. | Domains, global actors/roles/workers/policies/traces, readiness state. |
 | Actor and role | `global/actors/**`, `global/roles/**` | Human, AI-backed, service, or system caller identity and role semantics. | Workstream access, workers, AuthContext, capability permissions. |
-| Worker | `global/workers/**`, `domains/<domain>/workstreams/<workstream>/workers/**` | Human, functional-agent, internal-agent, autonomous-agent, evaluator-agent, or system participant with responsibility, authority, evidence, tools, supervision, handoffs, and traces. | Harnesses, actor adapters, governed tools, surfaces/agents/workflows/timers/consumers, policies, traces, tests. |
+| Worker | `global/workers/**`, `domains/<domain>/workstreams/<workstream>/workers/**` | Human, functional-agent, internal-agent, autonomous-agent, evaluator-agent, or system participant with behavior profile, reasoning/execution engine, responsibility, authority, evidence, tools, supervision, handoffs, and traces. | Behavior profile, harnesses, actor adapters, governed tools, surfaces/agents/workflows/timers/consumers, policies, traces, tests. |
 | Execution harness | Surface, agent, workflow, timer, consumer, endpoint, MCP, or internal implementation binding. | How a worker receives context and performs work. | Worker, actor adapter, governed tool, AuthContext, trace source. |
 | Workstream | `domains/<domain>/workstreams/<workstream>/**` | Operational binding for lifecycle/alignment state, access, workers, surfaces, agents, tools, policies, traces, tests, and realization. | Domain, lifecycle state, workers, surfaces, tools, agents, capabilities, traces, tests, realization maps. |
 | Surface | `global/surfaces/**`, `workstreams/<workstream>/surfaces/**` | Human-facing structured payload, route/panel/card/form, states, actions, result surfaces, and system messages. | Human worker, `surface_action` adapter, governed tool, capability, frontend route/component, trace, rendering tests. |
@@ -71,6 +71,8 @@ Additional mandatory cross-links:
 Use `./worker-artifact-contract.md` for the reusable `workers/<worker>.md` Markdown shape. A worker node or binding should state:
 
 - worker id and type: `human`, `functional-agent`, `internal-agent`, `autonomous-agent`, `evaluator-agent`, or `system`;
+- reasoning/execution engine: `human`, `model`, `deterministic`, `external-service`, or `mixed`;
+- behavior profile: instructions/prompt, skills, tools, policies/rubrics/examples, evidence profile, assistance mode, and governance/version state;
 - owning workstream or cross-cutting/system-only reason;
 - responsibility and non-responsibility;
 - authority level and retained human authority where applicable;
