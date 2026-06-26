@@ -108,6 +108,7 @@ Out of scope: public self-registration, permanent account deletion/profile anony
 ## Linked graph nodes
 
 - Workstream: `../workstreams/user-admin/workstream.md`
+- Workers: `../workstreams/user-admin/workers/README.md` and worker bindings for SaaS Owner Admin human, Organization Admin human, Customer Admin human, User Admin functional-agent, access-review agent, invitation/onboarding system, and admin-audit/projection system workers.
 - Surfaces: `../workstreams/user-admin/surfaces/surfaces.md`
 - Agent binding: `../workstreams/user-admin/agents/functional-agent.md`
 - Tools: `../workstreams/user-admin/tools/governed-tools.md`

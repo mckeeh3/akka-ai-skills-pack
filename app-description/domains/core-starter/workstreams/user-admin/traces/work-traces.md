@@ -8,6 +8,8 @@ Global traces: `../../../../../global/traces/foundation-trace-patterns.md`.
 
 User Admin emits durable trace/audit evidence for protected reads, direct API/deep-link denials, validation failures, no-op outcomes, SaaS Owner Admin invite/manage events, Organization lifecycle events, Organization Admin bootstrap/manage events, Customer lifecycle events, Customer Admin bootstrap/manage events, invitation delivery/acceptance lifecycle events, membership/role/status changes, support-access lifecycle, identity relink review, access-review worker lifecycle/result decisions, provider/outbox/model blocked states, prompt assembly, skill/reference loads, tool calls, data access, decision cards, and trace-open actions.
 
+Every traceable operation records the current worker-model chain where applicable: worker id/type, execution harness, actor adapter, governed tool id, capability id, selected `AuthContext` or service authority basis, Akka/API/UI realization path, result surface/event, and adapter-specific trace source. User Admin worker ids include `user-admin.saas-owner-admin-human`, `user-admin.organization-admin-human`, `user-admin.customer-admin-human`, `user-admin.functional-agent-worker`, `user-admin.access-review-agent-worker`, `user-admin.invitation-onboarding-system-worker`, and `user-admin.admin-audit-projection-system-worker`.
+
 Required trace types include `admin-audit-event`, `workstream-log-trace`, `agent-work-trace`, `prompt-assembly-trace`, `skill-load-trace`, `reference-load-trace`, `data-access-trace`, `policy-decision-trace`, and access-review worker task traces.
 
 ## Minimum fields
@@ -15,6 +17,7 @@ Required trace types include `admin-audit-event`, `workstream-log-trace`, `agent
 Trace records include:
 
 - trace id and correlation/request/idempotency id;
+- worker id, worker type, execution harness, actor adapter, governed tool id, and capability id;
 - actor account id and selected `AuthContext`;
 - tenant/customer scope and safe resource id/type where allowed;
 - role/capability basis, support-access basis where applicable, and policy decision;

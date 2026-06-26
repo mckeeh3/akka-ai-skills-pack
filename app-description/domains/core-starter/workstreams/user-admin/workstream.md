@@ -39,6 +39,26 @@ User Admin is not a generic CRUD console. It is a role-authorized functional-age
 
 Owns `user-admin-agent` as its exactly-one user-facing functional-agent binding. The legacy `agent-user-admin` id is retired; it may appear only in compatibility/retirement notes and must not be emitted or accepted by runtime payloads, traceability, frontend routes, tests, generated clients, or surface graph edges. Runtime instances are selected-context workstream logs and surface graphs, not page sessions. Internal access-review worker/agent tasks may support this workstream, but they do not become left-rail functional agents.
 
+## Worker roster and actor-adapter chain
+
+User Admin uses the current skills-pack worker model. Every consequential operation must remain traceable through:
+
+```text
+worker -> execution harness -> actor adapter -> governed tool -> capability -> Akka implementation
+```
+
+Workstream worker bindings live under `workers/`:
+
+- `user-admin.saas-owner-admin-human`: human SaaS Owner/App Admin worker for app-owner admins, Organizations, and Organization Admin bootstrap/maintenance through `surface_action`, protected `api_call`, and catalog-bound `human_chat_tool_plan` adapters.
+- `user-admin.organization-admin-human`: human Organization/Tenant Admin worker for tenant employees, foundation Customers, Customer Admin bootstrap/maintenance, support access, and tenant-scoped access review.
+- `user-admin.customer-admin-human`: human Customer Admin worker for Customer Users in one selected Customer scope.
+- `user-admin.functional-agent-worker`: model-backed `user-admin-agent` workstream assistant that may explain, draft, recommend, propose decision cards, and prepare no-mutation chat plans but cannot autonomously mutate access.
+- `user-admin.access-review-agent-worker`: bounded model-backed autonomous/advisory worker for access-review task progress and recommendations; outputs cannot directly change access.
+- `user-admin.invitation-onboarding-system-worker`: deterministic system worker for invitation delivery/outbox, signed-token invitee acceptance, account/membership linking, expiry/revoke/replay handling, and onboarding recovery.
+- `user-admin.admin-audit-projection-system-worker`: deterministic system worker for scoped projections, attention, row routing metadata, audit excerpts, trace refs, and redacted evidence.
+
+Human surface actions, confirmed human chat plans, AI `agent_tool_call`s, workflow/internal calls, consumer reactions, timer invocations, and protected APIs reuse the same governed tool ids declared in this workstream. No worker inherits authority from another worker's harness: human surface visibility does not grant AI tool authority, agent guidance does not grant human permissions, and projection visibility does not authorize writes.
+
 ## Capability binding
 
 Primary capability: `../../capabilities/user-and-access-administration.md`.

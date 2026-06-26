@@ -2,6 +2,7 @@
 
 ## Acceptance
 
+- Given a User Admin operation is exercised through browser, chat-plan, agent, workflow/internal, consumer/timer, or API paths, when it reaches backend behavior, then the test evidence identifies the responsible worker, execution harness, actor adapter, governed tool, capability, authorization basis, result surface/event, and audit/work trace; no worker inherits authority from another worker's harness.
 - Given an authorized caller with selected `AuthContext`, when they open User Admin, then `surface-user-admin-dashboard` renders scoped data, safe attention queues, trace refs, and only authorized actions, including SaaS Owner Admin and Organization/Organization Admin branch actions only for authorized SaaS Owner contexts.
 - Given dashboard queue filters or attention cards, when a user opens a dashboard object, then the backend-authored target is `surface-user-admin-users`, `surface-user-admin-user-detail`, `surface-user-admin-invitation-detail`, `surface-user-admin-role-change-preview`, `surface-user-admin-support-access-grant`, `surface-user-admin-support-access-revoke-confirmation`, `surface-user-admin-access-review-task`, `surface-user-admin-identity-exception-review`, Audit/Trace, or `surface-user-admin-system-message` according to the object state, with no cross-scope leakage.
 - Given an authorized dashboard or users-directory create/invite action, when activated, then it opens `surface-user-admin-invitation-create` with selected-scope role options and does not create a user until the create form is submitted with idempotency/correlation data.
@@ -49,6 +50,7 @@
 
 - Repeated side-effecting actions do not duplicate effects.
 - Denials, approval-required outcomes, no-ops, provider/model/outbox blocked states, prompt assembly, skill/reference loads, tool calls, data access, decision cards, and trace emissions are verifiable through local Akka/API/UI tests or readiness evidence.
+- Worker-specific evidence covers SaaS Owner Admin human, Organization Admin human, Customer Admin human, User Admin functional-agent, access-review agent, invitation/onboarding system, and admin-audit/projection system worker paths, including allowed and denied adapter-specific behavior.
 
 
 ## `human_chat_tool_plan` coverage
