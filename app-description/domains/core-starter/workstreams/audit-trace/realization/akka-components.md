@@ -8,12 +8,12 @@ This map is docs-only. It states the tenant-admin activity-log scope component r
 
 | Intent binding | Runtime responsibility |
 |---|---|
-| Immutable audit trace store | Persist tenant-scoped human request/response, agent request/response, tool-call, denial, detail-view, search, retention-setting, and retention-expiry evidence as immutable records until retention expiry. |
+| Immutable audit trace store | Persist tenant-scoped human request/response, agent request/response, tool-call, denial, detail-view, search, retention-setting, and retention-expiry evidence as immutable records until retention expiry, including worker id/type, harness, actor adapter, and trace source where applicable. |
 | Audit trace query/read model | Support tenant-admin search over deterministic metadata/summary fields and filters without indexing full payloads. |
 | Trace detail read path | Reauthorize tenant-admin access and return authorized full payload detail with human/agent/tool/denial fields. |
 | Retention setting state | Store tenant retention setting with default 90 days and allowed 30–365 day updates. |
 | Retention expiry process | Remove immutable records only through retention expiry and leave diagnosable retention-expiry evidence that does not reveal expired payloads. |
-| Authorization boundary | Enforce selected `AuthContext`, active membership, tenant-admin role/capability, tenant isolation, disabled/inactive denial, and hidden target non-enumeration for every read/mutation. |
+| Authorization boundary | Enforce selected `AuthContext`, active membership, tenant-admin role/capability, tenant isolation, disabled/inactive denial, hidden target non-enumeration, and no agent/chat evidence-tool authority for every read/mutation. |
 
 ## Validation evidence required before build completion
 
@@ -24,4 +24,4 @@ This map is docs-only. It states the tenant-admin activity-log scope component r
 
 ## Explicit tenant-admin activity-log scope component exclusions
 
-Do not include export bundle generation, investigation notes, suspicious-activity review state, autonomous audit summaries, or agent-tool trace search authority in this tenant-admin activity-log scope build slice unless later current intent adds them.
+Do not include export bundle generation, investigation notes, suspicious-activity review state, autonomous audit summaries, `human_chat_tool_plan`, or agent-tool trace search/detail/retention authority in this tenant-admin activity-log scope build slice unless later current intent adds them.

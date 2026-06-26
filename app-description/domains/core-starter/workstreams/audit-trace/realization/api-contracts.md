@@ -8,11 +8,11 @@ This file records the tenant-admin activity-log scope build contract implied by 
 
 | Tool / action | Exposure | Contract obligations |
 |---|---|---|
-| `search-audit-traces` / `action-audit-trace-search` | `browser-tool` | Tenant-admin-only scoped search over deterministic metadata/summary fields with filters for date/time range, worker type, actor/user/agent, action type, customer/account, and status. Must not search full payloads. |
-| `read-trace-detail` / `action-audit-trace-detail` | `browser-tool` | Tenant-admin-only trace detail read with full request/response payloads, human/agent identity fields, denial reason/policy where applicable, and sensitive full-payload warning contract. |
-| `read-trace-tool-call-detail` / `action-audit-trace-tool-call-detail` | `browser-tool` | Tenant-admin-only tool-call detail with tool name, purpose, input/output payload, authorization result, duration, status/error, and linked parent request/response. |
-| `read-audit-retention-setting` / `action-audit-trace-retention-settings-open` | `browser-tool` | Tenant-admin-only read of current retention setting, default 90 days, min 30, max 365. |
-| `update-audit-retention-setting` / `action-audit-trace-retention-settings-save` | `browser-tool` | Tenant-admin-only retention update with 30–365 day validation, idempotent same-value no-op, and audit trace emission for old/new values. |
+| `search-audit-traces` / `action-audit-trace-search` | `surface_action` + protected `api_call` | Tenant-admin-only scoped search over deterministic metadata/summary fields with filters for date/time range, worker type, actor/user/agent, action type, customer/account, and status. Must not search full payloads. |
+| `read-trace-detail` / `action-audit-trace-detail` | `surface_action` + protected `api_call` | Tenant-admin-only trace detail read with full request/response payloads, human/agent identity fields, denial reason/policy where applicable, and sensitive full-payload warning contract. |
+| `read-trace-tool-call-detail` / `action-audit-trace-tool-call-detail` | `surface_action` + protected `api_call` | Tenant-admin-only tool-call detail with tool name, purpose, input/output payload, authorization result, duration, status/error, and linked parent request/response. |
+| `read-audit-retention-setting` / `action-audit-trace-retention-settings-open` | `surface_action` + protected `api_call` | Tenant-admin-only read of current retention setting, default 90 days, min 30, max 365. |
+| `update-audit-retention-setting` / `action-audit-trace-retention-settings-save` | `surface_action` + protected `api_call` | Tenant-admin-only retention update with 30–365 day validation, idempotent same-value no-op, and audit trace emission for old/new values. |
 
 ## Validation evidence required before build completion
 
@@ -24,4 +24,4 @@ This file records the tenant-admin activity-log scope build contract implied by 
 
 ## Explicit tenant-admin activity-log scope API exclusions
 
-Do not implement export, investigation-note, acknowledgement, AI-summary, support-operator, customer-admin, auditor, SaaS-owner, or agent-tool APIs as part of this tenant-admin activity-log scope build slice unless a later current-intent change adds them.
+Do not implement export, investigation-note, acknowledgement, AI-summary, support-operator, customer-admin, auditor, SaaS-owner, `human_chat_tool_plan`, or Audit/Trace governed-tool `agent_tool_call` APIs as part of this tenant-admin activity-log scope build slice unless a later current-intent change adds them.

@@ -26,6 +26,8 @@ Required event families:
 Every consequential trace record includes:
 
 - event id and time;
+- worker id and worker type;
+- execution harness, actor adapter, and trace source where applicable;
 - tenant id/safe tenant label;
 - optional customer/account id/safe label;
 - worker type: human, agent, tool, or system;
@@ -52,7 +54,7 @@ Tool-call trace detail additionally includes:
 - status/error;
 - linked parent request/response trace id or safe handle.
 
-Retention configuration change traces include old value, new value, tenant, actor, timestamp, status, correlation id, validation/denial reason when applicable, and idempotency/no-op outcome when applicable.
+Retention configuration change traces include old value, new value, tenant, actor, timestamp, status, correlation id, governed tool/capability id, actor adapter, validation/denial reason when applicable, and idempotency/no-op outcome when applicable.
 
 ## Redaction, visibility, and indexing
 
@@ -64,7 +66,7 @@ Trace views must not expose secrets, bearer/session tokens, provider credentials
 
 ## Correlation model
 
-Tool-call traces link to their parent human or agent request/response. Agent traces include session/conversation id and requested-by user where applicable. Retention-setting changes correlate to the tenant admin settings action that produced them.
+Tool-call traces link to their parent human or agent request/response. Agent traces include session/conversation id, behavior profile/model/prompt/skill/reference version refs where applicable, and requested-by user where applicable. Retention-setting changes correlate to the tenant admin settings action that produced them. Search/detail/retention-read traces must distinguish `surface_action`, `api_call`, `internal_call`, `consumer_reaction`, and `timer_invocation` sources so source-alignment and runtime validation can prove the worker/adapter path.
 
 ## Retention model
 

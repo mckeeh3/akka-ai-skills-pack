@@ -8,7 +8,7 @@ This file records the tenant-admin activity-log scope frontend realization contr
 
 | Surface / route concern | Contract obligations |
 |---|---|
-| Activity log | Render `surface-audit-trace-activity-log` with filters for date/time range, worker type, actor/user/agent, action type, customer/account, and status. Rows show time, worker type, actor/agent, action type, customer/account, status, deterministic summary, and correlation/session id. |
+| Activity log | Render `surface-audit-trace-activity-log` as the tenant-admin human `surface_action` harness with filters for date/time range, worker type, actor/user/agent, action type, customer/account, and status. Rows show time, worker type, actor/agent, action type, customer/account, status, deterministic summary, and correlation/session id. |
 | Trace detail | Render `surface-audit-trace-detail` with full payload sections only after backend authorization, show **"Sensitive full payload — tenant admin access only"**, and show human/agent/tool/denial fields per surface contract. |
 | Tool-call links | Let authorized users navigate between tool-call traces and linked parent request/response traces through backend-authorized detail actions. |
 | Retention settings | Render `surface-audit-trace-retention-settings` with current value, default 90 days, min 30, max 365, validation errors, saved/no-op states, and last-change metadata when available. |
@@ -23,4 +23,4 @@ This file records the tenant-admin activity-log scope frontend realization contr
 
 ## Explicit tenant-admin activity-log scope frontend exclusions
 
-Do not render export/compliance bundle flows, investigation notes, suspicious-activity acknowledgement/review, AI-generated summary progress/review, or full-payload keyword search as working tenant-admin activity-log scope features.
+Do not render export/compliance bundle flows, investigation notes, suspicious-activity acknowledgement/review, AI-generated summary progress/review, full-payload keyword search, `human_chat_tool_plan`, or agent-tool evidence retrieval as working tenant-admin activity-log scope features.

@@ -3,7 +3,7 @@
 ## Acceptance
 
 - Given a tenant admin with selected `AuthContext`, when they open the Audit/Trace activity log, then rows are scoped to their tenant and show time, worker type, actor/agent, action type, customer/account, status, deterministic summary, and correlation/session id.
-- Given a tenant admin searches with date/time range, worker type, actor/user/agent, action type, customer/account, and status filters, when the search is submitted, then only authorized tenant-scoped metadata/summary matches are returned.
+- Given a tenant admin searches with date/time range, worker type, actor/user/agent, action type, customer/account, and status filters, when the search is submitted, then the responsible worker (`tenant-admin-human` plus `audit-trace-system-worker`), `surface_action`/`api_call` adapters, governed tool `search-audit-traces`, and capability `audit-and-trace-investigation` are traceable and only authorized tenant-scoped metadata/summary matches are returned.
 - Given a tenant admin opens a human request/response trace, then detail shows human email, role, org, full request payload, full response payload, status, summary, and the sensitive full-payload warning.
 - Given a tenant admin opens an agent request/response trace, then detail shows agent name, role/workstream, model, prompt/skill/version, session/conversation id, requested-by user where applicable, full request payload, full response payload, status, summary, and the sensitive full-payload warning.
 - Given a tenant admin opens a tool-call trace, then detail shows tool name, purpose, input payload, output payload, authorization result, duration, status/error, and linked parent request/response.
@@ -15,11 +15,11 @@
 
 - Given a user searches by keyword, then the search matches deterministic metadata/summary fields only and never full request/response/tool payload text.
 - Given the app renders activity rows, then full payloads do not appear in rows, filter chips, summaries, or browser-visible search indexes.
-- Given a tenant admin uses Audit/Trace tenant-admin activity-log scope, then export/compliance bundles, investigation notes, suspicious-activity acknowledgements, and agent-generated summaries are not available as working tenant-admin activity-log scope features.
+- Given a tenant admin uses Audit/Trace tenant-admin activity-log scope, then export/compliance bundles, investigation notes, suspicious-activity acknowledgements, `human_chat_tool_plan`, Audit/Trace governed-tool `agent_tool_call`, retention mutation through chat, and agent-generated summaries are not available as working tenant-admin activity-log scope features.
 
 ## Security and negative
 
-- Given a non-tenant-admin authenticated user, when they open, search, view detail, or configure retention, then the action is denied server-side and no protected trace data is exposed.
+- Given a non-tenant-admin authenticated user or the `audit-trace-agent`, when they attempt to open, search, view detail, reveal payloads, or configure retention outside the browser-authorized tenant-admin surface path, then the action is denied server-side or refused by the assistant and no protected trace data is exposed.
 - Given a disabled user or inactive membership, when they attempt any Audit/Trace tenant-admin activity-log scope action, then the action is denied and emits denial trace evidence.
 - Given a tenant admin from tenant A, when they request tenant B traces or a cross-tenant customer/account filter, then the action is denied or returns no authorized rows without hidden target enumeration.
 - Given a hidden, expired, or malformed trace reference, when detail is opened, then the response is `not_found_or_redacted` or validation-error without confirming protected record existence.
@@ -34,7 +34,7 @@
 
 ## Observability and trace verification
 
-- Search, validation failure, denied search, empty result, detail read, denied detail, tool-call detail read, retention setting view, retention setting update, retention validation failure, and idempotent no-op each emit durable trace evidence with tenant, actor, action, status, and correlation id.
+- Search, validation failure, denied search, empty result, detail read, denied detail, tool-call detail read, retention setting view, retention setting update, retention validation failure, idempotent no-op, retention expiry, and assistant refusal each emit durable trace evidence with worker id/type, adapter/trace source, tenant, actor/service, action, status, governed tool/capability id where applicable, and correlation id.
 - Human request/response, agent request/response, and tool-call records include the minimum trace fields defined in `../traces/work-traces.md`.
 - Denied-action traces include denial reason and policy reference for authorized tenant-admin detail viewing.
 - Retention expiry removes records only according to configured retention and does not allow manual edit/delete of immutable audit records.

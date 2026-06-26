@@ -8,7 +8,9 @@ This tenant-admin activity-log scope capability is an activity-log and trace-det
 
 ## Actors and scope
 
-- `tenant-admin`: may search and view audit trace records for their selected tenant/Organization and configure that tenant's audit-retention setting.
+- `tenant-admin`: may search and view audit trace records for their selected tenant/Organization and configure that tenant's audit-retention setting through the `tenant-admin-human` worker and browser surface adapters.
+- `audit-trace-agent`: may provide navigation and safe explanation only; it has no trace-search, trace-detail, payload-read, retention-mutation, export, note, summary, or chat-plan authority in this tenant-admin activity-log scope.
+- Deterministic Audit/Trace system worker: records traces, runs authorized backend searches/detail reads/retention updates, enforces retention expiry, and emits evidence through API/internal/consumer/timer adapters.
 - Human workers: produce user-facing request/response audit traces and are identified by email, role, and org.
 - Agent workers: produce user-facing request/response audit traces and tool-call traces. Agent identity includes agent name, role/workstream, model, prompt/skill/version, session/conversation id, and requested-by human/user when applicable.
 
@@ -16,16 +18,17 @@ All capability calls require selected backend-owned `AuthContext`, active member
 
 ## Governed tools and exposure
 
-- `search-audit-traces` (`browser-tool` read): searches deterministic metadata/summary fields and applies tenant-admin filters.
-- `read-trace-detail` (`browser-tool` read): opens one authorized trace detail, including full request/response/tool payloads and sensitive-payload warning.
-- `read-trace-tool-call-detail` (`browser-tool` read): opens tool-call evidence linked to a parent request/response trace.
-- `update-audit-retention-setting` (`browser-tool` mutation): updates tenant audit retention between 30 and 365 days and emits its own audit trace.
+- `search-audit-traces` (`surface_action`, `api_call` read): searches deterministic metadata/summary fields and applies tenant-admin filters.
+- `read-trace-detail` (`surface_action`, `api_call` read): opens one authorized trace detail, including full request/response/tool payloads and sensitive-payload warning.
+- `read-trace-tool-call-detail` (`surface_action`, `api_call` read): opens tool-call evidence linked to a parent request/response trace.
+- `read-audit-retention-setting` (`surface_action`, `api_call` read): reads the selected tenant's retention setting and default/range metadata.
+- `update-audit-retention-setting` (`surface_action`, `api_call` mutation): updates tenant audit retention between 30 and 365 days and emits its own audit trace.
 
-No tenant-admin activity-log scope agent-tool authority is granted for this capability. Agents may produce audited activity, but they may not use this tenant-admin activity-log scope capability to search or reveal traces. Browser visibility never grants backend authorization.
+No tenant-admin activity-log scope agent-tool or human chat-plan authority is granted for this capability. Agents may produce audited activity, but they may not use this tenant-admin activity-log scope capability to search or reveal traces. Browser visibility never grants backend authorization.
 
 ## Authorization and denials
 
-Unauthorized callers, disabled users, inactive memberships, non-tenant-admin roles, missing selected context, cross-tenant access, and hidden trace references are denied server-side. Denied actions return safe feedback without protected-data leakage or hidden target enumeration and emit denial trace evidence.
+Unauthorized callers, disabled users, inactive memberships, non-tenant-admin roles, missing selected context, cross-tenant access, hidden trace references, and agent/chat attempts to access tenant-admin evidence tools are denied server-side or refused by the assistant. Denied actions return safe feedback without protected-data leakage or hidden target enumeration and emit denial trace evidence.
 
 Denied trace records shown to tenant admins include the denial reason and policy reference when the tenant admin is authorized to view that trace.
 

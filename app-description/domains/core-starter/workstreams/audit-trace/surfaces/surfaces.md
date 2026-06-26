@@ -1,6 +1,10 @@
 # Surfaces: Audit/Trace
 
-The Audit/Trace tenant-admin activity-log scope owns browser surfaces for searching audit traces, viewing authorized trace detail/full payloads, and configuring tenant retention.
+The Audit/Trace tenant-admin activity-log scope owns browser surfaces for searching audit traces, viewing authorized trace detail/full payloads, and configuring tenant retention. These surfaces are human execution harnesses for `workers/tenant-admin-human.md`; `audit-trace-agent` may explain visible UI state but does not receive these surface actions as agent tools.
+
+## Current skills-pack binding rules
+
+Every Audit/Trace surface action is a `surface_action` adapter from the tenant-admin human worker to one governed tool in capability `audit-and-trace-investigation`, normally exposed through a protected browser `api_call` handled by the Audit/Trace system worker. There is no `human_chat_tool_plan` or Audit/Trace governed-tool `agent_tool_call` adapter in this tenant-admin activity-log scope. Detail/full-payload surfaces must show the sensitive tenant-admin warning and remain backend-authorized even when reached from a visible row, deep link, or related-trace link.
 
 ## Surface bindings
 
@@ -14,8 +18,8 @@ The Audit/Trace tenant-admin activity-log scope owns browser surfaces for search
 ## `surface-audit-trace-activity-log` contract details
 
 - Surface role: list/search surface for tenant-scoped audit records.
-- Owner: Audit/Trace workstream; exactly-one functional-agent binding is `audit-trace-agent`, but tenant-admin activity-log scope search/detail actions are browser surface actions only.
-- Actor: `tenant-admin` with selected backend-owned `AuthContext` and active membership.
+- Owner: Audit/Trace workstream; exactly-one functional-agent binding is `audit-trace-agent`, but tenant-admin activity-log scope search/detail actions are browser `surface_action` adapters for `tenant-admin-human` only.
+- Actor/worker: `tenant-admin-human` with selected backend-owned `AuthContext`, active membership, and tenant-admin role/capability.
 - User goal: find the human worker, agent worker, or tool call that performed an action.
 - Primary action: run or refine a backend-authorized search. Success returns rows for the selected tenant only.
 
@@ -48,7 +52,7 @@ Keyword search applies only to deterministic metadata/summary fields and never t
 ## `surface-audit-trace-detail` contract details
 
 - Surface role: detail view for one authorized tenant-scoped audit trace.
-- Actor: `tenant-admin` with selected backend-owned `AuthContext` and active membership.
+- Actor/worker: `tenant-admin-human` with selected backend-owned `AuthContext`, active membership, and tenant-admin role/capability.
 - User goal: inspect full payload evidence for a specific human request/response, agent request/response, tool call, denial, failure, or retention-setting change.
 - Primary action: open or refresh detail; follow linked parent/child trace references when authorized.
 - Sensitive warning: the detail view must show **"Sensitive full payload — tenant admin access only."** before or beside full payload sections.
@@ -84,7 +88,7 @@ Internal-only metadata includes secrets, bearer/session tokens, provider credent
 ## `surface-audit-trace-retention-settings` contract details
 
 - Surface role: settings form for tenant audit retention.
-- Actor: `tenant-admin` with selected backend-owned `AuthContext` and active membership.
+- Actor/worker: `tenant-admin-human` with selected backend-owned `AuthContext`, active membership, and tenant-admin role/capability.
 - User goal: review and update the tenant audit-retention value.
 - Primary action: submit a retention value from 30 to 365 days.
 
@@ -110,6 +114,18 @@ Default retention is 90 days. Allowed values are 30 through 365 days.
 - Submitting the same value is an idempotent no-op with a diagnosable outcome trace.
 - Values below 30 or above 365 are rejected with validation feedback and no configuration change.
 - Surface-description sufficiency review: sufficient for tenant-admin activity-log scope implementation without inventing payload fields, actions, auth/tenant behavior, trace links, tests, or component semantics.
+
+## Common action and trace rules
+
+Every action map row has:
+
+- browser action id as the human-facing `surface_action` adapter;
+- governed tool id as the semantic operation;
+- capability id `audit-and-trace-investigation` / named capability alias shown in the table;
+- protected `api_call` implementation path that rechecks selected tenant `AuthContext`, active membership, and tenant-admin authorization;
+- trace source `surface_action` for the human surface interaction and `api_call` / `internal_call` for backend execution evidence.
+
+Rows, filters, summaries, route params, related-trace links, and agent text are never authorization controls. Hidden or expired targets return `not_found_or_redacted`/forbidden system messages without enumeration.
 
 ## Explicit tenant-admin activity-log scope exclusions
 

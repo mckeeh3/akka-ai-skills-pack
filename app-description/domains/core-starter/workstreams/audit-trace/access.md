@@ -6,9 +6,15 @@
 
 The tenant-admin activity-log scope does not grant audit trace access to customer admins, auditors, support operators, SaaS-owner admins, agents, or non-admin tenant members unless a future app-description change explicitly adds those roles.
 
+## Authorized workers
+
+- `workers/tenant-admin-human.md` is the primary human worker for browser `surface_action` and `api_call` adapters.
+- `workers/audit-trace-functional-agent-worker.md` is the AI-backed workstream assistant for navigation and safe explanation only; it has no trace-evidence retrieval or mutation adapters in this scope.
+- `workers/audit-trace-system-worker.md` is the deterministic backend/API/projection/retention worker for trace ingestion, scoped search/detail reads, retention update/expiry, idempotency, and trace emission.
+
 ## Scope rules
 
-All reads, writes, surface actions, and governed-tool invocations use backend-owned selected `AuthContext`, tenant id, active membership status, role/capability grants, and server-side authorization.
+All reads, writes, surface actions, API calls, internal calls, consumer/timer reactions, and governed-tool invocations use backend-owned selected `AuthContext`, tenant id, active membership status, role/capability grants, and server-side authorization. Human browser surface availability does not grant agent authority; agent prompt text does not create trace-search, payload-read, retention-update, or chat-plan authority.
 
 Every trace is tenant-scoped. Tenant admins can inspect only traces for their selected tenant/Organization. A trace may optionally carry customer/account scope. Customer/account filters never permit cross-tenant discovery.
 
