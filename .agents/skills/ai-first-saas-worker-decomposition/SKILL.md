@@ -12,7 +12,7 @@ This is a workforce-modeling and routing skill. It does not replace `agent-works
 ## Lifecycle classification
 
 - Phase role: Interview-phase workforce decomposition with compile-ready handoff to surfaces, capabilities, and realization planning.
-- Graph layer: worker roster, responsibility/authority map, execution harnesses, actor adapters, governed-tool candidates, handoffs, and traces.
+- Graph layer: worker roster, behavior profiles, reasoning/execution engines, responsibility/authority map, execution harnesses, actor adapters, governed-tool candidates, handoffs, and traces.
 - Canonical chain: `worker → execution harness → actor adapter → governed tool → capability → Akka implementation`.
 
 ## Required reading
@@ -24,6 +24,7 @@ Read first:
 - `../docs/intent-to-realization-flow.md`
 - `../docs/app-development-lifecycle.md`
 - `../docs/app-worker-tool-model.md`
+- `../docs/worker-artifact-contract.md`
 - `../docs/app-description-component-graph.md`
 - `../docs/app-description-to-code-compile-contract.md`
 - `../docs/requirements-to-workstream-development-process.md`
@@ -70,7 +71,7 @@ Start from affected workstreams or domain outcomes. For each unit of work, list 
 
 Name human workers in domain language, such as Sales Rep, Sales Manager, Inventory Manager, Procurement Lead, Finance Approver, Support Agent, Tenant Admin, Auditor, or SaaS Owner Support Operator.
 
-For each human worker, capture responsibility, selected AuthContext scope, workstream access, surfaces used, direct actions, approval/escalation duties, evidence visibility, trace visibility, and denial/hidden behavior.
+For each human worker, capture responsibility, behavior profile (human-operating prompt, role skills, governed tools, policies/rubrics/examples, evidence profile, assistance mode), selected AuthContext scope, workstream access, surfaces used, direct actions, approval/escalation duties, whether the workstream agent may interpret human text requests into confirmed tool plans, evidence visibility, trace visibility, and denial/hidden behavior.
 
 ### 3. Inventory agent workers
 
@@ -83,11 +84,11 @@ Classify each agent worker:
 - `autonomous-agent`: durable background model-driven worker with task lifecycle;
 - `evaluator-agent`: independent reviewer/judge for quality, risk, policy fit, completeness, or outcomes.
 
-For each agent worker, define single responsibility, non-responsibilities, supervising human, authority level, allowed evidence/data, allowed governed tools and capabilities, approval/autonomy policy, handoffs/escalations, prompt/skill/reference/model/tool governance, traces, and fail-closed behavior.
+For each agent worker, define single responsibility, non-responsibilities, behavior profile (prompt/instructions, skills, references, governed/runtime tools, policies/rubrics/examples, evidence profile, model/tool-boundary governance, assistance/delegation mode), supervising human, authority level, allowed evidence/data, allowed governed tools and capabilities, approval/autonomy policy, handoffs/escalations, traces, and fail-closed behavior.
 
 ### 4. Inventory system workers
 
-Record deterministic participants such as workflows, timers, consumers, projections/views, integrations, service identities, and policy engines. Capture trigger, authority basis, idempotency, provenance, audit, failure behavior, and result/attention effects.
+Record deterministic participants such as workflows, timers, consumers, projections/views, integrations, service identities, and policy engines. Capture deterministic behavior profile, trigger, authority basis, idempotency, provenance, audit, failure behavior, and result/attention effects.
 
 ### 5. Build the responsibility and handoff map
 
@@ -115,7 +116,7 @@ Produce a compact worker decomposition with:
 
 - affected workstreams and scope;
 - worker roster grouped by human, functional-agent, internal-agent, autonomous-agent, evaluator-agent, and system workers;
-- for each worker: responsibility, non-responsibilities, authority level, AuthContext/scope, supervising human or owning workstream, execution harnesses, governed tools and capabilities, actor adapters/exposure channels, surfaces used/produced, handoffs/escalations, traces, and failure behavior;
+- for each worker: reasoning/execution engine, behavior profile, responsibility, non-responsibilities, authority level, AuthContext/scope, supervising human or owning workstream, execution harnesses, governed tools and capabilities, actor adapters/exposure channels, surfaces used/produced, handoffs/escalations, traces, and failure behavior;
 - worker-to-work-unit responsibility matrix;
 - human/AI shared-operation map showing one governed-tool with separate actor adapters where applicable, including `surface_action`, `human_chat_tool_plan`, and `agent_tool_call` trace sources when those paths are allowed;
 - candidate attention categories and result surfaces each worker produces or consumes;
@@ -127,6 +128,7 @@ Before moving to capability or component design, verify:
 
 - every affected workstream has a worker roster or an explicit non-worker/system-only justification;
 - every functional agent owns exactly one workstream;
+- every worker has a behavior profile proportional to risk, including instructions/prompt, skills, tools, policies, evidence profile, assistance mode, and governance/version state;
 - every agent worker has a specific type, bounded responsibility, non-responsibilities, supervising human, and authority level;
 - no agent worker inherits human authority implicitly;
 - every side-effecting agent worker has bounded autonomy or approval requirements;
