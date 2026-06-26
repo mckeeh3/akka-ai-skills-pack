@@ -40,13 +40,18 @@ Reusable governed-tool ids used by core starter capability and workstream bindin
 - `read-agent-prompt-doc`
 - `read-agent-skill-doc`
 - `read-agent-skill-reference-doc`
+- `inspect-agent-runtime-profile`
 - `draft-agent-doc-edit`
 - `revise-agent-doc-edit`
-- `save-agent-doc-edit`
+- `save-agent-doc-edit` (creates a non-active draft/proposal; activation is separate unless a later bounded implementation explicitly aliases low-risk review-and-activate)
+- `submit-agent-doc-proposal-for-review`
+- `approve-agent-doc-proposal`
+- `reject-agent-doc-proposal`
+- `activate-agent-doc-version`
 - `cancel-agent-doc-edit`
 - `read-agent-doc-version-history`
 - `read-agent-doc-version-diff`
-- `restore-agent-doc-version`
+- `restore-agent-doc-version` (creates a restore proposal; activation is separate)
 - `create-agent-skill`
 - `delete-agent-skill`
 - `create-agent-skill-reference-doc`
