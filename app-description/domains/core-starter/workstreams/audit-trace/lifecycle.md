@@ -2,7 +2,8 @@
 
 Workstream id: `audit-trace`
 Owning domain: `core-starter`
-Current readiness: `compile-ready`
+Current readiness: `ready-to-build`
+Ready-to-build assessment: 2026-06-26 — see `../ready-to-build-status.md`
 Implementation alignment: `unknown`
 Source alignment: `realization/source-alignment.md`
 Last description change: unknown
@@ -17,9 +18,10 @@ This workstream is not currently aligned. Existing implementation evidence may p
 ## Blockers and assumptions
 
 - File-level source alignment has been initialized conservatively.
+- Ready-to-build means app-description scope is sufficient for focused build/compile tasks.
 - Runtime readiness is not claimed by this lifecycle record.
 - A future workstream-specific alignment review must classify each mapping as aligned, stale-description-changed, stale-code-changed, partially-aligned, blocked, or intentionally description-only.
 
 ## Next recommended action
 
-Run a focused source-alignment review for this workstream before claiming implementation alignment or runtime readiness.
+Create focused build/compile tasks from the ready-to-build description, then run source-alignment and local runtime validation before claiming implementation alignment or runtime readiness.
