@@ -40,7 +40,7 @@ The canonical app development lifecycle has three iterative phases:
 3. Manual runtime test / reconciliation
 ```
 
-It is not a waterfall. Every feature request, bug report, issue, tweak, manual test observation, review finding, or clarification is part of a continuous request stream that updates current intent and may start another pass through the loop.
+It is not a waterfall. Every feature request, bug report, issue, tweak, manual test observation, review finding, or clarification is part of a continuous request stream that updates current intent and may start another pass through the loop. Track this state per workstream so app-description changes can flag implementation as stale until reviewed or recompiled.
 
 ### 1. Interview / intent reconciliation
 
@@ -82,10 +82,23 @@ Typical outputs:
 
 Readiness target: `runtime-ready`.
 
+## Workstream lifecycle/alignment tracking
+
+Each feature-bearing workstream should have lifecycle state in the app-description or companion lifecycle artifact. At minimum track:
+
+- readiness: `draft`, `description-ready`, `compile-ready`, `manual-ready`, `runtime-ready`, or `blocked`;
+- implementation alignment: `not-started`, `aligned`, `stale-description-changed`, `stale-code-changed`, `partially-aligned`, or `unknown`;
+- latest app-description version/digest or changed-node list;
+- implementation evidence and last compile/alignment/manual-test notes;
+- blockers and next recommended action.
+
+Default rule: when a workstream app-description change affects feature-bearing intent, mark related code as `stale-description-changed` and reduce readiness to no higher than `compile-ready` unless an alignment review explicitly records no code impact.
+
 ## Routing guidance
 
 - If the request is ambiguous or changes product behavior, route to Interview/app-description work first.
 - If current intent is clear and a bounded task exists, route to Build/compile implementation.
+- If a workstream changed in app-description, first route to alignment review or compile; do not assume existing code is current.
 - If implementation is present but confidence depends on real behavior, route to Manual runtime test.
 - If manual testing discovers a mismatch, classify it before patching: app-description gap, implementation gap, test gap, provider/config blocker, seed/demo-data gap, UX/state gap, or expectation change.
 

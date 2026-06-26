@@ -15,7 +15,7 @@ It evaluates the current description state and determines whether generation wou
 - Phase: interview.
 - Kind: readiness assessor.
 - Family: app-description.
-- Living-graph contract: readiness evaluates the app-description current-intent graph for semantic sufficiency across workers, execution harnesses, actor adapters, governed tools, capabilities, behavior, tests, security, observability, UI, and realization links.
+- Living-graph contract: readiness evaluates the app-description current-intent graph for semantic sufficiency across workers, execution harnesses, actor adapters, governed tools, capabilities, behavior, tests, security, observability, UI, realization links, and source-alignment coverage.
 - Build/compile handoff: only route to generation or implementation when the graph can safely proceed through `../docs/app-description-to-code-compile-contract.md`; otherwise return to focused description skills.
 
 ## Goal
@@ -41,6 +41,7 @@ Read these first if present:
 - `../docs/incremental-intent-processing.md`
 - `../docs/intent-compiler-skill-contracts.md`
 - `../docs/app-description-skill-output-contracts.md`
+- `../docs/app-description-source-alignment.md`
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/requirements-to-workstream-development-process.md` for readiness gates across workstreams, attention, dashboards, surface actions, autonomous tasks, notifications/projections, and traces
 - `../docs/capability-first-backend-architecture.md` for capability contract completeness criteria
@@ -82,7 +83,7 @@ This skill should resist premature generation when important agent workstream, r
 
 ## Readiness dimensions
 
-Use `../docs/app-description-skill-output-contracts.md` as the shared readiness contract. Assess semantic completeness for the declared scope across secure SaaS foundation, functional-agent workstreams, structured surfaces, capabilities/governed-tools, behavior, tests, auth/security, observability/traces, frontend/UI, realization maps, assumptions, and pending questions.
+Use `../docs/app-description-skill-output-contracts.md` as the shared readiness contract. Assess semantic completeness for the declared scope across secure SaaS foundation, functional-agent workstreams, structured surfaces, capabilities/governed-tools, behavior, tests, auth/security, observability/traces, frontend/UI, realization maps, source-alignment coverage, assumptions, and pending questions.
 
 Apply these gates strictly:
 - `SaaS Foundation App` readiness means the built-in foundation domain and its five workstreams are sufficiently described for the requested maintenance or extension scope.
@@ -143,7 +144,11 @@ For AI-first/delegated operations, missing global/domain/workstream operating-mo
 ### 4. Treat manual evaluation as a runtime target, not a lower bar
 If the user wants an early evaluation build, narrow the scope aggressively but still require the selected scope to run through real local Akka/API/UI paths with Akka component-backed normal runtime state and fail-closed provider/security handling. Do not use mock, fixture, deterministic, simulated, frontend-only, provider-bypass behavior, or missing internal Akka persistence as the normal runtime substitute for a named generated-app feature. Missing runtime behavior remains `not-ready`, blocked, or explicitly outside the narrowed scope.
 
-### 5. Recommend generation proactively when justified
+### 5. Check source-alignment readiness before generation
+
+For feature-bearing workstreams that have or expect implementation, missing `realization/source-alignment.md` coverage is a readiness gap. Treat generation as premature when app-description files, realization maps, or implementation paths cannot be mapped to source/frontend/API/test/validation artifacts for the selected slice, unless the scope is explicitly description-only or not-started.
+
+### 6. Recommend generation proactively when justified
 If the description is sufficiently mature, this skill may recommend moving on to generation even when the user has not yet explicitly asked.
 
 ## Handoff rules

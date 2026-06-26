@@ -22,6 +22,7 @@ Use this skill when the authoritative app-description/spec artifacts are ready t
 - `../docs/incremental-intent-processing.md`
 - `../docs/intent-compiler-skill-contracts.md`
 - `../docs/app-description-skill-output-contracts.md`
+- `../docs/app-description-source-alignment.md`
 - target `AGENTS.md`
 - current `app-description/**`, especially `app.md`, global definitions, domain capabilities/data-state, workstream access/behavior/surface/agent/tool/policy/trace/test bindings, and workstream realization files
 - relevant `specs/**`, backlog, pending-task, and task brief files
@@ -38,7 +39,7 @@ Use this skill when the authoritative app-description/spec artifacts are ready t
 Before editing, state:
 
 - source current-intent graph nodes/spec files and exact slice being realized
-- target runtime paths: Java packages, frontend folders, app-description/spec extensions, docs, tests
+- target runtime paths: Java packages, frontend folders, app-description/spec extensions, docs, tests, and source-alignment entries
 - governed tool ids, capability ids, and actor adapters/exposure channels being realized, including surface action/browser-tool, confirmed human chat tool-plan, AI agent-tool, API/workflow/timer/consumer/MCP/internal paths where in scope
 - what is in scope, explicitly deferred, blocked, or assumed
 - validation evidence required before claiming completion
@@ -70,7 +71,7 @@ Depending on scope, update all applicable artifacts together:
 - deterministic surface intent routing/catalog code for composer-enabled workstreams when in scope, preserving no-direct-command behavior before user submit
 - confirmed human chat tool-plan review/confirmation/execution/result paths when explicitly modeled, preserving shared governed tool ids, per-tool transaction/idempotency behavior, backend authorization, traces, and partial-failure surfaces
 - frontend source under `frontend/**` and rebuilt static resources when required
-- app-description extensions or readiness state when implementation discoveries change the authoritative model
+- app-description extensions, `realization/source-alignment.md`, or readiness state when implementation discoveries change the authoritative model
 - specs/task brief/pending queue status
 - docs/run notes only when useful to future maintainers
 - tests proving backend, UI, security, traces, and negative paths in the selected scope
@@ -79,7 +80,7 @@ Depending on scope, update all applicable artifacts together:
 
 Final handoff must include:
 
-- generated/changed files grouped by backend, frontend, description/spec/docs/tests
+- generated/changed files grouped by backend, frontend, description/spec/docs/tests, including any `realization/source-alignment.md` updates
 - runtime path exercised and commands run with exit codes
 - runtime evidence for feature-bearing changes: readiness level, browser/surface/API/Akka path, role/AuthContext/tenant setup, governed tool ids and actor adapters exercised, deterministic route/prefill/no-mutation evidence when applicable, human chat confirmation/partial-failure evidence when in scope, agent-tool boundary evidence when in scope, denial/provider fail-closed coverage, trace/audit evidence, and manual/browser/API smoke result
 - what passed, failed, or could not be run

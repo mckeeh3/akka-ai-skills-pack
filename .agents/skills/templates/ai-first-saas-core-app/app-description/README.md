@@ -1,6 +1,6 @@
 # Legacy SaaS Foundation App description template
 
-This template preserves the pre-intent-compiler SaaS Foundation App workstream/surface template layout. It remains available as legacy reference material for projects that already use the numbered `12-workstreams`, `55-ui`, and `70-traceability` layout. For new current-intent app-description work, prefer the intent compiler graph from `docs/current-intent-model.md` (`app.md`, `global/**`, and `domains/<domain>/workstreams/<workstream>/**`) and copy only the smallest relevant content after mapping it into that structure.
+This template preserves the pre-intent-compiler SaaS Foundation App workstream/surface template layout. It remains available as legacy reference material for projects that already use the numbered `12-workstreams`, `55-ui`, and `70-traceability` layout. For new current-intent app-description work, prefer the intent compiler graph from `docs/current-intent-model.md` (`app.md`, `global/**`, and `domains/<domain>/workstreams/<workstream>/**`) plus source-alignment guidance from `docs/app-description-source-alignment.md`; copy only the smallest relevant content after mapping it into that structure.
 
 The template is intentionally app-description-only. It is not a runnable app baseline, does not replace the upstream SaaS Foundation App implementation, and does not claim that the listed foundation surfaces are app-level complete. Treat the surface contracts as process examples / `surface-ready` baselines. Specific workstream surface implementation cleanup belongs in separate app-development tasks.
 
@@ -49,4 +49,5 @@ Use with companion pack guidance. From an installed skills directory, resolve th
 - Keep `deferred-typed-surfaces.md` honest. First-slice fallbacks are allowed in templates, but app-level cleanup must replace consequential deferred surfaces with full contracts before claiming capability readiness for that scope.
 - Keep `55-ui/**` focused on browser realization of those contracts.
 - Keep `70-traceability/**` current whenever a surface or action changes.
+- For new current-intent app-descriptions, also create or update each feature-bearing workstream's `realization/source-alignment.md` so graph files map to implementation/source/test evidence.
 - Every protected surface action maps to a governed backend capability and qualified governed-tool exposure. If authority or stable ids are unclear during app implementation, ask or queue the blocking question instead of inventing them.

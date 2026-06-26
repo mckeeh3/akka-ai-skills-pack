@@ -24,6 +24,7 @@ app-description/
     data-state/<state-object>.md
     workstreams/<workstream>/
       workstream.md
+      lifecycle.md
       access.md
       behavior.md
       workers/<worker-binding-or-local-worker>.md
@@ -36,6 +37,7 @@ app-description/
       realization/akka-components.md
       realization/frontend-routes.md
       realization/api-contracts.md
+      realization/source-alignment.md
 ```
 
 This hierarchy expresses primary ownership, not exclusive reuse. Cross-links are expected when a workstream uses global definitions or shared domain capabilities.
@@ -49,7 +51,7 @@ This hierarchy expresses primary ownership, not exclusive reuse. Cross-links are
 - `domains/<domain>/domain.md`: domain purpose, boundaries, owned capabilities, and data/state responsibilities.
 - `capabilities/<capability>.md`: business capability contract, actors, outcomes, authorization, and realization references.
 - `data-state/<state-object>.md`: durable state, lifecycle, invariants, retention, and trace obligations.
-- `workstreams/<workstream>/**`: the operational binding where purpose, access, surfaces, agents, tools, policies, traces, tests, and realization become executable.
+- `workstreams/<workstream>/**`: the operational binding where purpose, lifecycle/alignment state, access, surfaces, agents, tools, policies, traces, tests, and realization become executable.
 
 ## Workstream binding model
 
@@ -94,13 +96,53 @@ Workstreams are the main operational unit for generated AI-first SaaS apps. They
 - governed tools and capability APIs;
 - policies, approvals, and exception paths;
 - traces, audit, and outcome metrics;
-- Akka components, frontend routes, API contracts, and tests.
+- Akka components, frontend routes, API contracts, source-alignment evidence, and tests.
 
 Access should be modeled at workstream level first, then compiled into surface visibility, capability permission, tool permission, endpoint/component authorization, and trace obligations.
 
+## Workstream lifecycle and implementation alignment state
+
+Each feature-bearing workstream should include a lifecycle state artifact, typically:
+
+```text
+app-description/domains/<domain>/workstreams/<workstream>/lifecycle.md
+```
+
+The lifecycle artifact records whether the workstream's current intent is aligned with implementation evidence. The file-level evidence should live in `realization/source-alignment.md` when the workstream has or expects implementation. The lifecycle artifact should capture at minimum:
+
+- workstream id and owning domain;
+- current readiness: `draft`, `description-ready`, `compile-ready`, `manual-ready`, `runtime-ready`, or `blocked`;
+- implementation alignment: `not-started`, `aligned`, `stale-description-changed`, `stale-code-changed`, `partially-aligned`, or `unknown`;
+- app-description version, digest, or changed-node list used for the latest alignment decision;
+- implementation evidence, usually by linking to `realization/source-alignment.md` entries plus touched source/spec/test paths, commit id, or code digest when available;
+- last description change, last alignment review, last compile, and last manual runtime test timestamps or notes;
+- blockers, assumptions, and next recommended action.
+
+When app-description input modifies a workstream's feature-bearing intent, the workstream lifecycle must mark related implementation as stale unless an alignment review explicitly classifies the change as description-only/no-code-impact. The default update is:
+
+```text
+implementationAlignment: stale-description-changed
+readiness: no higher than compile-ready
+nextRecommendedAction: alignment-review or compile selected workstream slice
+```
+
+A later compile may move the workstream to `manual-ready` only after required checks pass and the real runtime path is known. A manual runtime test may move it to `runtime-ready` only when the real API/UI/agent path works at the claimed scope.
+
+## Source alignment realization artifact
+
+New feature-bearing app-description workstreams should include:
+
+```text
+app-description/domains/<domain>/workstreams/<workstream>/realization/source-alignment.md
+```
+
+This file maps app-description graph files to the source, frontend, resources, tests, specs, and manual validation evidence that realize them. If a mapped app-description file changes after its mapped implementation files, default the owning workstream to `stale-description-changed` unless an explicit no-code-impact alignment review says otherwise. If mapped implementation changes without description reconciliation, default to `stale-code-changed` or `partially-aligned`.
+
+See [App-description source alignment](app-description-source-alignment.md) for the required Markdown contract, optional JSON shape, and staleness rules.
+
 ## Editing principle
 
-When new input changes intent, update the affected current graph nodes to their new intended state. Do not append historical notes such as "previously we thought..." unless the artifact is explicitly a changelog, task record, or migration note.
+When new input changes intent, update the affected current graph nodes to their new intended state and update the owning workstream lifecycle/alignment state. Do not append historical notes such as "previously we thought..." unless the artifact is explicitly a changelog, task record, lifecycle evidence record, or migration note.
 
 See also [Incremental intent processing](incremental-intent-processing.md), [Intent to realization flow](intent-to-realization-flow.md), and [App-description component graph](app-description-component-graph.md).
 

@@ -12,12 +12,14 @@ A compile task starts only when the requested slice has enough current-intent pr
 
 - accepted current-intent delta or existing app-description graph node(s);
 - impacted app/domain/workstream or explicit cross-cutting/foundation/system-only scope;
+- owning workstream lifecycle/alignment state, including whether implementation is already aligned, stale, partially aligned, not started, blocked, or unknown;
 - responsible workers and worker types;
 - harnesses and actor adapters for each exposure path;
 - governed tools and capability contracts;
 - security, AuthContext, tenant/customer scope, confirmation/approval, idempotency, and denial semantics;
 - trace/audit/work events and outcome evidence;
 - implementation target area and selected or candidate Akka/frontend/API/agent substrates;
+- source-alignment artifact or planned alignment entry mapping app-description files to source/frontend/API/test/validation files;
 - required automated checks and manual runtime scenario, or an explicit docs-only/non-runtime exemption.
 
 If a feature-bearing task only names a page, route, endpoint, component, or agent tool, repair the graph/task brief or block with a pending question before implementation.
@@ -34,6 +36,7 @@ accepted intent delta
   -> policies, traces, tests, and manual scenarios
   -> selected Akka substrates
   -> frontend/API/agent/runtime adapters
+  -> source-alignment entries
   -> bounded repository changes
   -> automated checks
   -> manual runtime test scenario
@@ -48,8 +51,11 @@ Every item downstream should cite or inherit the upstream graph node that justif
 
 - Identify the accepted intent delta or graph nodes being compiled.
 - Name the lifecycle phase and readiness target: usually `compile-ready` before edits and `manual-ready` after checks pass.
+- Read and update the owning workstream lifecycle/alignment record.
+- If the app-description changed since the last compile/alignment review, treat related implementation as `stale-description-changed` unless an explicit no-code-impact review says otherwise.
 - Confirm the task is one bounded slice and does not start later queued work.
 - List affected current-intent, spec, task, implementation, test, and validation artifacts.
+- Read or create the owning workstream `realization/source-alignment.md` entry for the selected slice. If the app-description files are newer than mapped implementation files, begin from `stale-description-changed` unless a no-code-impact review is recorded.
 
 ### 2. Derive the worker/tool contract
 
@@ -107,11 +113,24 @@ The implementation slice should include or update the smallest tests that prove:
 - component-level behavior and endpoint/API/frontend wiring;
 - manual runtime path at the claimed readiness level.
 
-### 6. Reconcile outcomes
+### 6. Update source alignment
+
+Before final reconciliation, update the owning workstream `realization/source-alignment.md` so the implemented slice records:
+
+- the app-description files that drove the change;
+- backend, frontend, resources, specs, tests, and validation files that realize the slice;
+- checks and manual runtime scenario evidence used for the latest alignment decision;
+- unmapped feature-bearing description files or implementation files, with `not-started`, `description-only`, `blocked`, `generated-output`, or `unknown` reasons;
+- no-code-impact review notes when description files changed but implementation did not need to.
+
+If a machine-readable checker exists, update the optional `source-alignment.json` consistently with the Markdown artifact. See [App-description source alignment](app-description-source-alignment.md).
+
+### 7. Reconcile outcomes
 
 After automated checks and manual/runtime validation when applicable:
 
 - update task status and validation evidence;
+- update workstream lifecycle/alignment state, including links to source-alignment entries, last compile, last alignment review, last manual runtime test, blockers, and next action;
 - reconcile review or runtime findings as current-intent updates, implementation repairs, test repairs, follow-up tasks, or blockers;
 - never let implementation details silently supersede app-description intent.
 
@@ -123,10 +142,12 @@ A queued build/compile task or task brief should include:
 - [ ] Required reads and focused skills.
 - [ ] Lifecycle phase and readiness target.
 - [ ] Current-intent provenance: app/domain/workstream/global graph nodes or explicit cross-cutting docs-only scope.
+- [ ] Workstream lifecycle/alignment state and expected state transition for this task.
 - [ ] Responsible worker(s), worker type(s), harnesses, and actor adapters.
 - [ ] Governed tool id(s), capability id(s), and selected exposure channels.
 - [ ] AuthContext, tenant/customer scope, authorization, denial, confirmation/approval, idempotency, side-effect, partial-failure, and trace obligations.
 - [ ] Selected Akka/frontend/API/agent/runtime substrates or a docs-only/non-runtime exemption.
+- [ ] Source-alignment entry to create/update, including mapped app-description files and expected source/frontend/API/test/validation files.
 - [ ] Expected outputs and changed artifact categories.
 - [ ] Required automated checks.
 - [ ] Manual runtime scenario or explicit statement that runtime evidence is not applicable.
@@ -173,6 +194,7 @@ Block or create a pending question when safe compilation would require guessing:
 - approval/confirmation/autonomy threshold;
 - side effects, idempotency, transaction boundary, or partial-failure behavior;
 - trace/audit/outcome visibility;
+- whether a workstream app-description change is no-code-impact or requires stale implementation to be recompiled;
 - selected capability contract or Akka substrate;
 - required runtime validation path.
 
@@ -186,4 +208,4 @@ Block or create a pending question when safe compilation would require guessing:
 - Runtime completion claimed from fixture/demo/mock behavior for normal app paths.
 - Missing denial, approval, idempotency, tenant-isolation, trace, or manual runtime expectations.
 
-See also [Intent to realization flow](intent-to-realization-flow.md) and [Intent compiler skill contracts](intent-compiler-skill-contracts.md).
+See also [App-description source alignment](app-description-source-alignment.md), [Intent to realization flow](intent-to-realization-flow.md), and [Intent compiler skill contracts](intent-compiler-skill-contracts.md).
