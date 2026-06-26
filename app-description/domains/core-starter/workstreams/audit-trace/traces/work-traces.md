@@ -4,17 +4,68 @@
 
 Global traces: `../../../../../global/traces/foundation-trace-patterns.md`.
 
-## Required evidence
+## Required v1 evidence
 
-admin-audit-event, workstream-log-trace, agent-work-trace, policy-decision-trace for export approvals.
+Audit/Trace v1 uses durable audit trace records as product data, not merely operational logs. Trace records are immutable until retention expiry.
 
-Trace records include actor, selected `AuthContext`, tenant/customer ids, role/capability basis, correlation id, capability/tool id, policy decision, redaction decisions, denial/failure status, and linked surface/workstream item.
+Required event families:
 
+- `audit_trace.human_request_response_recorded`
+- `audit_trace.agent_request_response_recorded`
+- `audit_trace.tool_call_recorded`
+- `audit_trace.action_denied`
+- `audit_trace.search_performed`
+- `audit_trace.detail_viewed`
+- `audit_trace.retention_setting_viewed`
+- `audit_trace.retention_setting_updated`
+- `audit_trace.retention_setting_update_denied`
+- `audit_trace.retention_expired`
 
-## `human_chat_tool_plan` trace evidence
+## Minimum trace fields
 
-Audit/Trace must emit durable work/audit trace facts for the `human_chat_tool_plan` adapter in addition to existing surface-action traces. Required event types are `human_chat_tool_plan.proposed`, `human_chat_tool_plan.confirmed`, `human_chat_tool_plan.step_started`, `human_chat_tool_plan.step_completed`, `human_chat_tool_plan.step_failed`, `human_chat_tool_plan.step_skipped`, `human_chat_tool_plan.denied`, and `human_chat_tool_plan.provider_blocked`.
+Every consequential trace record includes:
 
-Minimum fields: trace/work trace id, correlation id, causation/parent event id, selected `AuthContext`, tenant/customer scope where applicable, functional agent `audit-trace-agent`, requestedBy, confirmedBy for execution, action ids `action-audit-trace-append-investigation-note`, governed tool ids `draft-investigation-note`, capability ids `audit.trace.investigation_note.append`, input schema ref, plan id, plan snapshot id, step id/sequence/dependencies, idempotency key or redacted hash, authorization decision and basis summary, policy/approval refs, prompt/skill/reference/model/tool-boundary refs for proposal generation, result surface ids `surface-audit-trace-investigation-note`, status, safe error code, redaction classification, and browser-safe input/output summaries.
+- event id and time;
+- tenant id/safe tenant label;
+- optional customer/account id/safe label;
+- worker type: human, agent, tool, or system;
+- human identity where applicable: email, role, org;
+- agent identity where applicable: agent name, role/workstream, model, prompt/skill/version, session/conversation id, requested-by user;
+- action type;
+- status: success, failure, or denied;
+- deterministic app-generated summary;
+- correlation id and session/conversation id where applicable;
+- authorization basis summary;
+- denial reason and policy reference for denied actions;
+- retention classification and expiry time where known.
 
-Trace summaries must distinguish direct surface actions from `human_chat_tool_plan`, preserve no-mutation proposal evidence, record confirmation and per-step transaction outcomes, and omit raw provider secrets, JWTs, invitation tokens, raw email bodies, raw prompts/model payloads, hidden tenant/customer ids, raw tool payloads, and unredacted evidence from browser-visible views.
+Request/response trace detail also retains full request and response payloads for tenant-admin detail viewing.
+
+Tool-call trace detail additionally includes:
+
+- tool name;
+- tool purpose;
+- input payload;
+- output payload;
+- authorization result;
+- duration;
+- status/error;
+- linked parent request/response trace id or safe handle.
+
+Retention configuration change traces include old value, new value, tenant, actor, timestamp, status, correlation id, validation/denial reason when applicable, and idempotency/no-op outcome when applicable.
+
+## Redaction, visibility, and indexing
+
+Tenant admins can view full payloads in authorized detail surfaces. The detail UI must display **"Sensitive full payload — tenant admin access only."**
+
+Search rows and keyword indexes use deterministic metadata/summary fields only. Full payloads are not indexed for keyword search in v1.
+
+Trace views must not expose secrets, bearer/session tokens, provider credentials, hidden cross-tenant identifiers, frontend-secret material, or raw implementation internals.
+
+## Correlation model
+
+Tool-call traces link to their parent human or agent request/response. Agent traces include session/conversation id and requested-by user where applicable. Retention-setting changes correlate to the tenant admin settings action that produced them.
+
+## Retention model
+
+Default retention is 90 days. Tenant admins may configure 30 to 365 days. Records are removed only by retention expiry. Retention expiry itself should be diagnosable through retained operational evidence that does not reveal expired payloads beyond authorized retention status.

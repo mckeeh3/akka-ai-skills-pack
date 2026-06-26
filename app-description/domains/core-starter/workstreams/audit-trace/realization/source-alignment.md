@@ -1,28 +1,26 @@
 # Audit Trace source alignment
 
 Lifecycle: ../lifecycle.md
-Last reviewed: 2026-06-25
-Alignment state: unknown
+Last reviewed: 2026-06-26
+Alignment state: stale-description-changed
 
-This file was added during the initial source-alignment migration. The user explicitly stated that none of the existing workstreams are currently aligned. Treat every mapping below as candidate evidence for a future alignment review, not as proof that implementation matches current intent.
+This file records candidate source alignment for the v1 tenant-admin audit trace activity-log intent. It is not proof that implementation currently matches the updated app-description.
 
 ## Alignment entries
 
 | Entry id | App-description files | Implementation files | Test / validation files | Last aligned evidence | Notes |
 | --- | --- | --- | --- | --- | --- |
-| `audit-trace.workstream-slice` | `../workstream.md`, `../access.md`, `../behavior.md`, `../agents/**`, `../surfaces/**`, `../tools/**`, `../policies/**`, `../traces/**`, `../tests/**`, `akka-components.md`, `api-contracts.md`, `frontend-routes.md`, `../../../capabilities/audit-and-trace-investigation.md` | `src/main/java/ai/first/application/coreapp/audit/**`, `src/main/java/ai/first/domain/coreapp/audit/**`, `src/main/java/ai/first/application/foundation/audit/**`, `src/main/java/ai/first/application/foundation/agent/**`, `src/main/java/ai/first/application/foundation/workstream/**`, `src/main/java/ai/first/api/coreapp/workstream/**`, `frontend/src/workstream/**`, `frontend/src/api/**`, `frontend/src/design-system/**` | `src/test/java/ai/first/application/coreapp/audit/**`, `src/test/java/ai/first/application/foundation/audit/**`, `src/test/java/ai/first/application/foundation/agent/AgentRuntimeTrace*Test.java`, `src/test/java/ai/first/application/foundation/workstream/**`, `frontend/src/workstream-audit-trace-vertical.contract.test.mjs` | Initial migration only; no aligned evidence recorded. | Broad candidate mapping for the current workstream. A focused review must split this into smaller entries and classify stale-description/stale-code gaps before claiming alignment. |
+| `audit-trace.v1-activity-log` | `../workstream.md`, `../access.md`, `../behavior.md`, `../surfaces/surfaces.md`, `../tools/governed-tools.md`, `../traces/work-traces.md`, `../tests/coverage.md`, `akka-components.md`, `api-contracts.md`, `frontend-routes.md`, `../../../capabilities/audit-and-trace-investigation.md` | Candidate paths: `src/main/java/ai/first/application/foundation/audit/**`, `src/main/java/ai/first/application/foundation/agent/**`, `src/main/java/ai/first/application/foundation/workstream/**`, `src/main/java/ai/first/api/coreapp/**`, `frontend/src/workstream/**`, `frontend/src/api/**` | Candidate paths: `src/test/java/ai/first/application/foundation/audit/**`, `src/test/java/ai/first/application/foundation/agent/**`, `src/test/java/ai/first/application/foundation/workstream/**`, `frontend/src/*audit*contract*.mjs`, `frontend/src/workstream*contract*.mjs` | Description updated from Stage 1 input only; no runtime validation recorded. | Focused build planning must verify whether existing implementation supports v1 tenant-admin activity log, full-payload detail, tool-call linkage, and retention settings. |
 
 ## Unmapped current-intent files
 
-- None recorded during the initial migration. This means no known app-description file was intentionally excluded, not that all current-intent files are aligned.
+- None known for the v1 description slice.
 
 ## Unmapped implementation files
 
-- None recorded during the initial migration. Shared foundation/workstream files may support multiple workstreams and need finer-grained classification in future reviews.
+- Unknown until a focused source-alignment review is run.
 
 ## Alignment notes
 
-- Current state is `unknown` because no existing workstream is considered aligned.
-- If mapped app-description files are newer than mapped implementation/test files, set the lifecycle implementation alignment to `stale-description-changed` unless a no-code-impact review is recorded.
-- If mapped implementation files changed without app-description reconciliation, set the lifecycle implementation alignment to `stale-code-changed` or `partially-aligned`.
-- Do not use this source-alignment file as runtime-readiness evidence. Runtime readiness still requires automated checks and real local API/UI/agent-path verification for the selected scope.
+- Current state is `stale-description-changed` because the app-description has been narrowed and clarified for v1 after the prior broad Audit/Trace intent.
+- Do not use this source-alignment file as runtime-readiness evidence. Runtime readiness still requires automated checks and real local API/UI validation for the selected scope.

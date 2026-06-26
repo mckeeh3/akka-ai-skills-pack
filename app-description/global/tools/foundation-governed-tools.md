@@ -59,6 +59,9 @@ Reusable governed-tool ids used by core starter capability and workstream bindin
 - `read-audit-trace-dashboard`
 - `search-audit-traces`
 - `read-trace-detail`
+- `read-trace-tool-call-detail`
+- `read-audit-retention-setting`
+- `update-audit-retention-setting`
 - `read-trace-timeline`
 - `read-trace-failure-evidence`
 - `read-investigation-guide`

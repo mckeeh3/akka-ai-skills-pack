@@ -2,29 +2,26 @@
 
 Capability: `audit-and-trace-investigation`.
 
-This map is docs-only. It points to current implementation evidence and does not change runtime behavior.
+This map is docs-only. It states the v1 component responsibilities implied by current intent and does not prove implementation alignment.
 
-## Component and service evidence
+## Required component responsibilities
 
-| Intent binding | Akka / Java evidence | Notes |
-|---|---|---|
-| Admin audit and trace repository | `src/main/java/ai/first/application/foundation/audit/AuditTraceService.java`, `AuditTraceRepository.java`, `AkkaAuditTraceRepository.java`, `AdminAuditView.java` | Authoritative evidence access must be scoped, redacted, and audited. |
-| Agent/runtime trace evidence | `src/main/java/ai/first/application/foundation/agent/AgentRuntimeTraceEntity.java`, `AgentRuntimeTraceView.java`, `AgentRuntimeTraceSink.java` | Connects prompt/skill/reference/model/tool/data/policy activity to investigation timelines. |
-| Workstream event/log trace | `src/main/java/ai/first/application/foundation/workstream/DurableWorkstreamLogEntity.java`, `DurableWorkstreamEventRepositoryEntity.java`, `WorkstreamEventAttentionConsumer.java` | Correlates shell actions, agent replies, surface actions, and attention updates. |
-| Audit summary worker | `src/main/java/ai/first/application/coreapp/audit/AuditTraceSummaryService.java`, `AuditTraceSummaryAutonomousAgent.java`, `DurableAuditTraceSummaryTaskRepositoryEntity.java` | Summaries are bounded, trace-linked, and fail closed when provider config is absent. |
-| Evidence tools | `AuditTraceEvidenceTools.java` | Agent-visible evidence reads must use authorized, redacted query shapes. |
+| Intent binding | Runtime responsibility |
+|---|---|
+| Immutable audit trace store | Persist tenant-scoped human request/response, agent request/response, tool-call, denial, detail-view, search, retention-setting, and retention-expiry evidence as immutable records until retention expiry. |
+| Audit trace query/read model | Support tenant-admin search over deterministic metadata/summary fields and filters without indexing full payloads. |
+| Trace detail read path | Reauthorize tenant-admin access and return authorized full payload detail with human/agent/tool/denial fields. |
+| Retention setting state | Store tenant retention setting with default 90 days and allowed 30–365 day updates. |
+| Retention expiry process | Remove immutable records only through retention expiry and leave diagnosable retention-expiry evidence that does not reveal expired payloads. |
+| Authorization boundary | Enforce selected `AuthContext`, active membership, tenant-admin role/capability, tenant isolation, disabled/inactive denial, and hidden target non-enumeration for every read/mutation. |
 
-## Validation evidence
+## Validation evidence required before build completion
 
-- `src/test/java/ai/first/application/foundation/audit/AdminAuditViewTest.java`
-- `src/test/java/ai/first/application/foundation/agent/AgentRuntimeTraceEntityTest.java`
-- `src/test/java/ai/first/application/foundation/agent/AgentRuntimeTraceViewTest.java`
-- `src/test/java/ai/first/application/foundation/workstream/DurableWorkstreamLogEntityTest.java`
-- `src/test/java/ai/first/application/coreapp/audit/AuditTraceSummaryServiceTest.java`
-- `src/test/java/ai/first/application/coreapp/audit/AuditTraceSummaryAutonomousAgentTest.java`
-- `frontend/src/workstream-audit-trace-vertical.contract.test.mjs`
+- Component/API tests for immutable record creation and tenant-scoped search/detail reads.
+- Component/API tests for tool-call to parent request/response linkage.
+- Component/API tests for retention setting default, valid update, invalid bounds, same-value no-op, and audit trace emission.
+- Component/API tests for tenant isolation, disabled/inactive user denial, non-admin denial, hidden/expired trace non-enumeration, and secret omission.
 
-## Gaps / caveats
+## Explicit v1 component exclusions
 
-- Redacted export and sensitive evidence access require policy gates; descriptions alone do not prove export readiness.
-- Local demo/fail-closed repositories are test support or failure-path proof, not normal runtime substitutes.
+Do not include export bundle generation, investigation notes, suspicious-activity review state, autonomous audit summaries, or agent-tool trace search authority in this v1 build slice unless later current intent adds them.

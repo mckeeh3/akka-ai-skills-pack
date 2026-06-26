@@ -2,23 +2,25 @@
 
 Capability: `audit-and-trace-investigation`.
 
-## Frontend evidence
+This file records the v1 frontend realization contract implied by current intent. It is not runtime proof.
 
-| Surface / route concern | Frontend evidence | Notes |
-|---|---|---|
-| Audit search/list and investigation dashboard | `frontend/src/workstream/surfaces/ListSearchSurface.tsx`, `DashboardSurface.tsx` | Query/filter UI must rely on backend-scoped results. |
-| Trace timeline/detail | `AuditTimelineSurface.tsx`, `DetailEditSurface.tsx`, `TraceLinkList.tsx` | Timelines render redacted, correlation-rich evidence. |
-| Export/approval/denial surfaces | `DecisionSurface.tsx`, `WorkflowStatusSurface.tsx`, `SystemMessageSurface.tsx`, `OutcomeSurface.tsx` | Sensitive export requests surface policy gates and denials. |
-| Realtime/stale-state behavior | `frontend/src/workstream/realtime/useWorkstreamRealtime.ts`, `workstreamEvents.ts` | Event streams update workstream state and must recover from disconnects. |
-| Typed browser API client | `frontend/src/api/HttpWorkstreamApiClient.ts`, `HttpWorkstreamRealtimeClient.ts`, `types.ts` | Normalizes unauthorized/forbidden/not-found/server stream errors. |
+## Frontend surface obligations
 
-## Validation evidence
+| Surface / route concern | Contract obligations |
+|---|---|
+| Activity log | Render `surface-audit-trace-activity-log` with filters for date/time range, worker type, actor/user/agent, action type, customer/account, and status. Rows show time, worker type, actor/agent, action type, customer/account, status, deterministic summary, and correlation/session id. |
+| Trace detail | Render `surface-audit-trace-detail` with full payload sections only after backend authorization, show **"Sensitive full payload — tenant admin access only"**, and show human/agent/tool/denial fields per surface contract. |
+| Tool-call links | Let authorized users navigate between tool-call traces and linked parent request/response traces through backend-authorized detail actions. |
+| Retention settings | Render `surface-audit-trace-retention-settings` with current value, default 90 days, min 30, max 365, validation errors, saved/no-op states, and last-change metadata when available. |
+| Error and restricted states | Render safe loading, empty, validation-error, forbidden, not-found/redacted, stale/reconnect, partial-data/redacted, saved, no-op, and failure states without hidden data leakage. |
 
-- `frontend/src/workstream-audit-trace-vertical.contract.test.mjs`
-- `frontend/src/workstream-attention-update-delivery.contract.test.mjs`
-- `frontend/src/workstream-surfaces.contract.test.mjs`
-- `frontend/src/governance-audit-admin-profile.contract.test.mjs`
+## Accessibility and frontend-security obligations
 
-## Gaps / caveats
+- Filters, rows, detail links, linked trace controls, and retention form controls are keyboard-operable with visible focus.
+- Status is not color-only.
+- Full payloads are never rendered in activity rows, filter chips, summaries, or client-side search indexes.
+- Browser assets and API payloads never expose provider/server secrets, bearer/session tokens, hidden cross-tenant identifiers, or frontend-secret material.
 
-- Audit/Trace frontend realization must stay in `frontend/src/workstream/**`; removed screen modules are not reference or fallback architecture.
+## Explicit v1 frontend exclusions
+
+Do not render export/compliance bundle flows, investigation notes, suspicious-activity acknowledgement/review, AI-generated summary progress/review, or full-payload keyword search as working v1 features.

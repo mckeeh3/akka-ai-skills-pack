@@ -4,24 +4,24 @@ Workstream id: `audit-trace`
 Owning domain: `core-starter`
 Current readiness: `ready-to-build`
 Ready-to-build assessment: 2026-06-26 — see `../ready-to-build-status.md`
-Implementation alignment: `unknown`
+Implementation alignment: `stale-description-changed`
 Source alignment: `realization/source-alignment.md`
-Last description change: unknown
-Last alignment review: 2026-06-25 — initial source-alignment migration only; user stated no workstream is currently aligned.
+Last description change: 2026-06-26 — narrowed and clarified v1 tenant-admin activity-log intent from Stage 1 audit trace input.
+Last alignment review: 2026-06-26 — description-only update; no runtime validation recorded.
 Last compile: unknown
 Last manual runtime test: unknown
 
 ## Current alignment posture
 
-This workstream is not currently aligned. Existing implementation evidence may partially realize parts of the current intent, but no entry is marked aligned until a focused alignment review compares the mapped app-description files against the mapped source, frontend, API, test, and manual-runtime evidence.
+This workstream is not currently aligned. The current app-description has changed to the v1 tenant-admin activity-log scope, so existing implementation evidence must be reviewed before claiming alignment.
 
 ## Blockers and assumptions
 
-- File-level source alignment has been initialized conservatively.
+- File-level source alignment has been updated conservatively for the v1 activity-log scope.
 - Ready-to-build means app-description scope is sufficient for focused build/compile tasks.
 - Runtime readiness is not claimed by this lifecycle record.
-- A future workstream-specific alignment review must classify each mapping as aligned, stale-description-changed, stale-code-changed, partially-aligned, blocked, or intentionally description-only.
+- A future workstream-specific alignment review must classify the v1 search, detail, tool-call linkage, retention, authorization, and UI mappings as aligned, stale-description-changed, stale-code-changed, partially-aligned, blocked, or intentionally description-only.
 
 ## Next recommended action
 
-Create focused build/compile tasks from the ready-to-build description, then run source-alignment and local runtime validation before claiming implementation alignment or runtime readiness.
+Create focused build/compile tasks for the v1 tenant-admin activity log, full-payload trace detail, tool-call linkage, retention settings, denials, and tests. Then run source-alignment and local runtime validation before claiming implementation alignment or runtime readiness.

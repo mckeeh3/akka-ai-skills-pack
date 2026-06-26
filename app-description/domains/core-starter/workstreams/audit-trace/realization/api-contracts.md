@@ -2,28 +2,26 @@
 
 Capability: `audit-and-trace-investigation`.
 
-## Browser/API evidence
+This file records the v1 build contract implied by current intent. It is not runtime proof.
 
-| Tool / action | Exposure | API evidence | Contract obligations |
-|---|---|---|---|
-| `read-audit-trace-dashboard` | `browser-tool`, `agent-tool` | `src/main/java/ai/first/api/coreapp/admin/AdminEndpoint.java`, `WorkstreamEndpoint.java`, audit projections | Scoped command-center counters, readiness, and attention entry points with no hidden counts. |
-| `search-audit-traces` | `browser-tool`, `agent-tool` | `src/main/java/ai/first/api/coreapp/admin/AdminEndpoint.java`, `WorkstreamEndpoint.java`, `AdminAuditView.java`, `AgentRuntimeTraceView.java` | Scoped, redacted search with tenant/customer filters and data-access audit. |
-| `read-trace-detail` | `browser-tool`, `agent-tool` | audit/agent/workstream trace services/views | Redacted trace detail must hide unauthorized cross-scope ids and secrets. |
-| `read-trace-timeline` | `browser-tool`, `agent-tool` | audit/agent/workstream trace services/views | Correlation timeline omits unauthorized event categories and reauthorizes every open. |
-| `read-trace-failure-evidence` | `browser-tool`, `agent-tool` | audit/provider/model/tool-boundary trace services | Redacted denial/provider/tool/model/runtime blocker evidence with safe recovery. |
-| `read-investigation-guide` | `browser-tool`, `agent-tool` | audit guidance service | Advisory next steps only; cannot approve, retry, mutate, or expand authority. |
-| `request-redacted-export` | `browser-tool` with approval when required | `AdminEndpoint.java`, `AuditTraceService.java`, policy/governance service evidence | Export requests are policy-gated and traced; unredacted exports are not default behavior. |
-| `draft-investigation-note` | `browser-tool`, `agent-tool` proposal | `AuditTraceSummaryService.java`, audit summary autonomous agent | Idempotent human-reviewable notes/summaries, not autonomous evidence deletion or policy bypass. |
-| Summary task tools (`start-audit-summary-task`, `read-audit-summary-task`, `review-audit-summary-task`, `accept-audit-summary-task`, `reject-audit-summary-task`) | `browser-tool`, `agent-tool` read/prepare, `internal-tool` worker start | `AuditTraceSummaryService.java`, audit summary autonomous agent/task state | Real model-backed redacted advisory summary lifecycle with provider/runtime/tool-boundary fail-closed behavior, no model-less acceptable summary, human accept/reject evidence only, idempotency, and trace evidence. |
-| Realtime workstream/audit events | `browser-tool` | `WorkstreamEndpoint.java`, `frontend/src/api/WorkstreamRealtimeClient.ts` | Streams typed events with reconnect/stale-state handling and no secret payloads. |
+## Browser/API contract obligations
 
-## Validation evidence
+| Tool / action | Exposure | Contract obligations |
+|---|---|---|
+| `search-audit-traces` / `action-audit-trace-search` | `browser-tool` | Tenant-admin-only scoped search over deterministic metadata/summary fields with filters for date/time range, worker type, actor/user/agent, action type, customer/account, and status. Must not search full payloads. |
+| `read-trace-detail` / `action-audit-trace-detail` | `browser-tool` | Tenant-admin-only trace detail read with full request/response payloads, human/agent identity fields, denial reason/policy where applicable, and sensitive full-payload warning contract. |
+| `read-trace-tool-call-detail` / `action-audit-trace-tool-call-detail` | `browser-tool` | Tenant-admin-only tool-call detail with tool name, purpose, input/output payload, authorization result, duration, status/error, and linked parent request/response. |
+| `read-audit-retention-setting` / `action-audit-trace-retention-settings-open` | `browser-tool` | Tenant-admin-only read of current retention setting, default 90 days, min 30, max 365. |
+| `update-audit-retention-setting` / `action-audit-trace-retention-settings-save` | `browser-tool` | Tenant-admin-only retention update with 30–365 day validation, idempotent same-value no-op, and audit trace emission for old/new values. |
 
-- `src/test/java/ai/first/application/foundation/audit/AdminAuditViewTest.java`
-- `src/test/java/ai/first/application/coreapp/audit/AuditTraceSummaryServiceTest.java`
-- `frontend/src/workstream-audit-trace-vertical.contract.test.mjs`
-- `frontend/src/workstream-attention-update-delivery.contract.test.mjs`
+## Validation evidence required before build completion
 
-## Gaps / caveats
+- Backend/API tests for tenant-admin success, non-admin denial, disabled/inactive denial, tenant isolation, invalid filters, hidden/expired trace references, and retention bounds.
+- Backend/API tests that list/search output excludes full payloads and full-payload keyword search is unavailable.
+- Backend/API tests that detail output includes full payloads only for authorized tenant admins.
+- Backend/API tests that denied trace detail includes denial reason and policy reference when authorized.
+- Backend/API tests that retention changes emit immutable audit trace evidence.
 
-- Future API feature work must add explicit forbidden/cross-tenant and redaction tests for any new trace query path.
+## Explicit v1 API exclusions
+
+Do not implement export, investigation-note, acknowledgement, AI-summary, support-operator, customer-admin, auditor, SaaS-owner, or agent-tool APIs as part of this v1 build slice unless a later current-intent change adds them.
