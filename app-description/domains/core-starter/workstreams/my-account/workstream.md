@@ -4,9 +4,21 @@
 
 Give the signed-in human a safe AI-first personal control point for selected authority context, personal attention, profile, named-theme/settings preferences, in-app notifications, governed digest/export requests, and safe recovery from unavailable or denied workstream/source openings.
 
+## Worker roster
+
+My Account binds explicit workers under `workers/` so implementation tasks preserve the current skills-pack chain:
+
+```text
+worker → execution harness → actor adapter → governed tool → capability → Akka/API/frontend realization
+```
+
+- `workers/signed-in-member-human.md` — authenticated human worker using structured surfaces and exact-confirmed `human_chat_tool_plan` where cataloged.
+- `workers/my-account-functional-agent-worker.md` — the user-facing workstream assistant / functional-agent worker behind `my-account-agent`; it explains, summarizes, and proposes within the selected context but does not execute side effects autonomously.
+- `workers/my-account-system-worker.md` — deterministic backend/API/projection/workflow participants that resolve context, assemble surfaces, reauthorize openings, emit traces, and enforce fail-closed behavior.
+
 ## Functional agent
 
-Owns `my-account-agent` as its exactly-one user-facing functional-agent binding. Runtime instances are selected-context workstream logs, not page sessions.
+Owns `my-account-agent` as its exactly-one user-facing functional-agent binding and product-facing workstream assistant. Runtime instances are selected-context workstream logs, not page sessions, and the agent's authority is defined by the functional-agent worker binding plus explicit governed-tool adapters.
 
 ## Capability binding
 
@@ -18,7 +30,7 @@ Backend-owned attention includes personal action items, notification acknowledge
 
 ## Readiness posture
 
-This node captures current intent only. Runtime readiness still requires local Akka/API/UI validation and model/provider fail-closed proof where applicable.
+This node captures current intent only and is compile-ready for focused build/alignment tasks, not runtime-ready. Runtime readiness still requires local Akka/API/UI validation and model/provider fail-closed proof where applicable. Because this review added current skills-pack worker bindings and adapter clarity, mapped implementation should be treated as `stale-description-changed` until a source-alignment review or compile updates evidence.
 
 
 ## Confirmed human chat tool-plan exposure

@@ -5,7 +5,8 @@ Reusable governed-tool ids used by core starter capability and workstream bindin
 ## My Account
 
 - `read-current-account-context`
-- `update-own-profile-settings`
+- `update-own-profile-settings` (legacy/self-service id retained for existing realization references)
+- `my_account.update_profile_settings` (current namespaced My Account profile/settings tool id used by surface/chat-plan mappings)
 - `request-personal-digest-export`
 - `notification.list_my_account_center`
 - `notification.mark_read`

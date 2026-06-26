@@ -5,7 +5,7 @@
 - Given an authorized caller with selected `AuthContext`, when they open My Account, then `surface-my-account-dashboard` renders as a personal command center with context/authority, top attention counters as the primary attention UI, secondary/collapsed `needsAttention[]` evidence only where useful, control panels, authorized workstream links, redaction, and trace refs.
 - Given the caller opens profile, settings, context authority, notification center, digest/export progress/result/blocked, or open-denied surfaces, then each surface returns its declared contract and frontend-safe payload only for the selected context.
 - Given a WorkOS/AuthKit-authenticated account has no active memberships or no eligible selected context, when it opens `/api/me` or My Account, then the backend returns a safe no-access/no-selected-context recovery surface with profile/session guidance only and no hidden tenant/customer/workstream enumeration.
-- Given an allowed action, when it is submitted with valid input, then capability `account-context-and-profile` or the linked notification/digest capability returns the expected structured result and emits required traces.
+- Given an allowed action, when it is submitted with valid input, then the responsible worker (`signed-in-member-human`, `my-account-functional-agent-worker`, or `my-account-system-worker`), actor adapter, governed tool, and capability `account-context-and-profile` or linked notification/digest capability are traceable, the expected structured result is returned, and required traces are emitted.
 - Given a named theme selection is changed in My Account settings, then local preview occurs immediately but durable persistence is only reported after the governed backend settings action succeeds.
 
 ## Security and negative
@@ -15,14 +15,14 @@
 - Context switching lists only authorized contexts and hidden/invalid targets return forbidden or `not_found_or_redacted` without enumeration.
 - Notification lifecycle actions mutate durable personal notification state only and never resolve source attention/tasks/events; snooze expiry, source-resolved projection, duplicate source aggregation, and hidden-source redaction preserve tenant/customer isolation and source authority.
 - Digest/export flows fail closed when provider/runtime/governed-tool configuration is missing and never return fake/model-less success in normal runtime.
-- Agent/tool calls cannot exceed the governed tool boundary or approval policy.
+- Agent/tool calls cannot exceed the governed tool boundary or approval policy, and human `surface_action` availability never implies `agent_tool_call` authority.
 - Browser payloads never expose provider secrets, hidden workstream names/counts, hidden notification categories, or hidden authority state.
 
 ## Idempotency and observability
 
 - Repeated side-effecting profile/settings, notification lifecycle, digest/export, and review actions do not duplicate effects.
 - No-op, validation-error, forbidden, conflict, stale/reconnect, provider-fail-closed, denial, and success outcomes render typed result/system-message/workflow/outcome surfaces with trace/correlation ids.
-- Denials, approval-required outcomes, provider fail-closed states, and trace emissions are verifiable through local Akka/API/UI tests or readiness evidence.
+- Denials, approval-required outcomes, provider fail-closed states, worker/adapter trace emissions, and source-alignment mappings are verifiable through local Akka/API/UI tests or readiness evidence.
 
 ## Frontend/style regression
 
@@ -34,7 +34,7 @@
 
 ## `human_chat_tool_plan` coverage
 
-- Given deterministic surface routing can safely open or prefill a surface, when a high-confidence no-mutation prompt is submitted, then the router returns that surface first and `human_chat_tool_plan` is not used.
+- Given deterministic surface routing can safely open or prefill a surface, when a high-confidence no-mutation prompt is submitted, then the router returns that surface first, records the human/system adapter path where applicable, and `human_chat_tool_plan` is not used.
 - Given the representative prompt **change my theme to Obsidian Dark** and an authorized selected `AuthContext`, when the chat request is classified as `human_chat_tool_plan`, then the response is a no-mutation plan proposal surface that lists actions `action-update-my-settings`, governed tools `my_account.update_profile_settings`, capabilities `my_account.update_profile_settings`, validated input schema `schema.my-account.settings.update.v1` with `preferredThemeId=obsidian-dark` selected from backend-valid theme options, side effects, approval gates, idempotency, result surfaces `surface-my-settings`, and trace refs.
 - Given a proposed plan has not been explicitly confirmed, when the request completes, then no surface action, governed tool, external provider side effect, state mutation, invitation/email/outbox send, policy/agent lifecycle change, trace note append, or settings update has occurred.
 - Given the human confirms the exact `planId` and `planSnapshotId`, when backend authorization, lifecycle, tool-boundary, validation, approval, tenant/customer ownership, and idempotency checks pass for every step, then each step executes as an independent transaction boundary and returns the declared result or recovery surface.

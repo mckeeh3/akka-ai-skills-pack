@@ -9,16 +9,29 @@ Global tool inventory: `../../../../../global/tools/foundation-governed-tools.md
 Allowed governed tools include:
 
 - `read-current-account-context`: dashboard, profile, settings, context/authority, and shell bootstrap reads.
-- `update-own-profile-settings`: self-service profile and preference persistence, including named theme id when allowed.
+- `update-own-profile-settings` / `my_account.update_profile_settings`: self-service profile and preference persistence, including named theme id when allowed. `my_account.update_profile_settings` is the namespaced action/capability-facing id used by current chat-plan and surface-action mappings; `update-own-profile-settings` is retained where older realization files still reference the legacy global id.
 - `request-personal-digest-export`: backend-governed personal attention digest/export start/read/cancel/review flows.
 - `notification.list_my_account_center`: personal in-app notification center reads.
 - `notification.mark_read`, `notification.dismiss`, `notification.archive`, `notification.snooze`, `notification.update_preferences`: notification lifecycle/preferences only; these never resolve source attention/tasks/events.
 - `my_account.open_authorized_workstream` and source-specific `attention.open_attention_item`: reauthorize sibling workstream/source openings and return a target surface or safe denial.
 - `my_account.view_own_trace_refs`: browser-safe trace/evidence links for the signed-in user's authorized context.
 
-Tools are exposed as browser, agent, or internal tools only as stated by the linked capability. Side-effecting or high-impact tools require idempotency, correlation, authorization, approval policy, and audit/work traces. Denied tool calls are traced and return safe feedback.
+Tools are exposed as browser, agent, internal, workflow/timer/consumer, API, or confirmed human chat-plan adapters only as stated by the linked capability and worker bindings. Side-effecting or high-impact tools require idempotency, correlation, authorization, approval policy, and audit/work traces. Denied tool calls are traced and return safe feedback.
 
 Forbidden tool exposure: role/capability grants, tenant/customer administration, provider secrets, external notification provider controls, fake digest success, hidden workstream enumeration, or client-side authority changes.
+
+## Adapter binding matrix
+
+| Governed tool id | Capability id | Workers | Allowed actor adapters | Authority / side-effect boundary | Result surfaces / events |
+|---|---|---|---|---|---|
+| `read-current-account-context` | `account-context-and-profile` | signed-in human, functional agent, system worker | `surface_action`, `agent_tool_call` read, `api_call`, `internal_call` | Read-only scoped account/context/profile/settings summary; backend-selected `AuthContext` only. | Dashboard/profile/settings/context surfaces or safe no-access recovery. |
+| `my_account.update_profile_settings` / `update-own-profile-settings` | `account-context-and-profile` | signed-in human, system worker; functional agent proposal only | `surface_action`, bounded `human_chat_tool_plan`, `api_call`, `internal_call` | Mutates only self-service profile/preference fields; exact chat-plan confirmation and per-step reauthorization required for chat execution. | `surface-my-profile`, `surface-my-settings`, validation/no-op/forbidden/conflict system messages. |
+| `notification.list_my_account_center` | `account-context-and-profile` | signed-in human, functional agent, system worker | `surface_action`, `agent_tool_call` read, `api_call`, `internal_call` | Read-only personal in-app notification projection for selected context. | `surface-my-account-notification-center`. |
+| `notification.mark_read`, `notification.dismiss`, `notification.archive`, `notification.snooze`, `notification.update_preferences` | `account-context-and-profile` | signed-in human, system worker; functional agent proposal only | `surface_action`, bounded `human_chat_tool_plan`, `api_call`, `internal_call`, timer/consumer where needed for lifecycle projection | Mutates only personal notification state/preferences; never resolves source work or grants access. | Updated notification center or safe system message. |
+| `request-personal-digest-export` | `account-context-and-profile` | signed-in human, functional agent read/propose where granted, system worker | `surface_action`, `agent_tool_call` read/proposal, `api_call`, `workflow_step`, `internal_call`, `timer_invocation` | Durable personal digest task lifecycle; provider/model/runtime must fail closed; no fake/model-less success. | Digest progress/result/blocked surfaces and events. |
+| `my_account.open_authorized_workstream`, `attention.open_attention_item`, `my_account.view_own_trace_refs` | `account-context-and-profile` | signed-in human, functional agent, system worker | `surface_action`, `agent_tool_call` read/prepare, `api_call`, `internal_call` | Reauthorize target every time; no hidden target enumeration and no source mutation. | Target surface, trace surface, or `surface-my-account-open-denied`. |
+
+This matrix is the workstream binding; detailed worker authority and failure behavior lives in `../workers/`.
 
 
 ## `human_chat_tool_plan` expanded current-intent catalog

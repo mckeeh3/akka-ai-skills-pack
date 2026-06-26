@@ -4,9 +4,11 @@
 
 Global definition: `../../../../../global/agents/foundation-functional-agents.md`.
 
+Worker binding: `../workers/my-account-functional-agent-worker.md`.
+
 ## Authority
 
-The agent operates only through capability `account-context-and-profile` and governed tools `read-current-account-context`, `update-own-profile-settings`, `request-personal-digest-export`, `notification.list_my_account_center`, `notification.mark_read`, `notification.dismiss`, `notification.archive`, `notification.snooze`, `notification.update_preferences`, `my_account.open_authorized_workstream`, `attention.open_attention_item`, and `my_account.view_own_trace_refs` with selected `AuthContext`, backend authorization, tool-boundary checks, approval gates, and durable traces. For notification lifecycle, source-opening, and trace-opening paths, the agent may explain state, draft safe actions, and prepare or invoke backend-authorized personal actions only as allowed by the tool boundary; it cannot resolve source work, broaden workstream visibility, mutate roles/memberships/tasks, or treat a browser route as authority.
+The agent operates only through capability `account-context-and-profile` and governed tools `read-current-account-context`, `update-own-profile-settings` / `my_account.update_profile_settings`, `request-personal-digest-export`, `notification.list_my_account_center`, `notification.mark_read`, `notification.dismiss`, `notification.archive`, `notification.snooze`, `notification.update_preferences`, `my_account.open_authorized_workstream`, `attention.open_attention_item`, and `my_account.view_own_trace_refs` with selected `AuthContext`, backend authorization, tool-boundary checks, approval gates, and durable traces. For notification lifecycle, source-opening, and trace-opening paths, the agent may explain state, draft safe actions, prepare no-mutation chat plans, and use backend-authorized read/advisory tools only as allowed by the tool boundary; it cannot execute human-backed side effects autonomously, resolve source work, broaden workstream visibility, mutate roles/memberships/tasks, or treat a browser route as authority.
 
 ## Model and expertise binding
 
@@ -48,6 +50,6 @@ See `../tests/coverage.md` and `../traces/work-traces.md`.
 
 ## `human_chat_tool_plan` behavior boundary
 
-`my-account-agent` may participate in `human_chat_tool_plan` only as a plan proposer for catalog-bound, backend-visible work in this workstream. It may summarize the request, ask clarifying questions, draft safe inputs, and propose steps using the representative shared governed tool ids `my_account.update_profile_settings` for actions `action-update-my-settings`. The proposal surface must state required capabilities `my_account.update_profile_settings`, side effects, validation needs, approval gates, idempotency, transaction boundaries, result surfaces, and trace expectations.
+`my-account-agent` may participate in `human_chat_tool_plan` only as a plan proposer for catalog-bound, backend-visible work in this workstream. It may summarize the request, ask clarifying questions, draft safe inputs, and propose steps using the representative shared governed tool ids `my_account.update_profile_settings` for actions `action-update-my-profile` / `action-update-my-settings` and notification lifecycle/preference governed tool ids for their matching action ids. The proposal surface must state required capabilities, side effects, validation needs, approval gates, idempotency, transaction boundaries, result surfaces, and trace expectations.
 
 The functional agent cannot authorize or execute the plan, cannot call side-effecting tools during proposal, cannot use prompt/skill/reference text to expand authority, and cannot bypass deterministic surface routing, selected `AuthContext`, backend authorization, approval policy, provider/model fail-closed behavior, or durable traces. Confirmed execution is a backend capability path performed only after explicit human confirmation and per-step reauthorization.
