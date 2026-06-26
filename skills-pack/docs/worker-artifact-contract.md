@@ -82,8 +82,8 @@ One or two sentences describing the job this worker performs in product language
   - allowed:
   - forbidden/redacted:
 - Assistance mode:
-  - workstream agent may explain role guidance: <yes/no>
-  - workstream agent may interpret human text into tool plans: <yes/no/not applicable>
+  - workstream assistant / functional agent may explain role guidance: <yes/no>
+  - workstream assistant / functional agent may interpret human text into tool plans: <yes/no/not applicable>
   - consequential tools require confirmation: <yes/no/not applicable>
 
 For human workers, the prompt/instructions and skills shape role guidance, surface copy, decision support, and workstream-agent assistance. For model-backed workers, the prompt/skills/tools shape model runtime behavior. For deterministic workers, the instructions/skills/tools define deterministic policy, trigger, and allowed operation semantics.
@@ -180,11 +180,11 @@ Record required trace events and fields, including:
 
 ### Human worker
 
-Emphasize role/AuthContext access, human-operating prompt/instructions, role skills, governed tools, surfaces used, direct actions, approval duties, denied/hidden states, trace visibility, and human accountability. A human text request handled by a workstream agent is still human-backed when the agent interprets the request through the human worker's behavior profile, proposes a plan, obtains required confirmation, and invokes allowed governed tools through `human_chat_tool_plan`.
+Emphasize role/AuthContext access, human-operating prompt/instructions, role skills, governed tools, surfaces used, direct actions, approval duties, denied/hidden states, trace visibility, and human accountability. A human text request handled by a workstream assistant is still human-backed when the assistant/functional agent interprets the request through the human worker's behavior profile, proposes a plan, obtains required confirmation, and invokes allowed governed tools through `human_chat_tool_plan`.
 
 ### Functional-agent worker
 
-Emphasize the single owning workstream, managed AgentDefinition or equivalent behavior profile, prompt/skill/reference/model/tool governance, allowed governed tools, result surfaces, human supervision, and provider/configuration fail-closed behavior.
+Emphasize the single owning workstream, managed AgentDefinition or equivalent behavior profile, prompt/skill/reference/model/tool governance, allowed governed tools, result surfaces, human supervision, and provider/configuration fail-closed behavior. For user-facing functional agents, record the product-facing **workstream assistant** label/copy separately from the technical functional-agent id and runtime. The assistant framing must not weaken the worker contract: it remains an AI-backed worker constrained by explicit tool-boundary exposure and backend capabilities.
 
 ### Internal-agent worker
 

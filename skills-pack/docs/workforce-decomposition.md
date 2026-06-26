@@ -55,7 +55,7 @@ A planning output is incomplete if it names a workstream, agent, capability, wor
 | `evaluator-agent` | Specialist reviewer that judges quality, policy fit, risk, completeness, or outcome evidence. | Akka evaluator agent, structured EvaluationResult, workflow gates, decision cards. |
 | `system` | Deterministic workflow, timer, consumer, service integration, projection, or policy engine participant. | Workflow, TimedAction, Consumer, View updater, endpoint/service code. |
 
-Functional agents and human workers are both workstream participants. Internal/autonomous/evaluator agents and system workers usually support the workstream through capability-backed operations, events, task progress, or result surfaces.
+Functional agents and human workers are both workstream participants. Product UX may describe the selected functional agent as the **workstream assistant** because it assists the human inside the workstream rather than owning authority. Keep the implementation/governance artifact as `functional-agent` / workstream agent, with managed behavior profile, tool boundary, traces, and Akka Agent runtime when model-backed. Internal/autonomous/evaluator agents and system workers usually support the workstream through capability-backed operations, events, task progress, or result surfaces.
 
 ## Worker identification workflow
 
@@ -80,7 +80,7 @@ For each human worker, record:
 - workstreams they can enter and default dashboard needs;
 - surfaces they use to inspect, decide, approve, repair, or supervise;
 - actions they can execute directly versus actions requiring approval/escalation;
-- whether the workstream agent may interpret human text requests through the human worker's behavior profile, propose confirmed tool plans, or only answer guidance questions;
+- whether the workstream assistant / functional agent may interpret human text requests through the human worker's behavior profile, propose confirmed tool plans, or only answer guidance questions;
 - evidence and trace visibility;
 - denied/hidden behavior and tenant-isolation expectations.
 
@@ -98,6 +98,7 @@ Classify each as:
 For each agent worker, record:
 
 - single responsibility and explicit non-responsibilities;
+- product-facing assistant label when the agent is user-facing, plus the technical functional-agent id/runtime when model-backed;
 - behavior profile: prompt/instructions, skills, references, governed/runtime tools, policies/rubrics/examples, evidence profile, model/tool-boundary governance, and assistance/delegation mode;
 - worker owner/steward and supervising human role;
 - allowed evidence/data and redaction profile;

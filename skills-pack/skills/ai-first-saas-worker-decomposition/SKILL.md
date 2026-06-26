@@ -71,7 +71,7 @@ Start from affected workstreams or domain outcomes. For each unit of work, list 
 
 Name human workers in domain language, such as Sales Rep, Sales Manager, Inventory Manager, Procurement Lead, Finance Approver, Support Agent, Tenant Admin, Auditor, or SaaS Owner Support Operator.
 
-For each human worker, capture responsibility, behavior profile (human-operating prompt, role skills, governed tools, policies/rubrics/examples, evidence profile, assistance mode), selected AuthContext scope, workstream access, surfaces used, direct actions, approval/escalation duties, whether the workstream agent may interpret human text requests into confirmed tool plans, evidence visibility, trace visibility, and denial/hidden behavior.
+For each human worker, capture responsibility, behavior profile (human-operating prompt, role skills, governed tools, policies/rubrics/examples, evidence profile, assistance mode), selected AuthContext scope, workstream access, surfaces used, direct actions, approval/escalation duties, whether the workstream assistant / functional agent may interpret human text requests into confirmed tool plans, evidence visibility, trace visibility, and denial/hidden behavior.
 
 ### 3. Inventory agent workers
 
@@ -84,7 +84,7 @@ Classify each agent worker:
 - `autonomous-agent`: durable background model-driven worker with task lifecycle;
 - `evaluator-agent`: independent reviewer/judge for quality, risk, policy fit, completeness, or outcomes.
 
-For each agent worker, define single responsibility, non-responsibilities, behavior profile (prompt/instructions, skills, references, governed/runtime tools, policies/rubrics/examples, evidence profile, model/tool-boundary governance, assistance/delegation mode), supervising human, authority level, allowed evidence/data, allowed governed tools and capabilities, approval/autonomy policy, handoffs/escalations, traces, and fail-closed behavior.
+For each agent worker, define single responsibility, non-responsibilities, product-facing assistant label when user-facing, technical functional-agent/workstream-agent id when applicable, behavior profile (prompt/instructions, skills, references, governed/runtime tools, policies/rubrics/examples, evidence profile, model/tool-boundary governance, assistance/delegation mode), supervising human, authority level, allowed evidence/data, allowed governed tools and capabilities, approval/autonomy policy, handoffs/escalations, traces, and fail-closed behavior.
 
 ### 4. Inventory system workers
 
@@ -98,7 +98,7 @@ For each work unit, map:
 primary worker → execution harness → actor adapter → governed tool → capability → supporting worker(s) → reviewer/approver → escalation/fallback → handoff artifact → result surface/event → trace/audit record
 ```
 
-If human and AI workers can both perform or request the same operation, map them to one governed tool inside one capability with separate actor adapters and trace sources. Human adapters include structured `surface_action` browser paths and, when explicitly modeled, `human_chat_tool_plan` flows with proposed-plan detail, confirmation binding, per-tool idempotency/transaction behavior, denials, and result/partial-failure surfaces. AI-backed adapters require explicit `agent_tool_call` tool-boundary exposure and do not inherit human surface availability.
+If human and AI workers can both perform or request the same operation, map them to one governed tool inside one capability with separate actor adapters and trace sources. Human adapters include structured `surface_action` browser paths and, when explicitly modeled, `human_chat_tool_plan` flows with proposed-plan detail, confirmation binding, per-tool idempotency/transaction behavior, denials, and result/partial-failure surfaces. AI-backed adapters require explicit `agent_tool_call` tool-boundary exposure and do not inherit human surface availability. Use `workstream assistant` for product-facing descriptions of the user-facing helper, but keep the functional-agent worker/runtime, managed behavior profile, and tool-boundary contract explicit.
 
 ### 6. Route downstream
 
@@ -116,7 +116,7 @@ Produce a compact worker decomposition with:
 
 - affected workstreams and scope;
 - worker roster grouped by human, functional-agent, internal-agent, autonomous-agent, evaluator-agent, and system workers;
-- for each worker: reasoning/execution engine, behavior profile, responsibility, non-responsibilities, authority level, AuthContext/scope, supervising human or owning workstream, execution harnesses, governed tools and capabilities, actor adapters/exposure channels, surfaces used/produced, handoffs/escalations, traces, and failure behavior;
+- for each worker: reasoning/execution engine, behavior profile, responsibility, non-responsibilities, authority level, AuthContext/scope, supervising human or owning workstream, execution harnesses, governed tools and capabilities, actor adapters/exposure channels, surfaces used/produced, handoffs/escalations, traces, failure behavior, and assistant label vs technical functional-agent id when user-facing;
 - worker-to-work-unit responsibility matrix;
 - human/AI shared-operation map showing one governed-tool with separate actor adapters where applicable, including `surface_action`, `human_chat_tool_plan`, and `agent_tool_call` trace sources when those paths are allowed;
 - candidate attention categories and result surfaces each worker produces or consumes;
