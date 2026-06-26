@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-User-facing functional-agent worker bound to `agent-admin-agent`. It helps SaaS admins navigate Agent Admin, understand safe profile summaries, prepare edit requests, interpret proposals, and route review/activation surfaces.
+User-facing functional-agent worker bound to `agent-admin-agent`. It helps SaaS admins navigate the all-agent Agent Admin workspace, understand safe global/tenant-scoped profile summaries, prepare prompt/skill/reference/profile edit requests, interpret proposals, and route review/activation surfaces.
 
 ## Execution harness and adapters
 
@@ -13,7 +13,7 @@ User-facing functional-agent worker bound to `agent-admin-agent`. It helps SaaS 
 
 ## Authority
 
-Uses the same governed tool ids as browser surfaces but only through adapter-specific grants. It cannot activate behavior, grant authority, or perform side effects without backend authorization and required human review/confirmation.
+Uses the same governed tool ids as browser surfaces but only through adapter-specific grants. It cannot activate behavior, create/delete whole agents, create/edit/delete generated tool code, grant authority, or perform side effects without backend authorization and required human review/confirmation.
 
 ## Traces
 

@@ -7,9 +7,9 @@ Agent Admin policy is intentionally simple and SaaS-admin-only.
 ## Authorization policy
 
 - Only SaaS Owner/Admin users may use Agent Admin.
-- Tenant/organization/customer-scoped Agent Admin access is out of scope.
-- Authorized SaaS admins may view unredacted prompt, skill, and governed reference docs for all agents.
-- Authorized SaaS admins may inspect safe behavior-profile summaries including placement, lifecycle status, steward, authority level, model alias, manifests, tool-boundary categories, and trace links; provider secrets and hidden backend policy internals are never exposed.
+- SaaS app owners operate in the reserved `saas-app-owner` tenant scope; broader tenant/organization/customer operator access remains out of scope unless explicitly added later.
+- Authorized SaaS admins may view unredacted prompt, skill, and governed reference docs for all agents in their authorized Agent Admin scope.
+- Authorized SaaS admins may inspect safe behavior-profile summaries including placement, lifecycle status, steward, authority level, model alias, manifests, allowed generated tools, tool-boundary categories, resolved scope, and trace links; provider secrets, generated tool implementation internals, and hidden backend policy internals are never exposed.
 
 ## Editing policy
 
@@ -19,12 +19,13 @@ Agent Admin policy is intentionally simple and SaaS-admin-only.
 - The editing agent returns structured proposals with proposed content, diff, rationale, risk classification, authority-expansion flags, and suggested tests/replay evidence.
 - Save creates a non-active draft/proposal version; activation is a separate protected backend action.
 - Low-risk copy/clarity drafts may be reviewed and activated immediately by the same authorized SaaS admin as the documented foundation simplification.
-- Medium/high-risk, authority-expanding, model-policy, tool-boundary, approval-boundary, tenant-scope, or secret-like proposals must be denied or routed to decision-card/review instead of direct activation.
-- Prompt/skill/reference text cannot grant backend authority, tools, model/provider access, tenant/customer scope, role capability, approval authority, or autonomous side effects.
+- Medium/high-risk, authority-expanding, backend tool-boundary implementation, approval-boundary, tenant-scope, or secret-like proposals must be denied or routed to decision-card/review instead of direct activation.
+- Changing an agent's allowed generated tool list is a protected, auditable behavior-profile change but is not automatically authority-expanding solely because a generated tool is added.
+- Prompt/skill/reference text cannot grant backend authority, generated tool implementation access beyond the resolved allowed tool list, model/provider access, tenant/customer scope, role capability, approval authority, or autonomous side effects.
 
 ## Version policy
 
-- Versions are immutable and retained.
+- Prompt, skill, reference, and agent behavior-profile versions are immutable and retained.
 - Historical versions are read-only.
 - Edit input is enabled only on the current/latest editable draft or active document.
 - Diffs compare selected version `N` only to `N-1`.
@@ -32,7 +33,7 @@ Agent Admin policy is intentionally simple and SaaS-admin-only.
 
 ## Deletion policy
 
-- Skills and references can be deprecated or permanently deleted by SaaS admins according to lifecycle policy and confirmation requirements.
-- Deleting a skill must remove, deprecate, or reassign affected references and manifest entries without leaving hidden loader access.
+- Skills are independently managed tenant-scoped library artifacts and can be deprecated by default or permanently deleted by SaaS admins only when lifecycle policy permits hard deletion and confirmation requirements are met.
+- Deleting/deprecating a skill must remove, deprecate, or reassign affected references, agent assignments, and manifest entries without leaving hidden loader access.
 - Permanently deleted skills/references cannot be restored.
 - Whole agents cannot be created or deleted in Agent Admin.

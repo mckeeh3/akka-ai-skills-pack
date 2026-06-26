@@ -2,28 +2,28 @@
 
 ## Purpose
 
-Allow SaaS Owner/Admin users to improve governed managed-agent behavior by inspecting safe agent behavior-profile summaries and reviewing/activating AI-assisted changes to versioned behavior artifacts. Artifacts include each agent's `AgentDefinition`, `PromptDocument`, assigned `SkillDocument` records, governed `ReferenceDocument` records, compact `AgentSkillManifest` and `AgentReferenceManifest` entries, safe `ModelConfigRef` summaries, `ToolPermissionBoundary` summaries, and related runtime loading traces.
+Allow SaaS Owner/Admin users to improve governed managed-agent behavior for all app agents by inspecting safe generated-agent behavior-profile summaries and reviewing/activating AI-assisted changes to versioned behavior artifacts. Agents and tools are static/code-generated from app-description. Artifacts include each agent's global or tenant-scoped `AgentDefinition` behavior profile, `PromptDocument`, independently managed tenant-scoped `SkillDocument` records, governed `ReferenceDocument` records, compact `AgentSkillManifest` and `AgentReferenceManifest` entries, safe `ModelConfigRef` summaries, allowed generated tool lists, `ToolPermissionBoundary` summaries, and related runtime loading traces.
 
 ## Actors and scope
 
-- SaaS Owner/Admin: may view all agents through the agent catalog, view full prompt/skill/reference docs, inspect safe behavior-profile references, create/update/deprecate/delete skills, create/update/deprecate/delete governed references, edit agent names and purposes, propose restores from historical doc versions, review/activate permitted low-risk drafts, route higher-risk proposals to review/decision cards, and inspect Agent Admin audit/read traces.
+- SaaS Owner/Admin: may view all agents through the agent catalog, view full prompt/skill/reference docs, inspect safe behavior-profile references, update model config references, create/update/deprecate/remove skills, create/update/deprecate/delete governed references, assign/unassign independently managed skills, assign/unassign static generated tools, propose restores from historical doc/profile versions, review/activate permitted low-risk drafts, route higher-risk proposals to review/decision cards, and inspect Agent Admin audit/read traces. SaaS app owners operate in the reserved `saas-app-owner` tenant scope.
 - Tenant/organization/customer admins: not Agent Admin operators.
 - `AgentBehaviorEditorAgent` (editing-agent): interprets authorized SaaS admin edit requests, reads the relevant current artifact and same-agent context, drafts Markdown-preserving structured `BehaviorChangeProposal` records, summarizes risks/warnings, classifies authority expansion, suggests tests/replay evidence, asks clarifying questions when needed, and returns proposed content for human review. It never directly activates runtime behavior.
 
-Agent Admin applies to all agents in the app, including foundation agents and future business/domain-specific agents. It does not create or delete whole agents.
+Agent Admin applies to all agents in the app, including functional/context-area agents, internal worker agents, evaluator agents, autonomous/background agents, system/foundation agents, and future business/domain-specific agents. It does not create or delete whole agents or create/edit/delete generated tool code.
 
 ## Agent document model
 
-- Each governed managed agent is represented by an `AgentDefinition` behavior profile with placement (`functional_context_area` or `internal_worker`), lifecycle status, owner/steward, authority level, active `PromptDocument`/`PromptVersion`, active `AgentSkillManifest`, active `AgentReferenceManifest`, `ModelConfigRef`, policy refs, trace requirements, and `ToolPermissionBoundary` refs.
-- Every agent may have zero or more `SkillDocument`/`SkillVersion` records assigned through its `AgentSkillManifest`.
+- Each governed managed agent is represented by an `AgentDefinition` behavior profile with placement (`functional_context_area`, `internal_worker`, evaluator, autonomous/background, system/foundation, or future generated placement), lifecycle status, owner/steward, authority level, active `PromptDocument`/`PromptVersion`, active `AgentSkillManifest`, active `AgentReferenceManifest`, `ModelConfigRef`, allowed generated tool list, policy refs, trace requirements, and `ToolPermissionBoundary` refs.
+- Every agent may have zero or more independently managed `SkillDocument`/`SkillVersion` records assigned through its `AgentSkillManifest`. Skills are tenant-scoped library artifacts and are not owned by a specific agent.
 - Every skill may have zero or more governed references associated through `AgentReferenceManifest` entries; the UI may group references under the skill that introduced them.
 - Reference docs are governed references with stable ids, titles, short summaries, when-to-consult hints, and optional access/redaction classification; they are not arbitrary filesystem paths or hidden prompt text.
 - Agent docs support Markdown, and the `AgentBehaviorEditorAgent` must preserve existing Markdown structure unless the user explicitly asks to reorganize it.
-- Agent docs, manifests, `ModelConfigRef` references, and `ToolPermissionBoundary` records are initially created by governed setup from implementation defaults with provenance. SaaS admins may update prompt docs, create/update/deprecate/delete skills, create/update/deprecate/delete references, and update manifest membership only through Agent Admin authorization, proposal, review, activation, and trace checks.
+- Agent profiles, docs, manifests, `ModelConfigRef` references, allowed generated tool lists, and `ToolPermissionBoundary` records are initially created by governed setup from app-description/code-generated defaults with provenance. Agents initially have a global behavior profile. A tenant change to model config reference, prompt, skill assignment list, or generated tool assignment list clones/versions the global profile into that tenant scope; SaaS app owners use the reserved `saas-app-owner` tenant scope. SaaS admins may update prompt docs, create/update/deprecate/remove skills, create/update/deprecate/delete references, update skill assignments, and update generated tool assignments only through Agent Admin authorization, proposal, review, activation, and trace checks.
 
 ## Versioning
 
-- Each saved prompt, skill, or reference edit creates an immutable draft/proposal version; activation is a separate protected action that makes an approved/reviewed version current.
+- Each saved prompt, skill, reference, or agent behavior-profile edit creates an immutable draft/proposal version; activation is a separate protected action that makes an approved/reviewed version current.
 - Version numbers are simple integers.
 - All versions are retained except where a whole skill or reference doc is permanently deleted by configured lifecycle policy.
 - Each version records version number, status, created/proposed time, proposed-by actor, reviewer/activator where applicable, saved content/checksum, risk classification, authority-expansion flags, and the whole editing-session transcript/summary including all user instructions.
@@ -48,22 +48,23 @@ Diff viewing is on demand through a `Show diff` style toggle or action. Users ma
 
 ## Skill and reference lifecycle
 
-- Create skill inputs: skill name, editable purpose/description, compact manifest hint, and free-form content request handled by the editing agent.
-- Delete/deprecate skill requires confirmation naming the skill, stating permanence/deprecation policy, and listing/counting references and manifest assignments that will be removed, deprecated, or reassigned.
-- Permanently deleted skills cannot be restored.
+- Create skill inputs: skill name, editable purpose/description, compact manifest hint, and free-form content request handled by the editing agent. The new skill is created in the tenant-scoped skill library, not under a specific agent.
+- Assigning or unassigning a skill creates a new version of the target agent behavior profile and does not change the skill document version.
+- Delete/deprecate skill requires confirmation naming the skill, stating lifecycle policy, and listing/counting agent assignments, references, and manifest entries that will be removed, deprecated, or reassigned.
+- Skill removal defaults to deprecation, especially when a skill has ever been assigned or used in traces. Permanently deleted skills cannot be restored.
 - Create governed reference inputs: title/name, short description and when-to-consult hint used by the model to decide whether to read it, optional access/redaction classification, and free-form content request handled by the editing agent.
 - Delete/deprecate reference requires confirmation and must remove manifest access.
 - Removing a skill must explicitly remove, deprecate, or reassign references associated with that skill; no hidden loader access remains.
 
 ## Runtime document loading
 
-Each time an agent handles a request, it resolves the active `AgentDefinition`, lifecycle status, authority level, current active `PromptDocument`/`PromptVersion`, compact `AgentSkillManifest`, compact `AgentReferenceManifest`, `ModelConfigRef`/model policy, selected `AuthContext`, and `ToolPermissionBoundary`. The model sees only compact assigned skill and reference names/descriptions/hints until it calls `readSkill(skillId)` or `readReferenceDoc(referenceId)`. Agents only know about skills/references listed for themselves; there is no discovery path for other agents' skills or references. Runtime loading emits `PromptAssemblyTrace`, `SkillLoadTrace`, reference-load trace facts, and `AgentWorkTrace`, including safe denials for unauthorized `PromptDocument` access, unassigned skill/reference denial, disabled/archived-agent denial, inactive/deleted docs, inactive/denied model config, and tool-boundary denial.
+Each time an agent handles a request, it resolves the tenant-specific active behavior profile when present, otherwise the global active profile, then resolves lifecycle status, authority level, current active `PromptDocument`/`PromptVersion`, compact `AgentSkillManifest`, compact `AgentReferenceManifest`, `ModelConfigRef`/model policy, selected `AuthContext`, allowed generated tool list, and `ToolPermissionBoundary`. The model sees only compact assigned skill and reference names/descriptions/hints until it calls `readSkill(skillId)` or `readReferenceDoc(referenceId)`, and it may only invoke generated tools allowed by the resolved profile and backend tool boundary. Agents only know about skills/references listed for themselves; there is no discovery path for other agents' skills or references. Runtime loading emits profile-resolution traces, `PromptAssemblyTrace`, `SkillLoadTrace`, reference-load trace facts, generated-tool assignment trace facts, and `AgentWorkTrace`, including safe denials for unauthorized `PromptDocument` access, unassigned skill/reference denial, unassigned generated tool denial, disabled/archived-agent denial, inactive/deleted docs, inactive/denied model config, and tool-boundary denial.
 
 ## Out of scope
 
-- Tenant/organization/customer-scoped Agent Admin.
 - Creating or deleting whole agents.
-- Provider-secret administration or direct model setting mutation.
-- Tool permission administration beyond viewing/explaining `ToolPermissionBoundary` effects and preserving manifest assignments during skill/reference edits.
-- Whole-agent lifecycle activation/disable/archive controls beyond safe profile inspection.
-- Using prompt/skill/reference text to expand authority, tools, model policy, approval rights, or tenant/customer scope.
+- Creating, editing, or deleting generated tool code; tools are static/code-generated from app-description.
+- Provider-secret administration or raw model setting mutation beyond selecting approved `ModelConfigRef` values for an agent behavior profile.
+- Backend authorization changes or `ToolPermissionBoundary` implementation changes; Agent Admin may change the per-agent allowed generated tool list but cannot make tool code bypass backend checks.
+- Whole-agent lifecycle activation/disable/archive controls beyond safe profile inspection unless later scoped.
+- Using prompt/skill/reference text to expand authority, model policy, approval rights, or tenant/customer scope.

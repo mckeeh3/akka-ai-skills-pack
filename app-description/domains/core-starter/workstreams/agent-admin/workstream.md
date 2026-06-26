@@ -2,11 +2,11 @@
 
 ## Purpose
 
-Allow SaaS Owner/Admin users to improve governed managed-agent behavior by reviewing and activating AI-assisted changes to versioned agent behavior artifacts. Agent behavior records include `AgentDefinition` behavior profiles, `PromptDocument` prompts, `SkillDocument` skills, governed `ReferenceDocument` records, compact `AgentSkillManifest` and `AgentReferenceManifest` entries, `ModelConfigRef` references, and `ToolPermissionBoundary` references assigned to an `AgentDefinition`.
+Allow SaaS Owner/Admin users to improve governed managed-agent behavior for all app agents by reviewing and activating AI-assisted changes to versioned agent behavior artifacts. Agents and tools are static/code-generated from the app-description; Agent Admin manages generated agents through runtime behavior profiles. Agent behavior records include global and tenant-scoped `AgentDefinition` behavior profiles, `PromptDocument` prompts, independently managed tenant-scoped `SkillDocument` skills, governed `ReferenceDocument` records, compact `AgentSkillManifest` and `AgentReferenceManifest` entries, `ModelConfigRef` references, and allowed generated tool lists/tool-boundary references assigned to an `AgentDefinition`.
 
 ## Description
 
-Agent Admin is the workstream where authorized SaaS admins inspect managed-agent behavior profiles and govern the documents that shape managed-agent behavior for all agents. Users should think of the workstream as **improving agent behavior safely**, not managing internal prompt, skill, reference, model, tool, or lifecycle machinery. The UI may show profile references such as placement, lifecycle status, steward, authority level, model alias, tool-boundary summary, and trace links, but provider secrets and backend authorization internals remain hidden.
+Agent Admin is the workstream where authorized SaaS admins inspect generated managed-agent behavior profiles and govern the prompts, skill library, skill assignments, generated tool assignments, and model config references that shape managed-agent behavior for all agents. This includes functional/context-area agents, internal worker agents, evaluator agents, autonomous/background agents, system/foundation agents, and future business/domain-specific agents. Users should think of the workstream as **improving agent behavior safely**, not creating agents or tools. The UI may show profile references such as placement, lifecycle status, steward, authority level, model alias, generated tool summary, tool-boundary summary, and trace links, but provider secrets and backend authorization internals remain hidden.
 
 Editing is intentionally not direct text editing. The user gives free-form instructions, and `AgentBehaviorEditorAgent` (the editing-agent) interprets the request, reads the current document and related agent context, preserves the existing Markdown structure unless asked otherwise, and drafts the actual document changes. The user reviews the proposed full document, summary, advisory warnings/risks, and optional diff before deciding whether to continue refining, Save, or Cancel.
 
@@ -14,7 +14,7 @@ The editing agent never directly mutates active runtime behavior. It returns a s
 
 The common journey is: show/filter the agent catalog, open an agent detail, inspect the runtime profile summary, open its prompt, one of its skills, or one of its governed references, describe the desired behavior improvement, iterate with the editing agent, review the structured proposal/diff/risk, then Save draft/proposal, Activate/Commit when allowed, route to review/decision card, or Cancel. The workstream persists previous surfaces and has no forced default surface. Users may open the dashboard on demand or clear the workstream.
 
-The intended outcome is a simple, trusted, SaaS-admin-only governance workspace: admins can improve prompts, skills, references, and manifest membership without hand-editing raw text, while every proposed, reviewed, activated, rejected, or cancelled change is versioned, auditable, and recoverable through version history. Prompt/skill/reference content remains behavior guidance only; backend authorization, tenant/customer scope, model policy, approval policy, and `ToolPermissionBoundary` enforcement remain authoritative.
+The intended outcome is a simple, trusted, SaaS-admin-only governance workspace: admins can improve prompts, independently managed skills, references, model config references, per-agent skill assignments, and per-agent allowed generated tool lists without hand-editing raw text, while every proposed, reviewed, activated, rejected, or cancelled change is versioned, auditable, and recoverable through version history. Prompt/skill/reference content remains behavior guidance only; backend authorization, tenant/customer scope, generated tool code, model policy, approval policy, and `ToolPermissionBoundary` enforcement remain authoritative.
 
 ## Functional agent and workers
 
@@ -24,7 +24,7 @@ Worker bindings live under `workers/` and distinguish the SaaS admin human worke
 
 ## Capability binding
 
-Primary capability: `../../capabilities/agent-doc-administration.md`. Access is limited to SaaS Owner/Admin contexts. Tenant/organization admins, customer admins, tenant employees, customer users, and auditors without SaaS admin authority are not Agent Admin operators.
+Primary capability: `../../capabilities/agent-doc-administration.md`. Access is limited to SaaS Owner/Admin contexts. SaaS app owners are represented as a reserved `saas-app-owner` tenant for scoped overrides. Tenant/organization admins, customer admins, tenant employees, customer users, and auditors without SaaS admin authority are not Agent Admin operators.
 
 ## Attention model
 

@@ -36,7 +36,12 @@ Reusable governed-tool ids used by core starter capability and workstream bindin
 
 - `list-agent-doc-agents`
 - `read-agent-doc-agent`
-- `update-agent-name-purpose`
+- `update-agent-model-config-ref`
+- `read-agent-behavior-profile-history`
+- `restore-agent-behavior-profile-version`
+- `assign-agent-skills`
+- `assign-agent-generated-tools`
+- `list-agent-skill-library`
 - `read-agent-prompt-doc`
 - `read-agent-skill-doc`
 - `read-agent-skill-reference-doc`
