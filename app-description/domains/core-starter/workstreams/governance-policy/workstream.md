@@ -6,9 +6,15 @@ Manage simple SMB-friendly governance policy settings, SaaS-owner defaults, tena
 
 Governance/Policy is a settings-and-controls center, not an enterprise policy engine. It keeps business-governance controls easy to understand and change while preserving non-overridable SaaS platform security controls.
 
+## Worker roster
+
+- Human worker binding: [`workers/governance-policy-human-operators.md`](workers/governance-policy-human-operators.md) covers SaaS owner admins, tenant admins, auditors, and scoped support users with role-specific authority.
+- Functional-agent worker binding: [`workers/governance-policy-functional-agent-worker.md`](workers/governance-policy-functional-agent-worker.md) is the model-backed workstream assistant behind `governance-policy-agent`.
+- System worker binding: [`workers/governance-policy-system-worker.md`](workers/governance-policy-system-worker.md) deterministically evaluates effective policy, executes authorized writes/checks, and emits history/traces.
+
 ## Functional agent
 
-Owns `governance-policy-agent` as its exactly-one user-facing functional-agent binding. Runtime instances are selected-context workstream logs, not page sessions.
+Owns `governance-policy-agent` as its exactly-one user-facing functional-agent binding. Runtime instances are selected-context workstream logs, not page sessions, and the agent worker does not inherit human surface authority.
 
 ## Capability binding
 
@@ -39,4 +45,6 @@ This node captures current intent only. Runtime readiness still requires local A
 
 This workstream may expose bounded `human_chat_tool_plan` assistance for policy lookup and simple override preparation after deterministic no-mutation surface routing declines the prompt. Chat may explain effective policy, draft an override payload, or prepare a reset/default-management request, but it must not bypass tenant-admin/SaaS-owner authority, write without explicit confirmation, alter hard platform security controls, or invent complex policy semantics.
 
-Representative catalog bindings: `action-governance-policy-list`, `action-governance-policy-read-effective`, `action-governance-policy-set-override`, and `action-governance-policy-reset-override` using governed tools `governance.policy.read_effective`, `governance.policy.set_override`, and `governance.policy.reset_override`. Confirmed execution requires selected `AuthContext`, backend authorization, exact plan snapshot confirmation, required change reason for writes, idempotency, effective-policy recomputation, and trace emission.
+Read/open prompts such as policy search and effective-policy explanation should first route to deterministic no-mutation surface-intent openings or bounded agent read tools. Confirmed chat plans are reserved for side-effecting command plans.
+
+Representative command-plan bindings: `action-governance-policy-set-default`, `action-governance-policy-set-override`, and `action-governance-policy-reset-override` using governed tools `governance.policy.set_default`, `governance.policy.set_override`, and `governance.policy.reset_override`. Confirmed execution requires selected `AuthContext`, backend authorization, exact plan snapshot confirmation, required change reason, idempotency, effective-policy recomputation, and trace emission.

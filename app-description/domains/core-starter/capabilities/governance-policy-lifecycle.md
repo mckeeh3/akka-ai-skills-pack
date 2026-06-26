@@ -14,12 +14,16 @@ Let authorized SaaS owners and tenant admins manage simple governance policy def
 
 ## Governed tools and exposure
 
-- `governance.policy.list` (`browser-tool`, `agent-tool` read): searchable policy catalog with supported scopes, value type, effective value, and overridden indicators.
-- `governance.policy.read_effective` (`browser-tool`, `agent-tool` read): scoped default/override/effective-value detail and decision explanation.
-- `governance.policy.set_default` (`browser-tool` command): SaaS-owner-only update of a default boolean or counter value with required reason.
-- `governance.policy.set_override` (`browser-tool`, confirmed `human_chat_tool_plan` command): tenant-admin update of a business-governance override with required reason.
-- `governance.policy.reset_override` (`browser-tool`, confirmed `human_chat_tool_plan` command): tenant-admin reset of an override back to inherited/default behavior with required reason.
-- `governance.policy.read_history` (`browser-tool`, `agent-tool` read): authorized direct change history and practical runtime outcome links.
+Canonical capability id: `governance-policy-lifecycle`.
+
+- `governance.policy.list` (`surface_action`, `api_call`, bounded `agent_tool_call`, `internal_call` read): searchable policy catalog with supported scopes, value type, effective value, and overridden indicators.
+- `governance.policy.read_effective` (`surface_action`, `api_call`, bounded `agent_tool_call`, `internal_call` read/evaluate): scoped default/override/effective-value detail and decision explanation.
+- `governance.policy.set_default` (`surface_action`, `api_call`, confirmed `human_chat_tool_plan` command): SaaS-owner-only update of a default boolean or counter value with required reason. The functional agent may propose a plan, but backend-confirmed human execution commits it.
+- `governance.policy.set_override` (`surface_action`, `api_call`, confirmed `human_chat_tool_plan` command): tenant-admin update of a business-governance override with required reason.
+- `governance.policy.reset_override` (`surface_action`, `api_call`, confirmed `human_chat_tool_plan` command): tenant-admin reset of an override back to inherited/default behavior with required reason.
+- `governance.policy.read_history` (`surface_action`, `api_call`, bounded `agent_tool_call` read): authorized direct change history and practical runtime outcome links.
+
+Side-effecting tools are never exposed as autonomous `agent_tool_call`s.
 
 ## Authorization and denials
 
@@ -27,13 +31,13 @@ Tenant admins may override tenant business-governance policy values and decide t
 
 Hard platform security controls are not overrideable through this capability. Non-overridable controls include tenant isolation, backend authorization, secret/JWT/provider-key protection, raw prompt/model/provider payload protection, redaction boundaries, audit trace integrity, and platform integrity checks.
 
-Denied writes and reads return safe system messages with no hidden scope enumeration and emit trace evidence.
+Denied writes and reads return safe `system_message` surfaces/results with no hidden scope enumeration and emit trace evidence.
 
 ## Capability contract
 
 Inputs for side-effecting tools include selected `AuthContext`, actor id, policy id, value type, target scope, requested value for set operations, idempotency key, correlation id, current version/freshness token when available, and required reason. Browser payloads never carry tenant/customer/account authority as trusted input; backend-selected context is authoritative.
 
-Outputs are typed surfaces or safe `system-message` responses with status, default value, override value when visible, effective value, overridden indicator, winning-scope explanation, validation failures, allowed/disabled actions, redaction metadata, and trace refs. Raw prompts, provider secrets, hidden authority state, JWTs, raw tool payloads, cross-tenant evidence, raw correlation ids, and idempotency internals are never returned.
+Outputs are typed surfaces or safe `system_message` responses with status, default value, override value when visible, effective value, overridden indicator, winning-scope explanation, validation failures, allowed/disabled actions, redaction metadata, and trace refs. Raw prompts, provider secrets, hidden authority state, JWTs, raw tool payloads, cross-tenant evidence, raw correlation ids, and idempotency internals are never returned.
 
 Supported policy value types are `boolean` and `counter`/`limit`. Additional types require future app-description updates and must remain SMB-simple.
 
@@ -50,5 +54,8 @@ Out of scope: complex policy scripting, simulations, legal compliance workflows,
 ## Linked graph nodes
 
 - Workstream: `../workstreams/governance-policy/workstream.md`
+- Workers: `../workstreams/governance-policy/workers/`
+- Tools: `../workstreams/governance-policy/tools/governed-tools.md`
+- Surfaces: `../workstreams/governance-policy/surfaces/surfaces.md`
 - Tests: `../workstreams/governance-policy/tests/coverage.md`
 - Traces: `../workstreams/governance-policy/traces/work-traces.md`

@@ -19,4 +19,4 @@ SaaS owners may change defaults in defaults context but must not silently overwr
 
 ## Denials
 
-Disabled users, inactive memberships, missing selected context, missing capability, cross-tenant/customer access, hidden scope targets, unsupported policy types/scopes, missing change reason, and attempts to override hard platform security are denied server-side, produce safe system-message feedback where user-facing, and emit required traces without exposing protected data.
+Disabled users, inactive memberships, missing selected context, missing capability, cross-tenant/customer access, hidden scope targets, unsupported policy types/scopes, missing change reason, and attempts to override hard platform security are denied server-side, produce safe `system_message` feedback where user-facing, and emit required traces without exposing protected data.

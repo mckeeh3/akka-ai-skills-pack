@@ -24,7 +24,7 @@
 - Tenant admins cannot change SaaS defaults.
 - SaaS owners changing defaults cannot overwrite tenant overrides.
 - Tenant admins cannot override hard platform controls: tenant isolation, backend authorization, secret/JWT/provider-key protection, raw prompt/model/provider payload protection, redaction boundaries, audit trace integrity, or platform integrity checks.
-- Unsupported policy ids, unsupported scopes, unsupported value types, missing reasons, stale versions, malformed counters, and hidden customer/account targets return safe validation/denial/system-message outcomes and emit traces.
+- Unsupported policy ids, unsupported scopes, unsupported value types, missing reasons, stale versions, malformed counters, and hidden customer/account targets return safe validation/denial/`system_message` outcomes and emit traces.
 - Browser payloads never expose provider secrets, raw prompts, hidden authority state, JWTs, raw tool payloads, raw correlation/idempotency internals, or cross-tenant evidence.
 - The Governance/Policy agent may explain, search, summarize, and draft simple changes, but cannot autonomously mutate policies or expand authority.
 
@@ -35,8 +35,8 @@
 
 ## `human_chat_tool_plan` coverage
 
-- Given deterministic surface routing can safely open or prefill a surface, when a high-confidence no-mutation prompt is submitted, then the router returns that surface first and `human_chat_tool_plan` is not used.
-- Given a representative prompt such as **allow SalesAgent to send emails immediately** and an authorized selected `AuthContext`, when the chat request is classified as `human_chat_tool_plan`, then the response is a no-mutation plan proposal surface that lists the relevant action, governed tool, capability, schema, required reason, idempotency, side effects, result surface, and trace refs.
+- Given deterministic surface routing can safely open or prefill a surface for policy reads/searches/effective-detail requests, when a high-confidence no-mutation prompt is submitted, then the router returns that surface first and `human_chat_tool_plan` is not used.
+- Given a representative command prompt such as **allow SalesAgent to send emails immediately**, **reset this policy to default**, or **set the SaaS default for this policy to false** and an authorized selected `AuthContext`, when the chat request is classified as `human_chat_tool_plan`, then the response is a no-mutation plan proposal surface that lists the relevant action, governed tool, capability `governance-policy-lifecycle`, schema, required reason, idempotency, side effects, result surface, and trace refs.
 - Given a proposed plan has not been explicitly confirmed, when the request completes, then no policy/default/override state mutation has occurred.
 - Given the human confirms the exact `planId` and `planSnapshotId`, when backend authorization, catalog, validation, selected scope, required reason, hard-platform-security, and idempotency checks pass, then each step executes as an independent transaction boundary and returns the declared result or recovery surface.
-- Given a modified, stale, expired, cross-context, cross-tenant/customer, missing-confirmation, out-of-catalog, unsupported-field, hidden-target, missing-reason, hard-platform-security, or unauthorized plan is confirmed, then execution is denied with a safe system message, `noDirectMutation=true`, no hidden-target enumeration, and trace refs.
+- Given a modified, stale, expired, cross-context, cross-tenant/customer, missing-confirmation, out-of-catalog, unsupported-field, hidden-target, missing-reason, hard-platform-security, or unauthorized plan is confirmed, then execution is denied with a safe `system_message`, `noDirectMutation=true`, no hidden-target enumeration, and trace refs.

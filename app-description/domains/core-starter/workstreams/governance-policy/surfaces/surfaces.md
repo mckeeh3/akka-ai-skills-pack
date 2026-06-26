@@ -6,13 +6,28 @@ All Governance/Policy browser actions use canonical `action-governance-policy-*`
 
 | Surface action | Governed tool | Capability | Result surface | Notes |
 |---|---|---|---|---|
-| `action-governance-policy-dashboard` | `governance.policy.list` | `governance.policy.read` | `surface-governance-policy-dashboard` | Simple overview of policies, overrides, recent changes, and safe shortcuts. |
-| `action-governance-policy-list` | `governance.policy.list` | `governance.policy.read` | `surface-governance-policy-inventory` | All-policy list with search/filter. |
-| `action-governance-policy-read-effective` | `governance.policy.read_effective` | `governance.policy.read` | `surface-governance-policy-effective-detail` | Shows default, override, effective value, winning scope, and decision explanation. |
-| `action-governance-policy-set-default` | `governance.policy.set_default` | `governance.policy.default.manage` | `surface-governance-policy-edit` | SaaS-owner/defaults context only; requires reason and idempotency. |
-| `action-governance-policy-set-override` | `governance.policy.set_override` | `governance.policy.override` | `surface-governance-policy-edit` | Tenant-admin override; requires reason and idempotency; active immediately. |
-| `action-governance-policy-reset-override` | `governance.policy.reset_override` | `governance.policy.override` | `surface-governance-policy-edit` | Tenant-admin reset to inherited/default behavior; requires reason and idempotency. |
-| `action-governance-policy-history` | `governance.policy.read_history` | `governance.policy.read` | `surface-governance-policy-history` | Change history plus practical runtime outcome links when available. |
+| `action-governance-policy-dashboard` | `governance.policy.list` | `governance-policy-lifecycle` | `surface-governance-policy-dashboard` | `surface_action` + `api_call`; simple overview of policies, overrides, recent changes, and safe shortcuts. |
+| `action-governance-policy-list` | `governance.policy.list` | `governance-policy-lifecycle` | `surface-governance-policy-inventory` | `surface_action` + `api_call`; all-policy list with search/filter. |
+| `action-governance-policy-read-effective` | `governance.policy.read_effective` | `governance-policy-lifecycle` | `surface-governance-policy-effective-detail` | `surface_action` + `api_call`; shows default, override, effective value, winning scope, and decision explanation. |
+| `action-governance-policy-set-default` | `governance.policy.set_default` | `governance-policy-lifecycle` | `surface-governance-policy-edit` | `surface_action` + `api_call`; SaaS-owner/defaults context only; requires reason and idempotency. Confirmed `human_chat_tool_plan` may reuse the same governed tool. |
+| `action-governance-policy-set-override` | `governance.policy.set_override` | `governance-policy-lifecycle` | `surface-governance-policy-edit` | `surface_action` + `api_call`; tenant-admin override; requires reason and idempotency; active immediately. Confirmed `human_chat_tool_plan` may reuse the same governed tool. |
+| `action-governance-policy-reset-override` | `governance.policy.reset_override` | `governance-policy-lifecycle` | `surface-governance-policy-edit` | `surface_action` + `api_call`; tenant-admin reset to inherited/default behavior; requires reason and idempotency. Confirmed `human_chat_tool_plan` may reuse the same governed tool. |
+| `action-governance-policy-history` | `governance.policy.read_history` | `governance-policy-lifecycle` | `surface-governance-policy-history` | `surface_action` + `api_call`; change history plus practical runtime outcome links when available. |
+
+## Structured-surface standard block
+
+Applies to every surface below unless a surface states a narrower rule.
+
+- ownerFunctionalAgentId: `governance-policy-agent`.
+- reusableByFunctionalAgentIds: none by default; cross-workstream links open this workstream's surfaces through backend-authorized deep links.
+- lifecycle status: compile-ready description; runtime-ready is not claimed.
+- placement: Governance/Policy workstream shell route/panel; detail/edit/history surfaces may open inline, side-panel, or deep-link according to frontend realization.
+- data source: governed tools in `../tools/governed-tools.md`; browser payloads are frontend-safe DTOs, not raw entity state.
+- actor adapters: human surface actions use `surface_action`; protected endpoints use `api_call`; confirmed command plans use separate `human_chat_tool_plan`; agent read tools use `agent_tool_call` only when explicitly granted.
+- action shape: every action includes `browserToolId` equal to its surface action id, `governedToolId`, `capabilityId: governance-policy-lifecycle`, input schema ref, idempotency requirements, result surface, and audit event type.
+- events/reconnect: stale or reconnect events mark affected surfaces stale and require refresh or server replay; malformed/duplicate/cross-context events are safe no-ops with diagnostics.
+- style/catalog binding: use `../../../../../global/surfaces/ui-style-and-runtime-contracts.md` and the standard workstream shell/component catalog; avoid exposing backend ids as primary user copy.
+- system feedback: denial, validation, stale, conflict, and provider/configuration failures render typed `system_message` surfaces.
 
 ## Surface contracts
 
@@ -30,7 +45,7 @@ Required payload schema:
 - `recentActivity`: redacted direct policy changes with actor display summary, policy name, scope summary, old/new/effective value summaries, reason, timestamp, and trace link.
 - `redaction`: field-level indicators for hidden cross-tenant/customer/account details, raw secrets, raw provider/model data, raw prompts, raw tool payloads, JWTs, raw correlation ids, and idempotency keys.
 
-Required states: loading, empty, ready, forbidden/system-message, stale/reconnect, partial-data, and failure.
+Required states: loading, empty, ready, forbidden/`system_message`, stale/reconnect, partial-data, and failure.
 
 ### `surface-governance-policy-inventory` (`governance.policy.inventory.v1`)
 
@@ -47,11 +62,11 @@ Required payload schema:
 - `authorizedActions`: only actions backend authorizes for the selected actor/context.
 - `redaction`: field-level indicators for hidden scopes and protected data.
 
-Required states: loading, empty, ready, filter-validation-error, forbidden/system-message, stale/reconnect, partial-data, and failure.
+Required states: loading, empty, ready, filter-validation-error, forbidden/`system_message`, stale/reconnect, partial-data, and failure.
 
 ### `surface-governance-policy-effective-detail` (`governance.policy.effective-detail.v1`)
 
-Pattern: `show-inspection`.
+Pattern: collection-object show/inspection surface for a policy setting.
 
 Purpose: explain one policy's current default, override, effective value, scope precedence, and runtime decision semantics.
 
@@ -64,11 +79,11 @@ Required payload schema:
 - `traceLinks`: user-readable policy-decision/admin-audit/workstream trace summaries.
 - `redaction`: field-level indicators for hidden scope details and protected data.
 
-Required states: loading, ready, read-only, forbidden/system-message, not-found-or-redacted, conflict/stale, partial-data, and failure.
+Required states: loading, ready, read-only, forbidden/`system_message`, not-found-or-redacted, conflict/stale, partial-data, and failure.
 
 ### `surface-governance-policy-edit` (`governance.policy.edit.v1`)
 
-Pattern: `settings-edit`.
+Pattern: collection-object edit surface for a policy setting.
 
 Purpose: allow authorized SaaS owners to update defaults and tenant admins to set/reset tenant overrides for simple policy values.
 
@@ -80,11 +95,11 @@ Required payload schema:
 - `result`: refreshed effective-policy summary, history reference, and trace reference after successful write.
 - `redaction`: indicators for hidden scopes and protected data.
 
-Required states: loading, ready, editing, submitting, validation-error, forbidden/system-message, conflict/stale, success, and failure.
+Required states: loading, ready, editing, submitting, validation-error, forbidden/`system_message`, conflict/stale, success, and failure.
 
 ### `surface-governance-policy-history` (`governance.policy.history.v1`)
 
-Pattern: `timeline-history`.
+Pattern: `audit-timeline` / lifecycle history surface.
 
 Purpose: show direct policy changes and practical runtime outcome links for tenant admins, auditors, and SaaS owner support.
 
@@ -96,11 +111,11 @@ Required payload schema:
 - `filters`: policy name/search, workstream, agent, tool/action, role, actor, changed window, and overridden/default state where backend-supported.
 - `redaction`: field-level indicators for hidden scope details and protected data.
 
-Required states: loading, empty, ready, filter-validation-error, forbidden/system-message, stale/reconnect, partial-data, and failure.
+Required states: loading, empty, ready, filter-validation-error, forbidden/`system_message`, stale/reconnect, partial-data, and failure.
 
 ## Authorization and tenant scope
 
-Backend resolves SaaS-owner/defaults context, tenant/customer/account authority, and row/action visibility from selected `AuthContext`. Browser-provided tenant/customer/account ids, policy ids, filters, and scopes are hints only. Direct/deep-link denials return safe system messages with no hidden target enumeration.
+Backend resolves SaaS-owner/defaults context, tenant/customer/account authority, and row/action visibility from selected `AuthContext`. Browser-provided tenant/customer/account ids, policy ids, filters, and scopes are hints only. Direct/deep-link denials return safe `system_message` surfaces with no hidden target enumeration.
 
 ## Trace, audit, and work evidence
 
@@ -113,7 +128,7 @@ Use the selected web UI style guide and component catalog for dashboards, list/s
 ## Required tests
 
 - App-description/contract tests prove payload schemas, actions, auth/scope rules, states, trace links, redaction, and simple-policy sufficiency.
-- Frontend tests prove list/search filters, overridden indicators, effective detail, edit validation, history rendering, forbidden/system-message states, secret-boundary redaction, keyboard behavior, and responsive rendering.
+- Frontend tests prove list/search filters, overridden indicators, effective detail, edit validation, history rendering, forbidden/`system_message` states, secret-boundary redaction, keyboard behavior, and responsive rendering.
 - Backend/API tests prove selected AuthContext scoping, SaaS-owner default writes, tenant-admin overrides, reset-to-default, default update without tenant override overwrite, finer-grained precedence, required reason validation, idempotency, hard-platform-security denials, and trace/history evidence.
 
 Surface-description sufficiency review: these definitions are sufficiently unambiguous for a focused first implementation slice of SMB-friendly Governance/Policy settings without inventing proposal/approval/simulation workflows.
