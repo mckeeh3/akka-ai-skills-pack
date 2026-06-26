@@ -68,7 +68,7 @@ Additional mandatory cross-links:
 
 ### Worker nodes
 
-A worker node or binding should state:
+Use `./worker-artifact-contract.md` for the reusable `workers/<worker>.md` Markdown shape. A worker node or binding should state:
 
 - worker id and type: `human`, `functional-agent`, `internal-agent`, `autonomous-agent`, `evaluator-agent`, or `system`;
 - owning workstream or cross-cutting/system-only reason;
@@ -78,6 +78,8 @@ A worker node or binding should state:
 - allowed governed tools and actor adapters;
 - required evidence, input context, output/result surfaces, supervision, handoff, escalation, and failure behavior;
 - trace obligations and tests.
+
+Place reusable worker definitions under `app-description/global/workers/<worker>.md`. Place workstream-specific bindings or local workers under `app-description/domains/<domain>/workstreams/<workstream>/workers/<worker>.md`; bindings should link to the global worker with `Uses:` and record local scope, adapters, tools, surfaces, tests, and realization links.
 
 ### Governed-tool nodes
 

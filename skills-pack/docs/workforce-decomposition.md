@@ -7,6 +7,7 @@ This is the canonical workforce-decomposition doctrine for generated secure AI-f
 Use it with:
 
 - `./app-worker-tool-model.md` for the canonical worker → harness → actor adapter → governed tool → capability → Akka implementation separation
+- `./worker-artifact-contract.md` for reusable `workers/<worker>.md` current-intent artifact shape
 - `./requirements-to-workstream-development-process.md`
 - `./agent-workstream-application-architecture.md`
 - `./workstream-contract.md`
@@ -136,7 +137,7 @@ Avoid responsibility gaps and unsafe overlap. If two workers can perform the sam
 
 ## Worker contract
 
-Use this minimum contract in app-description, specs, backlogs, and decomposition plans when the worker is relevant to implementation:
+Use this minimum contract in app-description, specs, backlogs, and decomposition plans when the worker is relevant to implementation. For maintained current-intent files, use the fuller reusable Markdown shape in `./worker-artifact-contract.md` under `app-description/global/workers/<worker>.md` or `app-description/domains/<domain>/workstreams/<workstream>/workers/<worker>.md`.
 
 ```yaml
 workerId:

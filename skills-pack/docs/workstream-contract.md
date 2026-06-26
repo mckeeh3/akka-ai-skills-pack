@@ -140,7 +140,7 @@ app-description/domains/<domain>/
   workstreams/<workstream>/
     workstream.md                           # workstream responsibility, readiness, and manifest/index pointer
     access.md                               # roles, AuthContext, hidden/denied states
-    workers/<worker>.md                     # human/agent/system worker roster and handoffs
+    workers/<worker>.md                     # human/agent/system worker roster and handoffs; use worker-artifact-contract.md
     surfaces/<surface-or-graph>.md          # dashboard, surface contracts, graph edges, deferred result surfaces
     agents/<functional-agent-or-bundle>.md  # expertise bundle and internal agent graph bindings
     tools/<governed-tool-binding>.md        # workstream adapter/tool bindings

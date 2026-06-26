@@ -5,6 +5,7 @@
 This is the canonical skills-pack doctrine for separating app workers, execution harnesses, actor adapters, governed tools, capabilities, and Akka implementation. Use it with:
 
 - `./workforce-decomposition.md` for worker rosters, authority, supervision, handoffs, and traces;
+- `./worker-artifact-contract.md` for reusable `workers/<worker>.md` app-description artifacts and bindings;
 - `./agent-workstream-application-architecture.md` for workstreams, functional agents, and the workstream shell;
 - `./structured-surface-contracts.md` for human surface contracts and surface actions;
 - `./capability-first-backend-architecture.md` for capability and governed-tool contracts;
@@ -172,7 +173,7 @@ A governed tool may require multiple Akka components. Example: `inviteOrganizati
 
 ## App-description graph implications
 
-When maintaining app descriptions, make these links first-class rather than implicit:
+When maintaining app descriptions, make these links first-class rather than implicit. Worker definitions and workstream bindings should use `./worker-artifact-contract.md` so the worker side of the chain is not buried in surface, agent, or tool files:
 
 ```text
 worker -> execution harness

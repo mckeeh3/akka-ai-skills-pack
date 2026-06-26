@@ -24,6 +24,7 @@ Read first:
 - `../docs/intent-to-realization-flow.md`
 - `../docs/app-development-lifecycle.md`
 - `../docs/app-worker-tool-model.md`
+- `../docs/worker-artifact-contract.md`
 - `../docs/app-description-component-graph.md`
 - `../docs/app-description-to-code-compile-contract.md`
 - `../docs/requirements-to-workstream-development-process.md`
