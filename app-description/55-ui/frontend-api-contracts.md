@@ -85,7 +85,7 @@ DTOs:
 
 ## Workstream shell contracts
 
-The canonical frontend runtime is the workstream shell described by `global/surfaces/ui-style-and-runtime-contracts.md`. These endpoints return typed structured surface envelopes; compatibility `/api/admin/**` JSON routes do not replace this contract.
+The canonical frontend runtime is the workstream shell described by `global/surfaces/workstream-shell.md` and styled/governed by `global/surfaces/ui-style-and-runtime-contracts.md`. These endpoints return typed structured surface envelopes; compatibility `/api/admin/**` JSON routes do not replace this contract.
 
 - `POST /api/workstream/bootstrap` loads `/api/me`-safe shell state, selected `AuthContext`, authorized functional-agent rail entries, initial workstream attention, structured surfaces, realtime connection metadata, trace/correlation refs, and redaction metadata. Missing bearer, disabled account, inactive membership, missing selected context, provider/model/outbox blockers, or hidden scope returns a typed safe shell/system-message state without secrets or hidden object enumeration.
 - `POST /api/workstream/actions` executes capability-backed surface actions with `X-Selected-Context-Id`, backend reauthorization, idempotency/correlation metadata where needed, and typed result surfaces. Browser action ids, disabled controls, route params, and local state are advisory only; backend capability, scope, policy, provider readiness, and approval gates are authoritative.

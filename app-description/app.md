@@ -37,7 +37,7 @@ Reusable foundation doctrine is referenced rather than duplicated here:
 
 - Generators and maintainers must read this file, `deferred-scope.md`, global runtime contracts, workstream surface contracts, and realization caveats together before treating behavior as current intent.
 - Archived specs, compatibility route names, retired action ids, legacy screen modules, fixtures, demo data, and test-only providers are never product authority and must not be used to infer missing behavior.
-- Canonical workstream shell contracts are authoritative for browser behavior; compatibility `/api/admin/**` routes are protected service/API edges only.
+- Canonical workstream shell contracts in `global/surfaces/workstream-shell.md` are authoritative for browser behavior; compatibility `/api/admin/**` routes are protected service/API edges only.
 - Model-backed, Resend-backed, WorkOS/AuthKit-backed, and outbox-backed behavior must either execute through configured runtime paths or return explicit fail-closed surfaces/results. Canned or model-less success is forbidden as normal runtime behavior.
 - Deferred scope remains absent until an accepted intent change adds capability, surface, API, auth, trace, test, and realization mappings in one consistent update.
 
