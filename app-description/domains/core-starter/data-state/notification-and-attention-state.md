@@ -15,11 +15,11 @@ Durable personal notification, workstream attention, dashboard-count, and source
 - Snooze has an explicit backend expiry and reactivates only if the source item still needs attention and remains visible to the user.
 - Expired notifications remain available only as audit/read-history evidence where policy permits; they are not active attention.
 - Notification preferences are account-scoped UX preferences and cannot disable mandatory security, provider-failure, invitation, approval, or audit in-app notifications required by policy.
-- Email notifications are foundation-scoped to invitations only. Approval-required, provider/outbox/model blocked, access-review ready, audit/export approval, policy activation/rollback, and other foundation attention events remain in-app unless a later accepted intent change adds email contracts, authorization, traces, and tests.
+- Email notifications are foundation-scoped to invitations only. Approval-required, provider/outbox/model blocked, access-review ready, audit/export approval, policy-history/effective-policy attention, and other foundation attention events remain in-app unless a later accepted intent change adds email contracts, authorization, traces, and tests.
 
 ## Source ownership
 
-Source workstreams own the canonical lifecycle of the source object: User Admin owns invitations/access reviews/identity exceptions, Agent Admin owns AI-assisted edit sessions, saved document versions, permanent skill/reference deletions, restore actions, and runtime skill/reference read trace surfaces, Governance/Policy owns policy proposals/impact analyses, Audit/Trace owns trace investigations/exports/summary tasks, and My Account owns personal digest/export tasks. Notification and attention state stores only browser-safe routing metadata, source refs, redaction summaries, lifecycle projection state, and personal read/dismiss/snooze/archive state.
+Source workstreams own the canonical lifecycle of the source object: User Admin owns invitations/access reviews/identity exceptions, Agent Admin owns AI-assisted edit sessions, saved document versions, permanent skill/reference deletions, restore actions, and runtime skill/reference read trace surfaces, Governance/Policy owns SaaS defaults, tenant overrides, effective-policy history, and runtime policy-decision evidence, Audit/Trace owns trace investigations/exports/summary tasks, and My Account owns personal digest/export tasks. Notification and attention state stores only browser-safe routing metadata, source refs, redaction summaries, lifecycle projection state, and personal read/dismiss/snooze/archive state.
 
 ## Retention and traces
 

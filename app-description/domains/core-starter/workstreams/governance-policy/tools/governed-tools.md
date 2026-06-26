@@ -6,40 +6,42 @@ Global tool inventory: `../../../../../global/tools/foundation-governed-tools.md
 
 ## Workstream exposure
 
-Allowed governed tools: list-policy-proposals, draft-policy-proposal, simulate-policy-change, approve-activate-or-rollback-policy, record-policy-outcome-note, start-policy-impact-analysis, read-policy-impact-analysis, cancel-policy-impact-analysis, accept-policy-impact-result, reject-policy-impact-result, request-policy-impact-changes.
+Allowed governed tools:
 
-Tools are exposed as browser, agent, or internal tools only as stated by the linked capability. Side-effecting or high-impact tools require idempotency, correlation, authorization, approval policy, and audit/work traces. Denied tool calls are traced and return safe feedback.
+- `governance.policy.list`: read the searchable policy catalog and visible scopes.
+- `governance.policy.read_effective`: read SaaS default, tenant override, effective value, override indicator, and decision explanation for an authorized policy/scope.
+- `governance.policy.set_default`: SaaS-owner-only write of a default boolean or counter value.
+- `governance.policy.set_override`: tenant-admin write of a tenant override for an authorized business-governance policy/scope.
+- `governance.policy.reset_override`: tenant-admin reset of a tenant override back to the inherited/default value.
+- `governance.policy.read_history`: read authorized change history and runtime outcome links.
 
-Impact-analysis tools are advisory task tools. They may create, read, cancel, or disposition an impact-analysis task/result, but they do not approve, activate, roll back, weaken security, expand authority, or mutate policy state except by linking evidence/disposition metadata to the proposal.
+Tools are exposed as browser tools and bounded agent tools only as stated by the linked capability. Side-effecting tools require selected `AuthContext`, backend authorization, supported policy id/type/scope validation, required reason, idempotency, correlation, and audit/work traces. Denied tool calls are traced and return safe feedback.
 
+## `human_chat_tool_plan` current-intent catalog
 
-## `human_chat_tool_plan` expanded current-intent catalog
+Exposure channel `human_chat_tool_plan` remains proposal-and-confirmation only. Deterministic no-mutation surface routing runs first. Initial execution-oriented chat requests may return a no-mutation plan proposal, and no state changes occur until exact human plan-snapshot confirmation and backend authorization succeed.
 
-This catalog records current intent for later runtime expansion. It reuses the same governed tool ids as browser surface actions and does not by itself change runtime behavior. Exposure channel `human_chat_tool_plan` remains proposal-and-confirmation only: deterministic no-mutation surface routing runs first, the initial execution-oriented chat request may only return a no-mutation plan proposal, and no state changes until exact human plan-snapshot confirmation and backend authorization succeed.
+Allowed entries:
 
-Allowed expanded entries:
+| Classification | Representative prompts | Surface action ids | Shared governed tool ids | Capability ids | Result surface(s) |
+|---|---|---|---|---|---|
+| `chat-executable-now` | `show policy settings`; `show effective policy for SalesAgent email`; `show overridden policies` | `action-governance-policy-list`; `action-governance-policy-read-effective` | `governance.policy.list`; `governance.policy.read_effective` | `governance.policy.read` | `surface-governance-policy-inventory`; `surface-governance-policy-effective-detail` |
+| `chat-proposal-only` | `allow SalesAgent to send emails immediately`; `reset this policy to default`; `set max retries to 3` | `action-governance-policy-set-override`; `action-governance-policy-reset-override`; `action-governance-policy-set-default` | `governance.policy.set_override`; `governance.policy.reset_override`; `governance.policy.set_default` | `governance.policy.override`; `governance.policy.default.manage` | `surface-governance-policy-edit`; `surface-governance-policy-history` |
 
-| Classification | Representative prompts | Surface action ids | Shared governed tool ids | Capability ids | Input schema and validation | Result surface(s) |
-|---|---|---|---|---|---|---|
-| `chat-executable-now` | `list policy proposals`; `show this policy proposal` | `action-governance-policy-list`; `action-governance-policy-read` | `list-policy-proposals`; `governance.policy.read` | `governance.policy.read` | `schema.governance-policy.inventory.v1`; `schema.governance-policy.detail.v1`; require selected scope, visible/filter-bound proposal or policy ref, redacted output, and no hidden-row enumeration | `surface-governance-policy-inventory`; `surface-governance-policy-detail` |
-| `chat-proposal-only` | `draft a policy proposal to require approval before redacted exports`; `submit this policy proposal`; `simulate this policy proposal`; `start impact analysis for this proposal`; `read the impact analysis` | `action-governance-policy-draft-proposal`; `action-governance-policy-submit-proposal`; `action-governance-policy-simulate`; `action-governance-policy-start-impact-analysis`; `action-governance-policy-read-impact-analysis` | `draft-policy-proposal`; `simulate-policy-change`; `start-policy-impact-analysis`; `read-policy-impact-analysis` | `governance.policy.propose`; `governance.policy.simulate`; `governance.policy.impact_analysis.start`; `governance.policy.impact_analysis.read` | Proposal/simulation/impact schemas under `schema.governance-policy.*`; require browser-safe proposed change summary, visible proposal refs, provider/runtime fail-closed state when required, no activation/approval, and idempotency key | Proposal, simulation, and impact-analysis task/result surfaces |
+Blocked or out-of-scope entries:
 
-Expanded classification and blocked/surface-only rationale:
+- complex policy scripts or arbitrary rule expressions;
+- policy simulations or impact-analysis tasks;
+- legal compliance workflows;
+- policy-edit approval workflows;
+- default notifications for policy changes;
+- enterprise delegation models;
+- any request to override hard platform security controls.
 
-| Classification | Action groups | Rationale and boundary |
-|---|---|---|
-| `router-only` | Governance dashboard open | Deterministic no-mutation route keeps policy attention and queues visible without implying lifecycle authority. |
-| `surface-only` | Target-specific detail opens without visible binding; outcome note until target binding exists; impact-result disposition review | Dedicated surfaces preserve visible proposal binding, evidence review, and human reason capture. |
-| `chat-proposal-only` | Draft/submit proposal, simulation, start/read impact analysis | These create or read inert/advisory artifacts only; they cannot approve, activate, roll back, weaken policy, or expand authority. |
-| `approval-gated` | Policy decide/approve/reject/request changes, outcome note when target binding is complete, impact-analysis cancel/accept/reject/request changes, activation, rollback | Human governance decisions and live authority changes require lifecycle prerequisites and dedicated decision-card semantics beyond chat confirmation. |
-| `blocked-pending-design` | Direct activation/rollback/threshold weakening without approved proposal and rollback metadata; unmodeled export policy changes | Live policy authority changes need full approval, simulation evidence, rollback, recovery, and trace policy before chat exposure. |
-| `internal-only` | Policy evaluators, enforcement hooks, scheduled outcome follow-ups, impact-analysis workers | Background/governance service paths are not direct chat catalog steps. |
-| `out-of-scope` | Business-domain policy surfaces outside foundation Governance/Policy | Outside the five foundation workstreams for this catalog expansion. |
+Execution requirements for every accepted entry:
 
-Execution requirements for every accepted Governance/Policy entry:
-
-- proposal step validation rejects out-of-catalog action/tool/capability combinations, hidden policy/proposal targets, unsafe output bindings, missing provider/runtime/tool-boundary readiness, unsupported input fields, direct activation/rollback, authority expansion, and policy-weakening shortcuts;
-- confirmation must bind `planId`, `planSnapshotId`, selected `AuthContext`, requestedBy, confirmedBy, step hashes, idempotency root, correlation id, and visible side-effect/approval acknowledgements;
-- every confirmed step recomputes backend authorization, selected tenant/customer scope, lifecycle prerequisites, provider fail-closed state when applicable, idempotency, and trace emission;
-- idempotent replay returns prior proposal/advisory/read results without duplicate proposals, provider runs, activation, rollback, or traces; partial failure reports completed, failed, skipped, and recovery steps;
-- no workstream agent, prompt, frontend route, disabled/visible control, or tool description grants autonomous mutation authority.
+- validate catalog membership, supported policy type, supported scope, selected context, actor capability, required reason for writes, idempotency, and trace emission;
+- recompute and return effective policy after writes;
+- reject hidden scope targets, unsupported value types, cross-tenant/customer scope, missing reasons, stale versions, and hard platform-security overrides;
+- idempotent replay returns prior write/read results without duplicate history or traces;
+- no workstream agent, prompt, frontend route, visible control, or tool description grants authority beyond backend authorization.

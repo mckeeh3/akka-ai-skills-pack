@@ -69,16 +69,11 @@ Reusable governed-tool ids used by core starter capability and workstream bindin
 - `review-audit-summary-task`
 - `accept-audit-summary-task`
 - `reject-audit-summary-task`
-- `list-policy-proposals`
-- `draft-policy-proposal`
-- `simulate-policy-change`
-- `approve-activate-or-rollback-policy`
-- `record-policy-outcome-note`
-- `start-policy-impact-analysis`
-- `read-policy-impact-analysis`
-- `cancel-policy-impact-analysis`
-- `accept-policy-impact-result`
-- `reject-policy-impact-result`
-- `request-policy-impact-changes`
+- `governance.policy.list`
+- `governance.policy.read_effective`
+- `governance.policy.set_default`
+- `governance.policy.set_override`
+- `governance.policy.reset_override`
+- `governance.policy.read_history`
 
 Exposure labels are `browser-tool`, `agent-tool`, `internal-tool`, or `onboarding-tool`; prompt content cannot add exposure or authority. Side-effecting tools require backend authorization, idempotency/correlation handling, audit/work traces, and approval/confirmation when policy marks the action risky. `onboarding-tool` exposure is reserved for deterministic invitee/system flows such as invitation acceptance and is not agent authority.

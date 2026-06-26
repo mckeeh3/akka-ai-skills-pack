@@ -556,7 +556,7 @@ Every consequential browser action has a stable action id, maps to capability `a
 - My Account may link to a user's own trace refs through `my_account.view_own_trace_refs`.
 - User Admin links to Audit/Trace for access, invitation, role, support-access, identity exception, and access-review evidence.
 - Agent Admin links to Audit/Trace for PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, ToolPermissionBoundary denials, model/provider readiness, behavior proposals, and AgentWorkTrace.
-- Governance/Policy links to Audit/Trace for policy proposal, simulation, approval, activation, rollback, impact-analysis, and outcome-note evidence.
+- Governance/Policy links to Audit/Trace for SaaS default changes, tenant overrides, reset-to-default actions, effective-policy runtime decisions, hard-platform-security override denials, and policy history evidence.
 
 Opening any trace link reauthorizes through Audit/Trace capabilities. Hidden/cross-scope traces return `not_found_or_redacted` or a safe system message and do not reveal hidden ids or counts.
 

@@ -6,7 +6,7 @@
 - `tenant-admin`: may inspect Organization/Tenant-scoped audit/work trace evidence for the selected Organization, including customer-boundary administration evidence within that Organization.
 - `customer-admin`: may inspect Customer-scoped audit/work trace evidence for the selected Customer only; sibling-customer and tenant-wide evidence is omitted or redacted.
 - `auditor`: may inspect scoped evidence where explicitly granted.
-- `policy-owner-approver`: may inspect policy/decision trace evidence where authorized for the selected scope.
+- `policy-history-reader`: may inspect Governance/Policy default, override, effective-policy decision, and hard-platform-security denial trace evidence where authorized for the selected scope.
 
 ## Scope rules
 

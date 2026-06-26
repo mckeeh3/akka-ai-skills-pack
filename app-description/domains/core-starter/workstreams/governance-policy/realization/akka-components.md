@@ -2,26 +2,26 @@
 
 Capability: `governance-policy-lifecycle`.
 
-This map is docs-only. It points to current implementation evidence and does not change runtime behavior.
+This map is docs-only. It points to candidate implementation evidence and does not change runtime behavior.
 
 ## Component and service evidence
 
-| Intent binding | Akka / Java evidence | Notes |
+| Intent binding | Candidate Akka / Java evidence | Notes |
 |---|---|---|
-| Governance policy repository and service | `src/main/java/ai/first/application/foundation/governance/DurableGovernancePolicyRepositoryEntity.java`, `GovernancePolicyRepository.java`, `AkkaGovernancePolicyRepository.java`, `GovernancePolicyService.java` | Durable policy state, decisions, activation/rollback, and outcome notes are backend-governed. |
-| Policy impact/simulation worker | `src/main/java/ai/first/application/coreapp/governance/GovernancePolicyImpactService.java`, `GovernancePolicyImpactAutonomousAgent.java`, `DurableGovernancePolicyImpactTaskRepositoryEntity.java` | Produces evidence and recommendations; cannot autonomously activate high-impact policy changes. |
-| Evidence tools | `GovernancePolicyEvidenceTools.java` | Agent-visible policy evidence reads must be scoped and traceable. |
-| Audit/policy decision traces | `src/main/java/ai/first/application/foundation/audit/**`, `src/main/java/ai/first/application/foundation/workstream/**` | Proposal, simulation, approval, activation, rollback, override, and outcome events require trace links. |
-| Workstream/API orchestration | `src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java`, `src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java`, `src/main/java/ai/first/api/coreapp/admin/AdminEndpoint.java` | Browser actions and agent proposals share backend policy authority. |
+| Policy catalog/default/override repository and service | `src/main/java/ai/first/application/foundation/governance/**`, `GovernancePolicyService.java` | Durable simple policy definitions, SaaS defaults, tenant overrides, effective-value calculation, reset-to-default, and history. |
+| Effective-policy evaluator | governance policy service plus runtime policy-check adapters | Computes winning scope, enforces finer-grained precedence, denies hard-platform-security overrides, and emits policy-decision traces. |
+| Audit/policy decision traces | `src/main/java/ai/first/application/foundation/audit/**`, `src/main/java/ai/first/application/foundation/workstream/**` | Default changes, tenant overrides, reset actions, denials, and runtime policy decisions require trace links. |
+| Workstream/API orchestration | `src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java`, `src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java`, `src/main/java/ai/first/api/coreapp/admin/AdminEndpoint.java` | Browser actions and confirmed chat plans share backend policy authority. |
+| Agent evidence tools | `GovernancePolicyEvidenceTools.java` or successor | Agent-visible policy reads/history must be scoped and traceable; agent writes require confirmed backend execution. |
 
 ## Validation evidence
 
 - `src/test/java/ai/first/application/foundation/governance/DurableGovernancePolicyRepositoryEntityTest.java`
 - `src/test/java/ai/first/application/foundation/governance/GovernancePolicyServiceTest.java`
-- `src/test/java/ai/first/application/coreapp/governance/GovernancePolicyImpactServiceTest.java`
 - `frontend/src/workstream-governance-policy-vertical.contract.test.mjs`
 - `frontend/src/governance-audit-admin-profile.contract.test.mjs`
 
 ## Gaps / caveats
 
-- Hidden threshold changes and autonomous policy commits are forbidden; feature work must validate approval/denial paths through backend runtime.
+- Existing code may still implement proposal/simulation/approval/activation concepts from older intent. Treat that as candidate or stale evidence until a focused source-alignment review is completed.
+- Hidden threshold changes, autonomous policy commits, and hard-platform-security overrides are forbidden; feature work must validate denial paths through backend runtime.

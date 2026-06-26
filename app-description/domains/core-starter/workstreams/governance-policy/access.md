@@ -2,14 +2,21 @@
 
 ## Authorized roles
 
-- `policy-owner-approver`: may draft, review, approve, activate, roll back, and request changes for policy proposals only within an authorized SaaS Owner/App Admin platform-governance context or tenant/organization selected context with explicit `governance_policy.*` capabilities. The same authorized person may draft and approve unless a stricter scope policy applies.
-- `agent-steward`: may draft, simulate, and review policy changes that affect managed-agent behavior only within the selected scope and explicit `governance_policy.*` / `agent_admin.*` capability overlap; high-risk authority expansion still follows the high-risk approver rule.
-- `auditor`: may read authorized Governance/Policy evidence, policy outcome notes, and trace links; audit access alone does not allow proposal mutation, approval, activation, rollback, or simulation start.
+- `saas-owner-admin`: manages SaaS default policy values in a SaaS-owner/defaults selected context. Default changes apply only where tenants have not set overrides.
+- `tenant-admin`: reads effective policies for their tenant, creates/updates tenant business-governance overrides, resets tenant overrides back to defaults, and views policy history for their authorized tenant/customer/account scope.
+- `auditor`: reads authorized policy defaults, overrides, effective values, history, runtime-decision evidence, and trace links. Audit access alone does not allow policy mutation.
+- `support`: reads authorized tenant policy state and history for support/troubleshooting only when support access is active and scoped by backend authorization.
 
 ## Scope rules
 
-All reads, writes, surface actions, streams, agent turns, and governed-tool invocations use backend-owned selected `AuthContext`, tenant/customer ids, membership status, role/capability grants, and approval policy. High-risk policy changes require two approvers when multiple eligible approvers are available in the selected scope; role/capability expansion, support-access policy, agent tool-boundary, model/provider configuration, and audit export policy changes are high-risk by default.
+All reads, writes, agent turns, surface actions, and governed-tool invocations use backend-owned selected `AuthContext`, tenant/customer/account ids, membership status, role/capability grants, and hard platform-security checks.
+
+Policy scopes may include tenant, agent, workstream, action/tool, role, and customer/account. Browser-provided scope values are untrusted hints; the backend resolves and authorizes the selected scope before returning or changing policy state.
+
+Tenant admins may override business-governance policies for their authorized tenant scope. They cannot change SaaS defaults and cannot override platform security controls.
+
+SaaS owners may change defaults in defaults context but must not silently overwrite tenant overrides.
 
 ## Denials
 
-Disabled users, inactive memberships, missing selected context, cross-tenant/customer access, unsupported authority expansion, and hidden/unauthorized actions are denied server-side, produce safe `system-message` feedback where user-facing, and emit required traces without exposing protected data.
+Disabled users, inactive memberships, missing selected context, missing capability, cross-tenant/customer access, hidden scope targets, unsupported policy types/scopes, missing change reason, and attempts to override hard platform security are denied server-side, produce safe system-message feedback where user-facing, and emit required traces without exposing protected data.

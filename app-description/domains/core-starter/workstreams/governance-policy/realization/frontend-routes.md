@@ -4,13 +4,13 @@ Capability: `governance-policy-lifecycle`.
 
 ## Frontend evidence
 
-| Surface / route concern | Frontend evidence | Notes |
+| Surface / route concern | Candidate frontend evidence | Notes |
 |---|---|---|
-| Policy proposal queue and dashboard | `frontend/src/workstream/surfaces/ListSearchSurface.tsx`, `DashboardSurface.tsx` | Backend-scoped proposal rows and statuses drive display. |
-| Policy diff/simulation/impact evidence | `GovernanceDiffSurface.tsx`, `MarkdownResponseSurface.tsx`, `DetailEditSurface.tsx` | Renders evidence and affected-capability summaries without hidden commits. |
-| Approval/activation/rollback decisions | `DecisionSurface.tsx`, `WorkflowStatusSurface.tsx`, `OutcomeSurface.tsx`, `SurfaceActionBar.tsx` | Human decisions map to backend policy actions and trace links. |
-| Audit and policy decision trace links | `AuditTimelineSurface.tsx`, `TraceLinkList.tsx` | Policy events must be investigable from the workstream. |
-| Typed browser API client | `frontend/src/api/HttpWorkstreamApiClient.ts`, `WorkstreamApiClient.ts`, `types.ts` | DTOs and errors must preserve policy denial and validation states. |
+| Policy dashboard and all-policy inventory | `frontend/src/workstream/surfaces/DashboardSurface.tsx`, `ListSearchSurface.tsx` | Shows all visible policies, search/filter, overridden counts, and shortcuts. |
+| Effective-policy detail | detail/show inspection surface components | Renders SaaS default, tenant override, effective value, winning scope, and decision explanation. |
+| Simple policy edit | settings/detail-edit surface components, `SurfaceActionBar.tsx` | Supports boolean/counter default and override edits, reset-to-default, required reason, validation, and idempotency. |
+| Policy history and runtime outcome links | timeline/history, `AuditTimelineSurface.tsx`, `TraceLinkList.tsx` | Shows direct changes plus practical runtime outcome traces without protected-data leakage. |
+| Typed browser API client | `frontend/src/api/HttpWorkstreamApiClient.ts`, `WorkstreamApiClient.ts`, `types.ts` | DTOs and errors must preserve default/override/effective values, denials, validation states, and trace refs. |
 
 ## Validation evidence
 
@@ -22,3 +22,4 @@ Capability: `governance-policy-lifecycle`.
 ## Gaps / caveats
 
 - Governance/Policy frontend realization must stay in `frontend/src/workstream/**`; removed screen modules are not reference or fallback architecture.
+- Existing UI tests/surfaces may still reflect older proposal/diff/simulation intent and must be reconciled before claiming current alignment.

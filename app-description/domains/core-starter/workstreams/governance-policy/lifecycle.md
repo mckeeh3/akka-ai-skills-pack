@@ -2,24 +2,25 @@
 
 Workstream id: `governance-policy`
 Owning domain: `core-starter`
-Current readiness: `compile-ready`
+Current readiness: `current-intent-updated-needs-readiness-reassessment`
 Implementation alignment: `unknown`
 Source alignment: `realization/source-alignment.md`
-Last description change: unknown
+Last description change: 2026-06-25 — reconciled Stage 1 interview into SMB-friendly effective-policy settings model.
 Last alignment review: 2026-06-25 — initial source-alignment migration only; user stated no workstream is currently aligned.
 Last compile: unknown
 Last manual runtime test: unknown
 
 ## Current alignment posture
 
-This workstream is not currently aligned. Existing implementation evidence may partially realize parts of the current intent, but no entry is marked aligned until a focused alignment review compares the mapped app-description files against the mapped source, frontend, API, test, and manual-runtime evidence.
+This workstream is not currently aligned. Existing implementation evidence may partially realize older proposal/approval/simulation-oriented intent, but no entry is marked aligned until a focused alignment review compares the updated effective-policy settings description against source, frontend, API, tests, and manual-runtime evidence.
 
 ## Blockers and assumptions
 
-- File-level source alignment has been initialized conservatively.
+- Current intent now prioritizes SaaS defaults, tenant overrides, simple boolean/counter policies, effective-policy display, history, and runtime policy-decision traces.
+- Older proposal, simulation, approval, activation, rollback, and impact-analysis semantics are no longer the primary current intent for this SMB foundation workstream unless reintroduced by a future app-description change.
 - Runtime readiness is not claimed by this lifecycle record.
 - A future workstream-specific alignment review must classify each mapping as aligned, stale-description-changed, stale-code-changed, partially-aligned, blocked, or intentionally description-only.
 
 ## Next recommended action
 
-Run a focused source-alignment review for this workstream before claiming implementation alignment or runtime readiness.
+Run a readiness reassessment for the updated workstream. If ready, create a focused build/compile task for the first implementation slice: policy catalog/effective-policy reads, SaaS default management, tenant overrides, reset-to-default, history, traces, and UI list/detail/edit surfaces.

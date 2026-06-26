@@ -2,18 +2,47 @@
 
 ## Current-state behavior
 
-Manage policy proposals, simulations, decisions, activation, rollback, approval gates, thresholds, behavior-change governance, and outcome notes. The workstream starts from a role-specific dashboard, accepts contextual composer requests, returns structured surfaces, and maps consequential actions to governed backend tools.
+Governance/Policy manages simple policy settings for SaaS defaults and tenant overrides. It starts from an all-policy searchable list, shows effective values and overridden indicators, supports tenant-admin override changes, supports reset-to-default, and records policy-change history and runtime policy-decision evidence.
 
 ## Agent behavior
 
-`governance-policy-agent` may explain, summarize, draft, recommend, and prepare proposals only within authorized capabilities. It cannot grant permissions through prompt text, bypass approval gates, or act outside its tool boundary. Model-backed turns use governed runtime configuration or fail closed.
+`governance-policy-agent` may explain effective policy, summarize defaults and overrides, help find policies, draft simple boolean/counter changes, and prepare reason text. It cannot grant authority through prompt text, bypass backend authorization, bypass tenant isolation, expose secrets, override hard platform security controls, or invent policy types outside the catalog.
 
-## Lifecycle and command behavior
+Model-backed turns use governed runtime configuration or fail closed.
 
-Policy proposals move through explicit lifecycle states defined by `../../capabilities/governance-policy-lifecycle.md`. Drafting/submission creates inert proposals; simulations and impact-analysis tasks produce advisory evidence only; human decisions approve, reject, or request changes; activation and rollback are separate approval-gated command modes that require current proposal state, prerequisite evidence, rollback metadata, backend authority, idempotency, and trace creation.
+## Policy catalog behavior
 
-The durable impact-analysis path is an advisory autonomous-agent task path. Starting, reading, cancelling, accepting, rejecting, or requesting changes to impact-analysis results updates task/result disposition and evidence links only. It never approves, activates, rolls back, weakens security, expands authority, or fabricates model-backed analysis.
+The policy catalog is not fixed up front. App-description changes for agents, workstreams, governed tools/actions, roles, and customer/account behavior may introduce new simple policy definitions. Each definition declares its id/name, value type, SaaS default, allowed scopes, effective-value calculation, and trace/history requirements.
+
+Initial allowed value types are:
+
+- `boolean`;
+- `counter` / `limit`.
+
+Additional value types require explicit future app-description intent and must remain SMB-simple.
+
+## Defaults, overrides, and precedence
+
+SaaS owner default values apply where no more specific tenant override exists. Tenant admins can set tenant-owned overrides at supported scopes. Tenant overrides become active immediately after a successful backend-authorized write.
+
+When multiple settings match a runtime decision, the finer-grained/more specific matching scope wins. Resetting an override removes the tenant value and recomputes the effective value from SaaS defaults or less-specific overrides. SaaS owner default changes do not overwrite tenant overrides.
+
+## Change behavior
+
+Every policy write requires a human-entered reason. Policy changes do not require additional confirmation beyond the normal committed action/request and do not notify anyone by default.
+
+Every write records history including actor, selected `AuthContext`, old value, new value, effective timestamp, scope, affected policy id, affected agents/workstreams/tools/roles/customers/accounts where applicable, reason, idempotency key, and trace reference.
+
+## Runtime decision behavior
+
+Runtime policy checks return an effective decision with a human-readable explanation. The trace should identify whether the value came from SaaS default or tenant override, which scope won, who last changed the winning override when applicable, when it changed, and the recorded reason.
+
+Example: one agent/action can be allowed to send email immediately while another agent/action is governed differently because a more specific tenant override applies.
 
 ## Edge cases
 
-Repeated commands with the same idempotency key return the existing result and must not duplicate proposals, tasks, activations, rollbacks, outcome notes, notifications, or traces. Stale proposal versions return conflict/stale states with recovery guidance. Provider/security misconfiguration returns actionable denial/failure feedback and a blocked-provider-or-runtime task state where applicable. Unsupported business-domain requests are routed to extension guidance rather than silently added.
+Repeated writes with the same idempotency key return the existing result and must not duplicate history or traces. Unsupported policy ids, unsupported scopes, unsupported value types, missing reasons, stale versions, inactive users/memberships, missing selected context, and unauthorized cross-tenant/customer attempts return safe validation/denial states and emit traces.
+
+Attempts to override hard platform security controls, such as tenant isolation, secret protection, backend authorization, redaction boundaries, and platform integrity controls, are denied even for tenant admins.
+
+Unsupported business-domain requests are routed to extension guidance rather than silently adding complex policy machinery.

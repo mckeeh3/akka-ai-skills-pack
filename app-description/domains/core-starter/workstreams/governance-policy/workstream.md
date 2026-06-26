@@ -2,7 +2,9 @@
 
 ## Purpose
 
-Manage policy proposals, simulations, decisions, activation, rollback, approval gates, thresholds, behavior-change governance, and outcome notes.
+Manage simple SMB-friendly governance policy settings, SaaS-owner defaults, tenant overrides, effective-policy visibility, policy-change history, and runtime policy-decision evidence.
+
+Governance/Policy is a settings-and-controls center, not an enterprise policy engine. It keeps business-governance controls easy to understand and change while preserving non-overridable SaaS platform security controls.
 
 ## Functional agent
 
@@ -12,19 +14,29 @@ Owns `governance-policy-agent` as its exactly-one user-facing functional-agent b
 
 Primary capability: `../../capabilities/governance-policy-lifecycle.md`.
 
+## Policy model
+
+SaaS owners manage default policy values. Tenant admins manage tenant-specific overrides. Tenant overrides are active immediately and win over SaaS defaults for business-governance behavior.
+
+Policy values are intentionally simple:
+
+- boolean settings, such as whether an agent/action is allowed immediately or requires governance handling;
+- counter/limit settings, such as maximum retry count.
+
+The policy catalog evolves as app-description-defined agents, workstreams, governed tools/actions, roles, and customer/account contexts evolve. Do not introduce complex policy scripting, enterprise rule languages, legal workflow engines, or simulation-only policy machinery for this SMB foundation scope.
+
+Policy scopes may include tenant, agent, workstream, action/tool, role, and customer/account. When more than one policy applies, the finer-grained/more specific setting wins. Tenant admins can reset an override back to the SaaS default. SaaS owner default updates never overwrite existing tenant overrides.
+
 ## Attention model
 
-Backend-owned attention includes stable categories `governance_policy.proposal.review_needed`, `governance_policy.simulation.ready`, `governance_policy.approval.required`, `governance_policy.threshold.high_risk`, `governance_policy.authority_change.high_risk`, `governance_policy.rollback.available`, `governance_policy.outcome.follow_up`, `governance_policy.impact_analysis.ready_for_review`, and `governance_policy.impact_analysis.blocked`. Producers are policy proposal lifecycle, simulation/impact-analysis tasks, approval-gate evaluation, activation/rollback flows, outcome-note follow-up scheduling, and provider/model/tool readiness checks. Each attention item has a backend idempotency key formed from selected scope, policy/proposal/task id, version, category, and lifecycle status; severity is backend-authored (`info`, `needs_review`, `approval_required`, `blocked`, `risk`) and terminal/resolved source states clear or downgrade the item. Counts feed the left rail and, where the signed-in human is a reviewer/approver/owner or assigned follow-up actor, My Account aggregation without exposing hidden policy clauses, raw model outputs, provider data, cross-scope facts, or hidden counts.
+Backend-owned attention focuses on simple policy operations and explainability: recently changed policies, overridden policies, policy history needing review, runtime outcomes affected by policies where practical, and safe denials for hard platform controls. Counts feed the left rail and My Account aggregation only for authorized actors and never expose hidden tenant/customer facts, raw secrets, raw provider/model data, raw prompts, raw tool payloads, or unredacted evidence.
 
 ## Readiness posture
 
-This node captures current intent only. Runtime readiness still requires local Akka/API/UI validation and model/provider fail-closed proof where applicable.
-
+This node captures current intent only. Runtime readiness still requires local Akka/API/UI validation of effective-policy reads, tenant override writes, reset-to-default, history, runtime trace evidence, auth denials, tenant isolation, and non-overridable platform-security boundaries.
 
 ## Confirmed human chat tool-plan exposure
 
-This workstream exposes a bounded `human_chat_tool_plan` adapter for execution-oriented chat prompts after deterministic no-mutation surface routing declines the prompt. The first-pass runtime path is implemented through backend-owned plan proposal, exact snapshot confirmation, catalog validation, dispatcher reauthorization, idempotency, and trace surfaces. It allows `governance-policy-agent` to propose a plan for the representative prompt **draft a policy proposal to require approval before redacted exports**, but it never permits prompt-only mutation, hidden target enumeration, or AI-autonomous authority.
+This workstream may expose bounded `human_chat_tool_plan` assistance for policy lookup and simple override preparation after deterministic no-mutation surface routing declines the prompt. Chat may explain effective policy, draft an override payload, or prepare a reset/default-management request, but it must not bypass tenant-admin/SaaS-owner authority, write without explicit confirmation, alter hard platform security controls, or invent complex policy semantics.
 
-Execution is allowed only when all of the following hold: the proposal was created with `noMutation=true`; the human explicitly confirms the exact plan snapshot; the backend reauthorizes the selected `AuthContext`, actor, capability, tool boundary, lifecycle state, approval policy, tenant/customer ownership, and idempotency on every step; and each step executes through its declared governed surface/action path as a separate transaction boundary.
-
-Representative catalog binding: actions `action-governance-policy-draft-proposal`; governed tool ids `governance.policy.propose`; capabilities `governance.policy.propose`; input contract `schema.governance-policy.proposal.draft.v1` with title, rationale, browser-safe proposed change summary, affected capabilities, and idempotency key; expected result surfaces `surface-governance-policy-proposal`. The allowed effect is to create or return an inert draft policy proposal only; it cannot approve, activate, roll back, weaken security, expand authority, or count advisory analysis as approval.
+Representative catalog bindings: `action-governance-policy-list`, `action-governance-policy-read-effective`, `action-governance-policy-set-override`, and `action-governance-policy-reset-override` using governed tools `governance.policy.read_effective`, `governance.policy.set_override`, and `governance.policy.reset_override`. Confirmed execution requires selected `AuthContext`, backend authorization, exact plan snapshot confirmation, required change reason for writes, idempotency, effective-policy recomputation, and trace emission.

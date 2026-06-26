@@ -6,6 +6,12 @@ Global policies: `../../../../../global/policies/foundation-security-and-governa
 
 ## Binding
 
-Applies approval-for-high-impact-change, governed-agent-authority, backend-authorization-default-deny, tenant-customer-isolation, redaction-and-export-governance.
+Applies backend-authorization-default-deny, tenant-customer-isolation, redaction-and-export-governance, governed-agent-authority, audit/history retention, idempotent-write safety, and non-overridable platform security.
 
-Policy evaluation is backend-enforced for protected reads, mutations, agent/tool calls, approval gates, redaction, export, model/provider boundaries, and frontend-visible payloads.
+## Business-governance override policy
+
+SaaS owner defaults define baseline business-governance values. Tenant admins may override business-governance settings for authorized tenant scopes. Tenant overrides win over SaaS defaults. More specific override scopes win over less-specific scopes.
+
+The following controls are hard platform controls and are not overrideable through Governance/Policy: tenant isolation, backend authorization, secret/JWT/provider-key protection, raw prompt/model/provider payload protection, redaction boundaries, audit trace integrity, and platform integrity checks.
+
+Policy evaluation is backend-enforced for protected reads, writes, agent/tool calls, effective-policy calculations, runtime policy decisions, redaction, and frontend-visible payloads.
