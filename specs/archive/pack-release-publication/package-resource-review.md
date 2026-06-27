@@ -16,7 +16,7 @@ Date: 2026-06-02
 
 - Manifest metadata remains coherent for the current package line:
   - `metadata.name`: `akka-ai-skills-pack`
-  - `metadata.version`: `0.3.0`
+  - `metadata.version`: `0.4.0`
   - `compatibleAkkaSdk`: `3.5.x`
 - `tools/check-version-consistency.sh` passes for `README.md`, `pack/README.md`, and the manifest version.
 - The package model includes the expected pack-facing guidance and resources:

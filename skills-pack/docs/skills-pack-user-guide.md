@@ -22,7 +22,7 @@ For a new app with an implementation baseline, fork or clone this repository, th
 
 ## Make the skills available to the harness
 
-Current manifest version: `0.3.0`
+Current manifest version: `0.4.0`
 
 Clone or check out the desired release tag. This repository clone/fork is the source attention for the runnable SaaS Foundation App. Then copy or symlink the skills library, including referenced pack docs, curated examples, templates, and downstream-safe tools, into your harness skills directory:
 
