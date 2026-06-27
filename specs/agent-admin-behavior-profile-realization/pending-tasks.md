@@ -178,7 +178,7 @@
 
 ### AABP-03-001: Wire current Agent Admin workstream/API surfaces
 
-- status: pending
+- status: done
 - source: `backlog/01-agent-admin-behavior-profile-build-backlog.md`
 - task brief: `specs/agent-admin-behavior-profile-realization/tasks/03-api/01-workstream-api-current-surfaces.md`
 - depends on: [AABP-02-001]
@@ -199,7 +199,9 @@
 - done criteria:
   - current surfaces/actions are API-smoked and stale product actions are not exposed
   - changes and queue update are committed
-- notes: []
+- notes:
+  - completed in this commit with message: `Wire Agent Admin current workstream surfaces`
+  - next runnable task after completion: `AABP-04-001` (`pending`, depends on `AABP-03-001`)
 
 ### AABP-04-001: Align Agent Admin frontend surfaces and contracts
 

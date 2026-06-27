@@ -111,8 +111,92 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         list.resultSurface().surfaceId(),
         "corr-agent-admin-detail"));
     assertEquals("surface-agent-admin-agent-detail", detail.resultSurface().surfaceId());
+    var detailText = String.valueOf(detail.resultSurface().data());
+    assertTrue(detailText.contains("generatedIdentityReadOnly=true"));
+    assertTrue(detailText.contains("surface-agent-admin-agent-profile-history"));
+    assertTrue(detailText.contains("surface-agent-admin-skill-assignment"));
+    assertTrue(detailText.contains("surface-agent-admin-tool-assignment"));
+    assertTrue(detailText.contains("surface-agent-admin-model-config-ref"));
+    assertFalse(detailText.contains("action-agent-admin-save-agent-profile"));
+    assertFalse(detailText.contains("action-agent-detail-open-activation"));
+    assertFalse(detailText.contains("action-agent-detail-open-deactivation"));
+    assertFalse(detailText.contains("action-agent-detail-open-rollback"));
+    var profile = (Map<String, Object>) detail.resultSurface().data().get("profile");
     var prompt = (Map<String, Object>) detail.resultSurface().data().get("prompt");
     var promptDocumentId = String.valueOf(prompt.get("documentId"));
+
+    var profileHistory = runAction(new CapabilityActionRequest(
+        "action-agent-admin-open-profile-history",
+        "action-agent-admin-open-profile-history",
+        "read-agent-behavior-profile-history",
+        "agent_admin.get_definition",
+        Map.of("agentDefinitionId", agentId),
+        null,
+        OWNER_CONTEXT_ID,
+        detail.resultSurface().surfaceId(),
+        "corr-agent-admin-profile-history"));
+    assertEquals("surface-agent-admin-agent-profile-history", profileHistory.resultSurface().surfaceId());
+
+    var skillAssignment = runAction(new CapabilityActionRequest(
+        "action-agent-admin-open-skill-assignment",
+        "action-agent-admin-open-skill-assignment",
+        "assign-agent-skills",
+        "saas_owner.admin.manage",
+        Map.of("agentDefinitionId", agentId),
+        null,
+        OWNER_CONTEXT_ID,
+        detail.resultSurface().surfaceId(),
+        "corr-agent-admin-skill-assignment"));
+    assertEquals("surface-agent-admin-skill-assignment", skillAssignment.resultSurface().surfaceId());
+
+    var toolAssignment = runAction(new CapabilityActionRequest(
+        "action-agent-admin-open-tool-assignment",
+        "action-agent-admin-open-tool-assignment",
+        "assign-agent-generated-tools",
+        "saas_owner.admin.manage",
+        Map.of("agentDefinitionId", agentId),
+        null,
+        OWNER_CONTEXT_ID,
+        detail.resultSurface().surfaceId(),
+        "corr-agent-admin-tool-assignment"));
+    assertEquals("surface-agent-admin-tool-assignment", toolAssignment.resultSurface().surfaceId());
+    assertTrue(String.valueOf(toolAssignment.resultSurface().data()).contains("noGeneratedToolCodeMutation=true"));
+
+    var modelRef = runAction(new CapabilityActionRequest(
+        "action-agent-admin-open-model-config-ref",
+        "action-agent-admin-open-model-config-ref",
+        "update-agent-model-config-ref",
+        "saas_owner.admin.manage",
+        Map.of("agentDefinitionId", agentId),
+        null,
+        OWNER_CONTEXT_ID,
+        detail.resultSurface().surfaceId(),
+        "corr-agent-admin-model-ref"));
+    assertEquals("surface-agent-admin-model-config-ref", modelRef.resultSurface().surfaceId());
+    assertTrue(String.valueOf(modelRef.resultSurface().data()).contains("providerSecretsExposed=false"));
+
+    var modelNoop = runAction(new CapabilityActionRequest(
+        "action-agent-admin-update-model-config-ref",
+        "action-agent-admin-update-model-config-ref",
+        "update-agent-model-config-ref",
+        "saas_owner.admin.manage",
+        Map.of("agentDefinitionId", agentId, "expectedProfileVersion", Integer.parseInt(String.valueOf(profile.get("profileVersion"))), "modelConfigRefId", String.valueOf(profile.get("modelConfigRefId"))),
+        "idem-agent-admin-model-ref-noop",
+        OWNER_CONTEXT_ID,
+        modelRef.resultSurface().surfaceId(),
+        "corr-agent-admin-model-ref-noop"));
+    assertEquals("no-op", modelNoop.status());
+
+    assertThrows(RuntimeException.class, () -> runAction(new CapabilityActionRequest(
+        "action-agent-admin-save-agent-profile",
+        "action-agent-admin-save-agent-profile",
+        "update-agent-name-purpose",
+        "saas_owner.admin.manage",
+        Map.of("agentDefinitionId", agentId, "agentName", "Stale name", "purpose", "Stale purpose"),
+        "idem-agent-admin-stale-profile",
+        OWNER_CONTEXT_ID,
+        detail.resultSurface().surfaceId(),
+        "corr-agent-admin-stale-profile")), "Stale whole-agent profile mutation action must not be exposed or executable as a current product action.");
 
     var promptDoc = runAction(new CapabilityActionRequest(
         "action-agent-admin-open-prompt-doc",
@@ -160,15 +244,57 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "action-agent-doc-edit-save",
         "action-agent-doc-edit-save",
         "save-agent-doc-edit",
-        "agent_admin.activate_behavior_change",
+        "agent_admin.draft_behavior_change",
         Map.of("sessionId", sessionId),
         null,
         OWNER_CONTEXT_ID,
         revised.resultSurface().surfaceId(),
         "corr-agent-admin-edit-save"));
     assertEquals("accepted", saved.status());
+    assertEquals("surface-agent-admin-proposal-review", saved.resultSurface().surfaceId());
     assertTrue(String.valueOf(saved.resultSurface().data()).contains("proposalId"));
     assertTrue(String.valueOf(saved.resultSurface().data()).contains("currentActiveVersion"));
+    var proposal = (Map<String, Object>) saved.resultSurface().data().get("proposal");
+    var proposalId = String.valueOf(proposal.get("proposalId"));
+
+    var approved = runAction(new CapabilityActionRequest(
+        "action-agent-doc-proposal-approve",
+        "action-agent-doc-proposal-approve",
+        "approve-agent-doc-proposal",
+        "agent_admin.approve_behavior_change",
+        Map.of("proposalId", proposalId, "rationale", "Low-risk smoke approval"),
+        null,
+        OWNER_CONTEXT_ID,
+        saved.resultSurface().surfaceId(),
+        "corr-agent-admin-proposal-approve"));
+    assertEquals("accepted", approved.status());
+    assertEquals("approved", ((Map<String, Object>) approved.resultSurface().data().get("proposal")).get("status"));
+
+    var activated = runAction(new CapabilityActionRequest(
+        "action-agent-doc-proposal-activate",
+        "action-agent-doc-proposal-activate",
+        "activate-agent-doc-version",
+        "agent_admin.activate_behavior_change",
+        Map.of("proposalId", proposalId, "confirmation", "ACTIVATE"),
+        null,
+        OWNER_CONTEXT_ID,
+        approved.resultSurface().surfaceId(),
+        "corr-agent-admin-proposal-activate"));
+    assertEquals("accepted", activated.status());
+    assertTrue(String.valueOf(activated.resultSurface().data()).contains("newCurrentVersion"));
+
+    var staleActivation = runAction(new CapabilityActionRequest(
+        "action-agent-doc-proposal-activate",
+        "action-agent-doc-proposal-activate",
+        "activate-agent-doc-version",
+        "agent_admin.activate_behavior_change",
+        Map.of("proposalId", proposalId, "confirmation", "ACTIVATE"),
+        null,
+        OWNER_CONTEXT_ID,
+        activated.resultSurface().surfaceId(),
+        "corr-agent-admin-proposal-stale-activate"));
+    assertEquals("stale-conflict", staleActivation.status());
+    assertEquals("surface-agent-admin-system-message", staleActivation.resultSurface().surfaceId());
 
     var history = runAction(new CapabilityActionRequest(
         "action-agent-doc-version-history",
