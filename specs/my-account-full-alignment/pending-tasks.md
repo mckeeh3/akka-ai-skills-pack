@@ -139,7 +139,7 @@
 
 ### MAFA-04-001: Notification center lifecycle alignment
 
-- status: pending
+- status: done
 - source: `backlog/01-my-account-automated-alignment-build-backlog.md` B04
 - task brief: `specs/my-account-full-alignment/tasks/04-notifications/01-notification-center-lifecycle-alignment.md`
 - depends on: [MAFA-03-001]
@@ -168,6 +168,9 @@
 - notes:
   - lifecycle/readiness: backend-ready/frontend-rendered by automated tests
   - vertical contract: My Account / `my-account-agent`; surface `surface-my-account-notification-center`; governed tools `notification.list_my_account_center`, `notification.mark_read`, `notification.dismiss`, `notification.archive`, `notification.snooze`, `notification.update_preferences`, `attention.open_attention_item`; adapter `surface_action`; lifecycle actions mutate notification state only; source-open reauthorizes or returns `surface-my-account-open-denied`; in-app only, no external/provider controls
+  - completed 2026-06-27: added notification service/workstream automated coverage for empty refresh, lifecycle/no-op/bounded snooze, visible in-app preferences, external/hidden preference denial, source-open success/safe denial, and frontend notification-center rendering/secret-boundary contract; source-alignment notification entry updated.
+  - validation: `mvn -Dtest='WorkstreamServiceTest,*Notification*Test' test`, `npm --prefix frontend test -- --run frontend/src/workstream-my-account-vertical.contract.test.mjs`, `npm --prefix frontend run typecheck`, and `git diff --check` pass.
+  - commit message: `MAFA-04-001 align notification center lifecycle`
 
 ### MAFA-05-001: Human chat tool-plan runtime proof
 

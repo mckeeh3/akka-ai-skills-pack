@@ -97,28 +97,41 @@ class NotificationServiceTest {
   }
 
   @Test
-  void lifecycleOperationsAreNotificationOnlyIdempotentAndAudited() {
+  void lifecycleOperationsAreNotificationOnlyIdempotentBoundedAndAudited() {
     var actor = actor("admin@example.test", "membership-admin", "corr-lifecycle");
-    var projected = service.projectFromAttention(actor, attention("attention-audit", "tenant-1", "audit-trace-agent", "audit.trace.read", AttentionCategory.AUDIT_FAILURE_EVIDENCE, AttentionSeverity.WARNING, "Audit evidence available"), "corr-project");
+    var sourceAttention = attention("attention-audit", "tenant-1", "audit-trace-agent", "audit.trace.read", AttentionCategory.AUDIT_FAILURE_EVIDENCE, AttentionSeverity.WARNING, "Audit evidence available");
+    var projected = service.projectFromAttention(actor, sourceAttention, "corr-project");
 
     var read = service.markRead(actor, projected.notificationId(), "corr-read");
     var readAgain = service.markRead(actor, projected.notificationId(), "corr-read-again");
     var snoozed = service.snooze(actor, projected.notificationId(), Instant.parse("2026-05-27T10:00:00Z"), "corr-snooze");
+    assertThrows(AuthorizationException.class, () -> service.snooze(actor, projected.notificationId(), Instant.parse("2026-07-01T10:00:00Z"), "corr-snooze-too-far"));
     var dismissed = service.dismiss(actor, projected.notificationId(), "corr-dismiss");
+    var dismissedAgain = service.dismiss(actor, projected.notificationId(), "corr-dismiss-again");
     var archived = service.archive(actor, projected.notificationId(), "corr-archive");
+    var archivedAgain = service.archive(actor, projected.notificationId(), "corr-archive-again");
 
     assertEquals(NotificationLifecycleStatus.READ, read.status());
     assertEquals(read, readAgain);
     assertEquals(NotificationLifecycleStatus.SNOOZED, snoozed.status());
     assertEquals(NotificationLifecycleStatus.DISMISSED, dismissed.status());
+    assertEquals(dismissed, dismissedAgain);
     assertEquals(NotificationLifecycleStatus.ARCHIVED, archived.status());
+    assertEquals(archived, archivedAgain);
+    assertEquals(AttentionItemStatus.OPEN, sourceAttention.status(), "Notification lifecycle must not resolve source attention.");
     assertTrue(service.listMyAccountCenter(actor, "corr-after-archive").items().isEmpty());
     assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("NOTIFICATION_MARK_READ") && event.reasonCode().contains("no_op") && event.correlationId().equals("corr-read-again")));
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("NOTIFICATION_DISMISS") && event.reasonCode().contains("no_op") && event.correlationId().equals("corr-dismiss-again")));
+    assertTrue(identityRepository.auditEvents().stream().anyMatch(event -> event.actionType().equals("NOTIFICATION_ARCHIVE") && event.reasonCode().contains("no_op") && event.correlationId().equals("corr-archive-again")));
   }
 
   @Test
-  void preferencesFilterCenterWithoutEnumeratingHiddenNotifications() {
+  void refreshSupportsEmptyAuthorizedCenterAndPreferencesFilterVisibleInAppCategoriesOnly() {
     var actor = actor("admin@example.test", "membership-admin", "corr-pref");
+    var emptyCenter = service.listMyAccountCenter(actor, "corr-empty-center");
+    assertEquals(0, emptyCenter.visibleCount());
+    assertEquals(NotificationChannel.IN_APP, emptyCenter.channel());
+
     service.projectFromAttention(actor, attention("attention-agent", "tenant-1", "agent-agent-admin", "agent_admin.list_definitions", AttentionCategory.PROVIDER_READINESS, AttentionSeverity.WARNING, "Provider warning"), "corr-project");
     service.updatePreference(actor, NotificationCategory.PROVIDER_READINESS, true, NotificationPriority.BLOCKED, null, false, "corr-pref-update");
 
@@ -126,6 +139,9 @@ class NotificationServiceTest {
 
     assertEquals(0, center.visibleCount());
     assertEquals(1, center.preferencesSummary().size());
+    assertEquals(NotificationChannel.IN_APP, center.preferencesSummary().get(0).channel());
+    assertThrows(AuthorizationException.class, () -> service.updatePreference(actor, NotificationCategory.AUDIT_OR_SECURITY, true, NotificationPriority.INFO, null, false, "corr-hidden-pref"));
+    assertThrows(AuthorizationException.class, () -> service.updateChannelPreference(actor, NotificationChannel.EMAIL, NotificationCategory.PROVIDER_READINESS, true, NotificationPriority.INFO, null, false, "corr-email-pref"));
     assertFalse(center.toString().contains("email"));
     assertFalse(center.toString().contains("push"));
   }

@@ -3124,6 +3124,7 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   void myAccountNotificationCenterSurfaceRendersBackendProjectionAndLifecycleActions() {
     var dashboard = service.surface(identity(), "membership-admin", "surface-my-account-dashboard", "corr-notification-dashboard");
     assertTrue(dashboard.toString().contains("card-my-account-notifications"));
@@ -3138,6 +3139,9 @@ class WorkstreamServiceTest {
     assertEquals("notification-center", center.resultSurface().surfaceType());
     assertEquals("my_account.notification_center.v1", center.resultSurface().data().get("surfaceContract"));
     assertEquals("in_app", center.resultSurface().data().get("channel"));
+    assertTrue(center.resultSurface().toString().contains("needs_attention"));
+    assertTrue(center.resultSurface().toString().contains("awareness"));
+    assertTrue(center.resultSurface().toString().contains("handled"));
     assertTrue(center.resultSurface().toString().contains("notification.mark_read"));
     assertTrue(center.resultSurface().toString().contains("notification.archive"));
     assertTrue(center.resultSurface().toString().contains("notification.update_preferences"));
@@ -3151,15 +3155,67 @@ class WorkstreamServiceTest {
     assertFalse(center.resultSurface().data().toString().contains("SMS, mobile push"));
     assertFalse(center.resultSurface().toString().contains("pushEnabled"));
     assertFalse(center.resultSurface().toString().contains("RESEND_API_KEY"));
+    assertBrowserPayloadSafe(center.resultSurface());
 
-    var firstNotificationId = ((List<?>) center.resultSurface().data().get("items")).get(0).toString().replaceFirst(".*notificationId=([^,}]+).*", "$1");
+    var firstItem = ((List<Map<String, Object>>) center.resultSurface().data().get("items")).stream()
+        .filter(item -> String.valueOf(item.get("surfaceRef")).contains("surface-audit-trace-dashboard"))
+        .findFirst()
+        .orElseGet(() -> ((List<Map<String, Object>>) center.resultSurface().data().get("items")).get(0));
+    var firstNotificationId = String.valueOf(firstItem.get("notificationId"));
+    var firstCategory = String.valueOf(firstItem.get("category"));
+    var opened = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-notification-open-source", "action-notification-open-source", "notification.get_notification", "notification.get_notification", Map.of("notificationId", firstNotificationId), null, "membership-admin", "surface-my-account-notification-center", "corr-notification-open-source"));
+    assertEquals("accepted", opened.status(), opened.toString());
+    assertNotNull(opened.resultSurface());
+    assertFalse(opened.resultSurface().surfaceId().equals("surface-my-account-open-denied"));
+
+    var deniedOpen = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-notification-open-source", "action-notification-open-source", "notification.get_notification", "notification.get_notification", Map.of("notificationId", "notification-hidden-source"), null, "membership-admin", "surface-my-account-notification-center", "corr-notification-open-source-denied"));
+    assertEquals("denied", deniedOpen.status());
+    assertEquals("surface-my-account-open-denied", deniedOpen.resultSurface().surfaceId());
+    assertFalse(deniedOpen.resultSurface().toString().contains("notification-hidden-source"));
+
     var read = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
         "action-notification-mark-read", "action-notification-mark-read", "notification.mark_read", "notification.mark_read", Map.of("notificationId", firstNotificationId), null, "membership-admin", "surface-my-account-notification-center", "corr-notification-read"));
+    var readAgain = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-notification-mark-read", "action-notification-mark-read", "notification.mark_read", "notification.mark_read", Map.of("notificationId", firstNotificationId), null, "membership-admin", "surface-my-account-notification-center", "corr-notification-read-again"));
+    var snoozed = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-notification-snooze", "action-notification-snooze", "notification.snooze", "notification.snooze", Map.of("notificationId", firstNotificationId, "snoozedUntil", Instant.now().plusSeconds(3600).toString()), null, "membership-admin", "surface-my-account-notification-center", "corr-notification-snooze"));
+    var invalidSnooze = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-notification-snooze", "action-notification-snooze", "notification.snooze", "notification.snooze", Map.of("notificationId", firstNotificationId, "snoozedUntil", Instant.now().minusSeconds(60).toString()), null, "membership-admin", "surface-my-account-notification-center", "corr-notification-snooze-invalid"));
+    var dismissed = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-notification-dismiss", "action-notification-dismiss", "notification.dismiss", "notification.dismiss", Map.of("notificationId", firstNotificationId), null, "membership-admin", "surface-my-account-notification-center", "corr-notification-dismiss"));
+    var archived = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-notification-archive", "action-notification-archive", "notification.archive", "notification.archive", Map.of("notificationId", firstNotificationId), null, "membership-admin", "surface-my-account-notification-center", "corr-notification-archive"));
 
     assertEquals("full", read.status());
+    assertEquals("full", readAgain.status());
+    assertEquals("full", snoozed.status());
+    assertEquals("validation-error", invalidSnooze.status());
+    assertEquals("full", dismissed.status());
+    assertEquals("full", archived.status());
     assertEquals("surface-my-account-notification-center", read.resultSurface().surfaceId());
     assertTrue(read.resultSurface().toString().contains("notification.list_my_account_center"));
     assertTrue(read.message().contains("source attention/task/event state unchanged"));
+    assertTrue(snoozed.message().contains("source state unchanged"));
+    assertTrue(dismissed.message().contains("source state unchanged"));
+    assertTrue(archived.message().contains("source state unchanged"));
+
+    var preference = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-notification-update-preferences", "action-notification-update-preferences", "notification.update_preferences", "notification.update_preferences", Map.of("channel", "in_app", "category", firstCategory, "enabled", true, "minimumPriority", "urgent"), null, "membership-admin", "surface-my-account-notification-center", "corr-notification-pref"));
+    assertEquals("accepted", preference.status());
+    assertTrue(preference.resultSurface().toString().contains(firstCategory));
+    assertFalse(preference.resultSurface().toString().contains("emailEnabled"));
+
+    var hiddenPreference = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-notification-update-preferences", "action-notification-update-preferences", "notification.update_preferences", "notification.update_preferences", Map.of("channel", "in_app", "category", "invitation_delivery", "enabled", true), null, "membership-admin", "surface-my-account-notification-center", "corr-notification-pref-hidden"));
+    assertEquals("denied", hiddenPreference.status());
+    assertTrue(hiddenPreference.resultSurface().toString().contains("noEnumeration"));
+
+    var externalPreference = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-notification-update-preferences", "action-notification-update-preferences", "notification.update_preferences", "notification.update_preferences", Map.of("channel", "email", "category", firstCategory, "enabled", false), null, "membership-admin", "surface-my-account-notification-center", "corr-notification-pref-email"));
+    assertEquals("validation-error", externalPreference.status());
+    assertFalse(externalPreference.resultSurface().toString().contains("RESEND_API_KEY"));
   }
 
   @Test

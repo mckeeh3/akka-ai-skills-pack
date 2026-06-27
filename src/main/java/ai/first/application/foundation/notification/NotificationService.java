@@ -206,7 +206,12 @@ public final class NotificationService {
   }
 
   public NotificationPreference updatePreference(AuthContextResolver.ResolvedMe actor, NotificationCategory category, boolean enabled, NotificationPriority minimumPriority, Instant muteUntil, boolean includeReadInCenter, String correlationId) {
-    return updateChannelPreference(actor, NotificationChannel.IN_APP, category, enabled, minimumPriority, muteUntil, includeReadInCenter, correlationId);
+    var safeCategory = category == null ? NotificationCategory.ALL : category;
+    if (safeCategory != NotificationCategory.ALL && visibleItems(actor).stream().noneMatch(item -> item.category() == safeCategory)) {
+      appendAudit(actor, "NOTIFICATION_UPDATE_PREFERENCES", AdminAuditEvent.Result.DENIED, "hidden_or_unavailable_category", correlationId);
+      throw new AuthorizationException(404, "not_found_or_redacted");
+    }
+    return updateChannelPreference(actor, NotificationChannel.IN_APP, safeCategory, enabled, minimumPriority, muteUntil, includeReadInCenter, correlationId);
   }
 
   public NotificationPreference updateChannelPreference(AuthContextResolver.ResolvedMe actor, NotificationChannel channel, NotificationCategory category, boolean enabled, NotificationPriority minimumPriority, Instant muteUntil, boolean includeReadInCenter, String correlationId) {
@@ -214,6 +219,10 @@ public final class NotificationService {
     var safeCategory = category == null ? NotificationCategory.ALL : category;
     var now = Instant.now(clock);
     var safeChannel = channel == null ? NotificationChannel.IN_APP : channel;
+    if (safeChannel != NotificationChannel.IN_APP) {
+      appendAudit(actor, "NOTIFICATION_UPDATE_PREFERENCES", AdminAuditEvent.Result.DENIED, "external_channel_controls_unsupported", correlationId);
+      throw new AuthorizationException(400, "external-channel-controls-unsupported");
+    }
     var tenantId = contextTenantId(actor.selectedContext());
     var pref = new NotificationPreference("notification-pref-" + tenantId + "-" + actor.account().accountId() + "-" + safeChannel.name().toLowerCase(Locale.ROOT) + "-" + safeCategory.name().toLowerCase(Locale.ROOT), tenantId, actor.selectedContext().customerId(), actor.account().accountId(), safeChannel, safeCategory, enabled, minimumPriority == null ? NotificationPriority.INFO : minimumPriority, muteUntil, includeReadInCenter, now, actor.account().accountId(), correlationId);
     var saved = repository.savePreference(pref);

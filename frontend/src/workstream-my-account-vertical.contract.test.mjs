@@ -138,6 +138,13 @@ test('My Account frontend path renders typed dashboard, detail-edit, system_mess
   assert.match(notificationCenterSurface, /notification-triage-board/);
   assert.match(notificationCenterSurface, /actionInput=\{\{ notificationId: item\.notificationId \}\}/);
   assert.match(notificationCenterSurface, /Hidden categories are not enumerated/);
+  assert.match(notificationCenterSurface, /Lifecycle actions clear or defer notification visibility; they do not resolve source attention, tasks, workstream events, or audit records/);
+  assert.match(notificationCenterSurface, /Source target requires reauthorization before opening/);
+  assert.match(backendWorkstreamTest, /myAccountNotificationCenterSurfaceRendersBackendProjectionAndLifecycleActions/);
+  assert.match(backendWorkstreamTest, /corr-notification-open-source-denied/);
+  assert.match(backendWorkstreamTest, /corr-notification-snooze-invalid/);
+  assert.match(backendWorkstreamTest, /corr-notification-pref-email/);
+  assert.match(backendWorkstreamTest, /assertEquals\("surface-my-account-open-denied", deniedOpen\.resultSurface\(\)\.surfaceId\(\)\)/);
   assert.match(componentsCss, /\.notification-triage-metrics div \{\n  display: grid;\n  place-items: center;[\s\S]*text-align: center;/);
   assert.doesNotMatch(notificationCenterSurface, /notification\.email|Resend configuration|channelRegistry|deliveryAttempts|externalOutbox|pushEnabled|emailEnabled|RESEND_API_KEY|RESEND_FROM_EMAIL/);
   assert.match(detailEditSurface, /surface-detail-edit-form/);
