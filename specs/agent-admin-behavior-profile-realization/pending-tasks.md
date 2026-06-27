@@ -299,7 +299,7 @@
 
 ### AABP-05-003: Rerun Agent Admin behavior-profile realization terminal verification
 
-- status: pending
+- status: done
 - source: terminal verification loop appended by `AABP-05-001`
 - task brief: `specs/agent-admin-behavior-profile-realization/tasks/05-validation/03-rerun-fullstack-closure-verification.md`
 - depends on: [AABP-05-002]
@@ -325,4 +325,8 @@
 - done criteria:
   - mini-project done state is achieved and recorded closed, or remaining material gaps are converted into a further bounded follow-up loop
   - changes are committed
-- notes: []
+- notes:
+  - completed in this commit with message: `Rerun Agent Admin behavior profile verification`
+  - closure recorded in `specs/agent-admin-behavior-profile-realization/verification-notes.md` and `app-description/domains/core-starter/workstreams/agent-admin/realization/source-alignment.md`.
+  - checks passed: `mvn test`, `npm --prefix frontend test -- --run`, `npm --prefix frontend run typecheck`, `npm --prefix frontend run build`, `git diff --check`.
+  - mini-project closed at the stated `api-smoked/frontend-rendered` target; no next runnable follow-up task appended. Runtime-ready remains future scope requiring real local API/UI/manual/provider smoke evidence.
