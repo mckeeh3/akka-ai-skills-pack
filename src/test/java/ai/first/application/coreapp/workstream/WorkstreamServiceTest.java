@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import ai.first.application.coreapp.myaccount.InMemoryTestMyAccountPersonalAttentionDigestTaskRepository;
 import ai.first.application.coreapp.myaccount.MyAccountService;
 import ai.first.application.coreapp.useradmin.AccessReviewAutonomousAgentRuntime;
 import ai.first.application.coreapp.useradmin.FailClosedAccessReviewAutonomousAgentRuntime;
@@ -106,6 +107,7 @@ class WorkstreamServiceTest {
     var workstreamLogRepository = new InMemoryTestWorkstreamLogRepository();
     var notificationService = new NotificationService(new InMemoryTestNotificationRepository(), resolver, Clock.systemUTC());
     StarterSecurityComponents.bindTestIdentityRepository(identityRepository);
+    StarterSecurityComponents.bindTestPersonalAttentionDigestTaskRepository(new InMemoryTestMyAccountPersonalAttentionDigestTaskRepository(), attentionService);
     service = new WorkstreamService(meService, resolver, new UserDirectoryView(userAdminService), new InvitationView(invitationService), userAdminService, invitationService, agentRepository, agentRuntimeService, trackingRuntimeInvoker, workstreamLogRepository, new InMemoryTestAccessReviewTaskRepository(), new InMemoryTestAuditTraceRepository(agentRuntimeService, workstreamLogRepository), new InMemoryTestGovernancePolicyRepository(), attentionService, attentionProducerService, workstreamEventPublisher, eventRepository, new FailClosedAccessReviewAutonomousAgentRuntime(), notificationService);
 
     identityRepository.putTenant(new Tenant("tenant-1", "Tenant One", true));
@@ -3271,6 +3273,39 @@ class WorkstreamServiceTest {
         "action-notification-update-preferences", "action-notification-update-preferences", "notification.update_preferences", "notification.update_preferences", Map.of("channel", "email", "category", firstCategory, "enabled", false), null, "membership-admin", "surface-my-account-notification-center", "corr-notification-pref-email"));
     assertEquals("validation-error", externalPreference.status());
     assertFalse(externalPreference.resultSurface().toString().contains("RESEND_API_KEY"));
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void myAccountPersonalAttentionDigestActionsExposeFailClosedBlockedSurfaceWithoutFakeSuccess() {
+    var started = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-start-my-account-personal-attention-digest", "action-start-my-account-personal-attention-digest", "my_account.personal_attention_digest.start", "my_account.personal_attention_digest.start", null, "idem-my-account-digest-workstream", "membership-admin", "surface-my-account-dashboard", "corr-my-account-digest-workstream-start"));
+
+    assertEquals("blocked_provider_or_runtime", started.status());
+    assertEquals("surface-my-account-personal-attention-digest-blocked", started.resultSurface().surfaceId());
+    assertEquals("system_message", started.resultSurface().surfaceType());
+    assertEquals("my_account.personal_attention_digest.blocked.v1", started.resultSurface().data().get("surfaceContract"));
+    assertEquals(true, started.resultSurface().data().get("noFakeSuccess"));
+    assertEquals(true, started.resultSurface().data().get("noDirectMutation"));
+    assertTrue(started.resultSurface().toString().contains("request-personal-digest-export"));
+    assertTrue(started.resultSurface().toString().contains("provider/runtime"));
+    assertFalse(started.resultSurface().toString().toLowerCase().contains("api_key"));
+    assertFalse(started.resultSurface().toString().toLowerCase().contains("secret="));
+    assertBrowserPayloadSafe(started.resultSurface());
+
+    var digestTaskId = String.valueOf(started.resultSurface().data().get("digestTaskId"));
+    var traceRefs = (List<String>) started.resultSurface().data().get("traceRefs");
+    assertFalse(digestTaskId.isBlank());
+    assertFalse(traceRefs.isEmpty());
+
+    var read = service.runAction(identity(), "membership-admin", new WorkstreamService.CapabilityActionRequest(
+        "action-read-my-account-personal-attention-digest", "action-read-my-account-personal-attention-digest", "my_account.personal_attention_digest.read", "my_account.personal_attention_digest.read", Map.of("digestTaskId", digestTaskId), null, "membership-admin", started.resultSurface().surfaceId(), "corr-my-account-digest-workstream-read"));
+
+    assertEquals("accepted", read.status());
+    assertEquals("surface-my-account-personal-attention-digest-blocked", read.resultSurface().surfaceId());
+    assertEquals(digestTaskId, read.resultSurface().data().get("digestTaskId"));
+    assertEquals(true, read.resultSurface().data().get("noFakeSuccess"));
+    assertBrowserPayloadSafe(read.resultSurface());
   }
 
   @Test

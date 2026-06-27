@@ -209,7 +209,7 @@
 
 ### MAFA-06-001: Digest/export provider-runtime closure
 
-- status: pending
+- status: done
 - source: `backlog/01-my-account-automated-alignment-build-backlog.md` B06
 - task brief: `specs/my-account-full-alignment/tasks/06-digest/01-digest-provider-runtime-closure.md`
 - depends on: [MAFA-05-001]
@@ -235,8 +235,11 @@
   - fail-closed/no-fake-success semantics are tested
   - source-alignment digest entry is updated
 - notes:
-  - lifecycle/readiness: backend-ready for fail-closed/task lifecycle; provider-backed runtime-ready only if configured and tested
+  - lifecycle/readiness: backend-ready for fail-closed/task lifecycle; provider-backed runtime-ready remains config-blocked/unclaimed because no concrete local provider configuration was exercised
   - vertical contract: My Account / `my-account-agent`; system/autonomous digest worker; governed tool `request-personal-digest-export`; digest progress/result/blocked surfaces; start/cancel/review idempotency; advisory-only; no source attention mutation; tenant/customer/account ownership and trace evidence required
+  - completed 2026-06-27: added/expanded digest service and WorkstreamService coverage for fail-closed provider/runtime/tool-boundary projection, task ownership, advisory accept/reject idempotency, no source-attention mutation, blocked surface `noFakeSuccess`/trace metadata, and source-alignment provider-success classification.
+  - validation: `mvn -Dtest='MyAccountPersonalAttentionDigestServiceTest,MyAccountPersonalAttentionDigestAutonomousAgentTest,DigestExportServiceTest,WorkstreamServiceTest' test` passes; `git diff --check` passes.
+  - commit message: `MAFA-06-001 close digest provider runtime alignment`
 
 ### MAFA-07-001: Frontend automated surface coverage
 

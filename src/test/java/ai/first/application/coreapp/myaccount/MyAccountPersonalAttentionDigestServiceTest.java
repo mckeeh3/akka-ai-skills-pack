@@ -173,12 +173,93 @@ class MyAccountPersonalAttentionDigestServiceTest {
   }
 
   @Test
-  void otherAccountCannotReadPersonalDigestTask() {
+  void completedDigestReviewIsIdempotentAdvisoryOnlyAndDoesNotMutateSourceAttention() {
+    var repository = new InMemoryTestMyAccountPersonalAttentionDigestTaskRepository();
+    var runtime = new RecordingPersonalAttentionDigestRuntime();
+    var digests = new MyAccountPersonalAttentionDigestService(repository, resolver, new AttentionService(attentionRepository, resolver, clock), clock, runtime);
+    var acceptedTask = serviceCompletedTask(digests, runtime, "idem-accept-review", "corr-accept-review");
+
+    var accepted = digests.acceptResult(owner, acceptedTask.digestTaskId(), "briefing reviewed", "corr-accept-review-decision");
+    var replay = digests.acceptResult(owner, acceptedTask.digestTaskId(), "briefing reviewed again", "corr-accept-review-replay");
+
+    assertEquals(MyAccountPersonalAttentionDigestTask.Status.ACCEPTED, accepted.status());
+    assertEquals("accepted", accepted.decision());
+    assertEquals(accepted.digestTaskId(), replay.digestTaskId());
+    assertEquals(MyAccountPersonalAttentionDigestTask.Status.ACCEPTED, replay.status());
+    assertTrue(accepted.decisionReason().contains("briefing reviewed"));
+    var contradictory = assertThrows(AuthorizationException.class, () -> digests.rejectResult(owner, acceptedTask.digestTaskId(), "changed mind", "corr-accept-then-reject"));
+    assertEquals("personal-attention-digest-result-not-completed", contradictory.reasonCode());
+    assertEquals(AttentionItemStatus.OPEN, attentionRepository.find("tenant-1", "attention-visible-audit").orElseThrow().status());
+    assertEquals(AttentionItemStatus.OPEN, attentionRepository.find("tenant-1", "attention-hidden-admin").orElseThrow().status());
+
+    var rejectedTask = serviceCompletedTask(digests, runtime, "idem-reject-review", "corr-reject-review");
+    var rejected = digests.rejectResult(owner, rejectedTask.digestTaskId(), "needs better evidence", "corr-reject-review-decision");
+    var rejectReplay = digests.rejectResult(owner, rejectedTask.digestTaskId(), "needs better evidence", "corr-reject-review-replay");
+
+    assertEquals(MyAccountPersonalAttentionDigestTask.Status.REJECTED, rejected.status());
+    assertEquals("rejected", rejected.decision());
+    assertEquals(MyAccountPersonalAttentionDigestTask.Status.REJECTED, rejectReplay.status());
+    assertEquals(AttentionItemStatus.OPEN, attentionRepository.find("tenant-1", "attention-visible-audit").orElseThrow().status());
+    assertEquals(AttentionItemStatus.OPEN, attentionRepository.find("tenant-1", "attention-hidden-admin").orElseThrow().status());
+  }
+
+  @Test
+  void queuedRuntimeProjectionFailsClosedWhenGovernedToolOrProviderRuntimeIsMissing() {
+    var repository = new InMemoryTestMyAccountPersonalAttentionDigestTaskRepository();
+    var runtime = new RecordingPersonalAttentionDigestRuntime();
+    var digests = new MyAccountPersonalAttentionDigestService(repository, resolver, new AttentionService(attentionRepository, resolver, clock), clock, runtime);
+    runtime.nextProjection = new MyAccountPersonalAttentionDigestAutonomousAgentRuntime.Projection(
+        MyAccountPersonalAttentionDigestTask.Status.BLOCKED_PROVIDER_OR_RUNTIME,
+        5,
+        "My Account personal attention digest failed closed because required governed tool request-personal-digest-export or provider runtime is not granted; no fake success.",
+        "blocked_provider_or_runtime",
+        null,
+        2,
+        List.of("attention_item:attention-visible-audit"),
+        List.of(),
+        List.of("trace-required-governed-tool-denied", "trace-provider-runtime-missing"));
+    var task = digests.start(owner, command("idem-tool-boundary-blocked"), "corr-tool-boundary-start");
+
+    var projected = digests.read(owner, task.digestTaskId(), "corr-tool-boundary-read");
+
+    assertEquals(MyAccountPersonalAttentionDigestTask.Status.BLOCKED_PROVIDER_OR_RUNTIME, projected.status());
+    assertEquals("blocked_provider_or_runtime", projected.blockerCode());
+    assertTrue(projected.summary().contains("failed closed"));
+    assertTrue(projected.summary().contains("request-personal-digest-export"));
+    assertTrue(projected.summary().contains("no fake success"));
+    assertTrue(projected.traceIds().contains("trace-required-governed-tool-denied"));
+    assertFalse(projected.summary().toLowerCase().contains("api_key"));
+  }
+
+  @Test
+  void otherAccountCannotReadCancelOrReviewPersonalDigestTask() {
     var deniedActor = resolver.resolveMe(new WorkosIdentity("workos-employee", "employee@example.test", "Employee"), "membership-employee", "corr-denied");
 
     var task = service.start(owner, command("idem-owner"), "corr-owner-start");
     var deniedRead = assertThrows(AuthorizationException.class, () -> service.read(deniedActor, task.digestTaskId(), "corr-denied-read"));
+    var deniedCancel = assertThrows(AuthorizationException.class, () -> service.cancel(deniedActor, task.digestTaskId(), "not mine", "corr-denied-cancel"));
+    var deniedAccept = assertThrows(AuthorizationException.class, () -> service.acceptResult(deniedActor, task.digestTaskId(), "not mine", "corr-denied-accept"));
+    var deniedReject = assertThrows(AuthorizationException.class, () -> service.rejectResult(deniedActor, task.digestTaskId(), "not mine", "corr-denied-reject"));
+
     assertEquals("personal-attention-digest-not-found-or-forbidden", deniedRead.reasonCode());
+    assertEquals("personal-attention-digest-not-found-or-forbidden", deniedCancel.reasonCode());
+    assertEquals("personal-attention-digest-not-found-or-forbidden", deniedAccept.reasonCode());
+    assertEquals("personal-attention-digest-not-found-or-forbidden", deniedReject.reasonCode());
+  }
+
+  private MyAccountPersonalAttentionDigestTask serviceCompletedTask(MyAccountPersonalAttentionDigestService digests, RecordingPersonalAttentionDigestRuntime runtime, String idempotencyKey, String correlationId) {
+    var task = digests.start(owner, command(idempotencyKey), correlationId + "-start");
+    runtime.nextProjection = new MyAccountPersonalAttentionDigestAutonomousAgentRuntime.Projection(
+        MyAccountPersonalAttentionDigestTask.Status.COMPLETED_REVIEW_REQUIRED,
+        100,
+        "Model-backed redacted personal attention digest ready for human advisory review; source attention remains authoritative.",
+        null,
+        null,
+        2,
+        task.evidenceRefs(),
+        List.of("personal_attention_digest_section:audit-trace-agent"),
+        List.of("autonomous_task:" + task.autonomousAgentTaskId(), "trace-model-backed-review-" + idempotencyKey));
+    return digests.read(owner, task.digestTaskId(), correlationId + "-read");
   }
 
   private MyAccountPersonalAttentionDigestService.StartPersonalAttentionDigestCommand command(String idempotencyKey) {

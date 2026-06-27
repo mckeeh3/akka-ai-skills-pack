@@ -326,6 +326,18 @@ public final class StarterSecurityComponents {
     workstreamService = unboundWorkstreamService();
   }
 
+  /** Test-only hook for unit tests that use explicit My Account personal digest task adapters. */
+  public static void bindTestPersonalAttentionDigestTaskRepository(MyAccountPersonalAttentionDigestTaskRepository testRepository) {
+    bindTestPersonalAttentionDigestTaskRepository(testRepository, attentionService);
+  }
+
+  /** Test-only hook for unit tests that use explicit My Account personal digest task and attention adapters. */
+  public static void bindTestPersonalAttentionDigestTaskRepository(MyAccountPersonalAttentionDigestTaskRepository testRepository, AttentionService testAttentionService) {
+    if (!FailClosedFoundationRuntime.testRuntime()) throw FailClosedFoundationRuntime.unavailable("Test My Account personal attention digest task repository binding");
+    personalAttentionDigestTaskRepository = testRepository;
+    personalAttentionDigestService = new MyAccountPersonalAttentionDigestService(testRepository, authContextResolver, testAttentionService, CLOCK);
+  }
+
   /** Test-only hook for unit tests that use explicit test-source invitation adapters. */
   public static void bindTestInvitationRepository(InvitationRepository testRepository) {
     if (!FailClosedFoundationRuntime.testRuntime()) throw FailClosedFoundationRuntime.unavailable("Test invitation repository binding");
