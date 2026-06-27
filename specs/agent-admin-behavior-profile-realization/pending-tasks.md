@@ -97,7 +97,7 @@
 
 ### AABP-01-003: Align doc restore and skill/reference lifecycle
 
-- status: pending
+- status: done
 - source: `backlog/01-agent-admin-behavior-profile-build-backlog.md`
 - task brief: `specs/agent-admin-behavior-profile-realization/tasks/01-backend/02-doc-restore-skill-reference-lifecycle.md`
 - depends on: [AABP-01-002]
@@ -118,7 +118,9 @@
 - done criteria:
   - direct restore/create/delete active mutations are reconciled to current intent
   - changes and queue update are committed
-- notes: []
+- notes:
+  - completed in this commit with message: `Align Agent Admin document lifecycle semantics`
+  - next runnable task after completion: `AABP-01-004` (`pending`, depends on `AABP-01-003`)
 
 ### AABP-01-004: Implement behavior-profile version and assignment seams
 

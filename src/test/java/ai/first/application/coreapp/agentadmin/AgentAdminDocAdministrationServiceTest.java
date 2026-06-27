@@ -29,6 +29,7 @@ import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
 import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
+import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import ai.first.domain.foundation.agent.ReferenceDocument;
 import ai.first.domain.foundation.identity.Account;
@@ -189,9 +190,18 @@ class AgentAdminDocAdministrationServiceTest {
     assertTrue(diff.unifiedDiff().contains("Concise behavior note."));
 
     var restored = service.restoreVersion(owner, new RestoreVersionRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentDocKind.PROMPT, AgentBehaviorSeedLoader.USER_ADMIN_PROMPT_ID, 1), "corr-restore");
-    assertEquals(3, restored.newCurrentVersion());
+    assertEquals(2, restored.newCurrentVersion());
+    assertNotNull(restored.proposalId());
     assertEquals("Restored from version 1", restored.summary());
-    var restoredCurrent = service.readDocumentVersion(owner, docRequest, "corr-restored-current");
+    var unchangedAfterRestoreProposal = service.readDocumentVersion(owner, docRequest, "corr-restored-current");
+    assertEquals(2, unchangedAfterRestoreProposal.version());
+    assertTrue(unchangedAfterRestoreProposal.contentBody().contains("Concise behavior note."));
+    var restoreProposal = service.readProposal(owner, new AgentAdminDocAdministrationService.ProposalCommandRequest(restored.proposalId()), "corr-read-restore-proposal");
+    assertEquals(AgentAdminDocAdministrationService.BehaviorProposalOperation.RESTORE_VERSION, restoreProposal.operation());
+    assertEquals("Restored from version 1", restoreProposal.transcriptSummary());
+    var activatedRestore = service.activateProposal(owner, new ActivateProposalRequest(restored.proposalId(), "Activate restore proposal"), "corr-activate-restore");
+    assertEquals(3, activatedRestore.newCurrentVersion());
+    var restoredCurrent = service.readDocumentVersion(owner, docRequest, "corr-restored-current-active");
     assertEquals(3, restoredCurrent.version());
     assertEquals("Restored from version 1", restoredCurrent.editSessionTranscriptSummary());
 
@@ -261,21 +271,58 @@ class AgentAdminDocAdministrationServiceTest {
   }
 
   @Test
-  void skillAndReferenceLifecycleSupportsPermanentDeletionCascade() {
+  void skillAndReferenceCreateUsesProposalAndDeprecationRemovesLoaderAccessWithoutHardDelete() {
     var owner = actor("owner@example.test", "membership-owner");
     var skill = service.createSkill(owner, new CreateSkillRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, "skill-test-coaching", "test.coaching.v1", "Test Coaching", "Coach tests", "Use for test guidance", "# Test Coaching\nUse examples.", "Create test skill"), "corr-create-skill");
-    var reference = service.createReferenceDoc(owner, new CreateReferenceDocRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, skill.skillDocumentId(), "ref-test-coaching", "test.coaching.reference.v1", "Test Coaching Reference", "Reference for test coaching", "Consult for test coaching details", ReferenceDocument.ReferenceType.PROCESS, "# Test Reference\nDetails.", "Create test reference"), "corr-create-reference");
+    assertEquals(0, skill.currentVersion());
+    assertEquals("create_proposal", skill.lifecycleAction());
+    assertNotNull(skill.proposalId());
+    assertTrue(agentRepository.skillDocument(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, skill.skillDocumentId()).isEmpty());
+    var createSkillProposal = service.readProposal(owner, new AgentAdminDocAdministrationService.ProposalCommandRequest(skill.proposalId()), "corr-read-skill-create-proposal");
+    assertEquals(AgentAdminDocAdministrationService.BehaviorProposalOperation.CREATE_SKILL, createSkillProposal.operation());
+    var activatedSkill = service.activateProposal(owner, new ActivateProposalRequest(skill.proposalId(), "Activate skill create"), "corr-activate-skill-create");
+    assertEquals(1, activatedSkill.newCurrentVersion());
+    var activeSkill = agentRepository.skillDocument(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, skill.skillDocumentId()).orElseThrow();
+    assertEquals(AgentLifecycleStatus.ACTIVE, activeSkill.status());
 
-    var skillDoc = service.readDocumentVersion(owner, new DocumentVersionRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentDocKind.SKILL, skill.skillDocumentId(), null), "corr-read-created-skill");
-    var referenceDoc = service.readDocumentVersion(owner, new DocumentVersionRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentDocKind.REFERENCE, reference.referenceDocumentId(), null), "corr-read-created-reference");
-    assertEquals(1, skillDoc.version());
-    assertEquals(1, referenceDoc.version());
+    var reference = service.createReferenceDoc(owner, new CreateReferenceDocRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentBehaviorSeedLoader.ACCESS_REVIEW_SKILL_DOC_ID, "ref-test-coaching", "test.coaching.reference.v1", "Test Coaching Reference", "Reference for test coaching", "Consult for test coaching details", ReferenceDocument.ReferenceType.PROCESS, "# Test Reference\nDetails.", "Create test reference"), "corr-create-reference");
+    assertEquals(0, reference.currentVersion());
+    assertEquals("create_proposal", reference.lifecycleAction());
+    assertNotNull(reference.proposalId());
+    assertTrue(agentRepository.referenceDocument(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, reference.referenceDocumentId()).isEmpty());
+    var activatedReference = service.activateProposal(owner, new ActivateProposalRequest(reference.proposalId(), "Activate reference create"), "corr-activate-reference-create");
+    assertEquals(1, activatedReference.newCurrentVersion());
+    assertEquals(AgentLifecycleStatus.ACTIVE, agentRepository.referenceDocument(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, reference.referenceDocumentId()).orElseThrow().status());
 
-    service.deleteSkill(owner, new DeleteSkillRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, skill.skillDocumentId(), "Permanently delete Test Coaching and its reference docs"), "corr-delete-skill");
+    var runtimeBeforeDeprecation = new AgentRuntimeService(agentRepository, resolver, CLOCK, new OpenAiModelProviderClient(), new InMemoryTestAgentRuntimeTraceSink());
+    assertEquals(AgentRuntimeTrace.Decision.ALLOWED, runtimeBeforeDeprecation.readSkill(new AgentRuntimeService.SkillReadRequest(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, owner.selectedContext(), "runtime", "saas_owner.admin.manage", "corr-before-deprecate-skill-read", "ua.access-review-triage.v1")).decision());
+    assertEquals(AgentRuntimeTrace.Decision.ALLOWED, runtimeBeforeDeprecation.readReferenceDoc(new AgentRuntimeService.ReferenceReadRequest(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, owner.selectedContext(), "runtime", "saas_owner.admin.manage", "corr-before-deprecate-reference-read", "ua.access-review-policy.v1", "consult")).decision());
 
-    assertThrows(AuthorizationException.class, () -> service.readDocumentVersion(owner, new DocumentVersionRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentDocKind.SKILL, skill.skillDocumentId(), null), "corr-read-deleted-skill"));
-    assertThrows(AuthorizationException.class, () -> service.readDocumentVersion(owner, new DocumentVersionRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentDocKind.REFERENCE, reference.referenceDocumentId(), null), "corr-read-deleted-reference"));
-    assertThrows(AuthorizationException.class, () -> service.restoreVersion(owner, new RestoreVersionRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentDocKind.REFERENCE, reference.referenceDocumentId(), 1), "corr-restore-deleted-reference"));
+    var referenceDocId = AgentBehaviorSeedLoader.ACCESS_REVIEW_POLICY_REFERENCE_DOC_ID;
+    var deprecatedReferenceResult = service.deleteReferenceDoc(owner, new AgentAdminDocAdministrationService.DeleteReferenceDocRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, referenceDocId, "Deprecate Access Review Policy and remove manifest access"), "corr-deprecate-reference");
+    assertEquals("deprecated", deprecatedReferenceResult.lifecycleAction());
+    assertTrue(deprecatedReferenceResult.affectedManifestEntryCount() >= 1);
+    assertEquals(AgentLifecycleStatus.DEPRECATED, agentRepository.referenceDocument(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, referenceDocId).orElseThrow().status());
+    var deprecatedReferenceDoc = service.readDocumentVersion(owner, new DocumentVersionRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentDocKind.REFERENCE, referenceDocId, null), "corr-read-deprecated-reference");
+    assertEquals(1, deprecatedReferenceDoc.version());
+    var deniedReferenceLoad = runtimeBeforeDeprecation.readReferenceDoc(new AgentRuntimeService.ReferenceReadRequest(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, owner.selectedContext(), "runtime", "saas_owner.admin.manage", "corr-after-deprecate-reference-read", "ua.access-review-policy.v1", "consult"));
+    assertEquals(AgentRuntimeTrace.Decision.DENIED, deniedReferenceLoad.decision());
+    assertEquals("Reference is not available in this governed runtime context.", deniedReferenceLoad.safeDenialReason());
+
+    var deprecated = service.deleteSkill(owner, new DeleteSkillRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentBehaviorSeedLoader.ACCESS_REVIEW_SKILL_DOC_ID, "Deprecate Access Review Triage and disclose affected assignments/references"), "corr-deprecate-skill");
+    assertEquals("deprecated", deprecated.lifecycleAction());
+    assertEquals(1, deprecated.affectedAssignmentCount());
+    assertTrue(deprecated.affectedReferenceCount() >= 1);
+    assertTrue(deprecated.affectedManifestEntryCount() >= deprecated.affectedAssignmentCount());
+    assertEquals(AgentLifecycleStatus.DEPRECATED, agentRepository.skillDocument(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, AgentBehaviorSeedLoader.ACCESS_REVIEW_SKILL_DOC_ID).orElseThrow().status());
+    var deprecatedSkillDoc = service.readDocumentVersion(owner, new DocumentVersionRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentDocKind.SKILL, AgentBehaviorSeedLoader.ACCESS_REVIEW_SKILL_DOC_ID, null), "corr-read-deprecated-skill");
+    assertEquals(1, deprecatedSkillDoc.version());
+
+    var runtimeAfterDeprecation = new AgentRuntimeService(agentRepository, resolver, CLOCK, new OpenAiModelProviderClient(), new InMemoryTestAgentRuntimeTraceSink());
+    var deniedSkillLoad = runtimeAfterDeprecation.readSkill(new AgentRuntimeService.SkillReadRequest(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, owner.selectedContext(), "runtime", "saas_owner.admin.manage", "corr-after-deprecate-skill-read", "ua.access-review-triage.v1"));
+    assertEquals(AgentRuntimeTrace.Decision.DENIED, deniedSkillLoad.decision());
+    assertEquals("Skill is not available in this governed runtime context.", deniedSkillLoad.safeDenialReason());
+
   }
 
   @Test

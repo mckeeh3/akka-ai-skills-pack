@@ -353,20 +353,18 @@ public final class AgentAdminDocAdministrationService {
     requireSaasAdmin(actor, ACTIVATE_PROPOSAL_CAPABILITY, "agent_admin.doc_proposal.activate.v1", correlationId);
     var existing = proposal(request == null ? null : request.proposalId());
     if (existing.status() != BehaviorProposalStatus.DRAFT && existing.status() != BehaviorProposalStatus.APPROVED) throw new AuthorizationException(409, "proposal-not-activatable");
-    var current = resolveDocument(new DocumentVersionRequest(existing.agentDefinitionId(), existing.kind(), existing.documentId(), null));
-    if (current.currentVersion() != existing.baseVersion()) {
-      recordProposalTrace("BEHAVIOR_PROPOSAL_ACTIVATION_DENIED", AgentRuntimeTrace.Decision.DENIED, existing, correlationId, "proposal base version stale; baseVersion=" + existing.baseVersion() + "; currentVersion=" + current.currentVersion());
-      throw new AuthorizationException(409, "proposal-base-version-stale");
-    }
     if (existing.riskClassification() != RiskClassification.LOW || existing.authorityExpansion().detected()) {
       recordProposalTrace("BEHAVIOR_PROPOSAL_ACTIVATION_DENIED", AgentRuntimeTrace.Decision.DENIED, existing, correlationId, "direct activation denied; risk=" + existing.riskClassification() + "; authorityExpansion=" + existing.authorityExpansion().detected());
       throw new AuthorizationException(403, "proposal-direct-activation-requires-review");
     }
-    var nextVersion = current.currentVersion() + 1;
-    saveCurrentSnapshot(current, existing.proposedContent(), actor.account().accountId(), firstNonBlank(existing.summary(), "Activated Agent Admin proposal " + existing.proposalId()), existing.transcriptSummary());
+    var nextVersion = switch (existing.operation()) {
+      case EDIT_DOCUMENT, RESTORE_VERSION -> activateDocumentContentProposal(actor, existing, correlationId);
+      case CREATE_SKILL -> activateCreateSkillProposal(actor, existing);
+      case CREATE_REFERENCE -> activateCreateReferenceProposal(actor, existing);
+    };
     var activated = transitionProposal(existing, BehaviorProposalStatus.ACTIVATED, actor.account().accountId(), actor.account().accountId(), correlationId);
     proposals.put(activated.proposalId(), activated);
-    recordProposalTrace("BEHAVIOR_PROPOSAL_ACTIVATED", AgentRuntimeTrace.Decision.ALLOWED, activated, correlationId, "proposal activated as document version " + nextVersion + "; risk=" + activated.riskClassification() + "; authorityExpansion=" + activated.authorityExpansion().detected());
+    recordProposalTrace("BEHAVIOR_PROPOSAL_ACTIVATED", AgentRuntimeTrace.Decision.ALLOWED, activated, correlationId, "proposal activated as document version " + nextVersion + "; operation=" + activated.operation() + "; risk=" + activated.riskClassification() + "; authorityExpansion=" + activated.authorityExpansion().detected());
     return new ActivateProposalResult(activated, nextVersion, List.of(traceId("behavior-proposal-activated", existing.proposalId(), correlationId)));
   }
 
@@ -374,9 +372,21 @@ public final class AgentAdminDocAdministrationService {
     requireSaasAdmin(actor, RESTORE_VERSION_CAPABILITY, "agent_admin.doc_version.restore.v1", correlationId);
     var current = resolveDocument(new DocumentVersionRequest(request.agentDefinitionId(), request.kind(), request.documentId(), null));
     if (request.version() < 1 || request.version() >= current.currentVersion()) throw new AuthorizationException(404, "historical-document-version-required");
-    if (!versionExists(current, request.version())) throw new AuthorizationException(404, "document-version-not-found");
-    restoreSnapshot(current, request.version(), actor.account().accountId());
-    return new RestoreVersionResult(current.agentDefinitionId(), current.kind(), current.documentId(), request.version(), current.currentVersion() + 1, "Restored from version " + request.version(), List.of(traceId("version-restore", current.documentId(), correlationId)));
+    var historical = resolveDocumentVersion(new DocumentVersionRequest(request.agentDefinitionId(), request.kind(), request.documentId(), request.version()));
+    var summary = "Restored from version " + request.version();
+    var proposal = proposalFromContent(
+        actor,
+        BehaviorProposalOperation.RESTORE_VERSION,
+        current,
+        historical.contentBody(),
+        summary,
+        summary,
+        summary,
+        Map.of("restoredFromVersion", String.valueOf(request.version())),
+        correlationId);
+    proposals.put(proposal.proposalId(), proposal);
+    recordProposalTrace("BEHAVIOR_RESTORE_PROPOSAL_SAVED", AgentRuntimeTrace.Decision.ALLOWED, proposal, correlationId, "restore saved as non-active proposal; restoredFromVersion=" + request.version() + "; baseVersion=" + current.currentVersion());
+    return new RestoreVersionResult(current.agentDefinitionId(), current.kind(), current.documentId(), request.version(), current.currentVersion(), proposal.proposalId(), summary, List.of(traceId("version-restore-proposal", current.documentId(), correlationId), traceId("behavior-proposal-saved", proposal.proposalId(), correlationId)));
   }
 
   public SkillLifecycleResult createSkill(AuthContextResolver.ResolvedMe actor, CreateSkillRequest request, String correlationId) {
@@ -386,15 +396,26 @@ public final class AgentAdminDocAdministrationService {
     requireNonBlank(request.name(), "skill-name-required");
     requireNonBlank(request.contentBody(), "skill-content-required");
     var agent = agent(request.agentDefinitionId());
-    var now = Instant.now(clock);
     var documentId = firstNonBlank(request.skillDocumentId(), "skill-" + safeId(request.stableSkillId()));
     if (repository.skillDocument(platformScopeId(), documentId).isPresent()) throw new AuthorizationException(409, "skill-document-already-exists");
-    var skill = repository.saveSkillDocument(new SkillDocument(platformScopeId(), documentId, request.stableSkillId(), request.name(), firstNonBlank(request.purpose(), request.name()), request.whenToUse(), List.of("agent-admin-created"), AgentLifecycleStatus.ACTIVE, 1, request.contentBody(), checksum(request.contentBody()), null, now, now));
-    var manifest = repository.skillManifest(platformScopeId(), agent.skillManifestId()).orElseThrow(() -> new AuthorizationException(404, "skill-manifest-not-found-or-forbidden"));
-    var entries = new ArrayList<>(manifest.entries());
-    entries.add(new AgentSkillManifest.Entry(skill.stableSkillId(), skill.skillDocumentId(), skill.activeVersion(), skill.title(), skill.purpose(), skill.whenToUse()));
-    repository.saveSkillManifest(new AgentSkillManifest(manifest.tenantId(), manifest.manifestId(), manifest.agentDefinitionId(), manifest.status(), manifest.manifestVersion() + 1, entries, checksum(entries.toString()), manifest.seedProvenance(), manifest.createdAt(), now));
-    return new SkillLifecycleResult(agent.agentDefinitionId(), skill.skillDocumentId(), 1, List.of(traceId("skill-create", skill.skillDocumentId(), correlationId)));
+    var proposal = createLifecycleProposal(
+        actor,
+        BehaviorProposalOperation.CREATE_SKILL,
+        agent.agentDefinitionId(),
+        AgentDocKind.SKILL,
+        documentId,
+        request.contentBody(),
+        "Create skill " + request.name(),
+        firstNonBlank(request.editSessionTranscriptSummary(), "Create skill proposal"),
+        Map.of(
+            "stableSkillId", request.stableSkillId(),
+            "name", request.name(),
+            "purpose", firstNonBlank(request.purpose(), request.name()),
+            "whenToUse", firstNonBlank(request.whenToUse(), "Use when relevant.")),
+        correlationId);
+    proposals.put(proposal.proposalId(), proposal);
+    recordProposalTrace("SKILL_CREATE_PROPOSAL_SAVED", AgentRuntimeTrace.Decision.ALLOWED, proposal, correlationId, "skill create saved as non-active proposal; assignmentCount=0; manifestEntryCount=0");
+    return new SkillLifecycleResult(agent.agentDefinitionId(), documentId, 0, proposal.proposalId(), "create_proposal", 0, 0, 0, List.of(traceId("skill-create-proposal", documentId, correlationId), traceId("behavior-proposal-saved", proposal.proposalId(), correlationId)));
   }
 
   public ReferenceLifecycleResult createReferenceDoc(AuthContextResolver.ResolvedMe actor, CreateReferenceDocRequest request, String correlationId) {
@@ -405,17 +426,31 @@ public final class AgentAdminDocAdministrationService {
     requireNonBlank(request.name(), "reference-name-required");
     requireNonBlank(request.contentBody(), "reference-content-required");
     var agent = agent(request.agentDefinitionId());
-    skill(agent, request.skillDocumentId());
-    var now = Instant.now(clock);
+    var skill = skill(agent, request.skillDocumentId());
     var documentId = firstNonBlank(request.referenceDocumentId(), "ref-" + safeId(request.stableReferenceId()));
     if (repository.referenceDocument(platformScopeId(), documentId).isPresent()) throw new AuthorizationException(409, "reference-document-already-exists");
-    var tags = List.of("agent-admin-created", skillReferenceTag(request.skillDocumentId()));
-    var reference = repository.saveReferenceDocument(new ReferenceDocument(platformScopeId(), documentId, request.stableReferenceId(), request.name(), firstNonBlank(request.description(), request.name()), request.whenToConsult(), request.referenceType() == null ? ReferenceDocument.ReferenceType.OTHER : request.referenceType(), "internal", tags, AgentLifecycleStatus.ACTIVE, 1, request.contentBody(), checksum(request.contentBody()), null, now, now));
-    var manifest = repository.referenceManifest(platformScopeId(), agent.referenceManifestId()).orElseThrow(() -> new AuthorizationException(404, "reference-manifest-not-found-or-forbidden"));
-    var entries = new ArrayList<>(manifest.entries());
-    entries.add(new AgentReferenceManifest.Entry(reference.stableReferenceId(), reference.referenceDocumentId(), reference.activeVersion(), reference.title(), reference.summary(), reference.whenToConsult(), "consult", reference.accessLevel()));
-    repository.saveReferenceManifest(new AgentReferenceManifest(manifest.tenantId(), manifest.manifestId(), manifest.agentDefinitionId(), manifest.workstreamExpertBundleId(), manifest.status(), manifest.manifestVersion() + 1, entries, checksum(entries.toString()), manifest.seedProvenance(), manifest.createdAt(), now));
-    return new ReferenceLifecycleResult(agent.agentDefinitionId(), request.skillDocumentId(), reference.referenceDocumentId(), 1, List.of(traceId("reference-create", reference.referenceDocumentId(), correlationId)));
+    var metadata = new LinkedHashMap<String, String>();
+    metadata.put("skillDocumentId", skill.skillDocumentId());
+    metadata.put("stableReferenceId", request.stableReferenceId());
+    metadata.put("name", request.name());
+    metadata.put("description", firstNonBlank(request.description(), request.name()));
+    metadata.put("whenToConsult", firstNonBlank(request.whenToConsult(), "Consult when relevant."));
+    metadata.put("referenceType", (request.referenceType() == null ? ReferenceDocument.ReferenceType.OTHER : request.referenceType()).name());
+    metadata.put("accessLevel", "internal");
+    var proposal = createLifecycleProposal(
+        actor,
+        BehaviorProposalOperation.CREATE_REFERENCE,
+        agent.agentDefinitionId(),
+        AgentDocKind.REFERENCE,
+        documentId,
+        request.contentBody(),
+        "Create reference " + request.name(),
+        firstNonBlank(request.editSessionTranscriptSummary(), "Create reference proposal"),
+        metadata,
+        correlationId);
+    proposals.put(proposal.proposalId(), proposal);
+    recordProposalTrace("REFERENCE_CREATE_PROPOSAL_SAVED", AgentRuntimeTrace.Decision.ALLOWED, proposal, correlationId, "reference create saved as non-active proposal; associatedSkill=" + skill.skillDocumentId() + "; manifestEntryCount=0");
+    return new ReferenceLifecycleResult(agent.agentDefinitionId(), skill.skillDocumentId(), documentId, 0, proposal.proposalId(), "create_proposal", 0, 0, List.of(traceId("reference-create-proposal", documentId, correlationId), traceId("behavior-proposal-saved", proposal.proposalId(), correlationId)));
   }
 
   public SkillLifecycleResult deleteSkill(AuthContextResolver.ResolvedMe actor, DeleteSkillRequest request, String correlationId) {
@@ -423,16 +458,20 @@ public final class AgentAdminDocAdministrationService {
     requireNonBlank(request == null ? null : request.agentDefinitionId(), "agentDefinitionId-required");
     var agent = agent(request.agentDefinitionId());
     var skill = skill(agent, request.skillDocumentId());
-    if (request.confirmation() == null || !request.confirmation().contains(skill.title())) throw new AuthorizationException(400, "skill-delete-confirmation-required");
+    if (request.confirmation() == null || !request.confirmation().contains(skill.title()) || !request.confirmation().toLowerCase(Locale.ROOT).contains("deprecat")) throw new AuthorizationException(400, "skill-deprecation-confirmation-required");
     var now = Instant.now(clock);
-    var referencesToDelete = referencesForSkill(agent, skill.skillDocumentId());
-    for (var reference : referencesToDelete) {
-      repository.deleteReferenceDocument(platformScopeId(), reference.referenceDocumentId(), actor.account().accountId(), now);
+    var assignmentCount = countSkillManifestEntries(skill.skillDocumentId());
+    var referencesToDeprecate = referencesForSkill(skill.skillDocumentId());
+    var affectedReferenceIds = referencesToDeprecate.stream().map(ReferenceDocument::referenceDocumentId).toList();
+    var affectedReferenceManifestEntries = countReferenceManifestEntries(affectedReferenceIds);
+    for (var reference : referencesToDeprecate) {
+      deprecateReference(reference, now);
     }
-    removeReferencesFromManifest(agent, referencesToDelete.stream().map(ReferenceDocument::referenceDocumentId).toList(), now);
-    repository.deleteSkillDocument(platformScopeId(), skill.skillDocumentId(), actor.account().accountId(), now);
-    removeSkillFromManifest(agent, skill.skillDocumentId(), now);
-    return new SkillLifecycleResult(agent.agentDefinitionId(), skill.skillDocumentId(), 0, List.of(traceId("skill-delete", skill.skillDocumentId(), correlationId)));
+    removeReferencesFromAllManifests(affectedReferenceIds, now);
+    deprecateSkill(skill, now);
+    removeSkillFromAllManifests(skill.skillDocumentId(), now);
+    var traceLinks = List.of(traceId("skill-deprecate", skill.skillDocumentId(), correlationId));
+    return new SkillLifecycleResult(agent.agentDefinitionId(), skill.skillDocumentId(), skill.activeVersion(), null, "deprecated", assignmentCount, referencesToDeprecate.size(), assignmentCount + affectedReferenceManifestEntries, traceLinks);
   }
 
   public ReferenceLifecycleResult deleteReferenceDoc(AuthContextResolver.ResolvedMe actor, DeleteReferenceDocRequest request, String correlationId) {
@@ -440,11 +479,12 @@ public final class AgentAdminDocAdministrationService {
     requireNonBlank(request == null ? null : request.agentDefinitionId(), "agentDefinitionId-required");
     var agent = agent(request.agentDefinitionId());
     var reference = reference(agent, request.referenceDocumentId());
-    if (request.confirmation() == null || !request.confirmation().contains(reference.title())) throw new AuthorizationException(400, "reference-delete-confirmation-required");
+    if (request.confirmation() == null || !request.confirmation().contains(reference.title()) || !request.confirmation().toLowerCase(Locale.ROOT).contains("deprecat")) throw new AuthorizationException(400, "reference-deprecation-confirmation-required");
     var now = Instant.now(clock);
-    repository.deleteReferenceDocument(platformScopeId(), reference.referenceDocumentId(), actor.account().accountId(), now);
-    removeReferencesFromManifest(agent, List.of(reference.referenceDocumentId()), now);
-    return new ReferenceLifecycleResult(agent.agentDefinitionId(), null, reference.referenceDocumentId(), 0, List.of(traceId("reference-delete", reference.referenceDocumentId(), correlationId)));
+    var manifestEntries = countReferenceManifestEntries(List.of(reference.referenceDocumentId()));
+    deprecateReference(reference, now);
+    removeReferencesFromAllManifests(List.of(reference.referenceDocumentId()), now);
+    return new ReferenceLifecycleResult(agent.agentDefinitionId(), null, reference.referenceDocumentId(), reference.activeVersion(), null, "deprecated", 0, manifestEntries, List.of(traceId("reference-deprecate", reference.referenceDocumentId(), correlationId)));
   }
 
   public RuntimeDocReadTraceResponse runtimeDocReadTraces(AuthContextResolver.ResolvedMe actor, RuntimeDocReadTraceQuery query, String correlationId) {
@@ -525,6 +565,7 @@ public final class AgentAdminDocAdministrationService {
     return new BehaviorChangeProposalRecord(
         proposalId,
         BehaviorProposalStatus.DRAFT,
+        BehaviorProposalOperation.EDIT_DOCUMENT,
         session.agentDefinitionId(),
         session.kind(),
         session.documentId(),
@@ -538,10 +579,90 @@ public final class AgentAdminDocAdministrationService {
         authorityExpansion,
         suggestedTestsFor(risk, authorityExpansion),
         editSessionTranscript(session),
+        Map.of(),
         session.actorAccountId(),
         null,
         null,
         appendTrace(session.traceLinks(), traceId("behavior-proposal-draft", proposalId, correlationId)),
+        Instant.now(clock),
+        null,
+        null);
+  }
+
+  private BehaviorChangeProposalRecord proposalFromContent(
+      AuthContextResolver.ResolvedMe actor,
+      BehaviorProposalOperation operation,
+      DocumentSnapshot current,
+      String proposedContent,
+      String summary,
+      String rationale,
+      String transcriptSummary,
+      Map<String, String> metadata,
+      String correlationId) {
+    var proposalId = "agent-doc-proposal-" + UUID.randomUUID();
+    var authorityExpansion = new AuthorityExpansionFlags(false, List.of());
+    return new BehaviorChangeProposalRecord(
+        proposalId,
+        BehaviorProposalStatus.DRAFT,
+        operation,
+        current.agentDefinitionId(),
+        current.kind(),
+        current.documentId(),
+        current.currentVersion(),
+        current.currentVersion() + 1,
+        safe(proposedContent),
+        simpleUnifiedDiff(current.contentBody(), proposedContent),
+        summary,
+        rationale,
+        RiskClassification.LOW,
+        authorityExpansion,
+        suggestedTestsFor(RiskClassification.LOW, authorityExpansion),
+        transcriptSummary,
+        metadata,
+        actor.account().accountId(),
+        null,
+        null,
+        List.of(traceId("behavior-proposal-draft", proposalId, correlationId)),
+        Instant.now(clock),
+        null,
+        null);
+  }
+
+  private BehaviorChangeProposalRecord createLifecycleProposal(
+      AuthContextResolver.ResolvedMe actor,
+      BehaviorProposalOperation operation,
+      String agentDefinitionId,
+      AgentDocKind kind,
+      String documentId,
+      String proposedContent,
+      String summary,
+      String transcriptSummary,
+      Map<String, String> metadata,
+      String correlationId) {
+    var proposalId = "agent-doc-proposal-" + UUID.randomUUID();
+    var authorityExpansion = new AuthorityExpansionFlags(false, List.of());
+    return new BehaviorChangeProposalRecord(
+        proposalId,
+        BehaviorProposalStatus.DRAFT,
+        operation,
+        agentDefinitionId,
+        kind,
+        documentId,
+        0,
+        1,
+        safe(proposedContent),
+        "",
+        summary,
+        summary,
+        RiskClassification.LOW,
+        authorityExpansion,
+        suggestedTestsFor(RiskClassification.LOW, authorityExpansion),
+        transcriptSummary + "\nproposedContentChecksum: " + checksum(proposedContent),
+        metadata,
+        actor.account().accountId(),
+        null,
+        null,
+        List.of(traceId("behavior-proposal-draft", proposalId, correlationId)),
         Instant.now(clock),
         null,
         null);
@@ -559,6 +680,7 @@ public final class AgentAdminDocAdministrationService {
     return new BehaviorChangeProposalRecord(
         existing.proposalId(),
         status,
+        existing.operation(),
         existing.agentDefinitionId(),
         existing.kind(),
         existing.documentId(),
@@ -572,6 +694,7 @@ public final class AgentAdminDocAdministrationService {
         existing.authorityExpansion(),
         existing.suggestedTests(),
         existing.transcriptSummary(),
+        existing.metadata(),
         existing.proposedByAccountId(),
         firstNonBlank(reviewedByAccountId, existing.reviewedByAccountId()),
         firstNonBlank(activatedByAccountId, existing.activatedByAccountId()),
@@ -841,9 +964,15 @@ public final class AgentAdminDocAdministrationService {
         .orElseThrow(() -> new AuthorizationException(404, "skill-manifest-not-found-or-forbidden"));
     var entry = manifest.entries().stream()
         .filter(candidate -> documentId == null || documentId.isBlank() || candidate.skillDocumentId().equals(documentId) || candidate.stableSkillId().equals(documentId))
+        .findFirst();
+    if (entry.isPresent()) {
+      return repository.skillDocument(platformScopeId(), entry.get().skillDocumentId())
+          .orElseThrow(() -> new AuthorizationException(404, "skill-not-found-or-forbidden"));
+    }
+    return repository.skillDocuments(platformScopeId()).stream()
+        .filter(candidate -> !isBlank(documentId) && (candidate.skillDocumentId().equals(documentId) || candidate.stableSkillId().equals(documentId)))
+        .filter(candidate -> candidate.status() == AgentLifecycleStatus.DEPRECATED)
         .findFirst()
-        .orElseThrow(() -> new AuthorizationException(404, "skill-not-found-or-forbidden"));
-    return repository.skillDocument(platformScopeId(), entry.skillDocumentId())
         .orElseThrow(() -> new AuthorizationException(404, "skill-not-found-or-forbidden"));
   }
 
@@ -852,9 +981,15 @@ public final class AgentAdminDocAdministrationService {
         .orElseThrow(() -> new AuthorizationException(404, "reference-manifest-not-found-or-forbidden"));
     var entry = manifest.entries().stream()
         .filter(candidate -> documentId == null || documentId.isBlank() || candidate.referenceDocumentId().equals(documentId) || candidate.stableReferenceId().equals(documentId))
+        .findFirst();
+    if (entry.isPresent()) {
+      return repository.referenceDocument(platformScopeId(), entry.get().referenceDocumentId())
+          .orElseThrow(() -> new AuthorizationException(404, "reference-not-found-or-forbidden"));
+    }
+    return repository.referenceDocuments(platformScopeId()).stream()
+        .filter(candidate -> !isBlank(documentId) && (candidate.referenceDocumentId().equals(documentId) || candidate.stableReferenceId().equals(documentId)))
+        .filter(candidate -> candidate.status() == AgentLifecycleStatus.DEPRECATED)
         .findFirst()
-        .orElseThrow(() -> new AuthorizationException(404, "reference-not-found-or-forbidden"));
-    return repository.referenceDocument(platformScopeId(), entry.referenceDocumentId())
         .orElseThrow(() -> new AuthorizationException(404, "reference-not-found-or-forbidden"));
   }
 
@@ -915,17 +1050,69 @@ public final class AgentAdminDocAdministrationService {
     }
   }
 
-  private void restoreSnapshot(DocumentSnapshot current, int version, String actorAccountId) {
-    var command = new AgentBehaviorRepository.DocumentVersionRestore(platformScopeId(), current.documentId(), version, actorAccountId, Instant.now(clock));
-    try {
-      switch (current.kind()) {
-        case PROMPT -> repository.restorePromptDocumentVersion(command);
-        case SKILL -> repository.restoreSkillDocumentVersion(command);
-        case REFERENCE -> repository.restoreReferenceDocumentVersion(command);
-      }
-    } catch (IllegalStateException failure) {
-      throw new AuthorizationException(404, failure.getMessage());
+  private int activateDocumentContentProposal(AuthContextResolver.ResolvedMe actor, BehaviorChangeProposalRecord existing, String correlationId) {
+    var current = resolveDocument(new DocumentVersionRequest(existing.agentDefinitionId(), existing.kind(), existing.documentId(), null));
+    if (current.currentVersion() != existing.baseVersion()) {
+      recordProposalTrace("BEHAVIOR_PROPOSAL_ACTIVATION_DENIED", AgentRuntimeTrace.Decision.DENIED, existing, correlationId, "proposal base version stale; baseVersion=" + existing.baseVersion() + "; currentVersion=" + current.currentVersion());
+      throw new AuthorizationException(409, "proposal-base-version-stale");
     }
+    var nextVersion = current.currentVersion() + 1;
+    saveCurrentSnapshot(current, existing.proposedContent(), actor.account().accountId(), firstNonBlank(existing.summary(), "Activated Agent Admin proposal " + existing.proposalId()), existing.transcriptSummary());
+    return nextVersion;
+  }
+
+  private int activateCreateSkillProposal(AuthContextResolver.ResolvedMe actor, BehaviorChangeProposalRecord existing) {
+    if (repository.skillDocument(platformScopeId(), existing.documentId()).isPresent()) throw new AuthorizationException(409, "skill-document-already-exists");
+    var now = Instant.now(clock);
+    repository.saveSkillDocument(new SkillDocument(
+        platformScopeId(),
+        existing.documentId(),
+        requireMetadata(existing, "stableSkillId"),
+        requireMetadata(existing, "name"),
+        requireMetadata(existing, "purpose"),
+        requireMetadata(existing, "whenToUse"),
+        List.of("agent-admin-created"),
+        AgentLifecycleStatus.ACTIVE,
+        1,
+        existing.proposedContent(),
+        checksum(existing.proposedContent()),
+        null,
+        now,
+        now));
+    return 1;
+  }
+
+  private int activateCreateReferenceProposal(AuthContextResolver.ResolvedMe actor, BehaviorChangeProposalRecord existing) {
+    if (repository.referenceDocument(platformScopeId(), existing.documentId()).isPresent()) throw new AuthorizationException(409, "reference-document-already-exists");
+    var now = Instant.now(clock);
+    var skillDocumentId = requireMetadata(existing, "skillDocumentId");
+    repository.skillDocument(platformScopeId(), skillDocumentId)
+        .filter(skill -> skill.status() == AgentLifecycleStatus.ACTIVE)
+        .orElseThrow(() -> new AuthorizationException(409, "reference-associated-skill-not-active"));
+    repository.saveReferenceDocument(new ReferenceDocument(
+        platformScopeId(),
+        existing.documentId(),
+        requireMetadata(existing, "stableReferenceId"),
+        requireMetadata(existing, "name"),
+        requireMetadata(existing, "description"),
+        requireMetadata(existing, "whenToConsult"),
+        ReferenceDocument.ReferenceType.valueOf(requireMetadata(existing, "referenceType")),
+        requireMetadata(existing, "accessLevel"),
+        List.of("agent-admin-created", skillReferenceTag(skillDocumentId)),
+        AgentLifecycleStatus.ACTIVE,
+        1,
+        existing.proposedContent(),
+        checksum(existing.proposedContent()),
+        null,
+        now,
+        now));
+    return 1;
+  }
+
+  private static String requireMetadata(BehaviorChangeProposalRecord proposal, String key) {
+    var value = proposal.metadata().get(key);
+    if (value == null || value.isBlank()) throw new AuthorizationException(409, "proposal-metadata-missing-" + key);
+    return value;
   }
 
   private EditSessionRecord session(String sessionId) {
@@ -962,31 +1149,91 @@ public final class AgentAdminDocAdministrationService {
     return new DocumentSummary(kind, documentId, title, description, currentVersion, updatedAt);
   }
 
-  private List<ReferenceDocument> referencesForSkill(AgentDefinition agent, String skillDocumentId) {
+  private List<ReferenceDocument> referencesForSkill(String skillDocumentId) {
     var tag = skillReferenceTag(skillDocumentId);
-    return referenceSummaries(agent).stream()
-        .map(summary -> repository.referenceDocument(platformScopeId(), summary.documentId()).orElse(null))
-        .filter(Objects::nonNull)
+    var references = new LinkedHashMap<String, ReferenceDocument>();
+    repository.referenceDocuments(platformScopeId()).stream()
         .filter(reference -> reference.tags().contains(tag))
-        .toList();
+        .forEach(reference -> references.put(reference.referenceDocumentId(), reference));
+    repository.agentDefinitions(platformScopeId()).stream()
+        .filter(agent -> repository.skillManifest(platformScopeId(), agent.skillManifestId())
+            .map(manifest -> manifest.entries().stream().anyMatch(entry -> entry.skillDocumentId().equals(skillDocumentId)))
+            .orElse(false))
+        .map(agent -> repository.referenceManifest(platformScopeId(), agent.referenceManifestId()).orElse(null))
+        .filter(Objects::nonNull)
+        .flatMap(manifest -> manifest.entries().stream())
+        .map(entry -> repository.referenceDocument(platformScopeId(), entry.referenceDocumentId()).orElse(null))
+        .filter(Objects::nonNull)
+        .forEach(reference -> references.put(reference.referenceDocumentId(), reference));
+    return List.copyOf(references.values());
   }
 
-  private void removeSkillFromManifest(AgentDefinition agent, String skillDocumentId, Instant now) {
-    var manifest = repository.skillManifest(platformScopeId(), agent.skillManifestId()).orElseThrow();
-    var entries = manifest.entries().stream()
-        .filter(entry -> !entry.skillDocumentId().equals(skillDocumentId))
-        .toList();
-    repository.saveSkillManifest(new AgentSkillManifest(manifest.tenantId(), manifest.manifestId(), manifest.agentDefinitionId(), manifest.status(), manifest.manifestVersion() + 1, entries, checksum(entries.toString()), manifest.seedProvenance(), manifest.createdAt(), now));
+  private int countSkillManifestEntries(String skillDocumentId) {
+    return repository.agentDefinitions(platformScopeId()).stream()
+        .map(agent -> repository.skillManifest(platformScopeId(), agent.skillManifestId()).orElse(null))
+        .filter(Objects::nonNull)
+        .collect(java.util.stream.Collectors.toMap(AgentSkillManifest::manifestId, manifest -> manifest, (left, right) -> left, LinkedHashMap::new))
+        .values()
+        .stream()
+        .mapToInt(manifest -> (int) manifest.entries().stream().filter(entry -> entry.skillDocumentId().equals(skillDocumentId)).count())
+        .sum();
   }
 
-  private void removeReferencesFromManifest(AgentDefinition agent, List<String> referenceDocumentIds, Instant now) {
-    if (referenceDocumentIds.isEmpty()) return;
-    var manifest = repository.referenceManifest(platformScopeId(), agent.referenceManifestId()).orElseThrow();
+  private int countReferenceManifestEntries(List<String> referenceDocumentIds) {
+    if (referenceDocumentIds.isEmpty()) return 0;
     var ids = java.util.Set.copyOf(referenceDocumentIds);
-    var entries = manifest.entries().stream()
-        .filter(entry -> !ids.contains(entry.referenceDocumentId()))
-        .toList();
-    repository.saveReferenceManifest(new AgentReferenceManifest(manifest.tenantId(), manifest.manifestId(), manifest.agentDefinitionId(), manifest.workstreamExpertBundleId(), manifest.status(), manifest.manifestVersion() + 1, entries, checksum(entries.toString()), manifest.seedProvenance(), manifest.createdAt(), now));
+    return repository.agentDefinitions(platformScopeId()).stream()
+        .map(agent -> repository.referenceManifest(platformScopeId(), agent.referenceManifestId()).orElse(null))
+        .filter(Objects::nonNull)
+        .collect(java.util.stream.Collectors.toMap(AgentReferenceManifest::manifestId, manifest -> manifest, (left, right) -> left, LinkedHashMap::new))
+        .values()
+        .stream()
+        .mapToInt(manifest -> (int) manifest.entries().stream().filter(entry -> ids.contains(entry.referenceDocumentId())).count())
+        .sum();
+  }
+
+  private void deprecateSkill(SkillDocument skill, Instant now) {
+    if (skill.status() == AgentLifecycleStatus.DEPRECATED) return;
+    repository.saveSkillDocument(new SkillDocument(skill.tenantId(), skill.skillDocumentId(), skill.stableSkillId(), skill.title(), skill.purpose(), skill.whenToUse(), skill.tags(), AgentLifecycleStatus.DEPRECATED, skill.activeVersion(), skill.contentBody(), skill.contentChecksum(), skill.seedProvenance(), skill.createdAt(), now));
+  }
+
+  private void deprecateReference(ReferenceDocument reference, Instant now) {
+    if (reference.status() == AgentLifecycleStatus.DEPRECATED) return;
+    repository.saveReferenceDocument(new ReferenceDocument(reference.tenantId(), reference.referenceDocumentId(), reference.stableReferenceId(), reference.title(), reference.summary(), reference.whenToConsult(), reference.referenceType(), reference.accessLevel(), reference.tags(), AgentLifecycleStatus.DEPRECATED, reference.activeVersion(), reference.contentBody(), reference.contentChecksum(), reference.seedProvenance(), reference.createdAt(), now));
+  }
+
+  private void removeSkillFromAllManifests(String skillDocumentId, Instant now) {
+    repository.agentDefinitions(platformScopeId()).stream()
+        .map(agent -> repository.skillManifest(platformScopeId(), agent.skillManifestId()).orElse(null))
+        .filter(Objects::nonNull)
+        .collect(java.util.stream.Collectors.toMap(AgentSkillManifest::manifestId, manifest -> manifest, (left, right) -> left, LinkedHashMap::new))
+        .values()
+        .forEach(manifest -> {
+          var entries = manifest.entries().stream()
+              .filter(entry -> !entry.skillDocumentId().equals(skillDocumentId))
+              .toList();
+          if (entries.size() != manifest.entries().size()) {
+            repository.saveSkillManifest(new AgentSkillManifest(manifest.tenantId(), manifest.manifestId(), manifest.agentDefinitionId(), manifest.status(), manifest.manifestVersion() + 1, entries, checksum(entries.toString()), manifest.seedProvenance(), manifest.createdAt(), now));
+          }
+        });
+  }
+
+  private void removeReferencesFromAllManifests(List<String> referenceDocumentIds, Instant now) {
+    if (referenceDocumentIds.isEmpty()) return;
+    var ids = java.util.Set.copyOf(referenceDocumentIds);
+    repository.agentDefinitions(platformScopeId()).stream()
+        .map(agent -> repository.referenceManifest(platformScopeId(), agent.referenceManifestId()).orElse(null))
+        .filter(Objects::nonNull)
+        .collect(java.util.stream.Collectors.toMap(AgentReferenceManifest::manifestId, manifest -> manifest, (left, right) -> left, LinkedHashMap::new))
+        .values()
+        .forEach(manifest -> {
+          var entries = manifest.entries().stream()
+              .filter(entry -> !ids.contains(entry.referenceDocumentId()))
+              .toList();
+          if (entries.size() != manifest.entries().size()) {
+            repository.saveReferenceManifest(new AgentReferenceManifest(manifest.tenantId(), manifest.manifestId(), manifest.agentDefinitionId(), manifest.workstreamExpertBundleId(), manifest.status(), manifest.manifestVersion() + 1, entries, checksum(entries.toString()), manifest.seedProvenance(), manifest.createdAt(), now));
+          }
+        });
   }
 
   private static String editSessionTranscript(EditSessionRecord session) {
@@ -1087,6 +1334,8 @@ public final class AgentAdminDocAdministrationService {
 
   public enum BehaviorProposalStatus { DRAFT, APPROVED, REJECTED, CANCELLED, ACTIVATED }
 
+  public enum BehaviorProposalOperation { EDIT_DOCUMENT, RESTORE_VERSION, CREATE_SKILL, CREATE_REFERENCE }
+
   public enum ProposalReviewDecision { APPROVE, REJECT }
 
   public enum RiskClassification { LOW, MEDIUM, HIGH, BLOCKED }
@@ -1186,6 +1435,7 @@ public final class AgentAdminDocAdministrationService {
   public record BehaviorChangeProposalRecord(
       String proposalId,
       BehaviorProposalStatus status,
+      BehaviorProposalOperation operation,
       String agentDefinitionId,
       AgentDocKind kind,
       String documentId,
@@ -1199,6 +1449,7 @@ public final class AgentAdminDocAdministrationService {
       AuthorityExpansionFlags authorityExpansion,
       List<String> suggestedTests,
       String transcriptSummary,
+      Map<String, String> metadata,
       String proposedByAccountId,
       String reviewedByAccountId,
       String activatedByAccountId,
@@ -1207,9 +1458,11 @@ public final class AgentAdminDocAdministrationService {
       Instant reviewedAt,
       Instant activatedAt) {
     public BehaviorChangeProposalRecord {
+      operation = operation == null ? BehaviorProposalOperation.EDIT_DOCUMENT : operation;
       riskClassification = riskClassification == null ? RiskClassification.LOW : riskClassification;
       authorityExpansion = authorityExpansion == null ? new AuthorityExpansionFlags(false, List.of()) : authorityExpansion;
       suggestedTests = List.copyOf(suggestedTests == null ? List.of() : suggestedTests);
+      metadata = Map.copyOf(metadata == null ? Map.of() : metadata);
       traceLinks = List.copyOf(traceLinks == null ? List.of() : traceLinks);
     }
   }
@@ -1234,7 +1487,7 @@ public final class AgentAdminDocAdministrationService {
 
   public record RestoreVersionRequest(String agentDefinitionId, AgentDocKind kind, String documentId, int version) {}
 
-  public record RestoreVersionResult(String agentDefinitionId, AgentDocKind kind, String documentId, int restoredFromVersion, int newCurrentVersion, String summary, List<String> traceLinks) {
+  public record RestoreVersionResult(String agentDefinitionId, AgentDocKind kind, String documentId, int restoredFromVersion, int newCurrentVersion, String proposalId, String summary, List<String> traceLinks) {
     public RestoreVersionResult {
       traceLinks = List.copyOf(traceLinks == null ? List.of() : traceLinks);
     }
@@ -1242,7 +1495,7 @@ public final class AgentAdminDocAdministrationService {
 
   public record CreateSkillRequest(String agentDefinitionId, String skillDocumentId, String stableSkillId, String name, String purpose, String whenToUse, String contentBody, String editSessionTranscriptSummary) {}
   public record DeleteSkillRequest(String agentDefinitionId, String skillDocumentId, String confirmation) {}
-  public record SkillLifecycleResult(String agentDefinitionId, String skillDocumentId, int currentVersion, List<String> traceLinks) {
+  public record SkillLifecycleResult(String agentDefinitionId, String skillDocumentId, int currentVersion, String proposalId, String lifecycleAction, int affectedAssignmentCount, int affectedReferenceCount, int affectedManifestEntryCount, List<String> traceLinks) {
     public SkillLifecycleResult {
       traceLinks = List.copyOf(traceLinks == null ? List.of() : traceLinks);
     }
@@ -1250,7 +1503,7 @@ public final class AgentAdminDocAdministrationService {
 
   public record CreateReferenceDocRequest(String agentDefinitionId, String skillDocumentId, String referenceDocumentId, String stableReferenceId, String name, String description, String whenToConsult, ReferenceDocument.ReferenceType referenceType, String contentBody, String editSessionTranscriptSummary) {}
   public record DeleteReferenceDocRequest(String agentDefinitionId, String referenceDocumentId, String confirmation) {}
-  public record ReferenceLifecycleResult(String agentDefinitionId, String skillDocumentId, String referenceDocumentId, int currentVersion, List<String> traceLinks) {
+  public record ReferenceLifecycleResult(String agentDefinitionId, String skillDocumentId, String referenceDocumentId, int currentVersion, String proposalId, String lifecycleAction, int affectedReferenceCount, int affectedManifestEntryCount, List<String> traceLinks) {
     public ReferenceLifecycleResult {
       traceLinks = List.copyOf(traceLinks == null ? List.of() : traceLinks);
     }
