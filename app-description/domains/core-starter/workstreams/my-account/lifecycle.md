@@ -4,40 +4,41 @@ Workstream id: `my-account`
 Owning domain: `core-starter`
 Current readiness: `compile-ready`
 Ready-to-build assessment: 2026-06-26 — see `../ready-to-build-status.md`; normalized to current skills-pack lifecycle term `compile-ready` during My Account review.
-Implementation alignment: `partially-aligned`
+Automated alignment readiness: `automated-aligned` for non-manual My Account slices verified by MAFA-08-001; manual browser/API acceptance and concrete provider-backed digest success remain separate residual checks.
+Implementation alignment: `automated-aligned-with-manual-provider-residuals`
 Source alignment: `realization/source-alignment.md`
 Last description change: 2026-06-26 — current skills-pack review added explicit worker bindings and adapter/tool-chain clarification.
-Last alignment review: 2026-06-27 — MAFA-02-001 added protected backend/API smoke evidence for dashboard/counter routing, profile/settings, context authority, selected `AuthContext`, safe denials, and no-access recovery; broader runtime readiness still not claimed.
+Last alignment review: 2026-06-27 — MAFA-08-001 terminal automated verification passed the aggregate Maven/frontend/typecheck/build/diff checks and found no material remaining automated gaps.
 Last compile: 2026-06-27 — command-center surface contract id, frontend-safe control-panel schema aliases, and accessible counter rendering aligned to current surface contract.
 Last manual runtime test: unknown
 
 ## Current alignment posture
 
-This workstream is partially aligned overall. Existing implementation evidence realizes the command-center/dashboard compile slice, and MAFA-02-001 now records protected backend/API smoke evidence for dashboard/counter routing, profile/settings, context authority, selected `AuthContext`, safe denials, and no-access recovery. The source-alignment split keeps notification center, digest/export, `human_chat_tool_plan`, trace/audit, frontend, and manual/runtime slices separate so later tasks can advance evidence without overstating readiness.
+This workstream is automated-aligned for the non-manual My Account scope covered by MAFA-01 through MAFA-08. Evidence now spans the protected WorkstreamEndpoint/API path, service/action adapters, governed My Account/notification/digest/chat-plan tools, selected `AuthContext` and safe-denial cases, durable audit/work trace facts, frontend contract rendering, and the terminal aggregate verification commands.
 
-Overall runtime readiness is not claimed by this lifecycle record. Notification lifecycle, chat-plan runtime, digest provider-backed success path, durable audit/work trace persistence, frontend surface coverage, provider configuration, and manual API/UI evidence remain to be validated before claiming full alignment.
+Overall runtime readiness is still not claimed by this lifecycle record. Human manual browser/API acceptance, real WorkOS/AuthKit production login smoke, concrete provider-backed digest success, production export/vendor delivery, and broader stale/reconnect manual review remain residual checks outside the automated mini-project.
 
 ## Slice status map
 
 | Slice | Current status | Evidence level | Next validation owner |
 | --- | --- | --- | --- |
-| Dashboard / personal command center | `backend-api-aligned` | Focused compile/static frontend contract evidence plus MAFA-02-001 protected API smoke for dashboard read, attention-counter open routing, selected `AuthContext`, and safe open-denied behavior. | Frontend/manual runtime and durable trace validation. |
-| Profile and settings | `backend-api-aligned` | MAFA-02-001 protected API smoke for reads, saves, no-op/idempotent replay, validation, unsupported/provider-backed field denials, invalid theme/timezone, and safe payloads. | Frontend surface tests and durable trace validation. |
-| Context authority | `backend-api-aligned` | MAFA-02-001 protected API smoke for context read, selected tenant/customer context, switch/no-op, hidden context denial, and safe payloads. | Frontend shell refresh and durable trace validation. |
-| Notification center | `pending-validation` | Source-alignment map only. | Notification lifecycle backend/frontend tests. |
-| Digest/export | `pending-validation` | Source-alignment map only; provider-backed success depends on concrete provider/runtime configuration. | Fail-closed/runtime classification and digest task tests. |
-| `human_chat_tool_plan` | `pending-validation` | Source-alignment map only. | Proposal/confirmation/denial/idempotency/tool-boundary tests. |
-| Trace/audit | `pending-validation` | Trace obligations mapped, durable evidence not yet proven. | Durable trace and audit verification. |
-| No-access/open-denied recovery | `backend-api-aligned` | MAFA-02-001 protected API smoke for open-denied direct/action surfaces, hidden workstream denial, no-active-membership and disabled-account recovery, missing-bearer failure, and tenant/customer redaction. | Frontend recovery rendering, request-access follow-through, and durable denial traces. |
+| Dashboard / personal command center | `automated-aligned` | MAFA-02/07/08 protected API smoke, frontend contract/build evidence, selected `AuthContext`, safe open-denied behavior, counter-first rendering, and terminal aggregate checks. | Manual browser runtime and stale/reconnect manual review only. |
+| Profile and settings | `automated-aligned` | MAFA-02/03/05/07/08 protected API smoke for reads/saves/no-op/idempotency/validation/denial, durable trace evidence, chat-plan confirmation execution, frontend editable-field checks, and terminal aggregate checks. | Manual browser runtime and conflict/stale visual review only. |
+| Context authority | `automated-aligned` | MAFA-02/07/08 selected tenant/customer context, authorized switch/no-op, hidden context denial, safe no-enumeration frontend recovery, and terminal aggregate checks. | Manual shell refresh review only. |
+| Notification center | `automated-aligned` | MAFA-04/07/08 backend lifecycle/preferences/source-open tests, frontend triage/lifecycle rendering, secret-boundary checks, and terminal aggregate checks. | Manual browser/responsive review only. |
+| Digest/export | `automated-aligned-provider-success-config-blocked` | MAFA-06/07/08 lifecycle, ownership, fail-closed provider/runtime/tool-boundary behavior, no-fake-success semantics, advisory review, autonomous-agent typed result/failure mapping, frontend digest surfaces, and terminal aggregate checks. | Concrete provider-backed happy path and production export/vendor delivery remain provider-config/manual residuals. |
+| `human_chat_tool_plan` | `automated-aligned-provider-success-config-blocked` | MAFA-05/08 proposal, no pre-confirm mutation, exact confirmation, denial/system-message, idempotency/replay, partial failure, tool-boundary, durable trace, frontend confirmation contract, and terminal aggregate checks. | Provider/model-backed happy path beyond test-double/fail-closed and manual browser smoke only. |
+| Trace/audit | `automated-aligned` | MAFA-03/08 durable admin-audit/workstream-log facts for My Account surface actions, digest fail-closed start, notification lifecycle/preference, and chat-plan proposal/confirmation/step execution. | Manual trace-link browser review only. |
+| No-access/open-denied recovery | `automated-aligned` | MAFA-02/07/08 protected open-denied recovery, no-active-membership/disabled-account recovery, missing-bearer failure, tenant/customer redaction, no-enumeration frontend copy, and terminal aggregate checks. | Request-access follow-through and manual browser runtime only. |
 
 ## Blockers and assumptions
 
-- File-level source alignment has been split conservatively by My Account runtime slice.
-- `compile-ready` means app-description scope is sufficient for focused build/compile tasks; it does not claim runtime behavior.
-- Runtime readiness is not claimed by this lifecycle record.
-- Provider-backed digest success is not claimed unless concrete provider/test runtime configuration is exercised; fail-closed behavior must be proven separately.
-- Future workstream-specific validation must classify each split mapping as aligned, stale-description-changed, stale-code-changed, partially-aligned, blocked, or intentionally description-only.
+- File-level source alignment has been split by My Account runtime slice and terminal automated verification found no material remaining automated gap.
+- `compile-ready` remains the app-description lifecycle term; automated-aligned records implementation/test evidence for the non-manual mini-project scope, not full manual/runtime acceptance.
+- Runtime-ready/manual-ready is not claimed by this lifecycle record because manual browser/API acceptance and concrete provider-backed digest success were not exercised.
+- Provider-backed digest success is not claimed unless concrete provider/test runtime configuration is exercised; the current automated evidence proves fail-closed/no-fake-success behavior.
+- Future workstream-specific validation must classify any new app-description or implementation changes as aligned, stale-description-changed, stale-code-changed, partially-aligned, blocked, or intentionally description-only.
 
 ## Next recommended action
 
-Run the next focused My Account durable trace/audit verification (MAFA-03-001) before claiming additional runtime readiness.
+Run separate manual/browser/API acceptance and provider-configured digest verification if runtime-ready/manual-ready evidence is required beyond this automated mini-project.

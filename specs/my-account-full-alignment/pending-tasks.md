@@ -278,7 +278,7 @@
 
 ### MAFA-08-001: Terminal automated verification
 
-- status: pending
+- status: done
 - source: `backlog/01-my-account-automated-alignment-build-backlog.md` B08
 - task brief: `specs/my-account-full-alignment/tasks/08-verification/01-terminal-automated-verification.md`
 - depends on: [MAFA-07-001]
@@ -306,5 +306,9 @@
   - terminal verification confirms all non-manual automated alignment items are complete, or appends bounded follow-up tasks plus a new terminal verification task
   - remaining manual/provider-config items are documented separately and not treated as automated gaps
 - notes:
-  - lifecycle/readiness: verification; automated-aligned/manual-ready only if evidence supports it
-  - vertical contract: My Account / `my-account-agent`; verification covers all My Account governed tools/adapters and capability ids in source-alignment entries; selected AuthContext and denial evidence required; trace evidence verified or follow-up queued
+  - lifecycle/readiness: terminal verification closed the non-manual automated My Account alignment mini-project as `automated-aligned-with-manual-provider-residuals`; manual-ready/runtime-ready are not claimed.
+  - vertical contract: My Account / `my-account-agent`; verification covered source-alignment evidence for protected WorkstreamEndpoint/API paths, `surface_action`, `human_chat_tool_plan`, autonomous/system digest worker paths, governed My Account/notification/digest tools, selected `AuthContext`, safe-denial cases, durable trace/audit evidence, frontend rendering, and secret-boundary checks.
+  - completed 2026-06-27: terminal aggregate checks passed and no material automated follow-up task was required.
+  - residual manual/provider-config items documented separately: manual browser/API acceptance, real WorkOS/AuthKit production login smoke, concrete provider-backed digest success, production export/vendor delivery, and manual stale/reconnect/responsive review.
+  - validation: `mvn -Dtest='WorkstreamServiceTest,MyAccountBrowserWorkstreamSmokeTest,MyAccountPersonalAttentionDigestServiceTest,MyAccountPersonalAttentionDigestAutonomousAgentTest,AgentBehaviorSeedLoaderTest' test`, `npm --prefix frontend test -- --run`, `npm --prefix frontend run typecheck`, `npm --prefix frontend run build`, and `git diff --check` pass.
+  - commit message: `MAFA-08-001 terminal My Account verification`
