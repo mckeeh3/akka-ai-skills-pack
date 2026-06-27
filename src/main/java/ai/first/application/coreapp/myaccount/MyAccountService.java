@@ -105,7 +105,7 @@ public final class MyAccountService {
   public DashboardData dashboardData(AuthContextResolver.ResolvedMe actor, String correlationId) {
     var summary = summary(actor, correlationId);
     return new DashboardData(
-        "my_account.dashboard.v1",
+        "my_account.personal_command_center.v1",
         workstreamStatusCards(actor, correlationId),
         List.of(),
         List.of(), // personalAttention(actor, correlationId) is intentionally not rendered on the minimal daily dashboard.

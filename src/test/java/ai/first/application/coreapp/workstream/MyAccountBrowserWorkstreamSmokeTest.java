@@ -60,6 +60,8 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     repository.saveMembership(new Membership(ADMIN_CUSTOMER_CONTEXT_ID, "admin@example.test", ScopeType.CUSTOMER, TENANT_ID, CUSTOMER_ID, List.of(FoundationRole.CUSTOMER_ADMIN), MembershipStatus.ACTIVE, false, null));
     seedSaasOwner(repository, "saas-owner@example.test", "SaaS Owner", SAAS_OWNER_CONTEXT_ID);
     seedIdentity(repository, "member@example.test", "Member User", MEMBER_CONTEXT_ID, List.of(FoundationRole.TENANT_EMPLOYEE));
+    seedNoAccessIdentity(repository, "no-active@example.test", "No Active Member", "membership-no-active", AccountStatus.ACTIVE, MembershipStatus.SUSPENDED);
+    seedNoAccessIdentity(repository, "disabled@example.test", "Disabled User", "membership-disabled", AccountStatus.DISABLED, MembershipStatus.ACTIVE);
   }
 
   @Test
@@ -92,6 +94,9 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("dashboard", dashboard.surfaceType());
     assertEquals("my_account.personal_command_center.v1", dashboard.data().get("surfaceContract"));
     assertTrue(dashboard.toString().contains("attentionCounters"));
+    assertTrue(dashboard.toString().contains("counter-user-admin-agent"));
+    assertTrue(dashboard.toString().contains("openActionId=action-open-user-admin"));
+    assertTrue(dashboard.toString().contains("targetSurfaceId=surface-user-admin-dashboard"));
     assertTrue(dashboard.toString().contains("controlPanels"));
     assertTrue(dashboard.toString().contains("my_account.view_summary"));
     assertTrue(dashboard.toString().contains("my_account.view_context"));
@@ -234,6 +239,21 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(directDenied.data().toString().contains("corr-open-denied-direct"));
     assertOpenDeniedBrowserSafe(directDenied);
 
+    var openedFromCounter = runAction(new CapabilityActionRequest(
+        "action-open-user-admin",
+        "action-open-user-admin",
+        "my_account.open_authorized_workstream",
+        "my_account.open_authorized_workstream",
+        Map.of("targetFunctionalAgentId", "user-admin-agent", "targetSurfaceId", "surface-user-admin-dashboard", "requiredCapabilityId", "user_admin.view_overview"),
+        null,
+        ADMIN_CONTEXT_ID,
+        memberDashboard.surfaceId(),
+        "corr-open-denied-counter-authorized-open"), ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("accepted", openedFromCounter.status());
+    assertEquals("surface-user-admin-tenant-dashboard", openedFromCounter.resultSurface().surfaceId());
+    assertTrue(openedFromCounter.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-my-account-open")));
+    assertBrowserSafe(openedFromCounter.resultSurface());
+
     assertThrows(RuntimeException.class, () -> httpClient
         .GET("/api/workstream/surfaces/surface-my-account-open-denied")
         .addHeader("X-Selected-Context-Id", MEMBER_CONTEXT_ID)
@@ -343,7 +363,56 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("Updated Browser Admin", afterDenied.body().me().profile().displayName(), "Unsupported self-service fields must be denied before profile mutation.");
     assertBrowserSafe(afterDenied.body());
 
+    var immutableProviderMutation = new CapabilityActionRequest(
+        "action-update-my-profile",
+        "action-update-my-profile",
+        "my_account.update_profile_settings",
+        "my_account.update_profile_settings",
+        Map.of("accountStatus", "DISABLED", "workosUserId", "workos-admin-takeover"),
+        "idem-my-profile-browser-provider-backed-denied",
+        ADMIN_CONTEXT_ID,
+        profile.surfaceId(),
+        "corr-my-profile-browser-provider-backed-denied");
+    var immutableProviderResult = runAction(immutableProviderMutation, ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("validation-error", immutableProviderResult.status());
+    assertEquals("surface-my-profile", immutableProviderResult.resultSurface().surfaceId());
+    assertTrue(immutableProviderResult.resultSurface().data().toString().contains("unsupported"));
+    assertProfileSurfaceBrowserSafe(immutableProviderResult.resultSurface());
+
     assertThrows(RuntimeException.class, () -> httpClient.GET("/api/workstream/surfaces/surface-my-profile").responseBodyAs(String.class).invoke());
+  }
+
+  @Test
+  void protectedWorkstreamApiReturnsMyAccountNoAccessRecoveryForDisabledOrInactiveAccounts() throws Exception {
+    var noActiveBootstrap = httpClient
+        .GET("/api/workstream/bootstrap")
+        .addHeader("Authorization", "Bearer " + bearerToken(subjectFor("no-active@example.test"), "no-active@example.test", "No Active Member"))
+        .addHeader("X-Selected-Context-Id", "membership-no-active")
+        .addHeader("X-Correlation-Id", "corr-my-account-no-active-recovery")
+        .responseBodyAs(String.class)
+        .invoke();
+    assertTrue(noActiveBootstrap.status().isSuccess());
+    assertNoAccessRecoveryBrowserSafe(noActiveBootstrap.body(), "no-active-membership", "inactive_membership", "corr-my-account-no-active-recovery");
+
+    var noActiveSurface = httpClient
+        .GET("/api/workstream/surfaces/surface-my-account-dashboard")
+        .addHeader("Authorization", "Bearer " + bearerToken(subjectFor("no-active@example.test"), "no-active@example.test", "No Active Member"))
+        .addHeader("X-Selected-Context-Id", "membership-no-active")
+        .addHeader("X-Correlation-Id", "corr-my-account-no-active-surface-recovery")
+        .responseBodyAs(String.class)
+        .invoke();
+    assertTrue(noActiveSurface.status().isSuccess());
+    assertNoAccessRecoveryBrowserSafe(noActiveSurface.body(), "no-active-membership", "inactive_membership", "corr-my-account-no-active-surface-recovery");
+
+    var disabledBootstrap = httpClient
+        .GET("/api/workstream/bootstrap")
+        .addHeader("Authorization", "Bearer " + bearerToken(subjectFor("disabled@example.test"), "disabled@example.test", "Disabled User"))
+        .addHeader("X-Selected-Context-Id", "membership-disabled")
+        .addHeader("X-Correlation-Id", "corr-my-account-disabled-recovery")
+        .responseBodyAs(String.class)
+        .invoke();
+    assertTrue(disabledBootstrap.status().isSuccess());
+    assertNoAccessRecoveryBrowserSafe(disabledBootstrap.body(), "account-disabled", "disabled_account", "corr-my-account-disabled-recovery");
   }
 
   @Test
@@ -908,6 +977,21 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("validation-error", invalidTimezoneResult.status());
     assertEquals("surface-my-settings", invalidTimezoneResult.resultSurface().surfaceId());
 
+    var invalidTheme = new CapabilityActionRequest(
+        "action-update-my-settings",
+        "action-update-my-settings",
+        "my_account.update_profile_settings",
+        "my_account.update_profile_settings",
+        Map.of("preferredThemeId", "light"),
+        "idem-my-settings-browser-invalid-theme",
+        ADMIN_CONTEXT_ID,
+        settings.surfaceId(),
+        "corr-my-settings-browser-invalid-theme");
+    var invalidThemeResult = runAction(invalidTheme, ADMIN_CONTEXT_ID, "admin@example.test", "Tenant Admin");
+    assertEquals("validation-error", invalidThemeResult.status());
+    assertEquals("surface-my-settings", invalidThemeResult.resultSurface().surfaceId());
+    assertSettingsSurfaceBrowserSafe(invalidThemeResult.resultSurface());
+
     var afterDenied = httpClient
         .GET("/api/workstream/bootstrap")
         .addHeader("Authorization", "Bearer " + bearerToken("workos-admin", "admin@example.test", "Tenant Admin"))
@@ -1041,6 +1125,13 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     repository.saveMembership(new Membership(membershipId, email, ScopeType.SAAS_OWNER, null, null, List.of(FoundationRole.SAAS_OWNER_ADMIN), MembershipStatus.ACTIVE, false, null));
   }
 
+  private void seedNoAccessIdentity(AkkaIdentityRepository repository, String email, String displayName, String membershipId, AccountStatus accountStatus, MembershipStatus membershipStatus) {
+    repository.saveAccount(new Account(email, null, email, email, accountStatus, "UNLINKED"));
+    repository.saveProfile(new UserProfile(email, email, displayName, null, null, null));
+    repository.saveSettings(new UserSettings(email, UserSettings.ThemeId.AURORA_LIGHT));
+    repository.saveMembership(new Membership(membershipId, email, ScopeType.TENANT, TENANT_ID, null, List.of(FoundationRole.TENANT_EMPLOYEE), membershipStatus, false, null));
+  }
+
   private String subjectFor(String email) {
     return "workos-" + email.substring(0, email.indexOf('@'));
   }
@@ -1163,6 +1254,23 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertFalse(text.contains("hidden workstream name"));
     assertFalse(text.contains("raw tool payload"));
     assertFalse(text.contains("source attention completed"));
+  }
+
+  private static void assertNoAccessRecoveryBrowserSafe(String payload, String reasonCode, String decision, String correlationId) {
+    assertTrue(payload.contains("no_access_recovery"));
+    assertTrue(payload.contains(reasonCode));
+    assertTrue(payload.contains(decision));
+    assertTrue(payload.contains("surface-my-account-open-denied"));
+    assertTrue(payload.contains("my_account.open_denied.v1"));
+    assertTrue(payload.contains("noEnumeration"));
+    assertTrue(payload.contains("trace-workstream-no-access-recovery"));
+    assertTrue(payload.contains(correlationId));
+    assertFalse(payload.contains(TENANT_ID));
+    assertFalse(payload.contains(CUSTOMER_ID));
+    assertFalse(payload.contains("membership-admin"));
+    assertFalse(payload.contains("membership-member"));
+    assertFalse(payload.contains("providerSecret"));
+    assertFalse(payload.contains("Bearer "));
   }
 
   private static void assertSettingsSurfaceBrowserSafe(SurfaceEnvelope payload) {

@@ -10,14 +10,14 @@ This file was added during the initial source-alignment migration and updated du
 
 | Entry id | Slice | Status | Runtime readiness claim |
 | --- | --- | --- | --- |
-| `my-account.dashboard` | Personal command-center dashboard and counter/control-panel payload | `partially-aligned` | No runtime readiness claim; focused compile/static frontend contract evidence only. |
-| `my-account.profile-settings` | Profile and settings self-service reads/saves | `pending-validation` | None. |
-| `my-account.context-authority` | Selected `AuthContext`, context switch, authority explanations | `pending-validation` | None. |
+| `my-account.dashboard` | Personal command-center dashboard and counter/control-panel payload | `backend-api-aligned` | `api-smoked` for protected WorkstreamEndpoint dashboard, attention-counter open routing, selected `AuthContext`, and safe open-denied paths; frontend/manual and durable trace depth remain separate. |
+| `my-account.profile-settings` | Profile and settings self-service reads/saves | `backend-api-aligned` | `api-smoked` for protected profile/settings reads, save/no-op/idempotent replay, validation errors, unsupported/provider-backed field denial, invalid theme/timezone, selected `AuthContext`, and browser-safe payloads. |
+| `my-account.context-authority` | Selected `AuthContext`, context switch, authority explanations | `backend-api-aligned` | `api-smoked` for protected context read, authorized selected-context switch/no-op, hidden context denial, selected tenant/customer scope, and browser-safe payloads. |
 | `my-account.notification-center` | In-app notification center reads/lifecycle/preferences/source-open | `pending-validation` | None. |
 | `my-account.digest-export` | Personal attention digest/export progress/result/blocked lifecycle | `pending-validation` with provider-success config dependency | None; provider-backed success remains unclaimed. |
 | `my-account.chat-plan` | Bounded `human_chat_tool_plan` proposal/confirmation/result/system-message path | `pending-validation` | None. |
 | `my-account.trace-audit` | Durable work/audit traces and browser-safe trace refs | `pending-validation` | None. |
-| `my-account.no-access-recovery` | No-membership, denied/open-unavailable, stale/hidden recovery | `pending-validation` | None. |
+| `my-account.no-access-recovery` | No-membership, denied/open-unavailable, stale/hidden recovery | `backend-api-aligned` | `api-smoked` for protected open-denied recovery plus no-active-membership and disabled-account My Account recovery without tenant/customer/workstream enumeration. |
 
 ## Alignment entries
 
@@ -26,24 +26,24 @@ This file was added during the initial source-alignment migration and updated du
 - App-description files: `../workstream.md`, `../surfaces/surfaces.md` (`surface-my-account-dashboard`), `../behavior.md`, `../access.md`, `../tools/governed-tools.md`, `../tests/coverage.md`, `akka-components.md`, `api-contracts.md`, `frontend-routes.md`, `../../../capabilities/account-context-and-profile.md`.
 - Implementation files: `src/main/java/ai/first/application/coreapp/myaccount/MyAccountService.java`, `src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java`, `src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java`, `src/main/java/ai/first/api/foundation/security/MeEndpoint.java`, `frontend/src/workstream/surfaces/DashboardSurface.tsx`, `frontend/src/workstream/types/surfaces.ts`, `frontend/src/api/**`.
 - Test / validation files: `frontend/src/workstream-my-account-vertical.contract.test.mjs`, `frontend/src/workstream-shell.contract.test.mjs`, `frontend/src/workstream-attention-backbone.contract.test.mjs`, `src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java`.
-- Last aligned evidence: 2026-06-27 focused compile for dashboard contract id `my_account.personal_command_center.v1`, required `controlPanels[]` payload aliases, accessible counter rendering, and static frontend contract coverage.
-- Remaining validation gaps: protected API/dashboard open path, zero-count counter opening, hidden/forbidden workstream denial, stale/reconnect recovery, tenant/customer isolation, durable trace evidence, and manual browser smoke remain unclaimed.
+- Last aligned evidence: 2026-06-27 focused compile for dashboard contract id `my_account.personal_command_center.v1`, required `controlPanels[]` payload aliases, accessible counter rendering, and static frontend contract coverage; MAFA-02-001 protected backend/API smoke `MyAccountBrowserWorkstreamSmokeTest` now covers dashboard read through `/api/workstream/surfaces`, attention counter payload/action mapping, authorized counter open routing, tenant/member/owner selected-context behavior, and hidden/forbidden workstream safe denial.
+- Remaining validation gaps: frontend browser/manual rendering, stale/reconnect recovery depth, durable trace persistence beyond returned trace refs, and broader terminal runtime readiness remain unclaimed.
 
 ### `my-account.profile-settings`
 
 - App-description files: `../surfaces/surfaces.md` (`surface-my-profile`, `surface-my-settings`), `../tools/governed-tools.md`, `../workers/signed-in-member-human.md`, `../workers/my-account-system-worker.md`, `../agents/functional-agent.md`, `../policies/policy-bindings.md`, `../tests/coverage.md`, `api-contracts.md`, `frontend-routes.md`, `../../../capabilities/account-context-and-profile.md`.
 - Implementation files: `src/main/java/ai/first/application/coreapp/myaccount/MyAccountService.java`, `src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java`, `src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java`, `src/main/java/ai/first/api/foundation/security/MeEndpoint.java`, `frontend/src/workstream/surfaces/DetailEditSurface.tsx`, `frontend/src/workstream/actions/**`, `frontend/src/api/**`.
 - Test / validation files: `src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java`, `src/test/java/ai/first/application/coreapp/myaccount/**`, `frontend/src/workstream-my-account-vertical.contract.test.mjs`, `frontend/src/workstream-actions.contract.test.mjs`, `frontend/src/workstream-surfaces.contract.test.mjs`.
-- Last aligned evidence: 2026-06-27 source-alignment split only; no automated runtime proof recorded for current profile/settings behavior.
-- Remaining validation gaps: editable-only field submission, named-theme persistence versus local preview, unsupported-field/role/capability/provider-secret denials, no-op/conflict/stale handling, selected `AuthContext`, idempotency, tenant/customer isolation, and trace/audit evidence.
+- Last aligned evidence: MAFA-02-001 protected backend/API smoke `MyAccountBrowserWorkstreamSmokeTest` covers profile/settings surface reads, allowed display-name/theme/locale/timezone persistence, idempotent replay/no-op behavior, unsupported role/provider-backed/account-status field denial, invalid named theme/timezone validation, selected `AuthContext`, post-denial no-mutation checks, and browser-safe payload assertions through `/api/workstream`.
+- Remaining validation gaps: frontend editable-only submission contract, local named-theme preview UI behavior, conflict/stale UI recovery, durable trace/audit evidence, and manual/browser runtime evidence remain unclaimed.
 
 ### `my-account.context-authority`
 
 - App-description files: `../access.md`, `../surfaces/surfaces.md` (`surface-my-context`), `../workers/signed-in-member-human.md`, `../workers/my-account-system-worker.md`, `../tools/governed-tools.md`, `../tests/coverage.md`, `api-contracts.md`, `frontend-routes.md`, `../../../capabilities/account-context-and-profile.md`.
 - Implementation files: `src/main/java/ai/first/api/foundation/security/MeEndpoint.java`, `src/main/java/ai/first/application/foundation/identity/**`, `src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java`, `src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java`, `frontend/src/workstream/shell/ContextAuthorityBar.tsx`, `frontend/src/workstream/surfaces/DetailEditSurface.tsx`, `frontend/src/api/**`.
 - Test / validation files: `src/test/java/ai/first/application/foundation/identity/MeServiceTest.java`, `src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java`, `frontend/src/workstream-shell.contract.test.mjs`, `frontend/src/workstream-my-account-vertical.contract.test.mjs`.
-- Last aligned evidence: 2026-06-27 source-alignment split only; selected-context runtime behavior is not yet revalidated against the current description.
-- Remaining validation gaps: backend-selected context refresh, authorized context switching, no-op current-context selection, hidden/cross-tenant/inactive context denial without enumeration, stale surface marking, support-access visibility, and trace/correlation evidence.
+- Last aligned evidence: MAFA-02-001 protected backend/API smoke `MyAccountBrowserWorkstreamSmokeTest` covers context authority surface read, selected tenant/customer `AuthContext`, authorized customer-context switch/no-op result, hidden/cross-tenant context denial without enumeration, stale-impact/result metadata, missing-bearer denial, and browser-safe payload assertions through `/api/workstream`.
+- Remaining validation gaps: frontend shell refresh behavior after context switch, inactive context variants beyond hidden/cross-tenant denial, durable trace/audit evidence, and manual/browser runtime evidence remain unclaimed.
 
 ### `my-account.notification-center`
 
@@ -82,8 +82,8 @@ This file was added during the initial source-alignment migration and updated du
 - App-description files: `../access.md`, `../behavior.md`, `../surfaces/surfaces.md` (`surface-my-account-open-denied` and no-membership/no-selected-context states), `../tools/governed-tools.md`, `../workers/signed-in-member-human.md`, `../workers/my-account-system-worker.md`, `../tests/coverage.md`, `api-contracts.md`, `frontend-routes.md`, `../../../capabilities/account-context-and-profile.md`.
 - Implementation files: `src/main/java/ai/first/api/foundation/security/MeEndpoint.java`, `src/main/java/ai/first/application/foundation/identity/**`, `src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java`, `src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java`, `frontend/src/workstream/surfaces/SystemMessageSurface.tsx`, `frontend/src/workstream/shell/**`, `frontend/src/api/**`.
 - Test / validation files: `src/test/java/ai/first/application/foundation/identity/MeServiceTest.java`, `src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java`, `frontend/src/workstream-my-account-vertical.contract.test.mjs`, `frontend/src/workstream-shell.contract.test.mjs`, `frontend/src/workstream-surfaces.contract.test.mjs`.
-- Last aligned evidence: 2026-06-27 source-alignment split only; no-access and open-denied runtime recovery are not yet revalidated.
-- Remaining validation gaps: no active membership/no selected context recovery, disabled account, hidden workstream/source/context denial without enumeration, authorized dashboard return, context refresh, retry-safe denial/success, request-access guidance availability, missing bearer/auth failure routing, tenant/customer isolation, and trace/correlation evidence.
+- Last aligned evidence: MAFA-02-001 protected backend/API smoke `MyAccountBrowserWorkstreamSmokeTest` covers open-denied direct/action surfaces, hidden workstream denial without capability/name enumeration, authorized dashboard/counter recovery routing, no-active-membership recovery, disabled-account recovery, selected-context headers, missing-bearer failure, tenant/customer redaction, and correlation/trace references through protected `/api/workstream` routes.
+- Remaining validation gaps: no selected-context recovery variants beyond backend defaulting, frontend recovery rendering, durable denial trace persistence, request-access follow-through, and manual/browser runtime evidence remain unclaimed.
 
 ## Unmapped current-intent files
 

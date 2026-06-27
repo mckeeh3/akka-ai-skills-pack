@@ -71,7 +71,7 @@
 
 ### MAFA-02-001: Backend protected API and action path tests
 
-- status: pending
+- status: done
 - source: `backlog/01-my-account-automated-alignment-build-backlog.md` B02
 - task brief: `specs/my-account-full-alignment/tasks/02-backend/01-protected-api-action-tests.md`
 - depends on: [MAFA-01-001]
@@ -101,6 +101,7 @@
 - notes:
   - lifecycle/readiness: backend-ready/api-smoked by automated tests
   - vertical contract: My Account / `my-account-agent`; surfaces `surface-my-account-dashboard`, `surface-my-profile`, `surface-my-settings`, `surface-my-context`, `surface-my-account-open-denied`; governed tools `read-current-account-context`, `my_account.update_profile_settings`, `my_account.open_authorized_workstream`, `core.access.context.select`; adapter `surface_action` plus API/internal; selected AuthContext and tenant/customer denials required; idempotency for profile/settings; traces checked or handed to MAFA-03-001
+  - completed: 2026-06-27; commit message `MAFA-02-001 protected My Account API tests`
 
 ### MAFA-03-001: Durable trace and audit verification
 
