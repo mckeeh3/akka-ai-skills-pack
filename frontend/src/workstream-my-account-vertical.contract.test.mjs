@@ -203,6 +203,7 @@ test('My Account frontend automated coverage proves dashboard, self-service, con
   assert.match(surfaceTypes, /attentionCounters\?: Array<\{ counterId: string; label: string; workstreamLabel\?: string; value: string \| number; attentionCount\?: string \| number/);
   assert.match(surfaceTypes, /controlPanels\?: Array<\{ panelId: string; label: string; panelLabel\?: string; summary: string; state\?: string; countOrStatus\?: string \| number/);
   assert.match(myAccountSurfaces, /fields\.filter\(\(field: AnyData\) => field\.editable\)\.map/);
+  assert.match(myAccountSurfaces, /name=\{field\.fieldId\}/);
   assert.match(myAccountSurfaces, /Field changes are local preview only until a governed save action succeeds/);
   assert.match(myAccountSurfaces, /onFieldValueChange\?\.\(fieldId, value, envelope\.surfaceId\)/);
   assert.doesNotMatch(myAccountSurfaces, /document\.documentElement\.dataset\.theme\s*=/);

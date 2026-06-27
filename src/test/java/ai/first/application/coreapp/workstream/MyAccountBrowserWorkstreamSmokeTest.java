@@ -95,6 +95,7 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertEquals("my_account.personal_command_center.v1", dashboard.data().get("surfaceContract"));
     assertTrue(dashboard.toString().contains("attentionCounters"));
     assertTrue(dashboard.toString().contains("counter-user-admin-agent"));
+    assertTrue(dashboard.toString().contains("counter-card-my-account-notifications"), "Notification card must also be represented in the primary attentionCounters strip.");
     assertTrue(dashboard.toString().contains("openActionId=action-open-user-admin"));
     assertTrue(dashboard.toString().contains("targetSurfaceId=surface-user-admin-dashboard"));
     assertTrue(dashboard.toString().contains("controlPanels"));
@@ -157,6 +158,7 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
         "corr-my-account-browser-open-agent-admin-saas-owner"), SAAS_OWNER_CONTEXT_ID, "saas-owner@example.test", "SaaS Owner");
     assertEquals("accepted", openedAgentAdmin.status());
     assertEquals("surface-agent-admin-dashboard", openedAgentAdmin.resultSurface().surfaceId());
+    assertTrue(ownerDashboard.toString().contains("targetSurfaceId=surface-agent-admin-dashboard"));
     assertEquals("agent-admin-agent", openedAgentAdmin.resultSurface().ownerFunctionalAgentId());
     assertTrue(openedAgentAdmin.traceIds().stream().anyMatch(traceId -> traceId.contains("trace-my-account-open")));
     assertBrowserSafe(openedAgentAdmin.resultSurface());
@@ -276,6 +278,9 @@ class MyAccountBrowserWorkstreamSmokeTest extends TestKitSupport {
     assertTrue(profile.toString().contains("core.profile.update"));
     assertTrue(profile.toString().contains("traceRefs"));
     assertTrue(profile.toString().contains("corr-my-profile-browser-read"));
+    assertTrue(profile.toString().contains("Current personal locale preference"));
+    assertTrue(profile.toString().contains("Current personal timezone preference"));
+    assertFalse(profile.toString().contains("preference persistence is implemented"));
     assertFalse(profile.toString().contains("role editor"));
     assertProfileSurfaceBrowserSafe(profile);
 

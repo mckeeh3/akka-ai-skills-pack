@@ -217,7 +217,7 @@ public final class MyAccountService {
 
   private String surfaceIdForWorkstream(String functionalAgentId) {
     return switch (functionalAgentId) {
-      case "agent-admin-agent" -> "surface-agent-admin-catalog";
+      case "agent-admin-agent" -> "surface-agent-admin-dashboard";
       case "audit-trace-agent" -> "surface-audit-trace-dashboard";
       case "governance-policy-agent" -> "surface-governance-policy-dashboard";
       case "user-admin-agent" -> "surface-user-admin-dashboard";
