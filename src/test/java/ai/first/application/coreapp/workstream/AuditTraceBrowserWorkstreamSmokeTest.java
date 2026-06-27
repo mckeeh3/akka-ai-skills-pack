@@ -934,13 +934,7 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
         "Member User",
         MEMBER_CONTEXT_ID), "Regular tenant members must not open Audit/Trace export-request decisions.");
 
-    assertThrows(RuntimeException.class, () -> getSurfaceAs(
-        "surface-audit-trace-export-request",
-        "corr-audit-export-disabled-denied",
-        "workos-audit-disabled",
-        "disabled-audit@example.test",
-        "Disabled Auditor",
-        DISABLED_CONTEXT_ID), "Disabled accounts must not resolve an Audit/Trace export-request AuthContext.");
+    assertDisabledAccountGetsNoAccessRecovery("surface-audit-trace-export-request", "corr-audit-export-disabled-denied", "Audit/Trace export-request");
   }
 
   @Test
@@ -1160,13 +1154,7 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
         detail.surfaceId(),
         "corr-audit-detail-cross-tenant-denied")), "Cross-tenant Audit/Trace detail reads must fail closed without hidden evidence enumeration.");
 
-    assertThrows(RuntimeException.class, () -> getSurfaceAs(
-        "surface-audit-trace-detail",
-        "corr-audit-detail-disabled-denied",
-        "workos-audit-disabled",
-        "disabled-audit@example.test",
-        "Disabled Auditor",
-        DISABLED_CONTEXT_ID), "Disabled accounts must not resolve an Audit/Trace detail AuthContext.");
+    assertDisabledAccountGetsNoAccessRecovery("surface-audit-trace-detail", "corr-audit-detail-disabled-denied", "Audit/Trace detail");
   }
 
   @Test
@@ -1396,13 +1384,7 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
         "Member User",
         MEMBER_CONTEXT_ID), "Regular tenant members must not read Audit/Trace timeline evidence.");
 
-    assertThrows(RuntimeException.class, () -> getSurfaceAs(
-        "surface-audit-trace-timeline",
-        "corr-audit-timeline-disabled-denied",
-        "workos-audit-disabled",
-        "disabled-audit@example.test",
-        "Disabled Auditor",
-        DISABLED_CONTEXT_ID), "Disabled accounts must not resolve an Audit/Trace timeline AuthContext.");
+    assertDisabledAccountGetsNoAccessRecovery("surface-audit-trace-timeline", "corr-audit-timeline-disabled-denied", "Audit/Trace timeline");
   }
 
   @Test
@@ -1627,13 +1609,7 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
         "Member User",
         MEMBER_CONTEXT_ID), "Regular tenant members must not read Audit/Trace failure evidence.");
 
-    assertThrows(RuntimeException.class, () -> getSurfaceAs(
-        "surface-audit-trace-failure-evidence",
-        "corr-audit-failure-disabled-denied",
-        "workos-audit-disabled",
-        "disabled-audit@example.test",
-        "Disabled Auditor",
-        DISABLED_CONTEXT_ID), "Disabled accounts must not resolve an Audit/Trace failure-evidence AuthContext.");
+    assertDisabledAccountGetsNoAccessRecovery("surface-audit-trace-failure-evidence", "corr-audit-failure-disabled-denied", "Audit/Trace failure-evidence");
   }
 
   @Test
@@ -1896,13 +1872,7 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
         "Member User",
         MEMBER_CONTEXT_ID), "Regular tenant members must not read Audit/Trace investigation guidance.");
 
-    assertThrows(RuntimeException.class, () -> getSurfaceAs(
-        "surface-audit-trace-investigation-guide",
-        "corr-audit-guide-disabled-denied",
-        "workos-audit-disabled",
-        "disabled-audit@example.test",
-        "Disabled Auditor",
-        DISABLED_CONTEXT_ID), "Disabled accounts must not resolve an Audit/Trace investigation-guide AuthContext.");
+    assertDisabledAccountGetsNoAccessRecovery("surface-audit-trace-investigation-guide", "corr-audit-guide-disabled-denied", "Audit/Trace investigation-guide");
   }
 
   @Test
@@ -2116,17 +2086,32 @@ class AuditTraceBrowserWorkstreamSmokeTest extends TestKitSupport {
         "Customer Admin",
         CUSTOMER_CONTEXT_ID), "Customer-scoped Audit/Trace searches must not enumerate a different customer scope.");
 
-    assertThrows(RuntimeException.class, () -> getSurfaceAs(
-        "surface-audit-trace-dashboard",
-        "corr-audit-dashboard-disabled-denied",
-        "workos-audit-disabled",
-        "disabled-audit@example.test",
-        "Disabled Auditor",
-        DISABLED_CONTEXT_ID), "Disabled accounts must not resolve an Audit/Trace AuthContext.");
+    assertDisabledAccountGetsNoAccessRecovery("surface-audit-trace-dashboard", "corr-audit-dashboard-disabled-denied", "Audit/Trace dashboard");
   }
 
   private SurfaceEnvelope getSurface(String surfaceId, String correlationId) throws Exception {
     return getSurfaceAs(surfaceId, correlationId, "workos-audit-auditor", "auditor@example.test", "Audit Reviewer", AUDITOR_CONTEXT_ID);
+  }
+
+  private void assertDisabledAccountGetsNoAccessRecovery(String surfaceId, String correlationId, String label) throws Exception {
+    var response = httpClient
+        .GET("/api/workstream/surfaces/" + surfaceId)
+        .addHeader("Authorization", "Bearer " + bearerToken("workos-audit-disabled", "disabled-audit@example.test", "Disabled Auditor"))
+        .addHeader("X-Selected-Context-Id", DISABLED_CONTEXT_ID)
+        .addHeader("X-Correlation-Id", correlationId)
+        .responseBodyAs(String.class)
+        .invoke();
+    assertTrue(response.status().isSuccess(), "Disabled " + label + " requests must return only no-access recovery guidance.");
+    var body = response.body();
+    assertTrue(body.contains("no_access_recovery"), "Disabled " + label + " requests must not resolve an Audit/Trace AuthContext.");
+    assertTrue(body.contains("account-disabled"));
+    assertTrue(body.contains("disabled_account"));
+    assertTrue(body.contains("surface-my-account-open-denied"));
+    assertTrue(body.contains("\"selectedContextId\":\"not_available\""));
+    assertFalse(body.contains(DISABLED_CONTEXT_ID));
+    assertFalse(body.contains("audit.trace."));
+    assertFalse(body.contains("surface-audit-trace"));
+    assertBrowserSafe(body);
   }
 
   private SurfaceEnvelope getSurfaceAs(String surfaceId, String correlationId, String subject, String email, String name, String selectedContextId) throws Exception {
