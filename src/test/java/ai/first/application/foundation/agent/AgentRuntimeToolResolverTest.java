@@ -21,6 +21,7 @@ import ai.first.application.foundation.invitation.InvitationView;
 import ai.first.application.coreapp.myaccount.MyAccountService;
 import ai.first.application.foundation.identity.StarterSecurityComponents;
 import ai.first.application.coreapp.useradmin.UserAdminService;
+import ai.first.domain.foundation.agent.AgentBehaviorProfileVersion;
 import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import ai.first.domain.foundation.agent.ToolPermissionBoundary;
 import ai.first.domain.foundation.identity.Account;
@@ -47,6 +48,7 @@ import ai.first.application.coreapp.useradmin.UserAdminEvidenceTools;
 
 class AgentRuntimeToolResolverTest {
   private InMemoryTestAgentBehaviorRepository repository;
+  private AgentRuntimeService runtimeService;
   private AgentRuntimeToolResolver resolver;
   private AuthContext tenantAdmin;
 
@@ -57,7 +59,7 @@ class AgentRuntimeToolResolverTest {
     seedLoader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed");
     seedLoader.importStarterDefaults(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, "bootstrap-platform", "corr-seed-platform");
     var identityRepository = new InMemoryTestIdentityRepository();
-    var runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(identityRepository), fixedClock(), new OpenAiModelProviderClient(), new InMemoryTestAgentRuntimeTraceSink());
+    runtimeService = new AgentRuntimeService(repository, new AuthContextResolver(identityRepository), fixedClock(), new OpenAiModelProviderClient(), new InMemoryTestAgentRuntimeTraceSink());
     StarterSecurityComponents.bindTestIdentityRepository(identityRepository);
     StarterSecurityComponents.bindTestAttentionRepository(new InMemoryTestAttentionRepository());
     StarterSecurityComponents.bindTestAuditTraceRepository(new InMemoryTestAuditTraceRepository(runtimeService, new InMemoryTestWorkstreamLogRepository()));
@@ -87,6 +89,19 @@ class AgentRuntimeToolResolverTest {
     assertTrue(resolved.runtimeTools().stream().anyMatch(UserAdminEvidenceTools.class::isInstance));
     var binding = resolved.runtimeTools().stream().filter(AgentRuntimeLoaderTools.class::isInstance).map(AgentRuntimeLoaderTools.class::cast).findFirst().orElseThrow();
     assertTrue(binding.readSkill("ua.access-review-triage.v1").contains("authority_note=Skill content is internal guidance only"));
+  }
+
+  @Test
+  void generatedToolsMustBeAssignedByActiveProfileAndBoundary() {
+    saveProfileVersion("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, AgentBehaviorSeedLoader.USER_ADMIN_BOUNDARY_ID, 1, List.of(), "remove generated tool assignment from active profile");
+
+    var resolved = resolver.resolve(runtimeToolsRequest("corr-generated-tool-profile-denied"));
+
+    assertEquals(List.of("readReferenceDoc", "readSkill"), resolved.grantedToolIds());
+    assertEquals(List.of("userAdminEvidence.read"), resolved.deniedToolIds());
+    assertTrue(resolved.runtimeTools().stream().anyMatch(AgentRuntimeLoaderTools.class::isInstance));
+    assertFalse(resolved.runtimeTools().stream().anyMatch(UserAdminEvidenceTools.class::isInstance));
+    assertTrue(resolverTraceContains("corr-generated-tool-profile-denied", "GENERATED_TOOL_ASSIGNMENT", "generated-tool-not-assigned-by-active-profile"));
   }
 
   @Test
@@ -352,7 +367,8 @@ class AgentRuntimeToolResolverTest {
   void deniesByDefaultWhenRegistryBindingIsMissing() {
     var boundary = repository.toolBoundary("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_BOUNDARY_ID).orElseThrow();
     var unknownGrant = new ToolPermissionBoundary.ToolGrant("tenantAdmin.deleteUser", ToolPermissionBoundary.Category.LOCAL_FUNCTION, "tenant.user.delete", List.of("execute"), List.of("runtime"), "security", "approval_required", true, "full_work_trace");
-    repository.saveToolBoundary(new ToolPermissionBoundary(boundary.tenantId(), boundary.boundaryId(), boundary.agentDefinitionId(), boundary.status(), boundary.boundaryVersion() + 1, List.of(unknownGrant), "unknown-tool", boundary.seedProvenance(), boundary.createdAt(), boundary.updatedAt()));
+    var updatedBoundary = repository.saveToolBoundary(new ToolPermissionBoundary(boundary.tenantId(), boundary.boundaryId(), boundary.agentDefinitionId(), boundary.status(), boundary.boundaryVersion() + 1, List.of(unknownGrant), "unknown-tool", boundary.seedProvenance(), boundary.createdAt(), boundary.updatedAt()));
+    saveProfileVersion("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, updatedBoundary.boundaryId(), updatedBoundary.boundaryVersion(), List.of("tenantAdmin.deleteUser"), "activate unknown generated tool grant");
 
     var resolved = resolver.resolve(runtimeToolsRequest("corr-tools-missing"));
 
@@ -366,7 +382,8 @@ class AgentRuntimeToolResolverTest {
     var wrongCapability = new ToolPermissionBoundary.ToolGrant("readSkill", ToolPermissionBoundary.Category.READ_SKILL, "tenant.admin.override", List.of("read"), List.of("runtime"), "none", "bounded_autonomous", false, "full_work_trace");
     var wrongCategory = new ToolPermissionBoundary.ToolGrant("readReferenceDoc", ToolPermissionBoundary.Category.READ_SKILL, "agent.references.read", List.of("read"), List.of("runtime"), "none", "bounded_autonomous", false, "full_work_trace");
     var wrongMode = new ToolPermissionBoundary.ToolGrant("readSkill", ToolPermissionBoundary.Category.READ_SKILL, "agent.skills.read", List.of("read"), List.of("evaluation"), "none", "bounded_autonomous", false, "full_work_trace");
-    repository.saveToolBoundary(new ToolPermissionBoundary(boundary.tenantId(), boundary.boundaryId(), boundary.agentDefinitionId(), boundary.status(), boundary.boundaryVersion() + 1, List.of(wrongCapability, wrongCategory, wrongMode), "denied-tools", boundary.seedProvenance(), boundary.createdAt(), boundary.updatedAt()));
+    var updatedBoundary = repository.saveToolBoundary(new ToolPermissionBoundary(boundary.tenantId(), boundary.boundaryId(), boundary.agentDefinitionId(), boundary.status(), boundary.boundaryVersion() + 1, List.of(wrongCapability, wrongCategory, wrongMode), "denied-tools", boundary.seedProvenance(), boundary.createdAt(), boundary.updatedAt()));
+    saveProfileVersion("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, updatedBoundary.boundaryId(), updatedBoundary.boundaryVersion(), null, "activate malformed boundary grants");
 
     var resolved = resolver.resolve(runtimeToolsRequest("corr-tools-denied"));
 
@@ -385,6 +402,41 @@ class AgentRuntimeToolResolverTest {
     repository.saveToolBoundary(new ToolPermissionBoundary(boundary.tenantId(), boundary.boundaryId(), "some-other-agent", AgentLifecycleStatus.ACTIVE, boundary.boundaryVersion(), boundary.allowedToolGrants(), boundary.checksum(), boundary.seedProvenance(), boundary.createdAt(), boundary.updatedAt()));
     var mismatched = assertThrows(AuthorizationException.class, () -> resolver.resolve(runtimeToolsRequest("corr-tools-mismatch")));
     assertTrue(mismatched.getMessage().contains("boundary-agent-mismatch"));
+  }
+
+  private boolean resolverTraceContains(String correlationId, String traceType, String summaryFragment) {
+    return runtimeService.traces().stream().anyMatch(trace -> trace.correlationId().equals(correlationId)
+        && trace.traceType().equals(traceType)
+        && trace.safeSummary().contains(summaryFragment));
+  }
+
+  private AgentBehaviorProfileVersion saveProfileVersion(String tenantId, String agentDefinitionId, String toolBoundaryId, int toolBoundaryVersion, List<String> assignedGeneratedToolIds, String summary) {
+    var current = repository.activeBehaviorProfile(tenantId, agentDefinitionId).orElseThrow();
+    var next = new AgentBehaviorProfileVersion(
+        tenantId,
+        agentDefinitionId,
+        current.profileVersion() + 1,
+        current.scopeProvenance(),
+        current.clonedFromTenantId(),
+        current.clonedFromProfileVersion(),
+        AgentLifecycleStatus.ACTIVE,
+        current.promptDocumentId(),
+        current.activePromptVersion(),
+        current.skillManifestId(),
+        current.activeSkillManifestVersion(),
+        current.referenceManifestId(),
+        current.activeReferenceManifestVersion(),
+        current.modelConfigRefId(),
+        current.modelPolicyRefId(),
+        toolBoundaryId,
+        toolBoundaryVersion,
+        current.assignedSkillDocumentIds(),
+        assignedGeneratedToolIds == null ? current.assignedGeneratedToolIds() : assignedGeneratedToolIds,
+        AgentRuntimeService.checksum(summary + toolBoundaryVersion + assignedGeneratedToolIds),
+        summary,
+        "admin-1",
+        Instant.now(fixedClock()));
+    return repository.saveBehaviorProfileVersion(new AgentBehaviorRepository.BehaviorProfileVersionSave(tenantId, agentDefinitionId, current.profileVersion(), next));
   }
 
   private ResolveRuntimeToolsRequest runtimeToolsRequest(String correlationId) {

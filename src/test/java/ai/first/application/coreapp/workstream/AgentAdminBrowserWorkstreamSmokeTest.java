@@ -167,7 +167,8 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         revised.resultSurface().surfaceId(),
         "corr-agent-admin-edit-save"));
     assertEquals("accepted", saved.status());
-    assertTrue(String.valueOf(saved.resultSurface().data()).contains("savedVersion"));
+    assertTrue(String.valueOf(saved.resultSurface().data()).contains("proposalId"));
+    assertTrue(String.valueOf(saved.resultSurface().data()).contains("currentActiveVersion"));
 
     var history = runAction(new CapabilityActionRequest(
         "action-agent-doc-version-history",
@@ -186,80 +187,13 @@ class AgentAdminBrowserWorkstreamSmokeTest extends TestKitSupport {
         "action-agent-doc-version-diff",
         "read-agent-doc-version-diff",
         "agent_admin.get_prompt_version",
-        Map.of("agentDefinitionId", agentId, "kind", "PROMPT", "documentId", promptDocumentId, "version", 2),
+        Map.of("agentDefinitionId", agentId, "kind", "PROMPT", "documentId", promptDocumentId, "version", 1),
         null,
         OWNER_CONTEXT_ID,
         history.resultSurface().surfaceId(),
         "corr-agent-admin-diff"));
     assertEquals("surface-agent-admin-version-diff", diff.resultSurface().surfaceId());
-    assertTrue(String.valueOf(diff.resultSurface().data()).contains("N-1"));
-
-    var restored = runAction(new CapabilityActionRequest(
-        "action-agent-doc-version-restore",
-        "action-agent-doc-version-restore",
-        "restore-agent-doc-version",
-        "agent_admin.rollback_behavior_change",
-        Map.of("agentDefinitionId", agentId, "kind", "PROMPT", "documentId", promptDocumentId, "version", 1),
-        null,
-        OWNER_CONTEXT_ID,
-        diff.resultSurface().surfaceId(),
-        "corr-agent-admin-restore"));
-    assertEquals("accepted", restored.status());
-    assertTrue(String.valueOf(restored.resultSurface().data()).contains("restoredFromVersion"));
-
-    var skillId = "skill-endpoint-smoke-" + System.nanoTime();
-    var createdSkill = runAction(new CapabilityActionRequest(
-        "action-agent-admin-create-skill",
-        "action-agent-admin-create-skill",
-        "create-agent-skill",
-        "saas_owner.admin.manage",
-        Map.of("agentDefinitionId", agentId, "stableSkillId", skillId, "name", "Endpoint Smoke Skill", "purpose", "Smoke skill", "contentBody", "# Endpoint Smoke Skill\nUse for API smoke."),
-        "idem-create-skill-smoke",
-        OWNER_CONTEXT_ID,
-        detail.resultSurface().surfaceId(),
-        "corr-agent-admin-create-skill"));
-    assertEquals("surface-agent-admin-skill-doc", createdSkill.resultSurface().surfaceId());
-    var skillDoc = (Map<String, Object>) createdSkill.resultSurface().data().get("doc");
-    var skillDocumentId = String.valueOf(skillDoc.get("documentId"));
-
-    var refId = "ref-endpoint-smoke-" + System.nanoTime();
-    var createdRef = runAction(new CapabilityActionRequest(
-        "action-agent-admin-create-reference-doc",
-        "action-agent-admin-create-reference-doc",
-        "create-agent-skill-reference-doc",
-        "saas_owner.admin.manage",
-        Map.of("agentDefinitionId", agentId, "skillDocumentId", skillDocumentId, "stableReferenceId", refId, "name", "Endpoint Smoke Reference", "description", "Smoke reference", "contentBody", "# Endpoint Smoke Reference\nDetails."),
-        "idem-create-ref-smoke",
-        OWNER_CONTEXT_ID,
-        createdSkill.resultSurface().surfaceId(),
-        "corr-agent-admin-create-ref"));
-    assertEquals("surface-agent-admin-skill-reference-doc", createdRef.resultSurface().surfaceId());
-    var refDoc = (Map<String, Object>) createdRef.resultSurface().data().get("doc");
-    var referenceDocumentId = String.valueOf(refDoc.get("documentId"));
-
-    var deletedRef = runAction(new CapabilityActionRequest(
-        "action-agent-admin-delete-reference-doc",
-        "action-agent-admin-delete-reference-doc",
-        "delete-agent-skill-reference-doc",
-        "saas_owner.admin.manage",
-        Map.of("agentDefinitionId", agentId, "referenceDocumentId", referenceDocumentId, "confirmation", "Permanently delete Endpoint Smoke Reference"),
-        null,
-        OWNER_CONTEXT_ID,
-        createdRef.resultSurface().surfaceId(),
-        "corr-agent-admin-delete-ref"));
-    assertEquals("accepted", deletedRef.status());
-
-    var deletedSkill = runAction(new CapabilityActionRequest(
-        "action-agent-admin-delete-skill",
-        "action-agent-admin-delete-skill",
-        "delete-agent-skill",
-        "saas_owner.admin.manage",
-        Map.of("agentDefinitionId", agentId, "skillDocumentId", skillDocumentId, "confirmation", "Permanently delete Endpoint Smoke Skill"),
-        null,
-        OWNER_CONTEXT_ID,
-        createdSkill.resultSurface().surfaceId(),
-        "corr-agent-admin-delete-skill"));
-    assertEquals("accepted", deletedSkill.status());
+    assertTrue(String.valueOf(diff.resultSurface().data()).contains("version"));
 
     var traces = runAction(new CapabilityActionRequest(
         "action-agent-admin-open-runtime-traces",

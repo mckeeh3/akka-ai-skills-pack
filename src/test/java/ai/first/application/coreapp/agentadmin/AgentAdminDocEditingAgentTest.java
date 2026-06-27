@@ -20,7 +20,7 @@ import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
 import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
-import ai.first.domain.foundation.agent.AgentDefinition;
+import ai.first.domain.foundation.agent.AgentBehaviorProfileVersion;
 import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import ai.first.domain.foundation.identity.Account;
@@ -170,31 +170,32 @@ class AgentAdminDocEditingAgentTest extends TestKitSupport {
   @Test
   void missingEditingAgentModelRuntimeFailsClosedBeforeModelSuccessIsFaked() {
     var owner = actor("owner@example.test", "membership-owner");
-    var agent = agentRepository.agentDefinition(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow();
-    agentRepository.saveAgentDefinition(new AgentDefinition(
-        agent.tenantId(),
-        agent.agentDefinitionId(),
-        agent.displayName(),
-        agent.description(),
-        agent.placement(),
-        agent.functionalAreaId(),
-        agent.authorityLevel(),
+    var currentProfile = agentRepository.activeBehaviorProfile(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, AgentBehaviorSeedLoader.AGENT_ADMIN_AGENT_ID).orElseThrow();
+    var missingModelProfile = new AgentBehaviorProfileVersion(
+        currentProfile.tenantId(),
+        currentProfile.agentDefinitionId(),
+        currentProfile.profileVersion() + 1,
+        currentProfile.scopeProvenance(),
+        currentProfile.clonedFromTenantId(),
+        currentProfile.clonedFromProfileVersion(),
         AgentLifecycleStatus.ACTIVE,
-        agent.promptDocumentId(),
-        agent.activePromptVersion(),
-        agent.skillManifestId(),
-        agent.activeSkillManifestVersion(),
-        agent.referenceManifestId(),
-        agent.activeReferenceManifestVersion(),
-        agent.toolBoundaryId(),
-        agent.activeToolBoundaryVersion(),
+        currentProfile.promptDocumentId(),
+        currentProfile.activePromptVersion(),
+        currentProfile.skillManifestId(),
+        currentProfile.activeSkillManifestVersion(),
+        currentProfile.referenceManifestId(),
+        currentProfile.activeReferenceManifestVersion(),
         "missing-editing-model",
-        agent.modelPolicyRefId(),
-        agent.runtimeClassRef(),
-        agent.traceRequirements(),
-        agent.seedProvenance(),
-        agent.createdAt(),
-        agent.updatedAt()));
+        currentProfile.modelPolicyRefId(),
+        currentProfile.toolBoundaryId(),
+        currentProfile.activeToolBoundaryVersion(),
+        currentProfile.assignedSkillDocumentIds(),
+        currentProfile.assignedGeneratedToolIds(),
+        AgentRuntimeService.checksum("missing-editing-model" + currentProfile.profileChecksum()),
+        "test missing editing model binding",
+        "owner@example.test",
+        Instant.now(CLOCK));
+    agentRepository.saveBehaviorProfileVersion(new ai.first.application.foundation.agent.AgentBehaviorRepository.BehaviorProfileVersionSave(currentProfile.tenantId(), currentProfile.agentDefinitionId(), currentProfile.profileVersion(), missingModelProfile));
 
     var failure = assertThrows(AuthorizationException.class, () -> service.draftEditSessionWithAgent(owner, new AgentDraftEditSessionRequest(
         AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID,

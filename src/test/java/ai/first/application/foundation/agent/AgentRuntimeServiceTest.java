@@ -15,12 +15,14 @@ import ai.first.application.foundation.agent.AgentRuntimeService.SkillReadReques
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.InMemoryTestIdentityRepository;
 import ai.first.application.coreapp.myaccount.MyAccountService;
+import ai.first.domain.foundation.agent.AgentBehaviorProfileVersion;
 import ai.first.domain.foundation.agent.AgentDefinition;
 import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import ai.first.domain.foundation.agent.BehaviorChangeProposal;
 import ai.first.domain.foundation.agent.ModelConfigRef;
 import ai.first.domain.foundation.agent.ModelPolicy;
+import ai.first.domain.foundation.agent.PromptDocument;
 import ai.first.domain.foundation.agent.ReferenceDocument;
 import ai.first.domain.foundation.agent.SkillDocument;
 import ai.first.domain.foundation.agent.ToolPermissionBoundary;
@@ -82,6 +84,65 @@ class AgentRuntimeServiceTest {
   }
 
   @Test
+  void runtimeLoadsOnlyCurrentActiveBehaviorProfileNotProposedDraftOrMutatedAgentDefinition() {
+    var existingPrompt = repository.promptDocument("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_PROMPT_ID).orElseThrow();
+    var draftPrompt = new PromptDocument(
+        existingPrompt.tenantId(),
+        "draft-profile-prompt",
+        existingPrompt.agentDefinitionId(),
+        "Draft profile prompt",
+        existingPrompt.promptType(),
+        AgentLifecycleStatus.ACTIVE,
+        1,
+        "DRAFT_PROFILE_PROMPT_SHOULD_NOT_LOAD",
+        AgentRuntimeService.checksum("DRAFT_PROFILE_PROMPT_SHOULD_NOT_LOAD"),
+        "draft only",
+        existingPrompt.seedProvenance(),
+        existingPrompt.createdAt(),
+        existingPrompt.updatedAt());
+    repository.savePromptDocument(draftPrompt);
+    saveProfileVersion("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, draftPrompt.promptDocumentId(), 1, null, null, null, null, null, AgentLifecycleStatus.DRAFT, "proposed draft profile must not load");
+    var agent = repository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).orElseThrow();
+    repository.saveAgentDefinition(new AgentDefinition(agent.tenantId(), agent.agentDefinitionId(), agent.displayName(), agent.description(), agent.placement(), agent.functionalAreaId(), agent.authorityLevel(), agent.status(), draftPrompt.promptDocumentId(), 1, agent.skillManifestId(), agent.activeSkillManifestVersion(), agent.referenceManifestId(), agent.activeReferenceManifestVersion(), agent.toolBoundaryId(), agent.activeToolBoundaryVersion(), agent.modelConfigRefId(), agent.modelPolicyRefId(), agent.runtimeClassRef(), agent.traceRequirements(), agent.seedProvenance(), agent.createdAt(), agent.updatedAt()));
+
+    var result = service.assemblePrompt(promptRequest("corr-active-profile-only"));
+
+    assertEquals(AgentRuntimeTrace.Decision.ALLOWED, result.decision());
+    assertFalse(result.assembledSystemPrompt().contains("DRAFT_PROFILE_PROMPT_SHOULD_NOT_LOAD"));
+    assertTrue(result.assembledSystemPrompt().contains(existingPrompt.contentBody()));
+    assertTrue(service.traces().stream().anyMatch(trace -> trace.traceType().equals("PROMPT_ASSEMBLY") && trace.correlationId().equals("corr-active-profile-only") && trace.safeSummary().contains("behaviorProfileVersion=1")));
+  }
+
+  @Test
+  void tenantRuntimeFallsBackToGlobalActiveProfileWithTraceMetadata() {
+    var fallbackRepository = new InMemoryTestAgentBehaviorRepository();
+    new AgentBehaviorSeedLoader(fallbackRepository, fixedClock()).importStarterDefaults(ai.first.application.foundation.workstream.WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, "bootstrap", "corr-global-seed");
+    var fallbackService = new AgentRuntimeService(fallbackRepository, new AuthContextResolver(new InMemoryTestIdentityRepository()), fixedClock(), new OpenAiModelProviderClient(), new InMemoryTestAgentRuntimeTraceSink());
+
+    var result = fallbackService.assemblePrompt(promptRequest("corr-tenant-fallback"));
+
+    assertEquals(AgentRuntimeTrace.Decision.ALLOWED, result.decision());
+    assertTrue(result.assembledSystemPrompt().contains("# Resolved behavior profile"));
+    assertTrue(fallbackService.traces().stream().anyMatch(trace -> trace.traceType().equals("PROMPT_ASSEMBLY")
+        && trace.correlationId().equals("corr-tenant-fallback")
+        && trace.safeSummary().contains("behaviorProfileScope=global")
+        && trace.safeSummary().contains("behaviorProfileVersion=1")));
+  }
+
+  @Test
+  void readSkillRequiresActiveProfileAssignmentInAdditionToManifestAndBoundary() {
+    saveProfileVersion("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, null, null, null, null, null, List.of(), null, AgentLifecycleStatus.ACTIVE, "remove assigned skills from active profile");
+
+    var denied = service.readSkill(new SkillReadRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, "corr-profile-skill-denied", "ua.access-review-triage.v1"));
+
+    assertEquals(AgentRuntimeTrace.Decision.DENIED, denied.decision());
+    assertEquals("Skill is not available in this governed runtime context.", denied.safeDenialReason());
+    assertTrue(service.traces().stream().anyMatch(trace -> trace.traceType().equals("SKILL_LOAD")
+        && trace.correlationId().equals("corr-profile-skill-denied")
+        && trace.safeSummary().contains("skill-not-assigned-by-profile")));
+  }
+
+  @Test
   void promptAssemblyDeniesInvalidModelBindingsBeforeRuntimeUse() {
     var model = repository.modelConfigRef("tenant-1", AgentBehaviorSeedLoader.STARTER_DEFAULT_MODEL_CONFIG_ID).orElseThrow();
     repository.saveModelConfigRef(new ModelConfigRef(model.tenantId(), model.modelConfigRefId(), model.displayName(), model.providerAlias(), AgentLifecycleStatus.DISABLED, model.allowedAgentDefinitionIds(), model.allowedCapabilityIds(), model.allowedModes(), model.allowedAuthorityLevels(), model.fallbackPolicyRef(), model.seedProvenance(), model.createdAt(), model.updatedAt()));
@@ -102,10 +163,9 @@ class AgentRuntimeServiceTest {
 
   @Test
   void promptAssemblyDeniesUnknownOrSecretLikeModelRefsSafely() {
-    var agent = repository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).orElseThrow();
-    repository.saveAgentDefinition(new AgentDefinition(agent.tenantId(), agent.agentDefinitionId(), agent.displayName(), agent.description(), agent.placement(), agent.functionalAreaId(), agent.authorityLevel(), agent.status(), agent.promptDocumentId(), agent.activePromptVersion(), agent.skillManifestId(), agent.activeSkillManifestVersion(), agent.referenceManifestId(), agent.activeReferenceManifestVersion(), agent.toolBoundaryId(), agent.activeToolBoundaryVersion(), "missing-model", agent.modelPolicyRefId(), agent.runtimeClassRef(), agent.traceRequirements(), agent.seedProvenance(), agent.createdAt(), agent.updatedAt()));
+    saveProfileVersion("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, null, null, "missing-model", null, null, null, null, AgentLifecycleStatus.ACTIVE, "missing model ref");
     var missing = service.assemblePrompt(promptRequest("corr-model-missing"));
-    repository.saveAgentDefinition(agent);
+    saveProfileVersion("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, null, null, AgentBehaviorSeedLoader.STARTER_DEFAULT_MODEL_CONFIG_ID, null, null, null, null, AgentLifecycleStatus.ACTIVE, "restore model ref");
     var model = repository.modelConfigRef("tenant-1", AgentBehaviorSeedLoader.STARTER_DEFAULT_MODEL_CONFIG_ID).orElseThrow();
     repository.saveModelConfigRef(new ModelConfigRef(model.tenantId(), model.modelConfigRefId(), model.displayName(), "openai-low-temperature api_key=hidden", model.status(), model.allowedAgentDefinitionIds(), model.allowedCapabilityIds(), model.allowedModes(), model.allowedAuthorityLevels(), model.fallbackPolicyRef(), model.seedProvenance(), model.createdAt(), model.updatedAt()));
     var secretLike = service.assemblePrompt(promptRequest("corr-model-secret"));
@@ -122,10 +182,9 @@ class AgentRuntimeServiceTest {
     new AgentBehaviorSeedLoader(repository, fixedClock()).importStarterDefaults("tenant-2", "bootstrap", "corr-seed-tenant-2");
     var tenantTwoModel = repository.modelConfigRef("tenant-2", AgentBehaviorSeedLoader.STARTER_DEFAULT_MODEL_CONFIG_ID).orElseThrow();
     repository.saveModelConfigRef(new ModelConfigRef("tenant-2", "tenant-2-only-model", tenantTwoModel.displayName(), tenantTwoModel.providerAlias(), tenantTwoModel.status(), tenantTwoModel.allowedAgentDefinitionIds(), tenantTwoModel.allowedCapabilityIds(), tenantTwoModel.allowedModes(), tenantTwoModel.allowedAuthorityLevels(), tenantTwoModel.fallbackPolicyRef(), tenantTwoModel.seedProvenance(), tenantTwoModel.createdAt(), tenantTwoModel.updatedAt()));
-    var agent = repository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).orElseThrow();
-    repository.saveAgentDefinition(new AgentDefinition(agent.tenantId(), agent.agentDefinitionId(), agent.displayName(), agent.description(), agent.placement(), agent.functionalAreaId(), agent.authorityLevel(), agent.status(), agent.promptDocumentId(), agent.activePromptVersion(), agent.skillManifestId(), agent.activeSkillManifestVersion(), agent.referenceManifestId(), agent.activeReferenceManifestVersion(), agent.toolBoundaryId(), agent.activeToolBoundaryVersion(), "tenant-2-only-model", agent.modelPolicyRefId(), agent.runtimeClassRef(), agent.traceRequirements(), agent.seedProvenance(), agent.createdAt(), agent.updatedAt()));
+    saveProfileVersion("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, null, null, "tenant-2-only-model", null, null, null, null, AgentLifecycleStatus.ACTIVE, "cross-scope model ref");
     var crossScope = service.assemblePrompt(promptRequest("corr-model-cross-scope"));
-    repository.saveAgentDefinition(agent);
+    saveProfileVersion("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, null, null, AgentBehaviorSeedLoader.STARTER_DEFAULT_MODEL_CONFIG_ID, null, null, null, null, AgentLifecycleStatus.ACTIVE, "restore local model ref");
     var model = repository.modelConfigRef("tenant-1", AgentBehaviorSeedLoader.STARTER_DEFAULT_MODEL_CONFIG_ID).orElseThrow();
     repository.saveModelConfigRef(new ModelConfigRef(model.tenantId(), model.modelConfigRefId(), model.displayName(), model.providerAlias(), model.status(), List.of("some-other-agent"), model.allowedCapabilityIds(), model.allowedModes(), model.allowedAuthorityLevels(), model.fallbackPolicyRef(), model.seedProvenance(), model.createdAt(), model.updatedAt()));
     var agentNotAllowed = service.assemblePrompt(promptRequest("corr-model-agent-denied"));
@@ -558,7 +617,8 @@ class AgentRuntimeServiceTest {
     var grantsWithoutSkills = existing.allowedToolGrants().stream()
         .filter(grant -> grant.category() != ToolPermissionBoundary.Category.READ_SKILL)
         .toList();
-    repository.saveToolBoundary(new ToolPermissionBoundary(existing.tenantId(), existing.boundaryId(), existing.agentDefinitionId(), existing.status(), existing.boundaryVersion() + 1, grantsWithoutSkills, "without-skill", existing.seedProvenance(), existing.createdAt(), existing.updatedAt()));
+    var updatedBoundary = repository.saveToolBoundary(new ToolPermissionBoundary(existing.tenantId(), existing.boundaryId(), existing.agentDefinitionId(), existing.status(), existing.boundaryVersion() + 1, grantsWithoutSkills, "without-skill", existing.seedProvenance(), existing.createdAt(), existing.updatedAt()));
+    saveProfileVersion("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, null, null, null, updatedBoundary.boundaryId(), updatedBoundary.boundaryVersion(), null, null, AgentLifecycleStatus.ACTIVE, "activate boundary without readSkill grant");
 
     var denied = service.readSkill(new SkillReadRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, "corr-skill-boundary", "ua.access-review-triage.v1"));
 
@@ -573,7 +633,8 @@ class AgentRuntimeServiceTest {
     var grantsWithoutReferences = existing.allowedToolGrants().stream()
         .filter(grant -> grant.category() != ToolPermissionBoundary.Category.READ_REFERENCE)
         .toList();
-    repository.saveToolBoundary(new ToolPermissionBoundary(existing.tenantId(), existing.boundaryId(), existing.agentDefinitionId(), existing.status(), existing.boundaryVersion() + 1, grantsWithoutReferences, "without-reference", existing.seedProvenance(), existing.createdAt(), existing.updatedAt()));
+    var updatedBoundary = repository.saveToolBoundary(new ToolPermissionBoundary(existing.tenantId(), existing.boundaryId(), existing.agentDefinitionId(), existing.status(), existing.boundaryVersion() + 1, grantsWithoutReferences, "without-reference", existing.seedProvenance(), existing.createdAt(), existing.updatedAt()));
+    saveProfileVersion("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, null, null, null, updatedBoundary.boundaryId(), updatedBoundary.boundaryVersion(), null, null, AgentLifecycleStatus.ACTIVE, "activate boundary without readReference grant");
 
     var denied = service.readReferenceDoc(new ReferenceReadRequest("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, tenantAdmin, "runtime", AgentRuntimeService.INVOKE_CAPABILITY, "corr-ref-boundary", "ua.access-review-policy.v1", "consult"));
 
@@ -750,6 +811,35 @@ class AgentRuntimeServiceTest {
 
     assertEquals(BehaviorChangeProposal.Status.DENIED, deniedBoundary.status());
     assertEquals(2, service.traces().stream().filter(trace -> trace.traceType().equals("BEHAVIOR_PROPOSAL") && trace.decision() == AgentRuntimeTrace.Decision.DENIED).count());
+  }
+
+  private AgentBehaviorProfileVersion saveProfileVersion(String tenantId, String agentDefinitionId, String promptDocumentId, Integer promptVersion, String modelConfigRefId, String toolBoundaryId, Integer toolBoundaryVersion, List<String> assignedSkillDocumentIds, List<String> assignedGeneratedToolIds, AgentLifecycleStatus status, String summary) {
+    var current = repository.activeBehaviorProfile(tenantId, agentDefinitionId).orElseThrow();
+    var next = new AgentBehaviorProfileVersion(
+        tenantId,
+        agentDefinitionId,
+        current.profileVersion() + 1,
+        current.scopeProvenance(),
+        current.clonedFromTenantId(),
+        current.clonedFromProfileVersion(),
+        status == null ? AgentLifecycleStatus.ACTIVE : status,
+        promptDocumentId == null ? current.promptDocumentId() : promptDocumentId,
+        promptVersion == null ? current.activePromptVersion() : promptVersion,
+        current.skillManifestId(),
+        current.activeSkillManifestVersion(),
+        current.referenceManifestId(),
+        current.activeReferenceManifestVersion(),
+        modelConfigRefId == null ? current.modelConfigRefId() : modelConfigRefId,
+        current.modelPolicyRefId(),
+        toolBoundaryId == null ? current.toolBoundaryId() : toolBoundaryId,
+        toolBoundaryVersion == null ? current.activeToolBoundaryVersion() : toolBoundaryVersion,
+        assignedSkillDocumentIds == null ? current.assignedSkillDocumentIds() : assignedSkillDocumentIds,
+        assignedGeneratedToolIds == null ? current.assignedGeneratedToolIds() : assignedGeneratedToolIds,
+        AgentRuntimeService.checksum(String.valueOf(summary) + current.profileVersion() + modelConfigRefId + toolBoundaryVersion + assignedSkillDocumentIds + assignedGeneratedToolIds),
+        summary,
+        "admin-1",
+        Instant.now(fixedClock()));
+    return repository.saveBehaviorProfileVersion(new ai.first.application.foundation.agent.AgentBehaviorRepository.BehaviorProfileVersionSave(tenantId, agentDefinitionId, current.profileVersion(), next));
   }
 
   private PromptAssemblyRequest promptRequest(String correlationId) {

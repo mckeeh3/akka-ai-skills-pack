@@ -2,7 +2,9 @@ package ai.first.application.foundation.agent;
 
 import ai.first.application.foundation.identity.AuthorizationException;
 import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
+import ai.first.domain.foundation.agent.AgentBehaviorProfileVersion;
 import ai.first.domain.foundation.agent.AgentLifecycleStatus;
+import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import ai.first.domain.foundation.agent.ToolCatalogEntry;
 import ai.first.domain.foundation.agent.ToolPermissionBoundary;
 import ai.first.domain.foundation.identity.AuthContext;
@@ -40,17 +42,24 @@ public final class AgentRuntimeToolResolver {
       throw new AuthorizationException(403, "runtime-tool-tenant-mismatch");
     }
     var agent = repository.agentDefinition(request.tenantId(), request.agentDefinitionId())
+        .or(() -> platformScopeId().equals(request.tenantId()) ? java.util.Optional.empty() : repository.agentDefinition(platformScopeId(), request.agentDefinitionId()))
         .orElseThrow(() -> new AuthorizationException(404, "agent-not-found"));
     if (agent.status() != AgentLifecycleStatus.ACTIVE && "runtime".equalsIgnoreCase(request.mode())) {
       throw new AuthorizationException(403, "agent-not-active");
     }
-    var boundary = repository.toolBoundary(request.tenantId(), agent.toolBoundaryId())
+    var profile = activeProfile(request.tenantId(), request.agentDefinitionId())
+        .or(() -> platformScopeId().equals(request.tenantId()) ? java.util.Optional.empty() : activeProfile(platformScopeId(), request.agentDefinitionId()))
+        .orElseThrow(() -> new AuthorizationException(403, "behavior-profile-not-active"));
+    var boundary = boundaryForProfile(request.tenantId(), profile)
         .orElseThrow(() -> new AuthorizationException(404, "boundary-not-found"));
     if (boundary.status() != AgentLifecycleStatus.ACTIVE) {
       throw new AuthorizationException(403, "boundary-not-active");
     }
     if (!agent.agentDefinitionId().equals(boundary.agentDefinitionId())) {
       throw new AuthorizationException(403, "boundary-agent-mismatch");
+    }
+    if (boundary.boundaryVersion() != profile.activeToolBoundaryVersion()) {
+      throw new AuthorizationException(403, "boundary-profile-version-mismatch");
     }
 
     var grantedToolIds = new ArrayList<String>();
@@ -65,15 +74,25 @@ public final class AgentRuntimeToolResolver {
       var registered = toolRegistry.find(grant.toolId());
       if (registered.isEmpty()) {
         deniedToolIds.add(grant.toolId());
+        recordToolDecision("TOOL_BOUNDARY", AgentRuntimeTrace.Decision.DENIED, request, profile, grant.toolId(), "tool-registry-binding-missing");
         continue;
       }
       var entry = registered.get().entry();
       if (!grantMatchesEntry(grant, entry) || !modeAllowed(grant, request.mode()) || !readOperationAllowed(grant)) {
         deniedToolIds.add(grant.toolId());
+        recordToolDecision("TOOL_BOUNDARY", AgentRuntimeTrace.Decision.DENIED, request, profile, grant.toolId(), "tool-boundary-denied");
+        continue;
+      }
+      if (isGeneratedToolGrant(grant) && !profile.assignedGeneratedToolIds().contains(grant.toolId())) {
+        deniedToolIds.add(grant.toolId());
+        recordToolDecision("GENERATED_TOOL_ASSIGNMENT", AgentRuntimeTrace.Decision.DENIED, request, profile, grant.toolId(), "generated-tool-not-assigned-by-active-profile");
         continue;
       }
       grantedToolIds.add(grant.toolId());
       entries.add(entry);
+      if (isGeneratedToolGrant(grant)) {
+        recordToolDecision("GENERATED_TOOL_ASSIGNMENT", AgentRuntimeTrace.Decision.ALLOWED, request, profile, grant.toolId(), "generated-tool-assigned-by-active-profile");
+      }
       var bindingGroup = bindingGroup(entry);
       if (!registeredBindingGroups.contains(bindingGroup)) {
         registeredBindingGroups.add(bindingGroup);
@@ -81,6 +100,66 @@ public final class AgentRuntimeToolResolver {
       }
     }
     return new ResolvedRuntimeTools(List.copyOf(runtimeTools), List.copyOf(entries), List.copyOf(grantedToolIds), List.copyOf(deniedToolIds));
+  }
+
+  private java.util.Optional<AgentBehaviorProfileVersion> activeProfile(String tenantId, String agentDefinitionId) {
+    try {
+      return repository.activeBehaviorProfile(tenantId, agentDefinitionId);
+    } catch (UnsupportedOperationException failure) {
+      throw new AuthorizationException(403, "behavior-profile-store-not-bound");
+    }
+  }
+
+  private java.util.Optional<ToolPermissionBoundary> boundaryForProfile(String requestTenantId, AgentBehaviorProfileVersion profile) {
+    for (var scope : resourceScopes(requestTenantId, profile)) {
+      var boundary = repository.toolBoundary(scope, profile.toolBoundaryId());
+      if (boundary.isPresent()) {
+        return boundary;
+      }
+    }
+    return java.util.Optional.empty();
+  }
+
+  private List<String> resourceScopes(String requestTenantId, AgentBehaviorProfileVersion profile) {
+    var scopes = new ArrayList<String>();
+    addScope(scopes, profile.tenantId());
+    addScope(scopes, profile.clonedFromTenantId());
+    addScope(scopes, requestTenantId);
+    addScope(scopes, platformScopeId());
+    return List.copyOf(scopes);
+  }
+
+  private void addScope(List<String> scopes, String scope) {
+    if (!isBlank(scope) && !scopes.contains(scope)) {
+      scopes.add(scope);
+    }
+  }
+
+  private boolean isGeneratedToolGrant(ToolPermissionBoundary.ToolGrant grant) {
+    return grant.category() != ToolPermissionBoundary.Category.READ_SKILL
+        && grant.category() != ToolPermissionBoundary.Category.READ_REFERENCE;
+  }
+
+  private void recordToolDecision(String traceType, AgentRuntimeTrace.Decision decision, ResolveRuntimeToolsRequest request, AgentBehaviorProfileVersion profile, String toolId, String reason) {
+    runtimeService.recordRuntimeToolDecision(
+        traceType,
+        decision,
+        request.tenantId(),
+        request.agentDefinitionId(),
+        request.authContext(),
+        request.capabilityId(),
+        request.correlationId(),
+        toolId,
+        reason + "; behaviorProfileScope=" + profileScopeLabel(profile) + "; behaviorProfileVersion=" + profile.profileVersion() + "; toolBoundary=" + profile.toolBoundaryId() + "@" + profile.activeToolBoundaryVersion(),
+        AgentRuntimeService.checksum(String.valueOf(toolId) + reason + profile.profileChecksum()));
+  }
+
+  private String profileScopeLabel(AgentBehaviorProfileVersion profile) {
+    return profile.scopeProvenance() == AgentBehaviorProfileVersion.ScopeProvenance.GLOBAL_DEFAULT ? "global" : "tenant:" + profile.tenantId();
+  }
+
+  private String platformScopeId() {
+    return WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID;
   }
 
   private boolean runtimeScopeMatchesAuthContext(String runtimeGovernanceScopeId, AuthContext authContext) {

@@ -151,7 +151,7 @@
 
 ### AABP-02-001: Align runtime loader and traces
 
-- status: pending
+- status: done
 - source: `backlog/01-agent-admin-behavior-profile-build-backlog.md`
 - task brief: `specs/agent-admin-behavior-profile-realization/tasks/02-runtime/01-runtime-loader-trace-alignment.md`
 - depends on: [AABP-01-004]
@@ -172,7 +172,9 @@
 - done criteria:
   - runtime uses active behavior only and emits current trace metadata
   - changes and queue update are committed
-- notes: []
+- notes:
+  - completed in this commit with message: `Align Agent Admin runtime loader traces`
+  - next runnable task after completion: `AABP-03-001` (`pending`, depends on `AABP-02-001`)
 
 ### AABP-03-001: Wire current Agent Admin workstream/API surfaces
 
