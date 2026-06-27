@@ -2,6 +2,7 @@ package ai.first.application.foundation.agent;
 
 import akka.javasdk.annotations.Component;
 import akka.javasdk.keyvalueentity.KeyValueEntity;
+import ai.first.domain.foundation.agent.AgentBehaviorProfileVersion;
 import ai.first.domain.foundation.agent.AgentBehaviorRepositoryState;
 import ai.first.domain.foundation.agent.AgentDefinition;
 import ai.first.domain.foundation.agent.AgentReferenceManifest;
@@ -44,6 +45,22 @@ public class DurableAgentBehaviorRepositoryEntity extends KeyValueEntity<AgentBe
 
   public ReadOnlyEffect<List<AgentDefinition>> agentDefinitions(String tenantId) {
     return effects().reply(currentState().agentDefinitions(tenantId));
+  }
+
+  public ReadOnlyEffect<Optional<AgentBehaviorProfileVersion>> activeBehaviorProfile(AgentProfileQuery query) {
+    return effects().reply(currentState().activeBehaviorProfile(query.tenantId(), query.agentDefinitionId()));
+  }
+
+  public ReadOnlyEffect<List<AgentBehaviorProfileVersion>> behaviorProfileVersions(AgentProfileQuery query) {
+    return effects().reply(currentState().behaviorProfileVersions(query.tenantId(), query.agentDefinitionId()));
+  }
+
+  public Effect<AgentBehaviorProfileVersion> saveBehaviorProfileVersion(AgentBehaviorRepository.BehaviorProfileVersionSave command) {
+    var current = currentState().activeBehaviorProfile(command.tenantId(), command.agentDefinitionId());
+    if (command.expectedCurrentProfileVersion() != null && current.map(AgentBehaviorProfileVersion::profileVersion).orElse(0) != command.expectedCurrentProfileVersion()) {
+      return effects().error("stale-profile-version");
+    }
+    return effects().updateState(currentState().saveBehaviorProfileVersion(command.profileVersion())).thenReply(command::profileVersion);
   }
 
   public ReadOnlyEffect<Optional<PromptDocument>> promptDocument(RecordQuery query) {
@@ -119,4 +136,5 @@ public class DurableAgentBehaviorRepositoryEntity extends KeyValueEntity<AgentBe
   }
 
   public record RecordQuery(String tenantId, String recordId) {}
+  public record AgentProfileQuery(String tenantId, String agentDefinitionId) {}
 }

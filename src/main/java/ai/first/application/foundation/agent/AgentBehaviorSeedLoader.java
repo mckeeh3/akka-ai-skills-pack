@@ -7,6 +7,7 @@ import ai.first.domain.foundation.identity.Tenant;
 import ai.first.domain.foundation.invitation.Invitation;
 import ai.first.application.coreapp.myaccount.MyAccountService;
 import ai.first.application.foundation.notification.NotificationService;
+import ai.first.domain.foundation.agent.AgentBehaviorProfileVersion;
 import ai.first.domain.foundation.agent.AgentDefinition;
 import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import ai.first.domain.foundation.agent.AgentReferenceManifest;
@@ -121,9 +122,10 @@ public final class AgentBehaviorSeedLoader {
     var modelConfig = repository.modelConfigRef(tenantId, STARTER_DEFAULT_MODEL_CONFIG_ID)
         .map(existing -> skipExisting("ModelConfigRef", existing.modelConfigRefId(), result, existing))
         .orElseGet(() -> createModelConfigRef(tenantId, modelPolicy, importerActor, correlationId, now, result));
-    repository.agentDefinition(tenantId, USER_ADMIN_AGENT_ID)
+    var userAdminAgent = repository.agentDefinition(tenantId, USER_ADMIN_AGENT_ID)
         .map(existing -> skipExisting("AgentDefinition", existing.agentDefinitionId(), result, existing))
         .orElseGet(() -> createAgentDefinition(tenantId, prompt, manifest, referenceManifest, boundary, modelConfig, modelPolicy, importerActor, correlationId, now, result));
+    ensureDefaultProfileVersion(userAdminAgent, manifest, referenceManifest, boundary, modelConfig, modelPolicy, importerActor, now, result);
     for (var seed : additionalCoreAgentSeeds()) {
       importBasicCoreAgent(tenantId, seed, modelConfig, modelPolicy, importerActor, correlationId, now, result);
     }
@@ -258,9 +260,10 @@ public final class AgentBehaviorSeedLoader {
       selectedModelPolicy = modelPolicy;
       selectedModelConfig = modelConfig;
     }
-    repository.agentDefinition(tenantId, seed.agentDefinitionId())
+    var agent = repository.agentDefinition(tenantId, seed.agentDefinitionId())
         .map(existing -> skipExisting("AgentDefinition", existing.agentDefinitionId(), result, existing))
         .orElseGet(() -> createBasicAgentDefinition(tenantId, seed, prompt, manifest, referenceManifest, boundary, selectedModelConfig, selectedModelPolicy, actor, correlationId, now, result));
+    ensureDefaultProfileVersion(agent, manifest, referenceManifest, boundary, selectedModelConfig, selectedModelPolicy, actor, now, result);
   }
 
   private PromptDocument createBasicPrompt(String tenantId, BasicCoreAgentSeed seed, String content, String checksum, String actor, String correlationId, Instant now, SeedImportResult result) {
@@ -337,6 +340,56 @@ public final class AgentBehaviorSeedLoader {
     repository.saveAgentDefinition(definition);
     result.created("AgentDefinition", seed.agentDefinitionId());
     return definition;
+  }
+
+  private void ensureDefaultProfileVersion(AgentDefinition agent, AgentSkillManifest manifest, AgentReferenceManifest referenceManifest, ToolPermissionBoundary boundary, ModelConfigRef modelConfig, ModelPolicy modelPolicy, String actor, Instant now, SeedImportResult result) {
+    if (repository.activeBehaviorProfile(agent.tenantId(), agent.agentDefinitionId()).isPresent()) {
+      result.skippedUnchanged("AgentBehaviorProfileVersion", agent.agentDefinitionId() + "@active");
+      return;
+    }
+    var assignedSkillIds = manifest.entries().stream().map(AgentSkillManifest.Entry::skillDocumentId).toList();
+    var assignedToolIds = assignedGeneratedToolIds(boundary);
+    var profileFacts = agent.promptDocumentId() + "@" + agent.activePromptVersion()
+        + manifest.manifestId() + "@" + manifest.manifestVersion()
+        + referenceManifest.manifestId() + "@" + referenceManifest.manifestVersion()
+        + boundary.boundaryId() + "@" + boundary.boundaryVersion()
+        + modelConfig.modelConfigRefId() + modelPolicy.modelPolicyRefId()
+        + assignedSkillIds + assignedToolIds;
+    var profile = new AgentBehaviorProfileVersion(
+        agent.tenantId(),
+        agent.agentDefinitionId(),
+        1,
+        AgentBehaviorProfileVersion.ScopeProvenance.GLOBAL_DEFAULT,
+        null,
+        null,
+        AgentLifecycleStatus.ACTIVE,
+        agent.promptDocumentId(),
+        agent.activePromptVersion(),
+        manifest.manifestId(),
+        manifest.manifestVersion(),
+        referenceManifest.manifestId(),
+        referenceManifest.manifestVersion(),
+        modelConfig.modelConfigRefId(),
+        modelPolicy.modelPolicyRefId(),
+        boundary.boundaryId(),
+        boundary.boundaryVersion(),
+        assignedSkillIds,
+        assignedToolIds,
+        checksum(profileFacts),
+        "Initial generated behavior profile seed.",
+        actor,
+        now);
+    repository.saveBehaviorProfileVersion(new AgentBehaviorRepository.BehaviorProfileVersionSave(agent.tenantId(), agent.agentDefinitionId(), 0, profile));
+    result.created("AgentBehaviorProfileVersion", agent.agentDefinitionId() + "@1");
+  }
+
+  private List<String> assignedGeneratedToolIds(ToolPermissionBoundary boundary) {
+    return boundary.allowedToolGrants().stream()
+        .filter(grant -> grant.category() != ToolPermissionBoundary.Category.READ_SKILL)
+        .filter(grant -> grant.category() != ToolPermissionBoundary.Category.READ_REFERENCE)
+        .map(ToolPermissionBoundary.ToolGrant::toolId)
+        .sorted()
+        .toList();
   }
 
   private PromptDocument skipOrDraftPrompt(PromptDocument existing, String packagedChecksum, SeedImportResult result) {

@@ -1,6 +1,7 @@
 package ai.first.application.foundation.agent;
 
 import akka.javasdk.client.ComponentClient;
+import ai.first.domain.foundation.agent.AgentBehaviorProfileVersion;
 import ai.first.domain.foundation.agent.AgentDefinition;
 import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import ai.first.domain.foundation.agent.AgentReferenceManifest;
@@ -75,6 +76,23 @@ public final class AkkaAgentBehaviorRepository implements AgentBehaviorRepositor
       agentDefinition(tenantId, agentId).ifPresent(definition -> definitions.put(definition.agentDefinitionId(), definition));
     }
     return List.copyOf(definitions.values());
+  }
+
+  @Override
+  public Optional<AgentBehaviorProfileVersion> activeBehaviorProfile(String tenantId, String agentDefinitionId) {
+    return componentClient.forKeyValueEntity(behaviorRepositoryEntityId).method(DurableAgentBehaviorRepositoryEntity::activeBehaviorProfile)
+        .invoke(new DurableAgentBehaviorRepositoryEntity.AgentProfileQuery(tenantId, agentDefinitionId));
+  }
+
+  @Override
+  public List<AgentBehaviorProfileVersion> behaviorProfileVersions(String tenantId, String agentDefinitionId) {
+    return componentClient.forKeyValueEntity(behaviorRepositoryEntityId).method(DurableAgentBehaviorRepositoryEntity::behaviorProfileVersions)
+        .invoke(new DurableAgentBehaviorRepositoryEntity.AgentProfileQuery(tenantId, agentDefinitionId));
+  }
+
+  @Override
+  public AgentBehaviorProfileVersion saveBehaviorProfileVersion(BehaviorProfileVersionSave command) {
+    return componentClient.forKeyValueEntity(behaviorRepositoryEntityId).method(DurableAgentBehaviorRepositoryEntity::saveBehaviorProfileVersion).invoke(command);
   }
 
   @Override

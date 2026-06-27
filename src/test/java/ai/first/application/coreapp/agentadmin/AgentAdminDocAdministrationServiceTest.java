@@ -326,6 +326,78 @@ class AgentAdminDocAdministrationServiceTest {
   }
 
   @Test
+  void behaviorProfileAssignmentCreatesTenantScopedVersionWithoutMutatingSkillDocsOrGeneratedTools() {
+    var owner = actor("owner@example.test", "membership-owner");
+    var globalDetail = service.agentDetail(owner, AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, "corr-profile-detail");
+    assertEquals("global", globalDetail.profile().scopeProvenance());
+    assertEquals(1, globalDetail.profile().profileVersion());
+    assertEquals("openai-low-temperature", globalDetail.profile().safeModelAlias());
+    assertFalse(globalDetail.toString().toLowerCase().contains("api_key"));
+    assertFalse(globalDetail.profileHistory().isEmpty());
+    assertEquals("global", service.listAgents(owner, new AgentListRequest("User Admin", null), "corr-profile-list").rows().get(0).profile().scopeProvenance());
+
+    var boundaryBefore = agentRepository.toolBoundary(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, AgentBehaviorSeedLoader.USER_ADMIN_BOUNDARY_ID).orElseThrow();
+    var skillBefore = agentRepository.skillDocument(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, AgentBehaviorSeedLoader.ACCESS_REVIEW_SKILL_DOC_ID).orElseThrow();
+
+    var updated = service.updateBehaviorProfileAssignments(owner, new AgentAdminDocAdministrationService.BehaviorProfileAssignmentRequest(
+        "tenant-1",
+        AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID,
+        globalDetail.profile().profileVersion(),
+        AgentBehaviorSeedLoader.STARTER_DEFAULT_MODEL_CONFIG_ID,
+        List.of(AgentBehaviorSeedLoader.ACCESS_REVIEW_SKILL_DOC_ID, AgentBehaviorSeedLoader.ACCESS_REVIEW_SKILL_DOC_ID),
+        List.of("userAdminEvidence.read"),
+        "Tenant-specific access review profile"), "corr-profile-update");
+
+    assertTrue(updated.changed());
+    assertEquals("tenant:tenant-1", updated.profile().scopeProvenance());
+    assertEquals(1, updated.profile().profileVersion());
+    assertEquals(List.of(AgentBehaviorSeedLoader.ACCESS_REVIEW_SKILL_DOC_ID), updated.profile().assignedSkillDocumentIds());
+    assertEquals(List.of("userAdminEvidence.read"), updated.profile().assignedGeneratedToolIds());
+    assertEquals("openai-low-temperature", updated.profile().safeModelAlias());
+
+    var tenantProfile = agentRepository.activeBehaviorProfile("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).orElseThrow();
+    assertEquals(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, tenantProfile.clonedFromTenantId());
+    assertEquals(1, tenantProfile.clonedFromProfileVersion());
+    assertEquals(1, agentRepository.behaviorProfileVersions("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).size());
+    assertEquals(globalDetail.profile().assignedSkillCount(), agentRepository.activeBehaviorProfile(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).orElseThrow().assignedSkillDocumentIds().size());
+
+    var skillAfter = agentRepository.skillDocument(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, AgentBehaviorSeedLoader.ACCESS_REVIEW_SKILL_DOC_ID).orElseThrow();
+    assertEquals(skillBefore.activeVersion(), skillAfter.activeVersion());
+    assertEquals(skillBefore.contentChecksum(), skillAfter.contentChecksum());
+    var boundaryAfter = agentRepository.toolBoundary(WorkstreamEventPublisher.PLATFORM_SCOPE_TENANT_ID, AgentBehaviorSeedLoader.USER_ADMIN_BOUNDARY_ID).orElseThrow();
+    assertEquals(boundaryBefore.boundaryVersion(), boundaryAfter.boundaryVersion());
+    assertEquals(boundaryBefore.allowedToolGrants(), boundaryAfter.allowedToolGrants());
+
+    var idempotent = service.updateBehaviorProfileAssignments(owner, new AgentAdminDocAdministrationService.BehaviorProfileAssignmentRequest(
+        "tenant-1",
+        AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID,
+        updated.profile().profileVersion(),
+        AgentBehaviorSeedLoader.STARTER_DEFAULT_MODEL_CONFIG_ID,
+        List.of(AgentBehaviorSeedLoader.ACCESS_REVIEW_SKILL_DOC_ID),
+        List.of("userAdminEvidence.read"),
+        "No-op repeat"), "corr-profile-idempotent");
+    assertFalse(idempotent.changed());
+    assertEquals(1, agentRepository.behaviorProfileVersions("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).size());
+  }
+
+  @Test
+  void behaviorProfileAssignmentDeniesUnauthorizedOrUnknownRequests() {
+    var owner = actor("owner@example.test", "membership-owner");
+    var tenantAdmin = actor("tenant-admin@example.test", "membership-tenant-admin");
+    var deniedActor = assertThrows(AuthorizationException.class, () -> service.updateBehaviorProfileAssignments(tenantAdmin, new AgentAdminDocAdministrationService.BehaviorProfileAssignmentRequest(
+        "tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, 1, null, List.of(AgentBehaviorSeedLoader.ACCESS_REVIEW_SKILL_DOC_ID), List.of("userAdminEvidence.read"), "Denied"), "corr-profile-denied-actor"));
+    assertEquals("agent-admin-requires-saas-owner-admin", deniedActor.reasonCode());
+
+    var deniedSkill = assertThrows(AuthorizationException.class, () -> service.updateBehaviorProfileAssignments(owner, new AgentAdminDocAdministrationService.BehaviorProfileAssignmentRequest(
+        "tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, 1, null, List.of("missing-skill"), null, "Denied"), "corr-profile-denied-skill"));
+    assertEquals("skill-not-found-or-forbidden", deniedSkill.reasonCode());
+
+    var deniedTool = assertThrows(AuthorizationException.class, () -> service.updateBehaviorProfileAssignments(owner, new AgentAdminDocAdministrationService.BehaviorProfileAssignmentRequest(
+        "tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, 1, null, null, List.of("missing.generated.tool"), "Denied"), "corr-profile-denied-tool"));
+    assertEquals("generated-tool-not-found-or-forbidden", deniedTool.reasonCode());
+  }
+
+  @Test
   void saasOwnerCanUpdateAgentNameAndPurposeButTenantAndCustomerAdminsAreDenied() {
     var owner = actor("owner@example.test", "membership-owner");
     var updated = service.updateAgentProfile(owner, new AgentAdminDocAdministrationService.AgentProfileUpdateRequest(AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID, "User Admin Agent Updated", "Updated purpose"), "corr-update");

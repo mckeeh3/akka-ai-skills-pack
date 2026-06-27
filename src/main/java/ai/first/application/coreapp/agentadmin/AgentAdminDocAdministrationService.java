@@ -5,17 +5,20 @@ import ai.first.application.foundation.agent.AgentRuntimeTraceSink;
 import ai.first.application.foundation.identity.AuthContextResolver;
 import ai.first.application.foundation.identity.AuthorizationException;
 import ai.first.application.foundation.workstream.WorkstreamEventPublisher;
+import ai.first.domain.foundation.agent.AgentBehaviorProfileVersion;
 import ai.first.domain.foundation.agent.AgentDefinition;
 import ai.first.domain.foundation.agent.AgentLifecycleStatus;
 import ai.first.domain.foundation.agent.AgentReferenceManifest;
 import ai.first.domain.foundation.agent.AgentRuntimeTrace;
 import ai.first.domain.foundation.agent.AgentSkillManifest;
+import ai.first.domain.foundation.agent.ModelConfigRef;
 import ai.first.domain.foundation.agent.PromptDocument;
 import ai.first.domain.foundation.agent.PromptVersion;
 import ai.first.domain.foundation.agent.ReferenceDocument;
 import ai.first.domain.foundation.agent.ReferenceVersion;
 import ai.first.domain.foundation.agent.SkillDocument;
 import ai.first.domain.foundation.agent.SkillVersion;
+import ai.first.domain.foundation.agent.ToolPermissionBoundary;
 import ai.first.domain.foundation.identity.FoundationRole;
 import ai.first.domain.foundation.identity.ScopeType;
 import java.nio.charset.StandardCharsets;
@@ -48,6 +51,7 @@ public final class AgentAdminDocAdministrationService {
   public static final String READ_SKILL_CAPABILITY = AgentAdminService.GET_SKILL_VERSION;
   public static final String READ_REFERENCE_CAPABILITY = AgentAdminService.GET_REFERENCE_VERSION;
   public static final String UPDATE_AGENT_PROFILE_CAPABILITY = "saas_owner.admin.manage";
+  public static final String UPDATE_BEHAVIOR_PROFILE_CAPABILITY = "saas_owner.admin.manage";
   public static final String DRAFT_EDIT_CAPABILITY = AgentRuntimeCapabilityIds.DRAFT_BEHAVIOR_CHANGE;
   public static final String CANCEL_EDIT_CAPABILITY = AgentRuntimeCapabilityIds.CANCEL_BEHAVIOR_CHANGE;
   public static final String SAVE_EDIT_CAPABILITY = AgentRuntimeCapabilityIds.DRAFT_BEHAVIOR_CHANGE;
@@ -136,12 +140,79 @@ public final class AgentAdminDocAdministrationService {
     return new AgentProfileUpdateResult(agentListRow(updated), List.of(traceId("agent-profile-update", updated.agentDefinitionId(), correlationId)));
   }
 
+  public BehaviorProfileAssignmentResult updateBehaviorProfileAssignments(AuthContextResolver.ResolvedMe actor, BehaviorProfileAssignmentRequest request, String correlationId) {
+    requireSaasAdmin(actor, UPDATE_BEHAVIOR_PROFILE_CAPABILITY, "agent_admin.behavior_profile.assignment.update.v1", correlationId);
+    requireNonBlank(request == null ? null : request.agentDefinitionId(), "agentDefinitionId-required");
+    var scopeTenantId = firstNonBlank(request.tenantId(), platformScopeId()).trim();
+    requireNonBlank(scopeTenantId, "tenantId-required");
+    var agent = agent(request.agentDefinitionId());
+    var base = resolveBehaviorProfile(scopeTenantId, agent);
+    if (request.expectedProfileVersion() != null && request.expectedProfileVersion() != base.profileVersion()) {
+      throw new AuthorizationException(409, "behavior-profile-version-stale");
+    }
+
+    var modelConfigRefId = firstNonBlank(request.modelConfigRefId(), base.modelConfigRefId());
+    var model = modelConfigForProfile(scopeTenantId, modelConfigRefId)
+        .orElseThrow(() -> new AuthorizationException(404, "model-config-not-found-or-forbidden"));
+    if (model.status() != AgentLifecycleStatus.ACTIVE) throw new AuthorizationException(409, "model-config-not-active");
+
+    var assignedSkillIds = request.assignedSkillDocumentIds() == null
+        ? base.assignedSkillDocumentIds()
+        : canonicalSkillDocumentIds(scopeTenantId, request.assignedSkillDocumentIds());
+    var assignedGeneratedToolIds = request.assignedGeneratedToolIds() == null
+        ? base.assignedGeneratedToolIds()
+        : canonicalGeneratedToolIds(scopeTenantId, base, request.assignedGeneratedToolIds());
+
+    var exactCurrent = activeBehaviorProfile(scopeTenantId, agent.agentDefinitionId()).orElse(null);
+    if (Objects.equals(modelConfigRefId, base.modelConfigRefId())
+        && Objects.equals(assignedSkillIds, base.assignedSkillDocumentIds())
+        && Objects.equals(assignedGeneratedToolIds, base.assignedGeneratedToolIds())) {
+      return new BehaviorProfileAssignmentResult(profileSummary(scopeTenantId, agent, base), false, List.of(traceId("behavior-profile-idempotent", agent.agentDefinitionId(), correlationId)));
+    }
+
+    var now = Instant.now(clock);
+    var nextVersion = exactCurrent == null ? 1 : exactCurrent.profileVersion() + 1;
+    var newProfile = new AgentBehaviorProfileVersion(
+        scopeTenantId,
+        agent.agentDefinitionId(),
+        nextVersion,
+        platformScopeId().equals(scopeTenantId) ? AgentBehaviorProfileVersion.ScopeProvenance.GLOBAL_DEFAULT : AgentBehaviorProfileVersion.ScopeProvenance.TENANT_OVERRIDE,
+        exactCurrent == null && !platformScopeId().equals(scopeTenantId) ? base.tenantId() : base.clonedFromTenantId(),
+        exactCurrent == null && !platformScopeId().equals(scopeTenantId) ? base.profileVersion() : base.clonedFromProfileVersion(),
+        AgentLifecycleStatus.ACTIVE,
+        base.promptDocumentId(),
+        base.activePromptVersion(),
+        base.skillManifestId(),
+        base.activeSkillManifestVersion(),
+        base.referenceManifestId(),
+        base.activeReferenceManifestVersion(),
+        modelConfigRefId,
+        base.modelPolicyRefId(),
+        base.toolBoundaryId(),
+        base.activeToolBoundaryVersion(),
+        assignedSkillIds,
+        assignedGeneratedToolIds,
+        checksum(base.promptDocumentId() + base.activePromptVersion() + base.skillManifestId() + base.activeSkillManifestVersion() + base.referenceManifestId() + base.activeReferenceManifestVersion() + modelConfigRefId + base.toolBoundaryId() + base.activeToolBoundaryVersion() + assignedSkillIds + assignedGeneratedToolIds),
+        firstNonBlank(request.changeSummary(), "Agent Admin behavior profile assignment update"),
+        actor.account().accountId(),
+        now);
+    try {
+      repository.saveBehaviorProfileVersion(new AgentBehaviorRepository.BehaviorProfileVersionSave(scopeTenantId, agent.agentDefinitionId(), exactCurrent == null ? 0 : exactCurrent.profileVersion(), newProfile));
+    } catch (IllegalStateException failure) {
+      if ("stale-profile-version".equals(failure.getMessage())) throw new AuthorizationException(409, "behavior-profile-version-stale");
+      throw failure;
+    }
+    recordProfileTrace("BEHAVIOR_PROFILE_VERSION_CREATED", AgentRuntimeTrace.Decision.ALLOWED, newProfile, correlationId, "profileVersion=" + newProfile.profileVersion() + "; scope=" + profileScopeLabel(newProfile) + "; modelAlias=" + safe(model.providerAlias()) + "; skillIds=" + assignedSkillIds + "; generatedToolIds=" + assignedGeneratedToolIds);
+    return new BehaviorProfileAssignmentResult(profileSummary(scopeTenantId, agent, newProfile), true, List.of(traceId("behavior-profile-version", agent.agentDefinitionId(), correlationId)));
+  }
+
   public AgentDocDetail agentDetail(AuthContextResolver.ResolvedMe actor, String agentDefinitionId, String correlationId) {
     requireSaasAdmin(actor, READ_AGENT_CAPABILITY, "agent_admin.doc_agent.detail.v1", correlationId);
     var agent = agent(agentDefinitionId);
     var prompt = prompt(agent);
     var skills = skillSummaries(agent);
     var references = referenceSummaries(agent);
+    var profile = resolveBehaviorProfile(platformScopeId(), agent);
     return new AgentDocDetail(
         agent.agentDefinitionId(),
         agent.displayName(),
@@ -151,6 +222,8 @@ public final class AgentAdminDocAdministrationService {
         docSummary(AgentDocKind.PROMPT, prompt.promptDocumentId(), prompt.title(), prompt.changeSummary(), prompt.activeVersion(), prompt.updatedAt()),
         skills,
         references,
+        profileSummary(platformScopeId(), agent, profile),
+        profileHistoryRows(platformScopeId(), agent),
         List.of(traceId("agent-detail", agent.agentDefinitionId(), correlationId), traceId("runtime-doc-reads", agent.agentDefinitionId(), correlationId)));
   }
 
@@ -890,8 +963,158 @@ public final class AgentAdminDocAdministrationService {
     authContextResolver.appendProtectedReadTrace(actor, capabilityId, surfaceContract, correlationId);
   }
 
+  private void recordProfileTrace(String traceType, AgentRuntimeTrace.Decision decision, AgentBehaviorProfileVersion profile, String correlationId, String safeSummary) {
+    traceSink.record(new AgentRuntimeTrace(
+        traceId(traceType.toLowerCase(Locale.ROOT), profile.agentDefinitionId() + "@" + profile.profileVersion(), correlationId),
+        Instant.now(clock),
+        profile.tenantId(),
+        profile.agentDefinitionId(),
+        correlationId,
+        profile.agentDefinitionId() + "@" + profile.profileVersion(),
+        traceType,
+        decision,
+        profile.actorAccountId(),
+        UPDATE_BEHAVIOR_PROFILE_CAPABILITY,
+        profile.agentDefinitionId(),
+        safe(safeSummary),
+        profile.profileChecksum()));
+  }
+
   private AgentListRow agentListRow(AgentDefinition agent) {
-    return new AgentListRow(agent.agentDefinitionId(), agent.displayName(), agent.description(), agent.functionalAreaId(), agent.updatedAt());
+    var profile = resolveBehaviorProfile(platformScopeId(), agent);
+    return new AgentListRow(agent.agentDefinitionId(), agent.displayName(), agent.description(), agent.functionalAreaId(), agent.updatedAt(), profileSummary(platformScopeId(), agent, profile));
+  }
+
+  private AgentBehaviorProfileVersion resolveBehaviorProfile(String tenantId, AgentDefinition agent) {
+    return activeBehaviorProfile(tenantId, agent.agentDefinitionId())
+        .or(() -> platformScopeId().equals(tenantId) ? java.util.Optional.empty() : activeBehaviorProfile(platformScopeId(), agent.agentDefinitionId()))
+        .orElseGet(() -> fallbackProfileFromAgent(tenantId, agent));
+  }
+
+  private java.util.Optional<AgentBehaviorProfileVersion> activeBehaviorProfile(String tenantId, String agentDefinitionId) {
+    try {
+      return repository.activeBehaviorProfile(tenantId, agentDefinitionId);
+    } catch (UnsupportedOperationException ignored) {
+      return java.util.Optional.empty();
+    }
+  }
+
+  private List<AgentBehaviorProfileVersion> behaviorProfileVersions(String tenantId, String agentDefinitionId) {
+    try {
+      return repository.behaviorProfileVersions(tenantId, agentDefinitionId);
+    } catch (UnsupportedOperationException ignored) {
+      return List.of();
+    }
+  }
+
+  private AgentBehaviorProfileVersion fallbackProfileFromAgent(String tenantId, AgentDefinition agent) {
+    var manifest = repository.skillManifest(platformScopeId(), agent.skillManifestId()).orElse(null);
+    var referenceManifest = repository.referenceManifest(platformScopeId(), agent.referenceManifestId()).orElse(null);
+    var boundary = repository.toolBoundary(platformScopeId(), agent.toolBoundaryId()).orElse(null);
+    var assignedSkills = manifest == null ? List.<String>of() : manifest.entries().stream().map(AgentSkillManifest.Entry::skillDocumentId).toList();
+    var assignedTools = boundary == null ? List.<String>of() : assignedGeneratedToolIds(boundary);
+    return new AgentBehaviorProfileVersion(
+        tenantId,
+        agent.agentDefinitionId(),
+        1,
+        platformScopeId().equals(tenantId) ? AgentBehaviorProfileVersion.ScopeProvenance.GLOBAL_DEFAULT : AgentBehaviorProfileVersion.ScopeProvenance.TENANT_OVERRIDE,
+        platformScopeId().equals(tenantId) ? null : platformScopeId(),
+        platformScopeId().equals(tenantId) ? null : 1,
+        agent.status(),
+        agent.promptDocumentId(),
+        agent.activePromptVersion(),
+        agent.skillManifestId(),
+        manifest == null ? agent.activeSkillManifestVersion() : manifest.manifestVersion(),
+        agent.referenceManifestId(),
+        referenceManifest == null ? agent.activeReferenceManifestVersion() : referenceManifest.manifestVersion(),
+        agent.modelConfigRefId(),
+        agent.modelPolicyRefId(),
+        agent.toolBoundaryId(),
+        boundary == null ? agent.activeToolBoundaryVersion() : boundary.boundaryVersion(),
+        assignedSkills,
+        assignedTools,
+        checksum(agent.promptDocumentId() + agent.activePromptVersion() + agent.skillManifestId() + assignedSkills + agent.toolBoundaryId() + assignedTools + agent.modelConfigRefId()),
+        "Current generated behavior profile snapshot.",
+        "system",
+        agent.updatedAt());
+  }
+
+  private BehaviorProfileSummary profileSummary(String scopeTenantId, AgentDefinition agent, AgentBehaviorProfileVersion profile) {
+    var model = modelConfigForProfile(scopeTenantId, profile.modelConfigRefId()).orElse(null);
+    return new BehaviorProfileSummary(
+        profile.tenantId(),
+        profileScopeLabel(profile),
+        profile.profileVersion(),
+        profile.promptDocumentId(),
+        profile.activePromptVersion(),
+        profile.modelConfigRefId(),
+        model == null ? null : safe(model.providerAlias()),
+        profile.assignedSkillDocumentIds().size(),
+        profile.assignedSkillDocumentIds(),
+        profile.assignedGeneratedToolIds().size(),
+        profile.assignedGeneratedToolIds(),
+        profile.toolBoundaryId() + "@" + profile.activeToolBoundaryVersion(),
+        profile.createdAt());
+  }
+
+  private List<BehaviorProfileHistoryRow> profileHistoryRows(String tenantId, AgentDefinition agent) {
+    var rows = behaviorProfileVersions(tenantId, agent.agentDefinitionId()).stream()
+        .map(profile -> new BehaviorProfileHistoryRow(profile.profileVersion(), profileScopeLabel(profile), profile.modelConfigRefId(), modelConfigForProfile(tenantId, profile.modelConfigRefId()).map(model -> safe(model.providerAlias())).orElse(null), profile.assignedSkillDocumentIds().size(), profile.assignedGeneratedToolIds().size(), profile.changeSummary(), profile.actorAccountId(), profile.createdAt()))
+        .toList();
+    if (!rows.isEmpty()) return rows;
+    var fallback = resolveBehaviorProfile(tenantId, agent);
+    return List.of(new BehaviorProfileHistoryRow(fallback.profileVersion(), profileScopeLabel(fallback), fallback.modelConfigRefId(), modelConfigForProfile(tenantId, fallback.modelConfigRefId()).map(model -> safe(model.providerAlias())).orElse(null), fallback.assignedSkillDocumentIds().size(), fallback.assignedGeneratedToolIds().size(), fallback.changeSummary(), fallback.actorAccountId(), fallback.createdAt()));
+  }
+
+  private String profileScopeLabel(AgentBehaviorProfileVersion profile) {
+    return profile.scopeProvenance() == AgentBehaviorProfileVersion.ScopeProvenance.GLOBAL_DEFAULT ? "global" : "tenant:" + profile.tenantId();
+  }
+
+  private java.util.Optional<ModelConfigRef> modelConfigForProfile(String tenantId, String modelConfigRefId) {
+    var exact = repository.modelConfigRef(tenantId, modelConfigRefId);
+    if (exact.isPresent() || platformScopeId().equals(tenantId)) return exact;
+    return repository.modelConfigRef(platformScopeId(), modelConfigRefId);
+  }
+
+  private List<String> canonicalSkillDocumentIds(String tenantId, List<String> requestedIds) {
+    var requested = distinctSorted(requestedIds);
+    for (var skillDocumentId : requested) {
+      var skill = repository.skillDocument(tenantId, skillDocumentId)
+          .or(() -> platformScopeId().equals(tenantId) ? java.util.Optional.empty() : repository.skillDocument(platformScopeId(), skillDocumentId))
+          .orElseThrow(() -> new AuthorizationException(404, "skill-not-found-or-forbidden"));
+      if (skill.status() != AgentLifecycleStatus.ACTIVE) throw new AuthorizationException(409, "skill-not-active");
+    }
+    return requested;
+  }
+
+  private List<String> canonicalGeneratedToolIds(String tenantId, AgentBehaviorProfileVersion base, List<String> requestedIds) {
+    var requested = distinctSorted(requestedIds);
+    var boundary = repository.toolBoundary(tenantId, base.toolBoundaryId())
+        .or(() -> platformScopeId().equals(tenantId) ? java.util.Optional.empty() : repository.toolBoundary(platformScopeId(), base.toolBoundaryId()))
+        .orElseThrow(() -> new AuthorizationException(404, "tool-boundary-not-found-or-forbidden"));
+    var knownIds = java.util.Set.copyOf(assignedGeneratedToolIds(boundary));
+    for (var toolId : requested) {
+      if (!knownIds.contains(toolId)) throw new AuthorizationException(404, "generated-tool-not-found-or-forbidden");
+    }
+    return requested;
+  }
+
+  private List<String> assignedGeneratedToolIds(ToolPermissionBoundary boundary) {
+    return boundary.allowedToolGrants().stream()
+        .filter(grant -> grant.category() != ToolPermissionBoundary.Category.READ_SKILL)
+        .filter(grant -> grant.category() != ToolPermissionBoundary.Category.READ_REFERENCE)
+        .map(ToolPermissionBoundary.ToolGrant::toolId)
+        .sorted()
+        .toList();
+  }
+
+  private static List<String> distinctSorted(List<String> ids) {
+    return ids == null ? List.of() : ids.stream()
+        .filter(id -> id != null && !id.isBlank())
+        .map(String::trim)
+        .distinct()
+        .sorted()
+        .toList();
   }
 
   private AgentDefinition agent(String agentDefinitionId) {
@@ -1344,7 +1567,7 @@ public final class AgentAdminDocAdministrationService {
 
   public record AgentListRequest(String nameContains, String workstreamOrDomain) {}
 
-  public record AgentListRow(String agentDefinitionId, String agentName, String shortPurpose, String workstreamDomain, Instant lastEditTime) {}
+  public record AgentListRow(String agentDefinitionId, String agentName, String shortPurpose, String workstreamDomain, Instant lastEditTime, BehaviorProfileSummary profile) {}
 
   public record AgentListResponse(List<AgentListRow> rows, int totalCount, int filteredCount, List<String> traceLinks) {
     public AgentListResponse {
@@ -1361,10 +1584,33 @@ public final class AgentAdminDocAdministrationService {
     }
   }
 
-  public record AgentDocDetail(String agentDefinitionId, String agentName, String purpose, String workstreamDomain, Instant lastEditTime, DocumentSummary prompt, List<SkillDocSummary> skills, List<ReferenceDocSummary> referenceDocs, List<String> traceLinks) {
+  public record AgentDocDetail(String agentDefinitionId, String agentName, String purpose, String workstreamDomain, Instant lastEditTime, DocumentSummary prompt, List<SkillDocSummary> skills, List<ReferenceDocSummary> referenceDocs, BehaviorProfileSummary profile, List<BehaviorProfileHistoryRow> profileHistory, List<String> traceLinks) {
     public AgentDocDetail {
       skills = List.copyOf(skills == null ? List.of() : skills);
       referenceDocs = List.copyOf(referenceDocs == null ? List.of() : referenceDocs);
+      profileHistory = List.copyOf(profileHistory == null ? List.of() : profileHistory);
+      traceLinks = List.copyOf(traceLinks == null ? List.of() : traceLinks);
+    }
+  }
+
+  public record BehaviorProfileSummary(String tenantId, String scopeProvenance, int profileVersion, String promptDocumentId, int activePromptVersion, String modelConfigRefId, String safeModelAlias, int assignedSkillCount, List<String> assignedSkillDocumentIds, int assignedGeneratedToolCount, List<String> assignedGeneratedToolIds, String toolBoundaryRef, Instant changedAt) {
+    public BehaviorProfileSummary {
+      assignedSkillDocumentIds = List.copyOf(assignedSkillDocumentIds == null ? List.of() : assignedSkillDocumentIds);
+      assignedGeneratedToolIds = List.copyOf(assignedGeneratedToolIds == null ? List.of() : assignedGeneratedToolIds);
+    }
+  }
+
+  public record BehaviorProfileHistoryRow(int profileVersion, String scopeProvenance, String modelConfigRefId, String safeModelAlias, int assignedSkillCount, int assignedGeneratedToolCount, String changeSummary, String actorAccountId, Instant createdAt) {}
+
+  public record BehaviorProfileAssignmentRequest(String tenantId, String agentDefinitionId, Integer expectedProfileVersion, String modelConfigRefId, List<String> assignedSkillDocumentIds, List<String> assignedGeneratedToolIds, String changeSummary) {
+    public BehaviorProfileAssignmentRequest {
+      assignedSkillDocumentIds = assignedSkillDocumentIds == null ? null : List.copyOf(assignedSkillDocumentIds);
+      assignedGeneratedToolIds = assignedGeneratedToolIds == null ? null : List.copyOf(assignedGeneratedToolIds);
+    }
+  }
+
+  public record BehaviorProfileAssignmentResult(BehaviorProfileSummary profile, boolean changed, List<String> traceLinks) {
+    public BehaviorProfileAssignmentResult {
       traceLinks = List.copyOf(traceLinks == null ? List.of() : traceLinks);
     }
   }

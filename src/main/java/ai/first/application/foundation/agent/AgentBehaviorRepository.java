@@ -1,5 +1,6 @@
 package ai.first.application.foundation.agent;
 
+import ai.first.domain.foundation.agent.AgentBehaviorProfileVersion;
 import ai.first.domain.foundation.agent.AgentDefinition;
 import ai.first.domain.foundation.agent.AgentReferenceManifest;
 import ai.first.domain.foundation.agent.AgentSkillManifest;
@@ -21,6 +22,10 @@ public interface AgentBehaviorRepository {
   Optional<AgentDefinition> agentDefinition(String tenantId, String agentDefinitionId);
   AgentDefinition saveAgentDefinition(AgentDefinition definition);
   List<AgentDefinition> agentDefinitions(String tenantId);
+
+  default Optional<AgentBehaviorProfileVersion> activeBehaviorProfile(String tenantId, String agentDefinitionId) { throw unsupportedProfileVersionLifecycle(); }
+  default List<AgentBehaviorProfileVersion> behaviorProfileVersions(String tenantId, String agentDefinitionId) { throw unsupportedProfileVersionLifecycle(); }
+  default AgentBehaviorProfileVersion saveBehaviorProfileVersion(BehaviorProfileVersionSave command) { throw unsupportedProfileVersionLifecycle(); }
 
   Optional<PromptDocument> promptDocument(String tenantId, String promptDocumentId);
   PromptDocument savePromptDocument(PromptDocument prompt);
@@ -66,6 +71,11 @@ public interface AgentBehaviorRepository {
     return new UnsupportedOperationException("agent-document-version-lifecycle-not-bound");
   }
 
+  private static UnsupportedOperationException unsupportedProfileVersionLifecycle() {
+    return new UnsupportedOperationException("agent-behavior-profile-version-lifecycle-not-bound");
+  }
+
+  record BehaviorProfileVersionSave(String tenantId, String agentDefinitionId, Integer expectedCurrentProfileVersion, AgentBehaviorProfileVersion profileVersion) {}
   record DocumentVersionSave(String tenantId, String documentId, int expectedCurrentVersion, String contentBody, String actorAccountId, String changeSummary, String editSessionTranscriptSummary, Instant createdAt) {}
   record DocumentVersionRestore(String tenantId, String documentId, int version, String actorAccountId, Instant createdAt) {}
 }

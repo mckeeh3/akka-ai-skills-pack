@@ -124,7 +124,7 @@
 
 ### AABP-01-004: Implement behavior-profile version and assignment seams
 
-- status: pending
+- status: done
 - source: `backlog/01-agent-admin-behavior-profile-build-backlog.md`
 - task brief: `specs/agent-admin-behavior-profile-realization/tasks/01-backend/03-behavior-profile-version-assignments.md`
 - depends on: [AABP-01-003]
@@ -145,7 +145,9 @@
 - done criteria:
   - profile version seams support runtime loader and safe catalog/detail summaries
   - changes and queue update are committed
-- notes: []
+- notes:
+  - completed in this commit with message: `Implement Agent Admin behavior profile versions`
+  - next runnable task after completion: `AABP-02-001` (`pending`, depends on `AABP-01-004`)
 
 ### AABP-02-001: Align runtime loader and traces
 

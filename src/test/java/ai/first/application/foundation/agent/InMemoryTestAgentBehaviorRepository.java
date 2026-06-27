@@ -1,5 +1,6 @@
 package ai.first.application.foundation.agent;
 
+import ai.first.domain.foundation.agent.AgentBehaviorProfileVersion;
 import ai.first.domain.foundation.agent.AgentDefinition;
 import ai.first.domain.foundation.agent.AgentReferenceManifest;
 import ai.first.domain.foundation.agent.AgentSkillManifest;
@@ -27,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /** Test/local governed-agent store for the core app. */
 public final class InMemoryTestAgentBehaviorRepository implements AgentBehaviorRepository {
   private final Map<String, AgentDefinition> agents = new ConcurrentHashMap<>();
+  private final Map<String, AgentBehaviorProfileVersion> behaviorProfileVersions = new ConcurrentHashMap<>();
   private final Map<String, PromptDocument> prompts = new ConcurrentHashMap<>();
   private final Map<String, Map<Integer, PromptVersion>> promptVersions = new ConcurrentHashMap<>();
   private final Map<String, SkillDocument> skills = new ConcurrentHashMap<>();
@@ -42,6 +44,15 @@ public final class InMemoryTestAgentBehaviorRepository implements AgentBehaviorR
   @Override public Optional<AgentDefinition> agentDefinition(String tenantId, String agentDefinitionId) { return Optional.ofNullable(agents.get(key(tenantId, agentDefinitionId))); }
   @Override public AgentDefinition saveAgentDefinition(AgentDefinition definition) { agents.put(key(definition.tenantId(), definition.agentDefinitionId()), definition); return definition; }
   @Override public List<AgentDefinition> agentDefinitions(String tenantId) { return agents.values().stream().filter(agent -> tenantId.equals(agent.tenantId())).toList(); }
+  @Override public Optional<AgentBehaviorProfileVersion> activeBehaviorProfile(String tenantId, String agentDefinitionId) { return behaviorProfileVersions.values().stream().filter(profile -> tenantId.equals(profile.tenantId())).filter(profile -> agentDefinitionId.equals(profile.agentDefinitionId())).filter(profile -> profile.status() == AgentLifecycleStatus.ACTIVE).max(Comparator.comparingInt(AgentBehaviorProfileVersion::profileVersion)); }
+  @Override public List<AgentBehaviorProfileVersion> behaviorProfileVersions(String tenantId, String agentDefinitionId) { return behaviorProfileVersions.values().stream().filter(profile -> tenantId.equals(profile.tenantId())).filter(profile -> agentDefinitionId.equals(profile.agentDefinitionId())).sorted(Comparator.comparingInt(AgentBehaviorProfileVersion::profileVersion)).toList(); }
+  @Override public AgentBehaviorProfileVersion saveBehaviorProfileVersion(BehaviorProfileVersionSave command) {
+    var currentVersion = activeBehaviorProfile(command.tenantId(), command.agentDefinitionId()).map(AgentBehaviorProfileVersion::profileVersion).orElse(0);
+    if (command.expectedCurrentProfileVersion() != null && currentVersion != command.expectedCurrentProfileVersion()) throw new IllegalStateException("stale-profile-version");
+    if (command.profileVersion().profileVersion() <= currentVersion) throw new IllegalStateException("stale-profile-version");
+    behaviorProfileVersions.put(profileKey(command.profileVersion().tenantId(), command.profileVersion().agentDefinitionId(), command.profileVersion().profileVersion()), command.profileVersion());
+    return command.profileVersion();
+  }
 
   @Override public Optional<PromptDocument> promptDocument(String tenantId, String promptDocumentId) { return Optional.ofNullable(prompts.get(key(tenantId, promptDocumentId))); }
   @Override public PromptDocument savePromptDocument(PromptDocument prompt) { prompts.put(key(prompt.tenantId(), prompt.promptDocumentId()), prompt); promptVersions.computeIfAbsent(key(prompt.tenantId(), prompt.promptDocumentId()), ignored -> new ConcurrentHashMap<>()).put(prompt.activeVersion(), toPromptVersion(prompt, actor(prompt), prompt.changeSummary())); return prompt; }
@@ -128,4 +139,5 @@ public final class InMemoryTestAgentBehaviorRepository implements AgentBehaviorR
   private static String checksum(String content) { try { return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(String.valueOf(content).getBytes(StandardCharsets.UTF_8))); } catch (NoSuchAlgorithmException e) { throw new IllegalStateException(e); } }
 
   private String key(String tenantId, String recordId) { return tenantId + ":" + recordId; }
+  private String profileKey(String tenantId, String agentDefinitionId, int version) { return key(tenantId, agentDefinitionId) + ":" + version; }
 }
