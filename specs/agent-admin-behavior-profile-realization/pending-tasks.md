@@ -41,7 +41,7 @@
 
 ### AABP-01-001: Map current Agent Admin implementation drift
 
-- status: pending
+- status: done
 - source: `backlog/01-agent-admin-behavior-profile-build-backlog.md`
 - task brief: `specs/agent-admin-behavior-profile-realization/tasks/00-planning/01-map-current-agent-admin-drift.md`
 - depends on: [AABP-00-001]
@@ -63,7 +63,9 @@
 - done criteria:
   - implementation map classifies current source/test drift and narrows next implementation boundaries
   - changes and queue update are committed
-- notes: []
+- notes:
+  - completed in this commit with message: `Map Agent Admin behavior profile drift`
+  - next runnable task after completion: `AABP-01-002` (`pending`, depends on `AABP-01-001`)
 
 ### AABP-01-002: Implement proposal lifecycle foundation
 
