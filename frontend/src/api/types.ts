@@ -473,6 +473,11 @@ export type AgentAdminAgentListRow = {
   agentName: string;
   shortPurpose: string;
   workstreamDomain: string;
+  placement?: string;
+  lifecycleStatus?: string;
+  authorityLevel?: string;
+  scopeProvenance?: string;
+  safeModelAlias?: string;
   lastEditTime?: string;
 };
 
@@ -506,15 +511,57 @@ export type AgentAdminSkillDocSummary = AgentAdminDocumentSummary & {
   referenceDocs: AgentAdminReferenceDocSummary[];
 };
 
+export type AgentAdminBehaviorProfileSummary = {
+  profileVersion?: number;
+  scope?: string;
+  scopeProvenance?: string;
+  modelRefId?: string;
+  safeModelAlias?: string;
+  activePromptVersion?: number;
+  assignedSkillDocumentIds?: string[];
+  assignedGeneratedToolIds?: string[];
+  activatedAt?: string;
+  traceLinks?: string[];
+};
+
+export type AgentAdminBehaviorProfileHistoryRow = AgentAdminBehaviorProfileSummary & {
+  version?: number;
+  active?: boolean;
+  provenance?: string;
+};
+
+export type AgentAdminGeneratedToolSummary = {
+  generatedToolId: string;
+  source?: string;
+  purpose?: string;
+  category?: string;
+  implementationReadOnly?: boolean;
+};
+
+export type AgentAdminBehaviorProposalSummary = {
+  proposalId: string;
+  status: string;
+  targetArtifact?: string;
+  targetArtifactId?: string;
+  riskClassification?: string;
+  authorityExpansion?: boolean;
+  summary?: string;
+  rationale?: string;
+  suggestedTests?: string[];
+  traceLinks?: string[];
+};
+
 export type AgentAdminAgentDetailResponse = {
   agentDefinitionId: string;
   agentName: string;
   purpose: string;
   workstreamDomain: string;
   lastEditTime?: string;
+  profile: AgentAdminBehaviorProfileSummary;
   prompt: AgentAdminDocumentSummary & { kind: 'prompt' };
   skills: AgentAdminSkillDocSummary[];
   referenceDocs: AgentAdminReferenceDocSummary[];
+  allowedGeneratedTools: Array<string | AgentAdminGeneratedToolSummary>;
   traceLinks: string[];
 };
 
@@ -550,6 +597,24 @@ export type AgentAdminVersionHistoryResponse = {
   traceLinks: string[];
 };
 
+export type AgentAdminBehaviorProfileHistoryResponse = {
+  agentDefinitionId: string;
+  rows: AgentAdminBehaviorProfileHistoryRow[];
+  currentProfile: AgentAdminBehaviorProfileSummary;
+  traceLinks: string[];
+};
+
+export type AgentAdminAssignmentSurfaceResponse = {
+  agentDefinitionId: string;
+  profile: AgentAdminBehaviorProfileSummary;
+  currentlyAssignedSkillDocumentIds?: string[];
+  availableSkills?: AgentAdminSkillDocSummary[];
+  currentlyAssignedGeneratedToolIds?: string[];
+  availableGeneratedTools?: AgentAdminGeneratedToolSummary[];
+  activationCreatesBehaviorProfileVersion: boolean;
+  traceLinks: string[];
+};
+
 export type AgentAdminAdjacentDiffResponse = {
   agentDefinitionId: string;
   kind: AgentAdminDocKind;
@@ -571,14 +636,26 @@ export type AgentAdminEditSessionRecord = {
   baseVersion: number;
   actorAccountId: string;
   status: AgentAdminEditSessionStatus;
+  proposalId?: string;
+  riskClassification?: string;
+  authorityExpansion?: boolean;
   instructions: Array<{ at?: string; actorAccountId: string; instructions: string }>;
   proposedContent?: string;
   changeSummary?: string;
+  rationale?: string;
+  suggestedTests?: string[];
   clarifyingQuestion?: string;
   warnings: string[];
   traceLinks: string[];
   startedAt: string;
   endedAt?: string;
+};
+
+export type AgentAdminProposalReviewResponse = {
+  proposal: AgentAdminBehaviorProposalSummary;
+  activationPolicy: Record<string, unknown>;
+  activeBehaviorChanged: boolean;
+  traceLinks: string[];
 };
 
 export type AgentAdminRuntimeDocReadTraceRow = {
@@ -589,7 +666,11 @@ export type AgentAdminRuntimeDocReadTraceRow = {
   documentType: AgentAdminDocKind | string;
   documentIdOrStableId: string;
   documentName: string;
-  documentRead: 'readSkill' | 'readReferenceDoc' | string;
+  documentRead: 'readSkill' | 'readReferenceDoc' | 'profileResolution' | 'promptAssembly' | 'generatedToolAssignment' | string;
+  resolvedProfileScope?: string;
+  resolvedProfileVersion?: number;
+  safeModelAlias?: string;
+  toolBoundaryDecisionCategory?: string;
   requestSessionId: string;
   actorAccountId?: string;
   userCustomerContext: string;

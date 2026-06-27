@@ -130,10 +130,15 @@ export type AgentAdminSurfaceContract =
   | 'agent_admin.dashboard.v1'
   | 'agent_admin.agent_list.v1'
   | 'agent_admin.agent_detail.v1'
+  | 'agent_admin.agent_profile_history.v1'
   | 'agent_admin.prompt_doc.v1'
+  | 'agent_admin.skill_library.v1'
   | 'agent_admin.skill_doc.v1'
+  | 'agent_admin.skill_assignment.v1'
+  | 'agent_admin.tool_assignment.v1'
   | 'agent_admin.skill_reference_doc.v1'
   | 'agent_admin.edit_session.v1'
+  | 'agent_admin.proposal_review.v1'
   | 'agent_admin.version_history.v1'
   | 'agent_admin.version_diff.v1'
   | 'agent_admin.create_skill.v1'
@@ -181,6 +186,49 @@ export type AgentAdminSkillDocSummary = {
   updatedAt?: string;
   referenceDocs: AgentAdminReferenceDocSummary[];
   actionId?: string;
+};
+
+export type AgentAdminBehaviorProfileSummary = {
+  profileVersion?: number;
+  scope?: string;
+  scopeProvenance?: string;
+  modelRefId?: string;
+  safeModelAlias?: string;
+  activePromptVersion?: number;
+  assignedSkillDocumentIds?: string[];
+  assignedGeneratedToolIds?: string[];
+  createdAt?: string;
+  activatedAt?: string;
+  traceLinks?: string[];
+};
+
+export type AgentAdminBehaviorProfileHistoryRow = AgentAdminBehaviorProfileSummary & {
+  version?: number;
+  profileVersion?: number;
+  scope: string;
+  active?: boolean;
+  provenance?: string;
+};
+
+export type AgentAdminGeneratedToolSummary = {
+  generatedToolId: string;
+  source?: string;
+  purpose?: string;
+  category?: string;
+  implementationReadOnly?: boolean;
+};
+
+export type AgentAdminBehaviorProposalSummary = {
+  proposalId: string;
+  status: string;
+  targetArtifact?: string;
+  targetArtifactId?: string;
+  riskClassification?: string;
+  authorityExpansion?: boolean;
+  summary?: string;
+  rationale?: string;
+  suggestedTests?: string[];
+  traceLinks?: string[];
 };
 
 export type AgentAdminDocumentDetail = {
@@ -232,7 +280,12 @@ export type AgentAdminSurfaceData = {
   totalCount?: number;
   filteredCount?: number;
   rowActionId?: string;
-  agent?: { agentDefinitionId: string; agentName: string; purpose: string; workstreamDomain: string; lastEditTime?: string };
+  agent?: { agentDefinitionId: string; agentName: string; purpose: string; workstreamDomain?: string; lastEditTime?: string; generatedIdentityReadOnly?: boolean; wholeAgentLifecycleReadOnly?: boolean };
+  profile?: AgentAdminBehaviorProfileSummary;
+  currentProfile?: AgentAdminBehaviorProfileSummary;
+  profileHistory?: AgentAdminBehaviorProfileHistoryRow[];
+  allowedGeneratedTools?: string[] | AgentAdminGeneratedToolSummary[];
+  safeModelAlias?: string;
   prompt?: AgentAdminDocumentSummary;
   skills?: AgentAdminSkillDocSummary[];
   referenceDocs?: AgentAdminReferenceDocSummary[];
@@ -243,7 +296,25 @@ export type AgentAdminSurfaceData = {
   session?: Record<string, unknown>;
   target?: { agentDefinitionId: string; kind: AgentAdminDocKind; documentId: string; baseVersion: number };
   saveCreatesNewCurrentVersion?: boolean;
+  saveCreatesNonActiveProposal?: boolean;
+  activationSurfaceId?: string;
   warningsAdvisoryOnly?: boolean;
+  proposal?: AgentAdminBehaviorProposalSummary | Record<string, unknown>;
+  activationPolicy?: Record<string, unknown>;
+  activeBehaviorChanged?: boolean;
+  restoreCreatesProposal?: boolean;
+  lifecycleDefault?: string;
+  deprecationWarning?: string;
+  currentlyAssignedSkillDocumentIds?: string[];
+  availableSkills?: AgentAdminSkillDocSummary[];
+  activationCreatesBehaviorProfileVersion?: boolean;
+  skillDocumentVersionsUnchanged?: boolean;
+  currentlyAssignedGeneratedToolIds?: string[];
+  availableGeneratedTools?: AgentAdminGeneratedToolSummary[];
+  noGeneratedToolCodeMutation?: boolean;
+  currentModelRefId?: string;
+  rawModelSettingsEditable?: boolean;
+  providerValuesExposed?: boolean;
   selectedVersion?: AgentAdminDocumentDetail | number;
   priorVersion?: number | null;
   diffRule?: string;

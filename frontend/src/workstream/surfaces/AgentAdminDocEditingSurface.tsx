@@ -58,10 +58,16 @@ const agentAdminDocEditingContracts = new Set([
   'agent_admin.dashboard.v1',
   'agent_admin.agent_list.v1',
   'agent_admin.agent_detail.v1',
+  'agent_admin.agent_profile_history.v1',
   'agent_admin.prompt_doc.v1',
+  'agent_admin.skill_library.v1',
   'agent_admin.skill_doc.v1',
+  'agent_admin.skill_assignment.v1',
+  'agent_admin.tool_assignment.v1',
+  'agent_admin.model_config_ref.v1',
   'agent_admin.skill_reference_doc.v1',
   'agent_admin.edit_session.v1',
+  'agent_admin.proposal_review.v1',
   'agent_admin.version_history.v1',
   'agent_admin.version_diff.v1',
   'agent_admin.create_skill.v1',
@@ -83,12 +89,22 @@ export function AgentAdminDocEditingSurface({ envelope, onAction }: Props) {
       return <AgentAdminAgentListSurface envelope={envelope} onAction={onAction} />;
     case 'agent_admin.agent_detail.v1':
       return <AgentAdminAgentDetailSurface envelope={envelope} onAction={onAction} />;
+    case 'agent_admin.agent_profile_history.v1':
+      return <AgentAdminProfileHistorySurface envelope={envelope} onAction={onAction} />;
+    case 'agent_admin.skill_library.v1':
+      return <AgentAdminSkillLibrarySurface envelope={envelope} onAction={onAction} />;
+    case 'agent_admin.skill_assignment.v1':
+    case 'agent_admin.tool_assignment.v1':
+    case 'agent_admin.model_config_ref.v1':
+      return <AgentAdminAssignmentSurface envelope={envelope} onAction={onAction} />;
     case 'agent_admin.prompt_doc.v1':
     case 'agent_admin.skill_doc.v1':
     case 'agent_admin.skill_reference_doc.v1':
       return <AgentAdminDocumentSurface envelope={envelope} onAction={onAction} />;
     case 'agent_admin.edit_session.v1':
       return <AgentAdminEditSessionSurface envelope={envelope} onAction={onAction} />;
+    case 'agent_admin.proposal_review.v1':
+      return <AgentAdminProposalReviewSurface envelope={envelope} onAction={onAction} />;
     case 'agent_admin.version_history.v1':
       return <AgentAdminVersionHistorySurface envelope={envelope} onAction={onAction} />;
     case 'agent_admin.version_diff.v1':
@@ -208,41 +224,35 @@ function AgentAdminAgentListSurface({ envelope, onAction }: Props) {
 
 function AgentAdminAgentDetailSurface({ envelope, onAction }: Props) {
   const agent = envelope.data.agent;
-  const [agentName, setAgentName] = useState(agent?.agentName ?? '');
-  const [purpose, setPurpose] = useState(agent?.purpose ?? '');
-  const saveAction = envelope.actions.find((action) => action.actionId === 'action-agent-admin-save-agent-profile');
   const promptAction = actionById(envelope.actions, 'action-agent-admin-open-prompt-doc');
   const runtimeAction = actionById(envelope.actions, 'action-agent-admin-open-runtime-traces');
   const skills = envelope.data.skills ?? [];
+  const profile = envelope.data.profile;
   return (
     <SurfaceStateFrame envelope={envelope}>
       <section className="agent-admin-doc-surface agent-admin-agent-detail" aria-labelledby={`${envelope.surfaceId}-detail-heading`}>
         <div className="surface-section-heading">
-          <div><p className="eyebrow">Agent Admin · agent detail</p><h4 id={`${envelope.surfaceId}-detail-heading`}>{agent?.agentName ?? envelope.title}</h4></div>
-          <p>Choose a prompt, skill, or reference doc to view current content and versions. Whole-agent create/delete is not available here.</p>
+          <div><p className="eyebrow">Agent Admin · generated identity read-only</p><h4 id={`${envelope.surfaceId}-detail-heading`}>{agent?.agentName ?? envelope.title}</h4></div>
+          <p>Generated agent identity, lifecycle, placement, and generated tool code are read-only. Use behavior-profile proposal and assignment surfaces for runtime behavior changes.</p>
         </div>
-        <form className="surface-detail-edit-form" aria-label="Agent name and purpose" onSubmit={(event) => { event.preventDefault(); if (saveAction) onAction?.(saveAction, envelope.surfaceId, stringRecord({ agentDefinitionId: agent?.agentDefinitionId, agentName, purpose })); }}>
-          <div className="surface-detail-field">
-            <label htmlFor={`${envelope.surfaceId}-agent-name`}>Agent name</label>
-            <input className="designed-control surface-detail-control" id={`${envelope.surfaceId}-agent-name`} name="agentName" value={agentName} readOnly={!saveAction} aria-readonly={!saveAction} onChange={(event) => setAgentName(event.currentTarget.value)} />
-            <p className="field-helper">{saveAction ? 'Editable in this SaaS-admin context; save with the governed action.' : 'Read-only in this selected context.'}</p>
-          </div>
-          <div className="surface-detail-field">
-            <label htmlFor={`${envelope.surfaceId}-purpose`}>Agent purpose</label>
-            <textarea className="designed-control surface-detail-control" id={`${envelope.surfaceId}-purpose`} name="purpose" value={purpose} readOnly={!saveAction} aria-readonly={!saveAction} onChange={(event) => setPurpose(event.currentTarget.value)} />
-            <p className="field-helper">{saveAction ? 'Purpose updates are held locally until the governed Save action runs.' : 'Read-only in this selected context.'}</p>
-          </div>
-          {saveAction && <button type="submit" className="surface-action-link primary" disabled={Boolean(saveAction.disabled)}>{saveAction.label}{saveAction.requiresConfirmation ? ' · confirm' : ''}</button>}
-        </form>
+        <dl className="authority-summary-grid" aria-label="Generated agent and behavior profile summary">
+          <div><dt>Purpose</dt><dd>{agent?.purpose ?? 'No purpose provided'}</dd></div>
+          <div><dt>Placement</dt><dd>{agent?.workstreamDomain ?? 'placement unavailable'}</dd></div>
+          <div><dt>Profile scope</dt><dd>{profile?.scopeProvenance ?? profile?.scope ?? 'global defaults until tenant-specific change'}</dd></div>
+          <div><dt>Safe model alias</dt><dd>{profile?.safeModelAlias ?? envelope.data.safeModelAlias ?? 'model alias unavailable'}</dd></div>
+          <div><dt>Prompt version</dt><dd>{profile?.activePromptVersion ?? envelope.data.prompt?.currentVersion ?? 'unavailable'}</dd></div>
+          <div><dt>Generated identity</dt><dd>Read-only app-description/code-generated default</dd></div>
+        </dl>
         <section className="user-admin-section" aria-labelledby={`${envelope.surfaceId}-docs-heading`}>
-          <div className="surface-section-heading compact"><div><p className="eyebrow">Documents</p><h4 id={`${envelope.surfaceId}-docs-heading`}>Prompt, skills, and reference docs</h4></div><p>Rows open separate backend-authorized doc surfaces.</p></div>
-          <div className="user-admin-clean-list agent-admin-doc-list" role="list" aria-label="Agent documents">
+          <div className="surface-section-heading compact"><div><p className="eyebrow">Behavior profile</p><h4 id={`${envelope.surfaceId}-docs-heading`}>Prompt, skills, references, and assignments</h4></div><p>Rows open separate backend-authorized surfaces; changes save proposals or create behavior-profile versions after activation.</p></div>
+          <div className="user-admin-clean-list agent-admin-doc-list" role="list" aria-label="Agent behavior documents and assignments">
             {envelope.data.prompt && <DocumentSummaryButton summary={envelope.data.prompt} action={promptAction} agentDefinitionId={agent?.agentDefinitionId} surfaceId={envelope.surfaceId} onAction={onAction} />}
             {skills.map((skill) => <SkillSummary key={skill.documentId} skill={skill} actions={envelope.actions} agentDefinitionId={agent?.agentDefinitionId} surfaceId={envelope.surfaceId} onAction={onAction} />)}
           </div>
         </section>
+        {Array.isArray(envelope.data.allowedGeneratedTools) && envelope.data.allowedGeneratedTools.length > 0 && <p className="surface-state-inline" role="status">Allowed generated tools are assignment metadata only; no action on this surface creates, edits, or deletes generated tool code.</p>}
         {runtimeAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(runtimeAction, envelope.surfaceId, stringRecord({ agentDefinitionId: agent?.agentDefinitionId }))}>Runtime reads</button>}
-        <SurfaceActionBar actions={envelope.actions.filter((action) => !['action-agent-admin-save-agent-profile', 'action-agent-admin-open-prompt-doc', 'action-agent-admin-open-skill-doc', 'action-agent-admin-open-reference-doc', 'action-agent-admin-open-create-reference-doc', 'action-agent-admin-open-delete-reference-doc', 'action-agent-admin-open-delete-skill', 'action-agent-admin-open-runtime-traces'].includes(action.actionId))} surfaceId={envelope.surfaceId} onAction={onAction} />
+        <SurfaceActionBar actions={envelope.actions.filter((action) => !['action-agent-admin-open-prompt-doc', 'action-agent-admin-open-skill-doc', 'action-agent-admin-open-reference-doc', 'action-agent-admin-open-create-reference-doc', 'action-agent-admin-open-delete-reference-doc', 'action-agent-admin-open-delete-skill', 'action-agent-admin-open-runtime-traces'].includes(action.actionId))} surfaceId={envelope.surfaceId} onAction={onAction} />
       </section>
     </SurfaceStateFrame>
   );
@@ -289,7 +299,7 @@ function AgentAdminDocumentSurface({ envelope, onAction }: Props) {
           </div>
         </section>
         <section className="detail-edit-form-section" aria-labelledby={`${envelope.surfaceId}-improve-heading`}>
-          <div className="surface-section-heading compact"><div><p className="eyebrow">Improve behavior</p><h4 id={`${envelope.surfaceId}-improve-heading`}>Free-form edit instructions</h4></div><p>{isCurrent ? 'Instructions are reviewed by the editing agent before any save. The browser does not mutate document content directly.' : 'Editing is disabled for historical versions. Restore first to create a new current version from this content.'}</p></div>
+          <div className="surface-section-heading compact"><div><p className="eyebrow">Improve behavior</p><h4 id={`${envelope.surfaceId}-improve-heading`}>Free-form edit instructions</h4></div><p>{isCurrent ? 'Instructions are reviewed by the editing agent before any save. The browser does not mutate document content directly.' : 'Editing is disabled for historical versions. Restore creates a non-active proposal copied from this content.'}</p></div>
           {isCurrent ? (
             <form className="surface-detail-edit-form" onSubmit={(event) => { event.preventDefault(); if (editAction) onAction?.(editAction, envelope.surfaceId, { ...documentInput(doc), instructions }); }}>
               <div className="surface-detail-field">
@@ -336,7 +346,7 @@ function AgentAdminEditSessionSurface({ envelope, onAction }: Props) {
           <div><dt>Status</dt><dd>{session.status ?? envelope.data.state ?? 'proposed'}</dd></div>
           <div><dt>Session</dt><dd>{session.sessionId ?? 'pending'}</dd></div>
           <div><dt>Started</dt><dd>{session.startedAt ?? envelope.generatedAt}</dd></div>
-          <div><dt>Save behavior</dt><dd>{envelope.data.saveCreatesNewCurrentVersion ? 'Save creates a new current version immediately.' : 'Save behavior unavailable.'}</dd></div>
+          <div><dt>Save behavior</dt><dd>{envelope.data.saveCreatesNonActiveProposal || envelope.data.saveCreatesNewCurrentVersion === false ? 'Save draft creates a non-active proposal. Activate separately from proposal review.' : 'Save behavior unavailable.'}</dd></div>
         </dl>
         <section className="agent-admin-edit-transcript" aria-labelledby={`${envelope.surfaceId}-transcript-heading`}>
           <h5 id={`${envelope.surfaceId}-transcript-heading`}>User instruction transcript</h5>
@@ -355,7 +365,7 @@ function AgentAdminEditSessionSurface({ envelope, onAction }: Props) {
           <h5 id={`${envelope.surfaceId}-summary-heading`}>Summary and advisory warnings</h5>
           <p>{session.changeSummary ?? 'No change summary is available.'}</p>
           {warnings.length > 0 && <ul className="surface-section-list" aria-label="Advisory warnings and risks">{warnings.map((warning) => <li key={warning}>{warning}</li>)}</ul>}
-          {envelope.data.warningsAdvisoryOnly && <p className="surface-state-inline no-op" role="status">Warnings are advisory only and do not block an authorized Save.</p>}
+          {envelope.data.warningsAdvisoryOnly && <p className="surface-state-inline no-op" role="status">Warnings are advisory only; Save draft does not activate behavior.</p>}
         </section>
         <div className="surface-action-bar" aria-label="Proposal diff actions">
           <button type="button" onClick={() => setShowDiff((value) => !value)}>Show diff</button>
@@ -374,6 +384,85 @@ function AgentAdminEditSessionSurface({ envelope, onAction }: Props) {
           {saveAction && <button type="button" className="surface-action-link primary" onClick={() => onAction?.(saveAction, envelope.surfaceId, sessionInput)} disabled={Boolean(saveAction.disabled)}>{saveAction.label}{saveAction.requiresConfirmation ? ' · confirm' : ''}</button>}
           {cancelAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(cancelAction, envelope.surfaceId, sessionInput)} disabled={Boolean(cancelAction.disabled)}>{cancelAction.label}</button>}
         </div>
+      </section>
+    </SurfaceStateFrame>
+  );
+}
+
+function AgentAdminProfileHistorySurface({ envelope, onAction }: Props) {
+  const rows = (envelope.data.profileHistory ?? envelope.data.rows ?? []) as Array<Record<string, unknown>>;
+  const agent = envelope.data.agent;
+  return (
+    <SurfaceStateFrame envelope={envelope}>
+      <section className="agent-admin-doc-surface agent-admin-profile-history" aria-labelledby={`${envelope.surfaceId}-profile-history-heading`}>
+        <div className="surface-section-heading"><div><p className="eyebrow">Agent Admin · behavior profile versions</p><h4 id={`${envelope.surfaceId}-profile-history-heading`}>Behavior profile history</h4></div><p>Historical profile versions are immutable. Restore creates a profile restore proposal; activation creates a new active behavior-profile version.</p></div>
+        <dl className="authority-summary-grid" aria-label="Current behavior profile">
+          <div><dt>Agent</dt><dd>{agent?.agentName ?? 'Selected agent'}</dd></div>
+          <div><dt>Current scope</dt><dd>{envelope.data.currentProfile?.scopeProvenance ?? envelope.data.currentProfile?.scope ?? 'global'}</dd></div>
+          <div><dt>Model config reference</dt><dd>{envelope.data.currentProfile?.modelRefId ?? 'unavailable'}</dd></div>
+          <div><dt>Safe model alias</dt><dd>{envelope.data.currentProfile?.safeModelAlias ?? 'unavailable'}</dd></div>
+        </dl>
+        {rows.length === 0 ? <p className="surface-empty-copy">No behavior-profile versions are visible for this scope.</p> : <div className="user-admin-clean-list agent-admin-profile-history-list" role="list" aria-label="Behavior profile versions">{rows.map((row, index) => <article key={String(row.profileVersion ?? row.version ?? index)} className="user-admin-clean-row" role="listitem"><span className="user-admin-person"><strong>Profile version {String(row.profileVersion ?? row.version ?? index + 1)}</strong><small>{String(row.scopeProvenance ?? row.scope ?? 'scope unavailable')}</small></span><span className="user-admin-role">Prompt v{String(row.activePromptVersion ?? '—')} · {String(row.modelRefId ?? 'model ref unavailable')}</span><small>Skills: {Array.isArray(row.assignedSkillDocumentIds) ? row.assignedSkillDocumentIds.join(', ') : 'none'} · Generated tools: {Array.isArray(row.assignedGeneratedToolIds) ? row.assignedGeneratedToolIds.join(', ') : 'none'}</small></article>)}</div>}
+        <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} actionInput={stringRecord({ agentDefinitionId: agent?.agentDefinitionId ?? envelope.data.agentDefinitionId })} />
+      </section>
+    </SurfaceStateFrame>
+  );
+}
+
+function AgentAdminSkillLibrarySurface({ envelope, onAction }: Props) {
+  const rows = (envelope.data.rows ?? envelope.data.skills ?? []) as Array<Record<string, unknown>>;
+  return (
+    <SurfaceStateFrame envelope={envelope}>
+      <section className="agent-admin-doc-surface agent-admin-skill-library" aria-labelledby={`${envelope.surfaceId}-skill-library-heading`}>
+        <div className="surface-section-heading"><div><p className="eyebrow">Agent Admin · skill library</p><h4 id={`${envelope.surfaceId}-skill-library-heading`}>Tenant-scoped governed skills</h4></div><p>Creating or editing a skill saves a non-active proposal. Assigning skills to agents creates behavior-profile versions and does not mutate skill document versions.</p></div>
+        {rows.length === 0 ? <p className="surface-empty-copy">No governed skills are visible for this scope.</p> : <div className="user-admin-clean-list agent-admin-doc-list" role="list" aria-label="Skill library rows">{rows.map((row) => <button key={String(row.documentId ?? row.stableSkillId ?? row.name)} type="button" role="listitem" className="user-admin-clean-row" onClick={() => { const action = actionById(envelope.actions, String(row.actionId ?? 'action-agent-admin-open-skill-doc')); if (action) onAction?.(action, envelope.surfaceId, stringRecord({ agentDefinitionId: envelope.data.agentDefinitionId, skillDocumentId: row.documentId, documentId: row.documentId, kind: 'skill' })); }}><span className="user-admin-person"><strong>{String(row.name ?? row.title ?? 'Skill')}</strong><small>{String(row.purpose ?? row.description ?? 'No purpose provided')}</small></span><span className="status-pill info">{String(row.lifecycleStatus ?? envelope.data.lifecycleDefault ?? 'active')}</span><small>Assigned agent count: {String(row.assignedAgentCount ?? 'available after backend read')}</small></button>)}</div>}
+        <SurfaceActionBar actions={envelope.actions.filter((action) => action.actionId !== 'action-agent-admin-open-skill-doc')} surfaceId={envelope.surfaceId} onAction={onAction} actionInput={stringRecord({ agentDefinitionId: envelope.data.agentDefinitionId })} />
+      </section>
+    </SurfaceStateFrame>
+  );
+}
+
+function AgentAdminAssignmentSurface({ envelope, onAction }: Props) {
+  const contract = envelope.data.surfaceContract;
+  const agent = envelope.data.agent;
+  const isToolAssignment = contract === 'agent_admin.tool_assignment.v1';
+  const isModelConfig = contract === 'agent_admin.model_config_ref.v1';
+  const rows = isToolAssignment ? (envelope.data.availableGeneratedTools ?? []) : (envelope.data.availableSkills ?? []);
+  const assigned = isToolAssignment ? (envelope.data.currentlyAssignedGeneratedToolIds ?? []) : (envelope.data.currentlyAssignedSkillDocumentIds ?? []);
+  const saveAction = actionById(envelope.actions, isToolAssignment ? 'action-agent-admin-assign-generated-tools' : isModelConfig ? 'action-agent-admin-update-model-config-ref' : 'action-agent-admin-assign-skills');
+  return (
+    <SurfaceStateFrame envelope={envelope}>
+      <section className="agent-admin-doc-surface agent-admin-assignment" aria-labelledby={`${envelope.surfaceId}-assignment-heading`}>
+        <div className="surface-section-heading"><div><p className="eyebrow">Agent Admin · behavior-profile assignment</p><h4 id={`${envelope.surfaceId}-assignment-heading`}>{envelope.title}</h4></div><p>Saving this surface is backend-authorized and creates a new behavior-profile version for the selected scope. It does not edit generated code or skill document versions.</p></div>
+        <dl className="authority-summary-grid" aria-label="Assignment profile impact">
+          <div><dt>Agent</dt><dd>{agent?.agentName ?? 'Selected agent'}</dd></div>
+          <div><dt>Profile scope</dt><dd>{envelope.data.profile?.scopeProvenance ?? envelope.data.profile?.scope ?? 'tenant/global scope resolved by backend'}</dd></div>
+          <div><dt>Activation impact</dt><dd>{envelope.data.activationCreatesBehaviorProfileVersion ? 'Creates behavior-profile version' : 'Backend determines impact'}</dd></div>
+          <div><dt>Secrets/code boundary</dt><dd>{isModelConfig ? 'Provider secrets are not exposed.' : isToolAssignment ? 'Generated tool implementation is read-only.' : 'Skill document versions are unchanged.'}</dd></div>
+        </dl>
+        {isModelConfig ? <p className="surface-state-inline" role="status">Current model config reference: {envelope.data.currentModelRefId ?? envelope.data.profile?.modelRefId ?? 'unavailable'} · safe alias {envelope.data.safeModelAlias ?? envelope.data.profile?.safeModelAlias ?? 'unavailable'}.</p> : <div className="user-admin-clean-list agent-admin-assignment-list" role="list" aria-label="Available assignment rows">{rows.map((row) => { const id = 'generatedToolId' in row ? row.generatedToolId : row.documentId; return <article key={String(id)} className="user-admin-clean-row" role="listitem"><span className="user-admin-person"><strong>{String('generatedToolId' in row ? row.generatedToolId : row.name)}</strong><small>{String('purpose' in row ? row.purpose : row.source ?? 'app-description/code-generated')}</small></span><span className={`status-pill ${assigned.includes(String(id)) ? 'success' : 'info'}`}>{assigned.includes(String(id)) ? 'assigned' : 'available'}</span></article>; })}</div>}
+        {saveAction && <button type="button" className="surface-action-link primary" onClick={() => onAction?.(saveAction, envelope.surfaceId, stringRecord({ agentDefinitionId: agent?.agentDefinitionId ?? envelope.data.agentDefinitionId, assignedIds: assigned.join(',') }))} disabled={Boolean(saveAction.disabled)}>{saveAction.label}{saveAction.requiresConfirmation ? ' · confirm' : ''}</button>}
+        <SurfaceActionBar actions={envelope.actions.filter((action) => action.actionId !== saveAction?.actionId)} surfaceId={envelope.surfaceId} onAction={onAction} actionInput={stringRecord({ agentDefinitionId: agent?.agentDefinitionId ?? envelope.data.agentDefinitionId })} />
+      </section>
+    </SurfaceStateFrame>
+  );
+}
+
+function AgentAdminProposalReviewSurface({ envelope, onAction }: Props) {
+  const proposal = (envelope.data.proposal ?? {}) as Record<string, unknown>;
+  const proposalId = String(proposal.proposalId ?? envelope.data.target?.documentId ?? 'proposal');
+  return (
+    <SurfaceStateFrame envelope={envelope}>
+      <section className="agent-admin-doc-surface agent-admin-proposal-review" aria-labelledby={`${envelope.surfaceId}-proposal-heading`}>
+        <div className="surface-section-heading"><div><p className="eyebrow">Agent Admin · proposal review</p><h4 id={`${envelope.surfaceId}-proposal-heading`}>Review behavior-change proposal {proposalId}</h4></div><p>Approval, rejection, and activation are separate backend-authorized actions. Rejection leaves active behavior unchanged; high-risk or authority-expanding changes route to decision-card review.</p></div>
+        <dl className="authority-summary-grid" aria-label="Proposal review metadata">
+          <div><dt>Status</dt><dd>{String(proposal.status ?? envelope.data.state ?? 'draft')}</dd></div>
+          <div><dt>Risk</dt><dd>{String(proposal.riskClassification ?? 'low')}</dd></div>
+          <div><dt>Authority expansion</dt><dd>{proposal.authorityExpansion ? 'requires decision-card route' : 'not indicated'}</dd></div>
+          <div><dt>Active behavior changed</dt><dd>{envelope.data.activeBehaviorChanged ? 'yes after activation' : 'no'}</dd></div>
+        </dl>
+        <section className="agent-admin-edit-summary" aria-labelledby={`${envelope.surfaceId}-proposal-summary-heading`}><h5 id={`${envelope.surfaceId}-proposal-summary-heading`}>Summary/rationale</h5><p>{String(proposal.summary ?? proposal.rationale ?? 'No proposal summary is available.')}</p>{Array.isArray(proposal.suggestedTests) && <ul className="surface-section-list" aria-label="Suggested tests">{proposal.suggestedTests.map((item) => <li key={String(item)}>{String(item)}</li>)}</ul>}</section>
+        <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} onAction={onAction} actionInput={stringRecord({ proposalId, agentDefinitionId: envelope.data.target?.agentDefinitionId })} />
       </section>
     </SurfaceStateFrame>
   );
@@ -492,8 +581,8 @@ function AgentAdminDeleteSkillSurface({ envelope, onAction }: Props) {
   return (
     <SurfaceStateFrame envelope={envelope}>
       <section className="agent-admin-doc-surface agent-admin-delete-skill" aria-labelledby={`${envelope.surfaceId}-heading`}>
-        <div className="surface-section-heading"><div><p className="eyebrow">Agent Admin · permanent delete</p><h4 id={`${envelope.surfaceId}-heading`}>Delete skill {envelope.data.skillName}</h4></div><p>{envelope.data.permanentDeletionWarning}</p></div>
-        <p className="surface-state-inline forbidden" role="alert">This delete is permanent. Deleted skills and reference docs cannot be restored.</p>
+        <div className="surface-section-heading"><div><p className="eyebrow">Agent Admin · deprecate/remove</p><h4 id={`${envelope.surfaceId}-heading`}>Deprecate or remove skill {envelope.data.skillName}</h4></div><p>{envelope.data.deprecationWarning ?? envelope.data.permanentDeletionWarning ?? 'Skill removal defaults to deprecation and manifest/loader access removal; hard delete is policy-gated.'}</p></div>
+        <p className="surface-state-inline forbidden" role="alert">Default lifecycle action is deprecation. Permanent deletion is shown only when backend lifecycle policy permits it.</p>
         <section className="agent-admin-reference-list" aria-label="Reference docs that will also be deleted">
           <h5>Reference docs affected: {envelope.data.referenceDocCount ?? referenceDocs.length}</h5>
           {referenceDocs.length === 0 ? <p className="surface-empty-copy">No reference doc list was provided.</p> : referenceDocs.map((reference) => <p key={reference.documentId} className="user-admin-clean-row"><strong>{reference.name}</strong><span>{reference.description}</span></p>)}
@@ -513,8 +602,8 @@ function AgentAdminDeleteReferenceDocSurface({ envelope, onAction }: Props) {
   return (
     <SurfaceStateFrame envelope={envelope}>
       <section className="agent-admin-doc-surface agent-admin-delete-reference" aria-labelledby={`${envelope.surfaceId}-heading`}>
-        <div className="surface-section-heading"><div><p className="eyebrow">Agent Admin · permanent delete</p><h4 id={`${envelope.surfaceId}-heading`}>Delete reference doc {envelope.data.referenceDocName}</h4></div><p>{envelope.data.permanentDeletionWarning}</p></div>
-        <p className="surface-state-inline forbidden" role="alert">This delete is permanent. Deleted reference docs cannot be restored.</p>
+        <div className="surface-section-heading"><div><p className="eyebrow">Agent Admin · deprecate/remove</p><h4 id={`${envelope.surfaceId}-heading`}>Deprecate or remove reference doc {envelope.data.referenceDocName}</h4></div><p>{envelope.data.deprecationWarning ?? envelope.data.permanentDeletionWarning ?? 'Reference removal follows lifecycle policy; permanent deletion is explicit and policy-gated.'}</p></div>
+        <p className="surface-state-inline forbidden" role="alert">Default lifecycle action is deprecation. Permanent deletion is shown only when backend lifecycle policy permits it.</p>
         <div className="surface-action-bar">
           {deleteAction && <button type="button" className="surface-action-link danger" onClick={() => onAction?.(deleteAction, envelope.surfaceId, stringRecord({ agentDefinitionId: envelope.data.agentDefinitionId, referenceDocumentId: envelope.data.referenceDocumentId, documentId: envelope.data.referenceDocumentId }))} disabled={Boolean(deleteAction.disabled)}>{deleteAction.label}{deleteAction.requiresConfirmation ? ' · confirm' : ''}</button>}
           {cancelAction && <button type="button" className="surface-action-link secondary" onClick={() => onAction?.(cancelAction, envelope.surfaceId, stringRecord({ agentDefinitionId: envelope.data.agentDefinitionId }))}>Cancel</button>}

@@ -19,16 +19,22 @@ import {
   displayAgentDetailActionResult,
   displayAgentEditSessionActionResult,
   displayAgentManifestActionResult,
+  displayAgentModelRefActionResult,
   displayAgentModelRefsActionResult,
+  displayAgentProfileHistoryActionResult,
   displayAgentPromptDocActionResult,
+  displayAgentProposalReviewActionResult,
   displayAgentPromptGovernanceActionResult,
   displayAgentPromptRiskReviewActionResult,
   displayAgentReferenceDocActionResult,
   displayAgentRollbackConfirmationActionResult,
   displayAgentRuntimeTracesActionResult,
   displayAgentSeedMaterialActionResult,
+  displayAgentSkillAssignmentActionResult,
   displayAgentSkillDocActionResult,
+  displayAgentSkillLibraryActionResult,
   displayAgentTestConsoleActionResult,
+  displayAgentToolAssignmentActionResult,
   displayAgentToolBoundaryActionResult,
   displayAgentVersionDiffActionResult,
   displayAgentVersionHistoryActionResult,
@@ -252,8 +258,16 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
         ? displayAgentCatalogActionResult
       : request.actionId === 'action-agent-admin-open-agent-detail'
         ? displayAgentDetailActionResult
-      : request.actionId === 'action-agent-admin-save-agent-profile'
-        ? displayAgentDetailActionResult
+      : request.actionId === 'action-agent-admin-open-profile-history'
+        ? displayAgentProfileHistoryActionResult
+      : request.actionId === 'action-agent-admin-open-skill-library'
+        ? displayAgentSkillLibraryActionResult
+      : request.actionId === 'action-agent-admin-open-skill-assignment' || request.actionId === 'action-agent-admin-assign-skills'
+        ? displayAgentSkillAssignmentActionResult
+      : request.actionId === 'action-agent-admin-open-tool-assignment' || request.actionId === 'action-agent-admin-assign-generated-tools'
+        ? displayAgentToolAssignmentActionResult
+      : request.actionId === 'action-agent-admin-open-model-config-ref' || request.actionId === 'action-agent-admin-update-model-config-ref'
+        ? displayAgentModelRefActionResult
       : request.actionId === 'action-agent-admin-open-prompt-doc'
         ? displayAgentPromptDocActionResult
       : request.actionId === 'action-agent-admin-open-skill-doc'
@@ -263,17 +277,19 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
       : request.actionId === 'action-agent-doc-edit-start' || request.actionId === 'action-agent-doc-edit-revise' || request.actionId === 'action-agent-doc-edit-cancel'
         ? displayAgentEditSessionActionResult
       : request.actionId === 'action-agent-doc-edit-save'
-        ? displayAgentPromptDocActionResult
+        ? displayAgentProposalReviewActionResult
+      : request.actionId === 'action-agent-doc-proposal-review' || request.actionId === 'action-agent-doc-proposal-approve' || request.actionId === 'action-agent-doc-proposal-reject' || request.actionId === 'action-agent-doc-proposal-activate' || request.actionId === 'action-agent-doc-proposal-cancel'
+        ? displayAgentProposalReviewActionResult
       : request.actionId === 'action-agent-doc-version-history'
         ? displayAgentVersionHistoryActionResult
       : request.actionId === 'action-agent-doc-version-diff'
         ? displayAgentVersionDiffActionResult
       : request.actionId === 'action-agent-doc-version-restore'
-        ? displayAgentPromptDocActionResult
+        ? displayAgentProposalReviewActionResult
       : request.actionId === 'action-agent-admin-open-create-skill'
         ? displayAgentCreateSkillActionResult
       : request.actionId === 'action-agent-admin-create-skill'
-        ? displayAgentSkillDocActionResult
+        ? displayAgentProposalReviewActionResult
       : request.actionId === 'action-agent-admin-open-delete-skill'
         ? displayAgentDeleteSkillActionResult
       : request.actionId === 'action-agent-admin-delete-skill'
@@ -281,7 +297,7 @@ export class FixtureWorkstreamApiClient implements WorkstreamClient {
       : request.actionId === 'action-agent-admin-open-create-reference-doc'
         ? displayAgentCreateReferenceDocActionResult
       : request.actionId === 'action-agent-admin-create-reference-doc'
-        ? displayAgentReferenceDocActionResult
+        ? displayAgentProposalReviewActionResult
       : request.actionId === 'action-agent-admin-open-delete-reference-doc'
         ? displayAgentDeleteReferenceDocActionResult
       : request.actionId === 'action-agent-admin-delete-reference-doc'

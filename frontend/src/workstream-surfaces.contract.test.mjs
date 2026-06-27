@@ -159,9 +159,14 @@ test('Agent Admin doc-editing read surfaces render without raw JSON fallback', (
     'agent_admin.dashboard.v1',
     'agent_admin.agent_list.v1',
     'agent_admin.agent_detail.v1',
+    'agent_admin.agent_profile_history.v1',
     'agent_admin.prompt_doc.v1',
+    'agent_admin.skill_library.v1',
     'agent_admin.skill_doc.v1',
+    'agent_admin.skill_assignment.v1',
+    'agent_admin.tool_assignment.v1',
     'agent_admin.skill_reference_doc.v1',
+    'agent_admin.proposal_review.v1',
     'agent_admin.version_history.v1',
     'agent_admin.version_diff.v1',
     'Historical version: read-only.',
@@ -184,10 +189,15 @@ test('Agent Admin doc-editing surface type contracts are explicit for current su
     'agent_admin.blank.v1',
     'agent_admin.agent_list.v1',
     'agent_admin.agent_detail.v1',
+    'agent_admin.agent_profile_history.v1',
     'agent_admin.prompt_doc.v1',
+    'agent_admin.skill_library.v1',
     'agent_admin.skill_doc.v1',
+    'agent_admin.skill_assignment.v1',
+    'agent_admin.tool_assignment.v1',
     'agent_admin.skill_reference_doc.v1',
     'agent_admin.edit_session.v1',
+    'agent_admin.proposal_review.v1',
     'agent_admin.version_history.v1',
     'agent_admin.version_diff.v1',
     'agent_admin.create_skill.v1',
@@ -196,7 +206,11 @@ test('Agent Admin doc-editing surface type contracts are explicit for current su
     'agent_admin.delete_reference_doc_confirmation.v1',
     'agent_admin.runtime_traces.v1',
     'AgentAdminSurfaceData',
-    'AgentAdminRuntimeTraceRow'
+    'AgentAdminRuntimeTraceRow',
+    'AgentAdminBehaviorProfileSummary',
+    'AgentAdminBehaviorProfileHistoryRow',
+    'AgentAdminBehaviorProposalSummary',
+    'AgentAdminGeneratedToolSummary'
   ]) assert.match(surfaceTypes, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 });
 

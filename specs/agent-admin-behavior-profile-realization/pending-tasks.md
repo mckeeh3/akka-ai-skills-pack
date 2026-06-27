@@ -205,7 +205,7 @@
 
 ### AABP-04-001: Align Agent Admin frontend surfaces and contracts
 
-- status: pending
+- status: done
 - source: `backlog/01-agent-admin-behavior-profile-build-backlog.md`
 - task brief: `specs/agent-admin-behavior-profile-realization/tasks/04-frontend/01-frontend-current-surface-alignment.md`
 - depends on: [AABP-03-001]
@@ -230,7 +230,9 @@
 - done criteria:
   - frontend renders current surfaces without stale governance-console/direct-mutation assumptions
   - changes and queue update are committed
-- notes: []
+- notes:
+  - completed in this commit with message: `Align Agent Admin frontend behavior profile surfaces`
+  - next runnable task after completion: `AABP-05-001` (`pending`, depends on `AABP-04-001`)
 
 ### AABP-05-001: Verify Agent Admin behavior-profile realization closure
 

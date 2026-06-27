@@ -1011,18 +1011,104 @@ export const agentAdminSurfaceActions = {
     resultSurface: { updateSurfaceId: 'surface-agent-admin-agent-detail', openPlacement: 'inline' },
     audit: { eventType: 'AgentAdminAgentDetailDisplayed', traceRequired: true }
   },
-  saveAgentProfile: {
-    actionId: 'action-agent-admin-save-agent-profile',
-    label: 'Save agent name/purpose',
+  openProfileHistory: {
+    actionId: 'action-agent-admin-open-profile-history',
+    label: 'Profile history',
+    intent: 'read',
+    capabilityId: agentDefinitionReadCapability,
+    governedToolId: 'read-agent-behavior-profile-history',
+    browserToolId: 'action-agent-admin-open-profile-history',
+    inputSchemaRef: 'schema.agent-admin.profile-history.read.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-agent-profile-history', openPlacement: 'inline' },
+    audit: { eventType: 'AgentAdminBehaviorProfileHistoryRead', traceRequired: true }
+  },
+  openSkillLibrary: {
+    actionId: 'action-agent-admin-open-skill-library',
+    label: 'Open skill library',
+    intent: 'read',
+    capabilityId: agentSkillReadCapability,
+    governedToolId: 'list-agent-skill-library',
+    browserToolId: 'action-agent-admin-open-skill-library',
+    inputSchemaRef: 'schema.agent-admin.skill-library.list.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-skill-library', openPlacement: 'inline' },
+    audit: { eventType: 'AgentAdminSkillLibraryRead', traceRequired: true }
+  },
+  openSkillAssignment: {
+    actionId: 'action-agent-admin-open-skill-assignment',
+    label: 'Assign skills',
+    intent: 'surface-request',
+    capabilityId: 'saas_owner.admin.manage',
+    governedToolId: 'assign-agent-skills',
+    browserToolId: 'action-agent-admin-open-skill-assignment',
+    inputSchemaRef: 'schema.agent-admin.skill-assignment.open.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-skill-assignment', openPlacement: 'inline' },
+    audit: { eventType: 'AgentAdminSkillAssignmentOpened', traceRequired: true }
+  },
+  assignSkills: {
+    actionId: 'action-agent-admin-assign-skills',
+    label: 'Save skill assignment',
     intent: 'command',
     capabilityId: 'saas_owner.admin.manage',
-    governedToolId: 'update-agent-name-purpose',
-    browserToolId: 'action-agent-admin-save-agent-profile',
-    inputSchemaRef: 'schema.agent-admin.agent-profile.update.v1',
+    governedToolId: 'assign-agent-skills',
+    browserToolId: 'action-agent-admin-assign-skills',
+    inputSchemaRef: 'schema.agent-admin.skill-assignment.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'client-generated' },
-    resultSurface: { updateSurfaceId: 'surface-agent-admin-agent-detail', openPlacement: 'inline' },
-    audit: { eventType: 'AgentAdminAgentProfileUpdated', traceRequired: true }
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-skill-assignment', openPlacement: 'inline' },
+    audit: { eventType: 'AgentAdminSkillAssignmentUpdated', traceRequired: true }
+  },
+  openToolAssignment: {
+    actionId: 'action-agent-admin-open-tool-assignment',
+    label: 'Assign generated tools',
+    intent: 'surface-request',
+    capabilityId: 'saas_owner.admin.manage',
+    governedToolId: 'assign-agent-generated-tools',
+    browserToolId: 'action-agent-admin-open-tool-assignment',
+    inputSchemaRef: 'schema.agent-admin.tool-assignment.open.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-tool-assignment', openPlacement: 'inline' },
+    audit: { eventType: 'AgentAdminGeneratedToolAssignmentOpened', traceRequired: true }
+  },
+  assignGeneratedTools: {
+    actionId: 'action-agent-admin-assign-generated-tools',
+    label: 'Save generated-tool assignment',
+    intent: 'command',
+    capabilityId: 'saas_owner.admin.manage',
+    governedToolId: 'assign-agent-generated-tools',
+    browserToolId: 'action-agent-admin-assign-generated-tools',
+    inputSchemaRef: 'schema.agent-admin.tool-assignment.v1',
+    requiresConfirmation: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-tool-assignment', openPlacement: 'inline' },
+    audit: { eventType: 'AgentAdminGeneratedToolAssignmentUpdated', traceRequired: true }
+  },
+  openModelRef: {
+    actionId: 'action-agent-admin-open-model-config-ref',
+    label: 'Change model config reference',
+    intent: 'surface-request',
+    capabilityId: 'saas_owner.admin.manage',
+    governedToolId: 'update-agent-model-config-ref',
+    browserToolId: 'action-agent-admin-open-model-config-ref',
+    inputSchemaRef: 'schema.agent-admin.model-config.open.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-model-config-ref', openPlacement: 'inline' },
+    audit: { eventType: 'AgentAdminModelConfigOpened', traceRequired: true }
+  },
+  updateModelRef: {
+    actionId: 'action-agent-admin-update-model-config-ref',
+    label: 'Save model config reference',
+    intent: 'command',
+    capabilityId: 'saas_owner.admin.manage',
+    governedToolId: 'update-agent-model-config-ref',
+    browserToolId: 'action-agent-admin-update-model-config-ref',
+    inputSchemaRef: 'schema.agent-admin.model-config.update.v1',
+    requiresConfirmation: true,
+    idempotency: { required: true, keySource: 'client-generated' },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-model-config-ref', openPlacement: 'inline' },
+    audit: { eventType: 'AgentAdminModelConfigUpdated', traceRequired: true }
   },
   openPromptDoc: {
     actionId: 'action-agent-admin-open-prompt-doc',
@@ -1086,15 +1172,15 @@ export const agentAdminSurfaceActions = {
   },
   docEditSave: {
     actionId: 'action-agent-doc-edit-save',
-    label: 'Save',
+    label: 'Save draft',
     intent: 'command',
-    capabilityId: agentActivateCapability,
+    capabilityId: agentPromptsCapability,
     governedToolId: 'save-agent-doc-edit',
     browserToolId: 'action-agent-doc-edit-save',
     inputSchemaRef: 'schema.agent-admin.doc-edit.save.v1',
     requiresConfirmation: true,
     idempotency: { required: false },
-    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt-doc', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-proposal-review', openPlacement: 'inline' },
     audit: { eventType: 'AgentAdminDocEditSaved', traceRequired: true }
   },
   docEditCancel: {
@@ -1108,6 +1194,70 @@ export const agentAdminSurfaceActions = {
     idempotency: { required: false },
     resultSurface: { updateSurfaceId: 'surface-agent-admin-edit-session', openPlacement: 'inline' },
     audit: { eventType: 'AgentAdminDocEditCancelled', traceRequired: true }
+  },
+  proposalReview: {
+    actionId: 'action-agent-doc-proposal-review',
+    label: 'Review proposal',
+    intent: 'read',
+    capabilityId: agentSubmitReviewCapability,
+    governedToolId: 'approve-agent-doc-proposal',
+    browserToolId: 'action-agent-doc-proposal-review',
+    inputSchemaRef: 'schema.agent-admin.proposal.review.read.v1',
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-proposal-review', openPlacement: 'inline' },
+    audit: { eventType: 'AgentAdminProposalReviewRead', traceRequired: true }
+  },
+  proposalApprove: {
+    actionId: 'action-agent-doc-proposal-approve',
+    label: 'Approve',
+    intent: 'command',
+    capabilityId: agentSubmitReviewCapability,
+    governedToolId: 'approve-agent-doc-proposal',
+    browserToolId: 'action-agent-doc-proposal-approve',
+    inputSchemaRef: 'schema.agent-admin.proposal.approve.v1',
+    requiresConfirmation: true,
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-proposal-review', openPlacement: 'inline' },
+    audit: { eventType: 'AgentAdminProposalApproved', traceRequired: true }
+  },
+  proposalReject: {
+    actionId: 'action-agent-doc-proposal-reject',
+    label: 'Reject',
+    intent: 'command',
+    capabilityId: agentRejectCapability,
+    governedToolId: 'reject-agent-doc-proposal',
+    browserToolId: 'action-agent-doc-proposal-reject',
+    inputSchemaRef: 'schema.agent-admin.proposal.reject.v1',
+    requiresConfirmation: true,
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-proposal-review', openPlacement: 'inline' },
+    audit: { eventType: 'AgentAdminProposalRejected', traceRequired: true }
+  },
+  proposalActivate: {
+    actionId: 'action-agent-doc-proposal-activate',
+    label: 'Activate',
+    intent: 'command',
+    capabilityId: agentActivateCapability,
+    governedToolId: 'activate-agent-doc-version',
+    browserToolId: 'action-agent-doc-proposal-activate',
+    inputSchemaRef: 'schema.agent-admin.proposal.activate.v1',
+    requiresConfirmation: true,
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-proposal-review', openPlacement: 'inline' },
+    audit: { eventType: 'AgentAdminProposalActivated', traceRequired: true }
+  },
+  proposalCancel: {
+    actionId: 'action-agent-doc-proposal-cancel',
+    label: 'Cancel proposal',
+    intent: 'command',
+    capabilityId: agentCancelCapability,
+    governedToolId: 'cancel-agent-doc-edit',
+    browserToolId: 'action-agent-doc-proposal-cancel',
+    inputSchemaRef: 'schema.agent-admin.proposal.cancel.v1',
+    requiresConfirmation: true,
+    idempotency: { required: false },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-proposal-review', openPlacement: 'inline' },
+    audit: { eventType: 'AgentAdminProposalCancelled', traceRequired: true }
   },
   versionHistory: {
     actionId: 'action-agent-doc-version-history',
@@ -1143,7 +1293,7 @@ export const agentAdminSurfaceActions = {
     inputSchemaRef: 'schema.agent-admin.doc-version.restore.v1',
     requiresConfirmation: true,
     idempotency: { required: false },
-    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt-doc', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-proposal-review', openPlacement: 'inline' },
     audit: { eventType: 'AgentAdminDocVersionRestored', traceRequired: true }
   },
   openCreateSkill: {
@@ -1173,7 +1323,7 @@ export const agentAdminSurfaceActions = {
   },
   openDeleteSkill: {
     actionId: 'action-agent-admin-open-delete-skill',
-    label: 'Delete skill',
+    label: 'Deprecate/remove skill',
     intent: 'surface-request',
     capabilityId: 'saas_owner.admin.manage',
     governedToolId: 'delete-agent-skill',
@@ -1185,7 +1335,7 @@ export const agentAdminSurfaceActions = {
   },
   deleteSkill: {
     actionId: 'action-agent-admin-delete-skill',
-    label: 'Delete skill permanently',
+    label: 'Confirm skill lifecycle change',
     intent: 'command',
     capabilityId: 'saas_owner.admin.manage',
     governedToolId: 'delete-agent-skill',
@@ -1223,7 +1373,7 @@ export const agentAdminSurfaceActions = {
   },
   openDeleteReferenceDoc: {
     actionId: 'action-agent-admin-open-delete-reference-doc',
-    label: 'Delete reference doc',
+    label: 'Deprecate/remove reference doc',
     intent: 'surface-request',
     capabilityId: 'saas_owner.admin.manage',
     governedToolId: 'delete-agent-skill-reference-doc',
@@ -1235,7 +1385,7 @@ export const agentAdminSurfaceActions = {
   },
   deleteReferenceDoc: {
     actionId: 'action-agent-admin-delete-reference-doc',
-    label: 'Delete reference doc permanently',
+    label: 'Confirm reference lifecycle change',
     intent: 'command',
     capabilityId: 'saas_owner.admin.manage',
     governedToolId: 'delete-agent-skill-reference-doc',
@@ -3174,8 +3324,8 @@ export const agentAdminCatalogSurface = envelope(
     surfaceContract: 'agent_admin.catalog.v1',
     query: 'tenant:tenant-acme scoped:true',
     rows: [
-      { id: 'agent-admin-agent', rowType: 'AgentDefinition', displayName: 'Agent Admin Agent', status: 'active', authorityLevel: 'APPROVAL_REQUIRED', readinessSummary: 'Ready with 2 approval-gated behavior tasks', attentionSummary: 'Prompt-risk review requires human decision', targetSurfaceId: 'surface-agent-admin-detail', openActionId: 'action-open-agent-detail', safeActionContext: { agentDefinitionId: 'agent-admin-agent' }, placement: 'WORKSTREAM', functionalAreaId: 'agent-admin', modelConfigRefId: 'model-safe-default', providerStatus: 'ready', seedStatus: 'starter-v1', tracePolicy: 'PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace', traceId: 'trace-agent-admin-definition-agent-admin-agent' },
-      { id: 'user-admin-agent', rowType: 'AgentDefinition', displayName: 'User Admin Agent', status: 'active', authorityLevel: 'APPROVAL_REQUIRED', readinessSummary: 'Ready with no provider blockers', attentionSummary: 'No behavior approval waiting', targetSurfaceId: 'surface-agent-admin-detail', openActionId: 'action-open-agent-detail', safeActionContext: { agentDefinitionId: 'user-admin-agent' }, placement: 'WORKSTREAM', functionalAreaId: 'user-admin', modelConfigRefId: 'model-safe-default', providerStatus: 'ready', seedStatus: 'starter-v1', tracePolicy: 'PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace', traceId: 'trace-agent-admin-definition-user-admin-agent' }
+      { id: 'agent-admin-agent', rowType: 'AgentDefinition', displayName: 'Agent Admin Agent', status: 'active', authorityLevel: 'APPROVAL_REQUIRED', readinessSummary: 'Ready with 2 approval-gated behavior tasks', attentionSummary: 'Prompt-risk review requires human decision', targetSurfaceId: 'surface-agent-admin-detail', openActionId: 'action-open-agent-detail', safeActionContext: { agentDefinitionId: 'agent-admin-agent' }, placement: 'WORKSTREAM', functionalAreaId: 'agent-admin', modelRefId: 'model-safe-default', providerStatus: 'ready', seedStatus: 'starter-v1', tracePolicy: 'PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace', traceId: 'trace-agent-admin-definition-agent-admin-agent' },
+      { id: 'user-admin-agent', rowType: 'AgentDefinition', displayName: 'User Admin Agent', status: 'active', authorityLevel: 'APPROVAL_REQUIRED', readinessSummary: 'Ready with no provider blockers', attentionSummary: 'No behavior approval waiting', targetSurfaceId: 'surface-agent-admin-detail', openActionId: 'action-open-agent-detail', safeActionContext: { agentDefinitionId: 'user-admin-agent' }, placement: 'WORKSTREAM', functionalAreaId: 'user-admin', modelRefId: 'model-safe-default', providerStatus: 'ready', seedStatus: 'starter-v1', tracePolicy: 'PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace', traceId: 'trace-agent-admin-definition-user-admin-agent' }
     ],
     pageInfo: { totalKnownCount: 2 },
     providerReadiness: { status: 'ready', readyAgents: 2, totalAgents: 2, secretVisibility: 'redacted' },
@@ -3220,7 +3370,7 @@ export const agentAdminDetailSurface = envelope(
       { fieldId: 'skillManifestId', label: 'Skill manifest', value: 'manifest-agent-admin@1', editable: false, inputType: 'text' },
       { fieldId: 'referenceManifestId', label: 'Reference manifest', value: 'reference-manifest-agent-admin@1', editable: false, inputType: 'text' },
       { fieldId: 'toolBoundaryId', label: 'Tool boundary', value: 'tool-boundary-agent-admin@1', editable: false, inputType: 'text' },
-      { fieldId: 'modelConfigRef', label: 'Model ref', value: 'model-safe-default', editable: false, inputType: 'text', disabledReason: 'Provider secret values are never browser-visible; provider credential values are backend-only.' }
+      { fieldId: 'modelRef', label: 'Model ref', value: 'model-safe-default', editable: false, inputType: 'text', disabledReason: 'Provider secret values are never browser-visible; provider values are backend-only.' }
     ],
     relatedArtifacts: [
       { artifactKind: 'prompt', artifactId: 'prompt-agent-admin-system', status: 'active', capabilityId: agentPromptReadCapability },
@@ -3454,7 +3604,7 @@ export const agentModelRefsSurface = envelope(
       secretVisibility: 'redacted'
     },
     impactSummary: { downstreamProposalLifecycleBlockers: ['approval-required', 'provider-readiness', 'activation-separate-surface'], simulationPromptRiskToolBoundaryOrHumanApprovalRequired: true },
-    riskAndEvidence: { riskClass: 'high', safeEvidenceRefs: ['ModelConfigRef', 'AgentDefinition', 'AgentWorkTrace'], requiredHumanReviewReasons: ['model-provider-routing', 'runtime-readiness', 'tenant-scope-impact'] },
+    riskAndEvidence: { riskClass: 'high', safeEvidenceRefs: ['ModelRef', 'AgentDefinition', 'AgentWorkTrace'], requiredHumanReviewReasons: ['model-provider-routing', 'runtime-readiness', 'tenant-scope-impact'] },
     reviewState: { allowedDecisions: ['refresh', 'submit-review', 'approve-after-review', 'reject-with-reason', 'open-prompt-governance', 'open-tool-boundary', 'open-trace', 'back-to-detail'], disabledDecisions: ['activate-directly', 'edit-provider-credentials', 'raw-model-config-edit', 'provider-secret-entry', 'cross-scope-routing'], approvalRequired: true, rejectionReasonRequired: true, providerRuntimeBlockedState: 'blocked_provider_or_runtime', nextRequiredSurface: 'surface-agent-behavior-proposal', noDirectMutation: true },
     safeRedactionSummary: { providerCredentials: 'omitted', rawProviderModelResponses: 'omitted', rawPromptText: 'omitted', skillReferenceBodies: 'omitted', hiddenScopes: 'omitted', rawTraceEvidence: 'role-gated', bearerTokens: 'omitted' },
     traceLinks: ['trace-agent-admin-model-refs', 'trace-agent-work-88'],
@@ -3681,7 +3831,7 @@ export const agentAdminAgentBlockedSystemMessageSurface = envelope(
     title: 'AgentAdminAgent unavailable',
     summary: 'Model-backed AgentAdminAgent guidance was blocked before a response was produced.',
     message: 'Model-backed AgentAdminAgent guidance was blocked before a response was produced. Backend provider/runtime configuration must be restored before guidance can run.',
-    recoverySteps: ['Verify model provider configuration and active ModelConfigRef on the backend.', 'Review PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, agentAdminEvidence.read, and AgentWorkTrace entries for this correlation id.', 'Retry after backend configuration is restored; use deterministic Agent Admin surfaces for catalog reads and behavior-change lifecycle commands.'],
+    recoverySteps: ['Verify model provider configuration and active ModelRef on the backend.', 'Review PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, agentAdminEvidence.read, and AgentWorkTrace entries for this correlation id.', 'Retry after backend configuration is restored; use deterministic Agent Admin surfaces for catalog reads and behavior-change lifecycle commands.'],
     workstreamEntryId: 'item-agent-admin-agent-provider-blocked',
     producingAgentId: 'agent-admin-agent',
     capabilityId: 'agent_admin.submit_turn',
@@ -3751,7 +3901,40 @@ const agentAdminSkillDoc = {
   currentVersion: 3,
   updatedAt: generatedAt,
   referenceDocs: [agentAdminReferenceDoc],
-  actionId: 'action-agent-admin-open-skill-doc'
+  actionId: 'action-agent-admin-open-skill-doc',
+  lifecycleStatus: 'active',
+  assignedAgentCount: 1
+};
+
+const agentAdminBehaviorProfile = {
+  profileVersion: 4,
+  scope: 'saas-app-owner',
+  scopeProvenance: 'reserved saas-app-owner scope cloned from global defaults',
+  modelRefId: 'model-safe-default',
+  safeModelAlias: 'approved-primary',
+  activePromptVersion: 2,
+  assignedSkillDocumentIds: [agentAdminSkillDoc.documentId],
+  assignedGeneratedToolIds: ['agentAdminEvidence.read'],
+  activatedAt: generatedAt,
+  traceLinks: ['trace-agent-admin-profile-v4']
+};
+
+const agentAdminBehaviorProfileHistoryRows = [
+  { ...agentAdminBehaviorProfile, profileVersion: 3, active: false, activatedAt: '2026-05-18T12:00:00.000Z', provenance: 'global default' },
+  { ...agentAdminBehaviorProfile, active: true, provenance: 'tenant-specific behavior profile' }
+];
+
+const agentAdminProposalReview = {
+  proposalId: 'proposal-agent-admin-prompt-v3',
+  status: 'approved',
+  targetArtifact: 'prompt',
+  targetArtifactId: agentAdminPromptDoc.documentId,
+  riskClassification: 'low',
+  authorityExpansion: false,
+  summary: 'Condense Agent Admin prompt while preserving Markdown editing boundaries.',
+  rationale: 'Improves SaaS admin clarity without changing generated identity or tool code.',
+  suggestedTests: ['Replay doc-editing prompt smoke', 'Verify runtime traces remain metadata-only'],
+  traceLinks: ['trace-agent-admin-proposal-v3']
 };
 
 const agentAdminPromptVersion = {
@@ -3876,17 +4059,67 @@ export const agentAdminDocEditingAgentDetailSurface = envelope(
   'agent-admin-agent',
   {
     surfaceContract: 'agent_admin.agent_detail.v1',
-    agent: { agentDefinitionId: agentAdminDocAgent.agentDefinitionId, agentName: agentAdminDocAgent.agentName, purpose: agentAdminDocAgent.purpose, workstreamDomain: agentAdminDocAgent.workstreamDomain, lastEditTime: generatedAt },
+    agent: { agentDefinitionId: agentAdminDocAgent.agentDefinitionId, agentName: agentAdminDocAgent.agentName, purpose: agentAdminDocAgent.purpose, workstreamDomain: agentAdminDocAgent.workstreamDomain, lastEditTime: generatedAt, generatedIdentityReadOnly: true, wholeAgentLifecycleReadOnly: true },
+    profile: agentAdminBehaviorProfile,
+    profileHistory: agentAdminBehaviorProfileHistoryRows,
     prompt: agentAdminPromptDoc,
     skills: [agentAdminSkillDoc],
     referenceDocs: [agentAdminReferenceDoc],
+    allowedGeneratedTools: [{ generatedToolId: 'agentAdminEvidence.read', source: 'app-description/code-generated', purpose: 'Read browser-safe Agent Admin evidence summaries.', implementationReadOnly: true }],
+    safeModelAlias: agentAdminBehaviorProfile.safeModelAlias,
     traceEntryPoints: [{ label: 'Runtime reads', actionId: 'action-agent-admin-open-runtime-traces', targetSurfaceId: 'surface-agent-admin-runtime-traces' }],
-    availableTaskActions: agentAdminAvailableActions(agentAdminSurfaceActions.showAgents, agentAdminSurfaceActions.saveAgentProfile, agentAdminSurfaceActions.openPromptDoc, agentAdminSurfaceActions.openSkillDoc, agentAdminSurfaceActions.openReferenceDoc, agentAdminSurfaceActions.openCreateSkill, agentAdminSurfaceActions.openDeleteSkill, agentAdminSurfaceActions.openCreateReferenceDoc, agentAdminSurfaceActions.openDeleteReferenceDoc, agentAdminSurfaceActions.openRuntimeTraces),
-    authorizedActions: ['action-agent-admin-show-agents', 'action-agent-admin-save-agent-profile', 'action-agent-admin-open-prompt-doc', 'action-agent-admin-open-skill-doc', 'action-agent-admin-open-reference-doc', 'action-agent-admin-open-create-skill', 'action-agent-admin-open-delete-skill', 'action-agent-admin-open-create-reference-doc', 'action-agent-admin-open-delete-reference-doc', 'action-agent-admin-open-runtime-traces'],
-    traceRefs: ['trace-agent-admin-doc-agent-detail'],
+    staleProductActionPolicy: 'Whole-agent lifecycle/profile mutation, seed material, raw model settings, tool-boundary internals, and generated-tool code actions are not presented on current Agent Admin surfaces.',
+    availableTaskActions: agentAdminAvailableActions(agentAdminSurfaceActions.showAgents, agentAdminSurfaceActions.openProfileHistory, agentAdminSurfaceActions.openSkillLibrary, agentAdminSurfaceActions.openSkillAssignment, agentAdminSurfaceActions.openToolAssignment, agentAdminSurfaceActions.openModelRef, agentAdminSurfaceActions.openPromptDoc, agentAdminSurfaceActions.openSkillDoc, agentAdminSurfaceActions.openReferenceDoc, agentAdminSurfaceActions.openCreateSkill, agentAdminSurfaceActions.openDeleteSkill, agentAdminSurfaceActions.openCreateReferenceDoc, agentAdminSurfaceActions.openDeleteReferenceDoc, agentAdminSurfaceActions.proposalReview, agentAdminSurfaceActions.openRuntimeTraces),
+    authorizedActions: ['action-agent-admin-show-agents', 'action-agent-admin-open-profile-history', 'action-agent-admin-open-skill-library', 'action-agent-admin-open-skill-assignment', 'action-agent-admin-open-tool-assignment', 'action-agent-admin-open-model-config-ref', 'action-agent-admin-open-prompt-doc', 'action-agent-admin-open-skill-doc', 'action-agent-admin-open-reference-doc', 'action-agent-admin-open-create-skill', 'action-agent-admin-open-delete-skill', 'action-agent-admin-open-create-reference-doc', 'action-agent-admin-open-delete-reference-doc', 'action-agent-doc-proposal-review', 'action-agent-admin-open-runtime-traces'],
+    traceRefs: ['trace-agent-admin-doc-agent-detail', 'trace-agent-admin-profile-v4'],
     systemStates: ['ready', 'forbidden', 'failure']
   },
-  [agentAdminSurfaceActions.showAgents, agentAdminSurfaceActions.saveAgentProfile, agentAdminSurfaceActions.openPromptDoc, agentAdminSurfaceActions.openSkillDoc, agentAdminSurfaceActions.openReferenceDoc, agentAdminSurfaceActions.openCreateSkill, agentAdminSurfaceActions.openDeleteSkill, agentAdminSurfaceActions.openCreateReferenceDoc, agentAdminSurfaceActions.openDeleteReferenceDoc, agentAdminSurfaceActions.openRuntimeTraces]
+  [agentAdminSurfaceActions.showAgents, agentAdminSurfaceActions.openProfileHistory, agentAdminSurfaceActions.openSkillLibrary, agentAdminSurfaceActions.openSkillAssignment, agentAdminSurfaceActions.openToolAssignment, agentAdminSurfaceActions.openModelRef, agentAdminSurfaceActions.openPromptDoc, agentAdminSurfaceActions.openSkillDoc, agentAdminSurfaceActions.openReferenceDoc, agentAdminSurfaceActions.openCreateSkill, agentAdminSurfaceActions.openDeleteSkill, agentAdminSurfaceActions.openCreateReferenceDoc, agentAdminSurfaceActions.openDeleteReferenceDoc, agentAdminSurfaceActions.proposalReview, agentAdminSurfaceActions.openRuntimeTraces]
+);
+
+export const agentAdminDocEditingProfileHistorySurface = envelope(
+  'surface-agent-admin-agent-profile-history',
+  'history',
+  'Behavior profile history',
+  'agent-admin-agent',
+  { surfaceContract: 'agent_admin.agent_profile_history.v1', agent: { agentDefinitionId: agentAdminDocAgent.agentDefinitionId, agentName: agentAdminDocAgent.agentName, generatedIdentityReadOnly: true }, currentProfile: agentAdminBehaviorProfile, profileHistory: agentAdminBehaviorProfileHistoryRows, rows: agentAdminBehaviorProfileHistoryRows, restoreCreatesProposal: true, availableTaskActions: agentAdminAvailableActions(agentAdminSurfaceActions.openAgentDetailDoc, agentAdminSurfaceActions.openModelRef, agentAdminSurfaceActions.openSkillAssignment, agentAdminSurfaceActions.openToolAssignment, agentAdminSurfaceActions.openRuntimeTraces), authorizedActions: ['action-agent-admin-open-agent-detail', 'action-agent-admin-open-model-config-ref', 'action-agent-admin-open-skill-assignment', 'action-agent-admin-open-tool-assignment', 'action-agent-admin-open-runtime-traces'], traceRefs: ['trace-agent-admin-profile-history'], systemStates: ['ready', 'empty', 'forbidden', 'failure'] },
+  [agentAdminSurfaceActions.openAgentDetailDoc, agentAdminSurfaceActions.openModelRef, agentAdminSurfaceActions.openSkillAssignment, agentAdminSurfaceActions.openToolAssignment, agentAdminSurfaceActions.openRuntimeTraces]
+);
+
+export const agentAdminDocEditingSkillLibrarySurface = envelope(
+  'surface-agent-admin-skill-library',
+  'list-search',
+  'Skill library',
+  'agent-admin-agent',
+  { surfaceContract: 'agent_admin.skill_library.v1', agentDefinitionId: agentAdminDocAgent.agentDefinitionId, rows: [agentAdminSkillDoc], lifecycleDefault: 'deprecate', availableTaskActions: agentAdminAvailableActions(agentAdminSurfaceActions.openAgentDetailDoc, agentAdminSurfaceActions.openSkillDoc, agentAdminSurfaceActions.openCreateSkill, agentAdminSurfaceActions.openDeleteSkill, agentAdminSurfaceActions.openRuntimeTraces), authorizedActions: ['action-agent-admin-open-agent-detail', 'action-agent-admin-open-skill-doc', 'action-agent-admin-open-create-skill', 'action-agent-admin-open-delete-skill', 'action-agent-admin-open-runtime-traces'], traceRefs: ['trace-agent-admin-skill-library'], systemStates: ['ready', 'empty', 'forbidden', 'failure'] },
+  [agentAdminSurfaceActions.openAgentDetailDoc, agentAdminSurfaceActions.openSkillDoc, agentAdminSurfaceActions.openCreateSkill, agentAdminSurfaceActions.openDeleteSkill, agentAdminSurfaceActions.openRuntimeTraces]
+);
+
+export const agentAdminDocEditingSkillAssignmentSurface = envelope(
+  'surface-agent-admin-skill-assignment',
+  'assignment',
+  'Skill assignment',
+  'agent-admin-agent',
+  { surfaceContract: 'agent_admin.skill_assignment.v1', agent: { agentDefinitionId: agentAdminDocAgent.agentDefinitionId, agentName: agentAdminDocAgent.agentName }, profile: agentAdminBehaviorProfile, currentlyAssignedSkillDocumentIds: [agentAdminSkillDoc.documentId], availableSkills: [agentAdminSkillDoc], proposedAddedSkillDocumentIds: [], proposedRemovedSkillDocumentIds: [], activationCreatesBehaviorProfileVersion: true, skillDocumentVersionsUnchanged: true, availableTaskActions: agentAdminAvailableActions(agentAdminSurfaceActions.assignSkills, agentAdminSurfaceActions.openAgentDetailDoc, agentAdminSurfaceActions.openProfileHistory, agentAdminSurfaceActions.openSkillLibrary), authorizedActions: ['action-agent-admin-assign-skills', 'action-agent-admin-open-agent-detail', 'action-agent-admin-open-profile-history', 'action-agent-admin-open-skill-library'], traceRefs: ['trace-agent-admin-skill-assignment'], systemStates: ['ready', 'validation-error', 'stale-current-version', 'forbidden', 'failure'] },
+  [agentAdminSurfaceActions.assignSkills, agentAdminSurfaceActions.openAgentDetailDoc, agentAdminSurfaceActions.openProfileHistory, agentAdminSurfaceActions.openSkillLibrary]
+);
+
+export const agentAdminDocEditingToolAssignmentSurface = envelope(
+  'surface-agent-admin-tool-assignment',
+  'assignment',
+  'Generated tool assignment',
+  'agent-admin-agent',
+  { surfaceContract: 'agent_admin.tool_assignment.v1', agent: { agentDefinitionId: agentAdminDocAgent.agentDefinitionId, agentName: agentAdminDocAgent.agentName }, profile: agentAdminBehaviorProfile, currentlyAssignedGeneratedToolIds: ['agentAdminEvidence.read'], availableGeneratedTools: [{ generatedToolId: 'agentAdminEvidence.read', source: 'app-description/code-generated', purpose: 'Read browser-safe Agent Admin evidence summaries.', category: 'DATA_LOOKUP', implementationReadOnly: true }], activationCreatesBehaviorProfileVersion: true, noGeneratedToolCodeMutation: true, availableTaskActions: agentAdminAvailableActions(agentAdminSurfaceActions.assignGeneratedTools, agentAdminSurfaceActions.openAgentDetailDoc, agentAdminSurfaceActions.openProfileHistory), authorizedActions: ['action-agent-admin-assign-generated-tools', 'action-agent-admin-open-agent-detail', 'action-agent-admin-open-profile-history'], traceRefs: ['trace-agent-admin-tool-assignment'], systemStates: ['ready', 'validation-error', 'stale-current-version', 'forbidden', 'failure'] },
+  [agentAdminSurfaceActions.assignGeneratedTools, agentAdminSurfaceActions.openAgentDetailDoc, agentAdminSurfaceActions.openProfileHistory]
+);
+
+export const agentAdminDocEditingModelRefSurface = envelope(
+  'surface-agent-admin-model-config-ref',
+  'form',
+  'Model config reference',
+  'agent-admin-agent',
+  { surfaceContract: 'agent_admin.model_config_ref.v1', agent: { agentDefinitionId: agentAdminDocAgent.agentDefinitionId, agentName: agentAdminDocAgent.agentName }, profile: agentAdminBehaviorProfile, currentModelRefId: agentAdminBehaviorProfile.modelRefId, safeModelAlias: agentAdminBehaviorProfile.safeModelAlias, rawModelSettingsEditable: false, providerValuesExposed: false, activationCreatesBehaviorProfileVersion: true, availableTaskActions: agentAdminAvailableActions(agentAdminSurfaceActions.updateModelRef, agentAdminSurfaceActions.openAgentDetailDoc, agentAdminSurfaceActions.openProfileHistory), authorizedActions: ['action-agent-admin-update-model-config-ref', 'action-agent-admin-open-agent-detail', 'action-agent-admin-open-profile-history'], traceRefs: ['trace-agent-admin-model-config-ref'], systemStates: ['ready', 'validation-error', 'stale-current-version', 'forbidden', 'failure'] },
+  [agentAdminSurfaceActions.updateModelRef, agentAdminSurfaceActions.openAgentDetailDoc, agentAdminSurfaceActions.openProfileHistory]
 );
 
 export const agentAdminDocEditingPromptDocSurface = envelope(
@@ -3921,8 +4154,17 @@ export const agentAdminDocEditingEditSessionSurface = envelope(
   'workflow-status',
   'Edit session',
   'agent-admin-agent',
-  { surfaceContract: 'agent_admin.edit_session.v1', session: { sessionId: 'edit-session-agent-admin-prompt-2', agentDefinitionId: agentAdminDocAgent.agentDefinitionId, kind: 'prompt', documentId: agentAdminPromptDoc.documentId, baseVersion: 2, status: 'proposal_ready', instructions: [{ actorAccountId: 'acct-admin', instructions: 'Make the prompt more concise.' }], proposedContent: '# Agent Admin\n\nImprove behavior through concise Markdown doc editing guidance.', changeSummary: 'Condensed prompt while preserving heading structure.', clarifyingQuestion: null, warnings: ['Advisory only; SaaS admin Save creates version 3.'], startedAt: generatedAt, endedAt: null }, target: { agentDefinitionId: agentAdminDocAgent.agentDefinitionId, kind: 'prompt', documentId: agentAdminPromptDoc.documentId, baseVersion: 2 }, saveCreatesNewCurrentVersion: true, warningsAdvisoryOnly: true, availableTaskActions: agentAdminAvailableActions(agentAdminSurfaceActions.docEditRevise, agentAdminSurfaceActions.docEditSave, agentAdminSurfaceActions.docEditCancel, agentAdminSurfaceActions.versionDiff), authorizedActions: ['action-agent-doc-edit-revise', 'action-agent-doc-edit-save', 'action-agent-doc-edit-cancel', 'action-agent-doc-version-diff'], traceRefs: ['trace-agent-admin-doc-edit-session'], systemStates: ['drafting', 'clarification-needed', 'proposed', 'refining', 'saving', 'cancelled', 'saved', 'provider-unavailable', 'stale-current-version', 'forbidden', 'failure'] },
+  { surfaceContract: 'agent_admin.edit_session.v1', session: { sessionId: 'edit-session-agent-admin-prompt-2', proposalId: agentAdminProposalReview.proposalId, agentDefinitionId: agentAdminDocAgent.agentDefinitionId, kind: 'prompt', documentId: agentAdminPromptDoc.documentId, baseVersion: 2, status: 'proposal_ready', riskClassification: 'low', authorityExpansion: false, instructions: [{ actorAccountId: 'acct-admin', instructions: 'Make the prompt more concise.' }], proposedContent: '# Agent Admin\n\nImprove behavior through concise Markdown doc editing guidance.', changeSummary: 'Condensed prompt while preserving heading structure.', rationale: 'Low-risk wording improvement.', suggestedTests: ['Replay doc-editing prompt smoke'], clarifyingQuestion: null, warnings: ['Advisory only; Save draft creates a non-active proposal.'], startedAt: generatedAt, endedAt: null }, target: { agentDefinitionId: agentAdminDocAgent.agentDefinitionId, kind: 'prompt', documentId: agentAdminPromptDoc.documentId, baseVersion: 2 }, saveCreatesNewCurrentVersion: false, saveCreatesNonActiveProposal: true, activationSurfaceId: 'surface-agent-admin-proposal-review', warningsAdvisoryOnly: true, availableTaskActions: agentAdminAvailableActions(agentAdminSurfaceActions.docEditRevise, agentAdminSurfaceActions.docEditSave, agentAdminSurfaceActions.docEditCancel, agentAdminSurfaceActions.versionDiff), authorizedActions: ['action-agent-doc-edit-revise', 'action-agent-doc-edit-save', 'action-agent-doc-edit-cancel', 'action-agent-doc-version-diff'], traceRefs: ['trace-agent-admin-doc-edit-session'], systemStates: ['drafting', 'clarification-needed', 'proposed', 'refining', 'saving-draft', 'draft-saved', 'routed-to-review', 'cancelled', 'provider-unavailable', 'stale-current-version', 'blocked-authority-expansion', 'forbidden', 'failure'] },
   [agentAdminSurfaceActions.docEditRevise, agentAdminSurfaceActions.docEditSave, agentAdminSurfaceActions.docEditCancel, agentAdminSurfaceActions.versionDiff]
+);
+
+export const agentAdminDocEditingProposalReviewSurface = envelope(
+  'surface-agent-admin-proposal-review',
+  'workflow-status',
+  'Proposal review',
+  'agent-admin-agent',
+  { surfaceContract: 'agent_admin.proposal_review.v1', proposal: agentAdminProposalReview, target: { agentDefinitionId: agentAdminDocAgent.agentDefinitionId, kind: 'prompt', documentId: agentAdminPromptDoc.documentId, baseVersion: 2, proposalVersion: 3 }, activationPolicy: { separateProtectedAction: true, directActivationAllowedForLowRiskOnly: true, staleVersionRechecked: true, authorityExpansionRoutesToDecisionCard: true }, activeBehaviorChanged: false, availableTaskActions: agentAdminAvailableActions(agentAdminSurfaceActions.proposalReview, agentAdminSurfaceActions.proposalApprove, agentAdminSurfaceActions.proposalReject, agentAdminSurfaceActions.proposalActivate, agentAdminSurfaceActions.proposalCancel, agentAdminSurfaceActions.openAgentDetailDoc), authorizedActions: ['action-agent-doc-proposal-review', 'action-agent-doc-proposal-approve', 'action-agent-doc-proposal-reject', 'action-agent-doc-proposal-activate', 'action-agent-doc-proposal-cancel', 'action-agent-admin-open-agent-detail'], traceRefs: ['trace-agent-admin-proposal-review'], systemStates: ['draft', 'in-review', 'approved', 'rejected', 'activation-ready', 'activating', 'active', 'decision-card-required', 'blocked-authority-expansion', 'stale-current-version', 'forbidden', 'failure'] },
+  [agentAdminSurfaceActions.proposalReview, agentAdminSurfaceActions.proposalApprove, agentAdminSurfaceActions.proposalReject, agentAdminSurfaceActions.proposalActivate, agentAdminSurfaceActions.proposalCancel, agentAdminSurfaceActions.openAgentDetailDoc]
 );
 
 export const agentAdminDocEditingVersionHistorySurface = envelope(
@@ -3957,7 +4199,7 @@ export const agentAdminDocEditingDeleteSkillSurface = envelope(
   'confirmation',
   'Delete skill',
   'agent-admin-agent',
-  { surfaceContract: 'agent_admin.delete_skill_confirmation.v1', agentDefinitionId: agentAdminDocAgent.agentDefinitionId, skillDocumentId: agentAdminSkillDoc.documentId, skillName: agentAdminSkillDoc.name, permanentDeletionWarning: 'Deleting a skill permanently deletes its reference docs. There is no restore.', referenceDocCount: 1, referenceDocs: [agentAdminReferenceDoc], availableTaskActions: agentAdminAvailableActions(agentAdminSurfaceActions.deleteSkill, agentAdminSurfaceActions.openAgentDetailDoc), authorizedActions: ['action-agent-admin-delete-skill', 'action-agent-admin-open-agent-detail'], systemStates: ['ready', 'confirmed', 'forbidden', 'failure'] },
+  { surfaceContract: 'agent_admin.delete_skill_confirmation.v1', agentDefinitionId: agentAdminDocAgent.agentDefinitionId, skillDocumentId: agentAdminSkillDoc.documentId, skillName: agentAdminSkillDoc.name, lifecycleDefault: 'deprecate', deprecationWarning: 'Skill removal defaults to deprecation and manifest/loader access removal; hard delete is policy-gated.', referenceDocCount: 1, referenceDocs: [agentAdminReferenceDoc], availableTaskActions: agentAdminAvailableActions(agentAdminSurfaceActions.deleteSkill, agentAdminSurfaceActions.openAgentDetailDoc), authorizedActions: ['action-agent-admin-delete-skill', 'action-agent-admin-open-agent-detail'], systemStates: ['ready', 'confirmed', 'forbidden', 'failure'] },
   [agentAdminSurfaceActions.deleteSkill, agentAdminSurfaceActions.openAgentDetailDoc]
 );
 
@@ -3975,7 +4217,7 @@ export const agentAdminDocEditingDeleteReferenceDocSurface = envelope(
   'confirmation',
   'Delete reference doc',
   'agent-admin-agent',
-  { surfaceContract: 'agent_admin.delete_reference_doc_confirmation.v1', agentDefinitionId: agentAdminDocAgent.agentDefinitionId, referenceDocumentId: agentAdminReferenceDoc.documentId, referenceDocName: agentAdminReferenceDoc.name, permanentDeletionWarning: 'Deleting a reference doc is permanent. There is no restore.', availableTaskActions: agentAdminAvailableActions(agentAdminSurfaceActions.deleteReferenceDoc, agentAdminSurfaceActions.openAgentDetailDoc), authorizedActions: ['action-agent-admin-delete-reference-doc', 'action-agent-admin-open-agent-detail'], systemStates: ['ready', 'confirmed', 'forbidden', 'failure'] },
+  { surfaceContract: 'agent_admin.delete_reference_doc_confirmation.v1', agentDefinitionId: agentAdminDocAgent.agentDefinitionId, referenceDocumentId: agentAdminReferenceDoc.documentId, referenceDocName: agentAdminReferenceDoc.name, lifecycleDefault: 'deprecate', deprecationWarning: 'Reference removal follows lifecycle policy; permanent deletion is explicit and policy-gated.', availableTaskActions: agentAdminAvailableActions(agentAdminSurfaceActions.deleteReferenceDoc, agentAdminSurfaceActions.openAgentDetailDoc), authorizedActions: ['action-agent-admin-delete-reference-doc', 'action-agent-admin-open-agent-detail'], systemStates: ['ready', 'confirmed', 'forbidden', 'failure'] },
   [agentAdminSurfaceActions.deleteReferenceDoc, agentAdminSurfaceActions.openAgentDetailDoc]
 );
 
@@ -4002,10 +4244,16 @@ export const currentAgentAdminSurfaceEnvelopes = [
   agentAdminDocEditingDashboardSurface,
   agentAdminDocEditingAgentListSurface,
   agentAdminDocEditingAgentDetailSurface,
+  agentAdminDocEditingProfileHistorySurface,
   agentAdminDocEditingPromptDocSurface,
+  agentAdminDocEditingSkillLibrarySurface,
   agentAdminDocEditingSkillDocSurface,
+  agentAdminDocEditingSkillAssignmentSurface,
+  agentAdminDocEditingToolAssignmentSurface,
+  agentAdminDocEditingModelRefSurface,
   agentAdminDocEditingReferenceDocSurface,
   agentAdminDocEditingEditSessionSurface,
+  agentAdminDocEditingProposalReviewSurface,
   agentAdminDocEditingVersionHistorySurface,
   agentAdminDocEditingVersionDiffSurface,
   agentAdminDocEditingCreateSkillSurface,
@@ -4545,7 +4793,7 @@ export const userAdminInvitationCreateSurface = envelope('surface-user-admin-inv
 export const userAdminInvitationActionStatusSurface = envelope('surface-user-admin-invitation-action-status', 'workflow-status', 'User Admin invitation action status', 'user-admin-agent', { workflowId: 'user-admin-invitation-action', status: 'completed', summary: 'Invitation create/resend/revoke action feedback is rendered from backend-authoritative /api/workstream/actions results with idempotency, audit, trace, and outbox status references.', traceIds: ['trace-useradmin-invitation-action', 'trace-useradmin'], requiredCapabilityId: userAdminCapabilities.sendInvitation, steps: [{ stepId: 'authorize-selected-auth-context', label: 'Backend selected AuthContext and canonical user_admin.* capability authorized', status: 'completed' }, { stepId: 'enqueue-outbox', label: 'Invitation outbox/provider result surfaced without fixture-only success substitution', status: 'completed' }, { stepId: 'system-message-denials', label: 'system_message denials preserve correlation id for forbidden, stale, validation, no-op, or blocked_provider_or_runtime states', status: 'completed' }] }, [userAdminSurfaceActions.createInvitation, userAdminSurfaceActions.resendInvitation, userAdminSurfaceActions.revokeInvitation, userAdminSurfaceActions.openAdminAudit]);
 export const userAdminMemberStatusActionSurface = envelope('surface-user-admin-member-status-action', 'workflow-status', 'User Admin member status action', 'user-admin-agent', { workflowId: 'user-admin-member-status-action', status: 'completed', summary: 'Disable/reactivate feedback is rendered from backend-authoritative user_admin.update_member_status results with last-admin, self-disable, disabled-user, idempotency, no-op, audit, and system_message evidence.', traceIds: ['trace-useradmin-status-action', 'trace-useradmin'], requiredCapabilityId: userAdminCapabilities.updateMemberStatus, steps: [{ stepId: 'authorize-selected-auth-context', label: 'Backend selected AuthContext, tenant/customer scope, active actor, and user_admin.update_member_status checked', status: 'completed' }, { stepId: 'validate-guardrails', label: 'last-admin and self-disable guardrails decide allow, denial, validation-error, or no-op idempotency result', status: 'completed' }, { stepId: 'emit-trace', label: 'Browser-safe trace links and system_message denial/no-op text returned with the action result', status: 'completed' }] }, [userAdminSurfaceActions.suspendMembership, userAdminSurfaceActions.reactivateMembership, userAdminSurfaceActions.openAdminAudit]);
 export const userAdminRoleChangeActionSurface = envelope('surface-user-admin-role-change-action', 'workflow-status', 'User Admin role change action', 'user-admin-agent', { workflowId: 'user-admin-role-change-action', status: 'waiting-for-human', summary: 'Role preview/commit feedback preserves user_admin.role_change_preview.v1, capability delta, affected workstreams, approval policy, idempotency, no-op, and trace links without letting frontend state grant authority.', traceIds: ['trace-useradmin-role-preview', 'trace-useradmin'], requiredCapabilityId: userAdminCapabilities.changeMemberRoles, steps: [{ stepId: 'preview-role-change', label: 'user_admin.preview_role_change returned user_admin.role_change_preview.v1 capability delta and affected workstreams', status: 'completed' }, { stepId: 'approval-policy', label: 'Apply role change remains approval-gated and backend-authoritative', status: 'waiting-for-human' }, { stepId: 'idempotency-trace', label: 'Commit uses client-generated idempotency and trace-useradmin links for no-op/replay evidence', status: 'completed' }] }, [userAdminSurfaceActions.previewRoleChange, userAdminSurfaceActions.changeMemberRoles, userAdminSurfaceActions.openAdminAudit]);
-export const userAdminAgentBlockedSystemMessageSurface = envelope('surface-user-admin-agent-provider-blocked', 'system_message', 'UserAdminAgent unavailable', 'user-admin-agent', { status: 'blocked_provider_or_runtime', severity: 'warning', title: 'UserAdminAgent unavailable', summary: 'Model-backed UserAdminAgent guidance was blocked before a response was produced.', message: 'Model-backed UserAdminAgent guidance was blocked before a response was produced. Backend provider/runtime configuration must be restored before guidance can run.', recoverySteps: ['Verify model provider configuration and active ModelConfigRef on the backend.', 'Review PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace, and userAdminEvidence.read tool traces for this correlation id.', 'Retry after backend configuration is restored; use deterministic User Admin surfaces for invite, member status, and role changes.'], workstreamEntryId: 'item-user-admin-agent-provider-blocked', producingAgentId: 'user-admin-agent', capabilityId: userAdminCapabilities.agentTurn, sourceRefs: [{ refType: 'trace', refId: 'trace-useradmin-agent-provider-blocked', label: 'Blocked UserAdminAgent runtime trace' }, { refType: 'capability', refId: userAdminCapabilities.overview, label: 'Scoped User Admin overview capability' }], safety: { sanitized: true, redactionNote: 'Provider secrets, raw JWTs, hidden prompts, invitation tokens, and unauthorized tenant/customer evidence are omitted.' }, trace: { correlationId: 'corr-useradmin-agent-provider-blocked', traceIds: ['trace-useradmin-agent-provider-blocked', 'trace-useradmin-agent-work-blocked'] } }, [userAdminSurfaceActions.openAdminAudit]);
+export const userAdminAgentBlockedSystemMessageSurface = envelope('surface-user-admin-agent-provider-blocked', 'system_message', 'UserAdminAgent unavailable', 'user-admin-agent', { status: 'blocked_provider_or_runtime', severity: 'warning', title: 'UserAdminAgent unavailable', summary: 'Model-backed UserAdminAgent guidance was blocked before a response was produced.', message: 'Model-backed UserAdminAgent guidance was blocked before a response was produced. Backend provider/runtime configuration must be restored before guidance can run.', recoverySteps: ['Verify model provider configuration and active ModelRef on the backend.', 'Review PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace, and userAdminEvidence.read tool traces for this correlation id.', 'Retry after backend configuration is restored; use deterministic User Admin surfaces for invite, member status, and role changes.'], workstreamEntryId: 'item-user-admin-agent-provider-blocked', producingAgentId: 'user-admin-agent', capabilityId: userAdminCapabilities.agentTurn, sourceRefs: [{ refType: 'trace', refId: 'trace-useradmin-agent-provider-blocked', label: 'Blocked UserAdminAgent runtime trace' }, { refType: 'capability', refId: userAdminCapabilities.overview, label: 'Scoped User Admin overview capability' }], safety: { sanitized: true, redactionNote: 'Provider secrets, raw JWTs, hidden prompts, invitation tokens, and unauthorized tenant/customer evidence are omitted.' }, trace: { correlationId: 'corr-useradmin-agent-provider-blocked', traceIds: ['trace-useradmin-agent-provider-blocked', 'trace-useradmin-agent-work-blocked'] } }, [userAdminSurfaceActions.openAdminAudit]);
 export const governanceDiffSurface = envelope('surface-governance-diff', 'governance-diff', 'Policy proposal diff', 'governance-policy-agent', { proposalId: 'proposal-1', beforeSummary: 'Manual approval over 75 risk.', afterSummary: 'Manual approval over 65 risk.', changes: [{ path: 'risk.approvalThreshold', before: '75', after: '65', impact: 'More decisions require human review.' }] }, [surfaceActionsByIntent.proposal, surfaceActionsByIntent.governance]);
 export const outcomeSurface = envelope('surface-outcome-review', 'outcome', 'Outcome review', 'governance-policy-agent', { outcomeId: 'outcome-1', metrics: [{ metricId: 'decision-cycle-time', label: 'Decision cycle time', current: 4, target: 2, unit: 'hours' }] }, [surfaceActionsByIntent.read]);
 
@@ -4677,6 +4925,46 @@ export const displayAgentDetailActionResult: CapabilityActionResult = {
   resultSurface: agentAdminDocEditingAgentDetailSurface
 };
 
+export const displayAgentProfileHistoryActionResult: CapabilityActionResult = {
+  status: 'accepted',
+  message: 'Display immutable Agent Admin behavior-profile history with restore-as-proposal copy.',
+  correlationId: 'corr-display-agent-profile-history',
+  traceIds: ['trace-display-agent-profile-history'],
+  resultSurface: agentAdminDocEditingProfileHistorySurface
+};
+
+export const displayAgentSkillLibraryActionResult: CapabilityActionResult = {
+  status: 'accepted',
+  message: 'Display the tenant-scoped Agent Admin skill library with lifecycle-aware rows.',
+  correlationId: 'corr-display-agent-skill-library',
+  traceIds: ['trace-display-agent-skill-library'],
+  resultSurface: agentAdminDocEditingSkillLibrarySurface
+};
+
+export const displayAgentSkillAssignmentActionResult: CapabilityActionResult = {
+  status: 'accepted',
+  message: 'Display skill assignment surface; activation creates a behavior-profile version and does not alter skill documents.',
+  correlationId: 'corr-display-agent-skill-assignment',
+  traceIds: ['trace-display-agent-skill-assignment'],
+  resultSurface: agentAdminDocEditingSkillAssignmentSurface
+};
+
+export const displayAgentToolAssignmentActionResult: CapabilityActionResult = {
+  status: 'accepted',
+  message: 'Display generated-tool assignment surface without generated tool code mutation.',
+  correlationId: 'corr-display-agent-tool-assignment',
+  traceIds: ['trace-display-agent-tool-assignment'],
+  resultSurface: agentAdminDocEditingToolAssignmentSurface
+};
+
+export const displayAgentModelRefActionResult: CapabilityActionResult = {
+  status: 'accepted',
+  message: 'Display model config reference surface without provider secrets or raw model settings.',
+  correlationId: 'corr-display-agent-model-config-ref',
+  traceIds: ['trace-display-agent-model-config-ref'],
+  resultSurface: agentAdminDocEditingModelRefSurface
+};
+
 export const displayAgentPromptDocActionResult: CapabilityActionResult = {
   status: 'accepted',
   message: 'Display the current Agent Admin prompt doc with Markdown body and version metadata.',
@@ -4709,6 +4997,14 @@ export const displayAgentEditSessionActionResult: CapabilityActionResult = {
   resultSurface: agentAdminDocEditingEditSessionSurface
 };
 
+export const displayAgentProposalReviewActionResult: CapabilityActionResult = {
+  status: 'accepted',
+  message: 'Behavior-change proposal review loaded; active behavior remains unchanged until separate activation.',
+  correlationId: 'corr-display-agent-proposal-review',
+  traceIds: ['trace-display-agent-proposal-review'],
+  resultSurface: agentAdminDocEditingProposalReviewSurface
+};
+
 export const displayAgentVersionHistoryActionResult: CapabilityActionResult = {
   status: 'accepted',
   message: 'Version history loaded with simple integer versions and read-only historical selection.',
@@ -4735,7 +5031,7 @@ export const displayAgentCreateSkillActionResult: CapabilityActionResult = {
 
 export const displayAgentDeleteSkillActionResult: CapabilityActionResult = {
   status: 'accepted',
-  message: 'Permanent skill delete confirmation opened and lists affected reference docs.',
+  message: 'Skill lifecycle confirmation opened; default action is deprecation with hard delete policy-gated.',
   correlationId: 'corr-display-agent-delete-skill',
   traceIds: ['trace-display-agent-delete-skill'],
   resultSurface: agentAdminDocEditingDeleteSkillSurface
@@ -4751,7 +5047,7 @@ export const displayAgentCreateReferenceDocActionResult: CapabilityActionResult 
 
 export const displayAgentDeleteReferenceDocActionResult: CapabilityActionResult = {
   status: 'accepted',
-  message: 'Permanent reference doc delete confirmation opened.',
+  message: 'Reference lifecycle confirmation opened; deprecation is default and hard delete is policy-gated.',
   correlationId: 'corr-display-agent-delete-reference-doc',
   traceIds: ['trace-display-agent-delete-reference-doc'],
   resultSurface: agentAdminDocEditingDeleteReferenceDocSurface
