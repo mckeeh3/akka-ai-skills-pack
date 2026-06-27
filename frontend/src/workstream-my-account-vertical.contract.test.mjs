@@ -183,6 +183,10 @@ test('My Account representative chat tool plan path is catalog-bound and confirm
   ]) assert.match(backendWorkstreamService, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   assert.match(backendWorkstreamTest, /change my theme to Obsidian Dark/);
   assert.match(backendWorkstreamTest, /representativeChatToolPlansCoverAllFiveFoundationWorkstreamsWithConfirmationAndTraceSemantics/);
+  assert.match(backendWorkstreamTest, /expandedMyAccountChatToolPlanConfirmationDenialsReturnSystemMessagesWithoutMutation/);
+  assert.match(backendWorkstreamTest, /CHAT_TOOL_BOUNDARY_TOOL_NOT_GRANTED/);
+  assert.match(backendWorkstreamService, /persistChatToolPlanConfirmationDenial/);
+  assert.match(backendWorkstreamService, /CHAT_TOOL_PLAN_SYSTEM_MESSAGE_CONTRACT/);
 });
 
 test('My Account launches from signed-in user tile and uses backend shell requests rather than frontend-only authority', () => {

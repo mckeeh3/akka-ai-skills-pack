@@ -1689,10 +1689,9 @@ public final class WorkstreamService {
 
   public WorkstreamMessageResponse confirmChatToolPlan(WorkosIdentity identity, String selectedContextId, ChatToolPlanConfirmationRequest request) {
     var correlationId = firstNonBlank(request.correlationId(), "chat-tool-plan-confirm");
-    if (request.selectedContextId() == null || request.selectedContextId().isBlank() || !Objects.equals(selectedContextId, request.selectedContextId())) throw new AuthorizationException(403, "CONTEXT_FORBIDDEN");
+    if (request.selectedContextId() == null || request.selectedContextId().isBlank()) throw new AuthorizationException(403, "CONTEXT_FORBIDDEN");
     if (request.planId() == null || request.planId().isBlank() || request.planSnapshotId() == null || request.planSnapshotId().isBlank()) throw new AuthorizationException(400, "CHAT_TOOL_PLAN_SNAPSHOT_REQUIRED");
     if (request.idempotencyKey() == null || request.idempotencyKey().isBlank()) throw new AuthorizationException(400, "CHAT_TOOL_PLAN_CONFIRMATION_IDEMPOTENCY_REQUIRED");
-    requireExplicitChatToolPlanConfirmation(request);
     var actor = authContextResolver.resolveMe(identity, selectedContextId, correlationId);
     var workstreamScopeId = workstreamEventTenantId(actor.selectedContext());
     var proposalSurfaceId = "surface-chat-tool-plan-" + request.planId();
@@ -1706,16 +1705,23 @@ public final class WorkstreamService {
       return new WorkstreamMessageResponse(existing.correlationId(), existing.idempotencyKey(), existing.userItem(), existing.agentItem(), existing.surface());
     }
     var expectedSnapshot = chatToolPlanConfirmationSnapshot(proposal);
-    validateChatToolPlanConfirmationSnapshot(actor, request, proposal, expectedSnapshot);
-    traceChatToolPlan(actor, "human_chat_tool_plan.confirmed", proposal.functionalAgentId() + ":" + proposal.planId() + ":" + proposal.planSnapshotId(), correlationId);
-    var result = dispatchConfirmedChatToolPlanSteps(identity, selectedContextId, new ChatToolPlanDispatchRequest(
-        selectedContextId,
-        proposal.functionalAgentId(),
-        proposal.planId(),
-        proposal.planSnapshotId(),
-        expectedSnapshot.steps(),
-        request.idempotencyKey(),
-        correlationId));
+    final ChatToolPlanExecutionResult result;
+    try {
+      if (!Objects.equals(selectedContextId, request.selectedContextId())) throw new AuthorizationException(403, "CONTEXT_FORBIDDEN");
+      requireExplicitChatToolPlanConfirmation(request);
+      validateChatToolPlanConfirmationSnapshot(actor, request, proposal, expectedSnapshot);
+      traceChatToolPlan(actor, "human_chat_tool_plan.confirmed", proposal.functionalAgentId() + ":" + proposal.planId() + ":" + proposal.planSnapshotId(), correlationId);
+      result = dispatchConfirmedChatToolPlanSteps(identity, selectedContextId, new ChatToolPlanDispatchRequest(
+          selectedContextId,
+          proposal.functionalAgentId(),
+          proposal.planId(),
+          proposal.planSnapshotId(),
+          expectedSnapshot.steps(),
+          request.idempotencyKey(),
+          correlationId));
+    } catch (AuthorizationException denied) {
+      return persistChatToolPlanConfirmationDenial(actor, workstreamScopeId, proposalSurface, proposal, request, correlationId, denied.reasonCode());
+    }
     var now = Instant.now();
     var traceIds = new ArrayList<String>();
     traceIds.add("trace-human-chat-tool-plan-confirmed-" + stableSuffix(correlationId + ":" + proposal.planSnapshotId()));
@@ -1752,6 +1758,46 @@ public final class WorkstreamService {
         "Confirmed " + workstreamLabel(proposal.functionalAgentId()) + " plan execution status: " + result.status() + ".",
         result.status());
     var persisted = workstreamLogRepository.appendMessage(new WorkstreamLogRepository.WorkstreamMessageLogEntry(workstreamScopeId, actor.selectedContext().membershipId(), proposal.functionalAgentId(), request.idempotencyKey(), correlationId, userItem, agentItem, resultSurface));
+    return new WorkstreamMessageResponse(persisted.correlationId(), persisted.idempotencyKey(), persisted.userItem(), persisted.agentItem(), persisted.surface());
+  }
+
+  private WorkstreamMessageResponse persistChatToolPlanConfirmationDenial(AuthContextResolver.ResolvedMe actor, String workstreamScopeId, SurfaceEnvelope proposalSurface, ChatToolPlanProposal proposal, ChatToolPlanConfirmationRequest request, String correlationId, String reasonCode) {
+    var now = Instant.now();
+    var safeReason = firstNonBlank(reasonCode, "CHAT_TOOL_PLAN_CONFIRMATION_DENIED");
+    var traceIds = List.of("trace-human-chat-tool-plan-denied-" + stableSuffix(correlationId + ":" + safeReason));
+    traceChatToolPlan(actor, "human_chat_tool_plan.denied", proposal.functionalAgentId() + ":" + proposal.planId() + ":" + safeReason, correlationId);
+    var surface = chatToolPlanSystemMessageSurface(
+        "surface-chat-tool-plan-denied-" + stableSuffix(request.idempotencyKey() + ":" + safeReason),
+        proposal.functionalAgentId(),
+        actor,
+        safeReason,
+        "Chat tool plan confirmation was denied before execution because exact snapshot, selected AuthContext, authorization, tool-boundary, catalog, or validation checks failed closed. No tools executed and no records were changed.",
+        correlationId,
+        traceIds,
+        now);
+    var userItem = new WorkstreamItem(
+        "item-chat-tool-plan-confirm-user-" + stableSuffix(request.idempotencyKey() + ":denied-user"),
+        proposal.functionalAgentId(),
+        "user-confirmation",
+        now.toString(),
+        correlationId,
+        traceIds,
+        proposalSurface.surfaceId(),
+        "Denied chat tool plan confirmation",
+        "Human confirmation did not satisfy the exact governed plan snapshot and runtime boundary checks.",
+        "blocked");
+    var agentItem = new WorkstreamItem(
+        "item-chat-tool-plan-denied-" + stableSuffix(request.idempotencyKey() + ":denied-agent"),
+        proposal.functionalAgentId(),
+        "chat_tool_plan_system_message",
+        now.toString(),
+        correlationId,
+        traceIds,
+        surface.surfaceId(),
+        "Chat tool plan denied",
+        "Confirmation failed closed with " + safeReason + ". No tools executed and no records were changed.",
+        "blocked");
+    var persisted = workstreamLogRepository.appendMessage(new WorkstreamLogRepository.WorkstreamMessageLogEntry(workstreamScopeId, actor.selectedContext().membershipId(), proposal.functionalAgentId(), request.idempotencyKey(), correlationId, userItem, agentItem, surface));
     return new WorkstreamMessageResponse(persisted.correlationId(), persisted.idempotencyKey(), persisted.userItem(), persisted.agentItem(), persisted.surface());
   }
 

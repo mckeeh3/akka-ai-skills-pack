@@ -174,7 +174,7 @@
 
 ### MAFA-05-001: Human chat tool-plan runtime proof
 
-- status: pending
+- status: done
 - source: `backlog/01-my-account-automated-alignment-build-backlog.md` B05
 - task brief: `specs/my-account-full-alignment/tasks/05-chat-plan/01-human-chat-tool-plan-runtime-proof.md`
 - depends on: [MAFA-04-001]
@@ -201,8 +201,11 @@
   - chat-plan path is automated-tested for proposal, no pre-confirm mutation, exact confirmation, denials, idempotency, partial failure, and tool-boundary enforcement
   - source-alignment chat-plan entry is updated
 - notes:
-  - lifecycle/readiness: backend-ready for chat-plan path; provider/model unavailable may be fail-closed unless configured
+  - lifecycle/readiness: backend-ready/frontend-contract for chat-plan path; provider/model unavailable may be fail-closed unless configured
   - vertical contract: My Account / `my-account-agent`; governed tools `my_account.update_profile_settings`, notification lifecycle/preference tools; actor adapter `human_chat_tool_plan`; exact snapshot confirmation, per-step idempotency/transaction, selected AuthContext, requestedBy/confirmedBy, safe system-message denial, durable trace events required
+  - completed 2026-06-27: added safe confirmation-denial system-message handling plus WorkstreamService tests for My Account cross-context/tool-boundary confirmation denials, refreshed exact-confirmation denial assertions, and updated frontend/source-alignment chat-plan evidence.
+  - validation: `mvn -Dtest='WorkstreamServiceTest,AgentBehaviorSeedLoaderTest,*ToolBoundary*Test,*Trace*Test' test`, `npm --prefix frontend test -- --run frontend/src/workstream-chat-tool-plan.contract.test.mjs frontend/src/workstream-my-account-vertical.contract.test.mjs`, and `git diff --check` pass.
+  - commit message: `MAFA-05-001 prove My Account chat tool plan runtime`
 
 ### MAFA-06-001: Digest/export provider-runtime closure
 

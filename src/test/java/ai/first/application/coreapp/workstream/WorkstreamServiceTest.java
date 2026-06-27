@@ -2205,9 +2205,12 @@ class WorkstreamServiceTest {
 
     assertEquals("Chat Catalog Admin", proposal.steps().get(0).input().get("displayName"));
     assertEquals("Tenant Admin", identityRepository.profile("admin@example.test").displayName(), "Profile proposal must not mutate before exact confirmation.");
-    var denied = assertThrows(AuthorizationException.class, () -> service.confirmChatToolPlan(identity(), "membership-admin", new WorkstreamService.ChatToolPlanConfirmationRequest(
-        "membership-admin", proposal.planId(), proposal.planSnapshotId(), "confirm " + proposal.planSnapshotId(), snapshot.stepHashes(), "idem-my-account-profile-chat-denied", "corr-my-account-profile-chat-denied")));
-    assertTrue(denied.reasonCode().contains("CHAT_TOOL_PLAN_CONFIRMATION_TEXT_REQUIRED"));
+    var denied = service.confirmChatToolPlan(identity(), "membership-admin", new WorkstreamService.ChatToolPlanConfirmationRequest(
+        "membership-admin", proposal.planId(), proposal.planSnapshotId(), "confirm " + proposal.planSnapshotId(), snapshot.stepHashes(), "idem-my-account-profile-chat-denied", "corr-my-account-profile-chat-denied"));
+    assertEquals("chat_tool_plan_system_message", denied.surface().surfaceType());
+    assertEquals("chat_tool_plan.system_message.v1", denied.surface().data().get("surfaceContract"));
+    assertEquals(true, denied.surface().data().get("noDirectMutation"));
+    assertTrue(denied.surface().toString().contains("CHAT_TOOL_PLAN_CONFIRMATION_TEXT_REQUIRED"));
     assertEquals("Tenant Admin", identityRepository.profile("admin@example.test").displayName());
 
     var confirmed = confirmRepresentativePlan(identity(), "membership-admin", proposal, snapshot, "idem-my-account-profile-chat-confirm");
@@ -2351,6 +2354,51 @@ class WorkstreamServiceTest {
   }
 
   @Test
+  void expandedMyAccountChatToolPlanConfirmationDenialsReturnSystemMessagesWithoutMutation() {
+    assertEquals(UserSettings.ThemeId.AURORA_LIGHT, identityRepository.settings("admin@example.test").themeId());
+    var response = submitRepresentativePlan(identity(), "membership-admin", "my-account-agent", "change my theme to Obsidian Dark", "idem-my-account-denial-chat", List.of(runtimeStep(
+        "step-update-my-settings", 1, "action-update-my-settings", "action-update-my-settings", "my_account.update_profile_settings", "my_account.update_profile_settings", "schema.my-account.settings.update.v1", false)));
+    var proposal = (WorkstreamService.ChatToolPlanProposal) response.surface().data().get("proposal");
+    var snapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) response.surface().data().get("confirmationSnapshot");
+
+    var crossContext = service.confirmChatToolPlan(identity(), "membership-admin", new WorkstreamService.ChatToolPlanConfirmationRequest(
+        "membership-member", proposal.planId(), proposal.planSnapshotId(), "CONFIRM " + proposal.planSnapshotId(), snapshot.stepHashes(), "idem-my-account-denial-cross-context", "corr-my-account-denial-cross-context"));
+    assertEquals("chat_tool_plan_system_message", crossContext.agentItem().kind());
+    assertEquals("chat_tool_plan_system_message", crossContext.surface().surfaceType());
+    assertEquals("chat_tool_plan.system_message.v1", crossContext.surface().data().get("surfaceContract"));
+    assertEquals(true, crossContext.surface().data().get("noDirectMutation"));
+    assertEquals(true, crossContext.surface().data().get("noMutation"));
+    assertTrue(crossContext.surface().toString().contains("CONTEXT_FORBIDDEN"));
+    assertEquals(UserSettings.ThemeId.AURORA_LIGHT, identityRepository.settings("admin@example.test").themeId());
+
+    var boundary = agentRepository.toolBoundary("tenant-1", "tool-boundary-my-account").orElseThrow();
+    var withoutSettingsGrant = boundary.allowedToolGrants().stream()
+        .filter(grant -> !"my_account.update_profile_settings".equals(grant.toolId()))
+        .toList();
+    agentRepository.saveToolBoundary(new ToolPermissionBoundary(
+        boundary.tenantId(),
+        boundary.boundaryId(),
+        boundary.agentDefinitionId(),
+        boundary.status(),
+        boundary.boundaryVersion() + 1,
+        withoutSettingsGrant,
+        "without-my-account-settings-chat-grant",
+        boundary.seedProvenance(),
+        boundary.createdAt(),
+        boundary.updatedAt()));
+
+    var boundaryDenied = service.confirmChatToolPlan(identity(), "membership-admin", new WorkstreamService.ChatToolPlanConfirmationRequest(
+        "membership-admin", proposal.planId(), proposal.planSnapshotId(), "CONFIRM " + proposal.planSnapshotId(), snapshot.stepHashes(), "idem-my-account-denial-boundary", "corr-my-account-denial-boundary"));
+    assertEquals("chat_tool_plan_system_message", boundaryDenied.surface().surfaceType());
+    assertEquals("chat_tool_plan.system_message.v1", boundaryDenied.surface().data().get("surfaceContract"));
+    assertEquals(true, boundaryDenied.surface().data().get("noDirectMutation"));
+    assertTrue(boundaryDenied.surface().toString().contains("CHAT_TOOL_BOUNDARY_TOOL_NOT_GRANTED"));
+    assertTrue(boundaryDenied.surface().traceIds().stream().anyMatch(traceId -> traceId.contains("trace-human-chat-tool-plan-denied")));
+    assertEquals(UserSettings.ThemeId.AURORA_LIGHT, identityRepository.settings("admin@example.test").themeId(), "Denied confirmation must not mutate settings.");
+    assertBrowserPayloadSafe(boundaryDenied.surface());
+  }
+
+  @Test
   void representativeChatToolPlansCoverAllFiveFoundationWorkstreamsWithConfirmationAndTraceSemantics() {
     assertEquals(UserSettings.ThemeId.AURORA_LIGHT, identityRepository.settings("admin@example.test").themeId());
 
@@ -2441,15 +2489,22 @@ class WorkstreamServiceTest {
     var proposal = (WorkstreamService.ChatToolPlanProposal) response.surface().data().get("proposal");
     var snapshot = (WorkstreamService.ChatToolPlanConfirmationSnapshot) response.surface().data().get("confirmationSnapshot");
 
-    var missingConfirmation = assertThrows(AuthorizationException.class, () -> service.confirmChatToolPlan(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanConfirmationRequest(
-        "membership-owner", proposal.planId(), proposal.planSnapshotId(), "confirm", snapshot.stepHashes(), "idem-chat-confirm-gate-execute", "corr-chat-confirm-gate-missing")));
-    assertTrue(missingConfirmation.reasonCode().contains("CHAT_TOOL_PLAN_CONFIRMATION_TEXT_REQUIRED"));
+    var missingConfirmation = service.confirmChatToolPlan(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanConfirmationRequest(
+        "membership-owner", proposal.planId(), proposal.planSnapshotId(), "confirm", snapshot.stepHashes(), "idem-chat-confirm-gate-execute", "corr-chat-confirm-gate-missing"));
+    assertEquals("chat_tool_plan_system_message", missingConfirmation.surface().surfaceType());
+    assertEquals("chat_tool_plan.system_message.v1", missingConfirmation.surface().data().get("surfaceContract"));
+    assertEquals(true, missingConfirmation.surface().data().get("noDirectMutation"));
+    assertEquals(true, missingConfirmation.surface().data().get("noMutation"));
+    assertTrue(missingConfirmation.surface().toString().contains("CHAT_TOOL_PLAN_CONFIRMATION_TEXT_REQUIRED"));
 
     var tamperedHashes = new java.util.LinkedHashMap<>(snapshot.stepHashes());
     tamperedHashes.put("step-create-organization", "step-hash-tampered");
-    var tampered = assertThrows(AuthorizationException.class, () -> service.confirmChatToolPlan(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanConfirmationRequest(
-        "membership-owner", proposal.planId(), proposal.planSnapshotId(), "CONFIRM " + proposal.planSnapshotId(), tamperedHashes, "idem-chat-confirm-gate-tampered", "corr-chat-confirm-gate-tampered")));
-    assertTrue(tampered.reasonCode().contains("CHAT_TOOL_PLAN_STEP_HASH_MISMATCH"));
+    var tampered = service.confirmChatToolPlan(ownerIdentity(), "membership-owner", new WorkstreamService.ChatToolPlanConfirmationRequest(
+        "membership-owner", proposal.planId(), proposal.planSnapshotId(), "CONFIRM " + proposal.planSnapshotId(), tamperedHashes, "idem-chat-confirm-gate-tampered", "corr-chat-confirm-gate-tampered"));
+    assertEquals("chat_tool_plan_system_message", tampered.surface().surfaceType());
+    assertEquals("chat_tool_plan.system_message.v1", tampered.surface().data().get("surfaceContract"));
+    assertEquals(true, tampered.surface().data().get("noDirectMutation"));
+    assertTrue(tampered.surface().toString().contains("CHAT_TOOL_PLAN_STEP_HASH_MISMATCH"));
     assertEquals(tenantCountBefore, identityRepository.tenantRows().size(), "Plan must not execute without exact snapshot confirmation.");
     assertEquals(invitationCountBefore, invitationRepository.invitations().size(), "Plan must not invite without exact snapshot confirmation.");
   }
