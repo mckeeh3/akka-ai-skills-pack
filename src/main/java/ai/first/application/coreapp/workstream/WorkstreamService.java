@@ -776,8 +776,8 @@ public final class WorkstreamService {
     } else if ("action-agent-doc-edit-save".equals(request.actionId())) {
       var saved = agentAdminDocAdministrationService.saveEditSession(actor, new AgentAdminDocAdministrationService.EditSessionCommandRequest(stringInput(request.input(), "sessionId", "")), request.correlationId());
       var surface = agentAdminDocumentSurface(actor, mapOf("agentDefinitionId", saved.session().agentDefinitionId(), "kind", saved.session().kind().name(), "documentId", saved.session().documentId()), request.correlationId());
-      surface.data().put("lastResult", mapOf("status", "saved", "savedVersion", saved.savedVersion(), "traceRefs", saved.traceLinks()));
-      result = new CapabilityActionResult("accepted", "Edit saved as the new current document version.", request.correlationId(), saved.traceLinks(), surface);
+      surface.data().put("lastResult", mapOf("status", "draft-saved", "proposalId", saved.proposal().proposalId(), "baseVersion", saved.proposal().baseVersion(), "currentActiveVersion", saved.savedVersion(), "traceRefs", saved.traceLinks()));
+      result = new CapabilityActionResult("accepted", "Edit saved as a non-active behavior proposal; activation is a separate protected action.", request.correlationId(), saved.traceLinks(), surface);
     } else if ("action-agent-doc-edit-cancel".equals(request.actionId())) {
       var session = agentAdminDocAdministrationService.cancelEditSession(actor, new AgentAdminDocAdministrationService.EditSessionCommandRequest(stringInput(request.input(), "sessionId", "")), request.correlationId());
       result = new CapabilityActionResult("accepted", "Edit session cancelled; proposed content was discarded.", request.correlationId(), session.traceLinks(), agentAdminEditSessionSurface(actor, session, request.correlationId()));

@@ -126,7 +126,13 @@ class AgentAdminDocEditingAgentTest extends TestKitSupport {
 
     var saved = service.saveEditSession(owner, new EditSessionCommandRequest(revised.sessionId()), "corr-save");
     assertEquals(EditSessionStatus.SAVED, saved.session().status());
-    assertEquals(2, saved.savedVersion());
+    assertEquals(1, saved.savedVersion());
+    var afterDraft = service.readDocumentVersion(owner, promptRequest(null), "corr-after-draft");
+    assertEquals(1, afterDraft.version());
+    assertFalse(afterDraft.contentBody().contains("Keep the existing headings."));
+
+    var activated = service.activateProposal(owner, new AgentAdminDocAdministrationService.ActivateProposalRequest(saved.proposal().proposalId(), "Activate low-risk draft"), "corr-activate");
+    assertEquals(2, activated.newCurrentVersion());
     var afterSave = service.readDocumentVersion(owner, promptRequest(null), "corr-after-save");
     assertEquals(2, afterSave.version());
     assertTrue(afterSave.contentBody().contains("Keep the existing headings."));
@@ -156,7 +162,8 @@ class AgentAdminDocEditingAgentTest extends TestKitSupport {
 
     assertTrue(traceSink.traces().stream().anyMatch(trace -> trace.traceType().equals("PROMPT_ASSEMBLY") && trace.decision() == AgentRuntimeTrace.Decision.ALLOWED));
     assertTrue(traceSink.traces().stream().anyMatch(trace -> trace.traceType().equals("EDIT_AGENT_INVOCATION") && trace.decision() == AgentRuntimeTrace.Decision.ALLOWED));
-    assertTrue(traceSink.traces().stream().anyMatch(trace -> trace.traceType().equals("EDIT_SESSION_SAVE") && trace.capabilityId().equals(AgentAdminDocAdministrationService.SAVE_EDIT_CAPABILITY)));
+    assertTrue(traceSink.traces().stream().anyMatch(trace -> trace.traceType().equals("EDIT_SESSION_SAVE_DRAFT") && trace.capabilityId().equals(AgentAdminDocAdministrationService.SAVE_EDIT_CAPABILITY)));
+    assertTrue(traceSink.traces().stream().anyMatch(trace -> trace.traceType().equals("BEHAVIOR_PROPOSAL_ACTIVATED") && trace.capabilityId().equals(AgentAdminDocAdministrationService.ACTIVATE_PROPOSAL_CAPABILITY)));
     assertTrue(traceSink.traces().stream().anyMatch(trace -> trace.traceType().equals("EDIT_SESSION_CANCEL") && trace.capabilityId().equals(AgentAdminDocAdministrationService.CANCEL_EDIT_CAPABILITY)));
   }
 

@@ -50,7 +50,10 @@ public final class AgentAdminDocAdministrationService {
   public static final String UPDATE_AGENT_PROFILE_CAPABILITY = "saas_owner.admin.manage";
   public static final String DRAFT_EDIT_CAPABILITY = AgentRuntimeCapabilityIds.DRAFT_BEHAVIOR_CHANGE;
   public static final String CANCEL_EDIT_CAPABILITY = AgentRuntimeCapabilityIds.CANCEL_BEHAVIOR_CHANGE;
-  public static final String SAVE_EDIT_CAPABILITY = AgentRuntimeCapabilityIds.ACTIVATE_BEHAVIOR_CHANGE;
+  public static final String SAVE_EDIT_CAPABILITY = AgentRuntimeCapabilityIds.DRAFT_BEHAVIOR_CHANGE;
+  public static final String ACTIVATE_PROPOSAL_CAPABILITY = AgentRuntimeCapabilityIds.ACTIVATE_BEHAVIOR_CHANGE;
+  public static final String APPROVE_PROPOSAL_CAPABILITY = AgentRuntimeCapabilityIds.APPROVE_BEHAVIOR_CHANGE;
+  public static final String REJECT_PROPOSAL_CAPABILITY = AgentRuntimeCapabilityIds.REJECT_BEHAVIOR_CHANGE;
   public static final String RESTORE_VERSION_CAPABILITY = AgentRuntimeCapabilityIds.ROLLBACK_BEHAVIOR_CHANGE;
   public static final String MANAGE_SKILL_CAPABILITY = "saas_owner.admin.manage";
   public static final String MANAGE_REFERENCE_CAPABILITY = "saas_owner.admin.manage";
@@ -60,9 +63,11 @@ public final class AgentAdminDocAdministrationService {
   private final Clock clock;
   private final AgentAdminDocEditingRuntime editingRuntime;
   private static final Map<String, EditSessionRecord> SESSIONS = new ConcurrentHashMap<>();
+  private static final Map<String, BehaviorChangeProposalRecord> PROPOSALS = new ConcurrentHashMap<>();
 
   private final AgentRuntimeTraceSink traceSink;
   private final Map<String, EditSessionRecord> sessions = SESSIONS;
+  private final Map<String, BehaviorChangeProposalRecord> proposals = PROPOSALS;
 
   public AgentAdminDocAdministrationService(AgentBehaviorRepository repository, AuthContextResolver authContextResolver, Clock clock) {
     this(repository, authContextResolver, clock, new FailClosedAgentAdminDocEditingRuntime(), new NoopAgentRuntimeTraceSink());
@@ -292,19 +297,77 @@ public final class AgentAdminDocAdministrationService {
   }
 
   public SaveEditSessionResult saveEditSession(AuthContextResolver.ResolvedMe actor, EditSessionCommandRequest request, String correlationId) {
-    requireSaasAdmin(actor, SAVE_EDIT_CAPABILITY, "agent_admin.doc_edit_session.save.v1", correlationId);
+    requireSaasAdmin(actor, SAVE_EDIT_CAPABILITY, "agent_admin.doc_edit_session.save_draft.v1", correlationId);
     var existing = session(request.sessionId());
     ensureSessionActor(actor, existing);
     if (existing.status() == EditSessionStatus.CANCELLED) throw new AuthorizationException(409, "edit-session-cancelled");
     if (existing.status() != EditSessionStatus.PROPOSAL_READY || existing.proposedContent() == null || existing.proposedContent().isBlank()) throw new AuthorizationException(409, "edit-session-proposal-required");
     var current = resolveDocument(new DocumentVersionRequest(existing.agentDefinitionId(), existing.kind(), existing.documentId(), null));
     if (current.currentVersion() != existing.baseVersion()) throw new AuthorizationException(409, "edit-session-base-version-stale");
-    var nextVersion = current.currentVersion() + 1;
-    saveCurrentSnapshot(current, existing.proposedContent(), actor.account().accountId(), firstNonBlank(existing.changeSummary(), "Saved from Agent Admin edit session " + existing.sessionId()), editSessionTranscript(existing));
+    var proposal = proposalFromSession(actor, existing, current, correlationId);
+    proposals.put(proposal.proposalId(), proposal);
     var saved = transitionSession(existing, EditSessionStatus.SAVED, correlationId);
-    recordEditTrace("EDIT_SESSION_SAVE", AgentRuntimeTrace.Decision.ALLOWED, saved, correlationId, "edit session saved as document version " + nextVersion, checksum(existing.proposedContent()));
+    recordEditTrace("EDIT_SESSION_SAVE_DRAFT", AgentRuntimeTrace.Decision.ALLOWED, saved, correlationId, "edit session saved as non-active proposal " + proposal.proposalId() + "; risk=" + proposal.riskClassification() + "; authorityExpansion=" + proposal.authorityExpansion().detected(), checksum(existing.proposedContent()));
+    recordProposalTrace("BEHAVIOR_PROPOSAL_SAVED", AgentRuntimeTrace.Decision.ALLOWED, proposal, correlationId, "proposal saved as non-active draft; baseVersion=" + proposal.baseVersion() + "; risk=" + proposal.riskClassification() + "; authorityExpansion=" + proposal.authorityExpansion().detected());
     sessions.put(saved.sessionId(), saved);
-    return new SaveEditSessionResult(saved, nextVersion, List.of(traceId("edit-session-save", existing.sessionId(), correlationId)));
+    return new SaveEditSessionResult(saved, proposal, current.currentVersion(), List.of(traceId("edit-session-save-draft", existing.sessionId(), correlationId), traceId("behavior-proposal-saved", proposal.proposalId(), correlationId)));
+  }
+
+  public BehaviorChangeProposalRecord readProposal(AuthContextResolver.ResolvedMe actor, ProposalCommandRequest request, String correlationId) {
+    requireSaasAdmin(actor, READ_AGENT_CAPABILITY, "agent_admin.doc_proposal.read.v1", correlationId);
+    return proposal(request == null ? null : request.proposalId());
+  }
+
+  public BehaviorChangeProposalRecord reviewProposal(AuthContextResolver.ResolvedMe actor, ReviewProposalRequest request, String correlationId) {
+    var decision = request == null || request.decision() == null ? ProposalReviewDecision.APPROVE : request.decision();
+    requireSaasAdmin(actor, decision == ProposalReviewDecision.REJECT ? REJECT_PROPOSAL_CAPABILITY : APPROVE_PROPOSAL_CAPABILITY, "agent_admin.doc_proposal.review.v1", correlationId);
+    var existing = proposal(request == null ? null : request.proposalId());
+    if (existing.status() != BehaviorProposalStatus.DRAFT && existing.status() != BehaviorProposalStatus.APPROVED) throw new AuthorizationException(409, "proposal-review-closed");
+    if (decision == ProposalReviewDecision.REJECT) {
+      var rejected = transitionProposal(existing, BehaviorProposalStatus.REJECTED, actor.account().accountId(), null, correlationId);
+      proposals.put(rejected.proposalId(), rejected);
+      recordProposalTrace("BEHAVIOR_PROPOSAL_REJECTED", AgentRuntimeTrace.Decision.DENIED, rejected, correlationId, "proposal rejected; rationale=" + safe(request.rationale()));
+      return rejected;
+    }
+    if (existing.riskClassification() != RiskClassification.LOW || existing.authorityExpansion().detected()) {
+      recordProposalTrace("BEHAVIOR_PROPOSAL_REVIEW_DENIED", AgentRuntimeTrace.Decision.DENIED, existing, correlationId, "proposal approval requires decision-card route; risk=" + existing.riskClassification() + "; authorityExpansion=" + existing.authorityExpansion().detected());
+      throw new AuthorizationException(403, "proposal-approval-requires-decision-card");
+    }
+    var approved = transitionProposal(existing, BehaviorProposalStatus.APPROVED, actor.account().accountId(), null, correlationId);
+    proposals.put(approved.proposalId(), approved);
+    recordProposalTrace("BEHAVIOR_PROPOSAL_APPROVED", AgentRuntimeTrace.Decision.ALLOWED, approved, correlationId, "low-risk proposal approved for separate activation");
+    return approved;
+  }
+
+  public BehaviorChangeProposalRecord cancelProposal(AuthContextResolver.ResolvedMe actor, ProposalCommandRequest request, String correlationId) {
+    requireSaasAdmin(actor, CANCEL_EDIT_CAPABILITY, "agent_admin.doc_proposal.cancel.v1", correlationId);
+    var existing = proposal(request == null ? null : request.proposalId());
+    if (existing.status() != BehaviorProposalStatus.DRAFT && existing.status() != BehaviorProposalStatus.APPROVED) throw new AuthorizationException(409, "proposal-cancel-closed");
+    var cancelled = transitionProposal(existing, BehaviorProposalStatus.CANCELLED, actor.account().accountId(), null, correlationId);
+    proposals.put(cancelled.proposalId(), cancelled);
+    recordProposalTrace("BEHAVIOR_PROPOSAL_CANCELLED", AgentRuntimeTrace.Decision.DENIED, cancelled, correlationId, "proposal cancelled; active document unchanged");
+    return cancelled;
+  }
+
+  public ActivateProposalResult activateProposal(AuthContextResolver.ResolvedMe actor, ActivateProposalRequest request, String correlationId) {
+    requireSaasAdmin(actor, ACTIVATE_PROPOSAL_CAPABILITY, "agent_admin.doc_proposal.activate.v1", correlationId);
+    var existing = proposal(request == null ? null : request.proposalId());
+    if (existing.status() != BehaviorProposalStatus.DRAFT && existing.status() != BehaviorProposalStatus.APPROVED) throw new AuthorizationException(409, "proposal-not-activatable");
+    var current = resolveDocument(new DocumentVersionRequest(existing.agentDefinitionId(), existing.kind(), existing.documentId(), null));
+    if (current.currentVersion() != existing.baseVersion()) {
+      recordProposalTrace("BEHAVIOR_PROPOSAL_ACTIVATION_DENIED", AgentRuntimeTrace.Decision.DENIED, existing, correlationId, "proposal base version stale; baseVersion=" + existing.baseVersion() + "; currentVersion=" + current.currentVersion());
+      throw new AuthorizationException(409, "proposal-base-version-stale");
+    }
+    if (existing.riskClassification() != RiskClassification.LOW || existing.authorityExpansion().detected()) {
+      recordProposalTrace("BEHAVIOR_PROPOSAL_ACTIVATION_DENIED", AgentRuntimeTrace.Decision.DENIED, existing, correlationId, "direct activation denied; risk=" + existing.riskClassification() + "; authorityExpansion=" + existing.authorityExpansion().detected());
+      throw new AuthorizationException(403, "proposal-direct-activation-requires-review");
+    }
+    var nextVersion = current.currentVersion() + 1;
+    saveCurrentSnapshot(current, existing.proposedContent(), actor.account().accountId(), firstNonBlank(existing.summary(), "Activated Agent Admin proposal " + existing.proposalId()), existing.transcriptSummary());
+    var activated = transitionProposal(existing, BehaviorProposalStatus.ACTIVATED, actor.account().accountId(), actor.account().accountId(), correlationId);
+    proposals.put(activated.proposalId(), activated);
+    recordProposalTrace("BEHAVIOR_PROPOSAL_ACTIVATED", AgentRuntimeTrace.Decision.ALLOWED, activated, correlationId, "proposal activated as document version " + nextVersion + "; risk=" + activated.riskClassification() + "; authorityExpansion=" + activated.authorityExpansion().detected());
+    return new ActivateProposalResult(activated, nextVersion, List.of(traceId("behavior-proposal-activated", existing.proposalId(), correlationId)));
   }
 
   public RestoreVersionResult restoreVersion(AuthContextResolver.ResolvedMe actor, RestoreVersionRequest request, String correlationId) {
@@ -454,6 +517,116 @@ public final class AgentAdminDocAdministrationService {
     return "accountId=" + safe(trace.actorId());
   }
 
+  private BehaviorChangeProposalRecord proposalFromSession(AuthContextResolver.ResolvedMe actor, EditSessionRecord session, DocumentSnapshot current, String correlationId) {
+    var risk = classifyRisk(session);
+    var authorityExpansion = detectAuthorityExpansion(session);
+    var proposalVersion = current.currentVersion() + 1;
+    var proposalId = "agent-doc-proposal-" + UUID.randomUUID();
+    return new BehaviorChangeProposalRecord(
+        proposalId,
+        BehaviorProposalStatus.DRAFT,
+        session.agentDefinitionId(),
+        session.kind(),
+        session.documentId(),
+        session.baseVersion(),
+        proposalVersion,
+        safe(session.proposedContent()),
+        simpleUnifiedDiff(current.contentBody(), session.proposedContent()),
+        firstNonBlank(session.changeSummary(), "Agent Admin behavior proposal"),
+        firstNonBlank(session.changeSummary(), "Proposed from edit session " + session.sessionId()),
+        risk,
+        authorityExpansion,
+        suggestedTestsFor(risk, authorityExpansion),
+        editSessionTranscript(session),
+        session.actorAccountId(),
+        null,
+        null,
+        appendTrace(session.traceLinks(), traceId("behavior-proposal-draft", proposalId, correlationId)),
+        Instant.now(clock),
+        null,
+        null);
+  }
+
+  private BehaviorChangeProposalRecord proposal(String proposalId) {
+    requireNonBlank(proposalId, "proposalId-required");
+    var proposal = proposals.get(proposalId);
+    if (proposal == null) throw new AuthorizationException(404, "proposal-not-found-or-forbidden");
+    return proposal;
+  }
+
+  private BehaviorChangeProposalRecord transitionProposal(BehaviorChangeProposalRecord existing, BehaviorProposalStatus status, String reviewedByAccountId, String activatedByAccountId, String correlationId) {
+    var now = Instant.now(clock);
+    return new BehaviorChangeProposalRecord(
+        existing.proposalId(),
+        status,
+        existing.agentDefinitionId(),
+        existing.kind(),
+        existing.documentId(),
+        existing.baseVersion(),
+        existing.proposalVersion(),
+        existing.proposedContent(),
+        existing.proposedDiff(),
+        existing.summary(),
+        existing.rationale(),
+        existing.riskClassification(),
+        existing.authorityExpansion(),
+        existing.suggestedTests(),
+        existing.transcriptSummary(),
+        existing.proposedByAccountId(),
+        firstNonBlank(reviewedByAccountId, existing.reviewedByAccountId()),
+        firstNonBlank(activatedByAccountId, existing.activatedByAccountId()),
+        appendTrace(existing.traceLinks(), traceId("behavior-proposal-" + status.name().toLowerCase(Locale.ROOT), existing.proposalId(), correlationId)),
+        existing.createdAt(),
+        reviewedByAccountId == null ? existing.reviewedAt() : now,
+        activatedByAccountId == null ? existing.activatedAt() : now);
+  }
+
+  private RiskClassification classifyRisk(EditSessionRecord session) {
+    var text = proposalRiskText(session);
+    if (containsAny(text, "blocked")) return RiskClassification.BLOCKED;
+    if (containsAny(text, "high-risk", "high risk", "authority", "tool permission", "toolpermissionboundary", "broader tenant", "cross-tenant", "approval authority", "bypass authorization", "side-effect permission")) return RiskClassification.HIGH;
+    if (containsAny(text, "medium-risk", "medium risk", "review required", "decision card")) return RiskClassification.MEDIUM;
+    return RiskClassification.LOW;
+  }
+
+  private AuthorityExpansionFlags detectAuthorityExpansion(EditSessionRecord session) {
+    var text = proposalRiskText(session);
+    var types = new ArrayList<String>();
+    if (containsAny(text, "tool", "toolpermissionboundary")) types.add("tool");
+    if (containsAny(text, "data access", "customer data", "tenant data", "cross-tenant", "broader tenant")) types.add("data");
+    if (containsAny(text, "tenant scope", "broader tenant", "cross-tenant")) types.add("tenant_scope");
+    if (containsAny(text, "role scope", "grant role", "admin role", "approval authority")) types.add("role_scope");
+    if (containsAny(text, "approve", "approval authority")) types.add("approval");
+    if (containsAny(text, "autonomous", "background")) types.add("autonomy");
+    if (containsAny(text, "model authority", "provider")) types.add("model");
+    if (containsAny(text, "bypass authorization", "policy override")) types.add("policy");
+    var distinct = types.stream().distinct().toList();
+    return new AuthorityExpansionFlags(!distinct.isEmpty(), distinct);
+  }
+
+  private static String proposalRiskText(EditSessionRecord session) {
+    var instructions = session.instructions().stream().map(EditInstruction::instructions).collect(java.util.stream.Collectors.joining("\n"));
+    return (instructions + "\n" + safe(session.changeSummary()) + "\n" + session.warnings()).toLowerCase(Locale.ROOT);
+  }
+
+  private static boolean containsAny(String text, String... needles) {
+    var safeText = text == null ? "" : text;
+    for (var needle : needles) {
+      if (safeText.contains(needle)) return true;
+    }
+    return false;
+  }
+
+  private static List<String> suggestedTestsFor(RiskClassification risk, AuthorityExpansionFlags authorityExpansion) {
+    var tests = new ArrayList<String>();
+    tests.add("Verify active runtime document remains unchanged after Save Draft.");
+    tests.add("Activate through the protected proposal command and verify the new active version only after activation.");
+    if (risk != RiskClassification.LOW || authorityExpansion.detected()) {
+      tests.add("Route to review/decision-card evidence before activation; direct activation must be denied.");
+    }
+    return List.copyOf(tests);
+  }
+
   private EditSessionRecord invokeEditingAgent(AuthContextResolver.ResolvedMe actor, EditSessionRecord session, DocumentSnapshot base, String priorProposal, String correlationId) {
     var agent = agent(session.agentDefinitionId());
     var result = editingRuntime.proposeEdit(new AgentAdminDocEditingRuntime.EditProposalRequest(
@@ -549,9 +722,29 @@ public final class AgentAdminDocAdministrationService {
         checksum));
   }
 
+  private void recordProposalTrace(String traceType, AgentRuntimeTrace.Decision decision, BehaviorChangeProposalRecord proposal, String correlationId, String safeSummary) {
+    traceSink.record(new AgentRuntimeTrace(
+        traceId(traceType.toLowerCase(Locale.ROOT), proposal.proposalId(), correlationId),
+        Instant.now(clock),
+        platformScopeId(),
+        proposal.agentDefinitionId(),
+        correlationId,
+        proposal.proposalId(),
+        traceType,
+        decision,
+        firstNonBlank(proposal.activatedByAccountId(), firstNonBlank(proposal.reviewedByAccountId(), proposal.proposedByAccountId())),
+        capabilityForTrace(traceType),
+        proposal.documentId(),
+        safe(safeSummary),
+        checksum(proposal.proposedContent())));
+  }
+
   private static String capabilityForTrace(String traceType) {
-    if ("EDIT_SESSION_SAVE".equals(traceType)) return SAVE_EDIT_CAPABILITY;
-    if ("EDIT_SESSION_CANCEL".equals(traceType)) return CANCEL_EDIT_CAPABILITY;
+    if ("EDIT_SESSION_SAVE_DRAFT".equals(traceType) || "BEHAVIOR_PROPOSAL_SAVED".equals(traceType)) return SAVE_EDIT_CAPABILITY;
+    if ("EDIT_SESSION_CANCEL".equals(traceType) || "BEHAVIOR_PROPOSAL_CANCELLED".equals(traceType)) return CANCEL_EDIT_CAPABILITY;
+    if ("BEHAVIOR_PROPOSAL_APPROVED".equals(traceType) || "BEHAVIOR_PROPOSAL_REVIEW_DENIED".equals(traceType)) return APPROVE_PROPOSAL_CAPABILITY;
+    if ("BEHAVIOR_PROPOSAL_REJECTED".equals(traceType)) return REJECT_PROPOSAL_CAPABILITY;
+    if ("BEHAVIOR_PROPOSAL_ACTIVATED".equals(traceType) || "BEHAVIOR_PROPOSAL_ACTIVATION_DENIED".equals(traceType)) return ACTIVATE_PROPOSAL_CAPABILITY;
     return DRAFT_EDIT_CAPABILITY;
   }
 
@@ -882,6 +1075,8 @@ public final class AgentAdminDocAdministrationService {
   private static final class AgentRuntimeCapabilityIds {
     private static final String DRAFT_BEHAVIOR_CHANGE = "agent_admin.draft_behavior_change";
     private static final String CANCEL_BEHAVIOR_CHANGE = "agent_admin.cancel_behavior_change";
+    private static final String APPROVE_BEHAVIOR_CHANGE = "agent_admin.approve_behavior_change";
+    private static final String REJECT_BEHAVIOR_CHANGE = "agent_admin.reject_behavior_change";
     private static final String ACTIVATE_BEHAVIOR_CHANGE = "agent_admin.activate_behavior_change";
     private static final String ROLLBACK_BEHAVIOR_CHANGE = "agent_admin.rollback_behavior_change";
   }
@@ -889,6 +1084,12 @@ public final class AgentAdminDocAdministrationService {
   public enum AgentDocKind { PROMPT, SKILL, REFERENCE }
 
   public enum EditSessionStatus { DRAFTING, CLARIFICATION_REQUESTED, PROPOSAL_READY, REFUSED, SAVED, CANCELLED }
+
+  public enum BehaviorProposalStatus { DRAFT, APPROVED, REJECTED, CANCELLED, ACTIVATED }
+
+  public enum ProposalReviewDecision { APPROVE, REJECT }
+
+  public enum RiskClassification { LOW, MEDIUM, HIGH, BLOCKED }
 
   public enum DiffStatus { READY, NO_PRIOR_VERSION, PRIOR_VERSION_NOT_AVAILABLE_IN_CURRENT_SLICE }
 
@@ -976,8 +1177,57 @@ public final class AgentAdminDocAdministrationService {
     }
   }
 
-  public record SaveEditSessionResult(EditSessionRecord session, int savedVersion, List<String> traceLinks) {
+  public record AuthorityExpansionFlags(boolean detected, List<String> expansionTypes) {
+    public AuthorityExpansionFlags {
+      expansionTypes = List.copyOf(expansionTypes == null ? List.of() : expansionTypes);
+    }
+  }
+
+  public record BehaviorChangeProposalRecord(
+      String proposalId,
+      BehaviorProposalStatus status,
+      String agentDefinitionId,
+      AgentDocKind kind,
+      String documentId,
+      int baseVersion,
+      int proposalVersion,
+      String proposedContent,
+      String proposedDiff,
+      String summary,
+      String rationale,
+      RiskClassification riskClassification,
+      AuthorityExpansionFlags authorityExpansion,
+      List<String> suggestedTests,
+      String transcriptSummary,
+      String proposedByAccountId,
+      String reviewedByAccountId,
+      String activatedByAccountId,
+      List<String> traceLinks,
+      Instant createdAt,
+      Instant reviewedAt,
+      Instant activatedAt) {
+    public BehaviorChangeProposalRecord {
+      riskClassification = riskClassification == null ? RiskClassification.LOW : riskClassification;
+      authorityExpansion = authorityExpansion == null ? new AuthorityExpansionFlags(false, List.of()) : authorityExpansion;
+      suggestedTests = List.copyOf(suggestedTests == null ? List.of() : suggestedTests);
+      traceLinks = List.copyOf(traceLinks == null ? List.of() : traceLinks);
+    }
+  }
+
+  public record SaveEditSessionResult(EditSessionRecord session, BehaviorChangeProposalRecord proposal, int savedVersion, List<String> traceLinks) {
     public SaveEditSessionResult {
+      traceLinks = List.copyOf(traceLinks == null ? List.of() : traceLinks);
+    }
+  }
+
+  public record ProposalCommandRequest(String proposalId) {}
+
+  public record ReviewProposalRequest(String proposalId, ProposalReviewDecision decision, String rationale) {}
+
+  public record ActivateProposalRequest(String proposalId, String confirmation) {}
+
+  public record ActivateProposalResult(BehaviorChangeProposalRecord proposal, int newCurrentVersion, List<String> traceLinks) {
+    public ActivateProposalResult {
       traceLinks = List.copyOf(traceLinks == null ? List.of() : traceLinks);
     }
   }

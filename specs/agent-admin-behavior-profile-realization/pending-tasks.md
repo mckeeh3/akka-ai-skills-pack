@@ -69,7 +69,7 @@
 
 ### AABP-01-002: Implement proposal lifecycle foundation
 
-- status: pending
+- status: done
 - source: `backlog/01-agent-admin-behavior-profile-build-backlog.md`
 - task brief: `specs/agent-admin-behavior-profile-realization/tasks/01-backend/01-proposal-lifecycle-foundation.md`
 - depends on: [AABP-01-001]
@@ -91,7 +91,9 @@
 - done criteria:
   - Save Draft is non-active, activation is separate, stale/high-risk denials are tested
   - changes and queue update are committed
-- notes: []
+- notes:
+  - completed in this commit with message: `Implement Agent Admin proposal lifecycle foundation`
+  - next runnable task after completion: `AABP-01-003` (`pending`, depends on `AABP-01-002`)
 
 ### AABP-01-003: Align doc restore and skill/reference lifecycle
 
