@@ -271,7 +271,7 @@
 
 ### AABP-05-002: Repair full-suite seed-count blocker from terminal verification
 
-- status: pending
+- status: done
 - source: `AABP-05-001` terminal verification failure
 - task brief: `specs/agent-admin-behavior-profile-realization/tasks/05-validation/02-repair-seed-count-full-suite-blocker.md`
 - depends on: [AABP-04-001]
@@ -292,7 +292,10 @@
   - full backend suite no longer fails on stale seed-count assertions or the underlying seed-accounting defect is isolated with a bounded blocker
   - changes and queue update are committed
 - notes:
-  - next runnable task after `AABP-05-001` blockage.
+  - completed in this commit with message: `Repair Agent Admin terminal seed count blocker`
+  - seed-count delta was stale test evidence after the five core active `AgentBehaviorProfileVersion` seed records were added; fresh import and idempotent reimport now expect 54 seed records and assert one active profile version per core agent.
+  - checks passed: `mvn -Dtest=AgentBehaviorSeedLoaderTest test`, `mvn test`, `git diff --check`.
+  - next runnable task after completion: `AABP-05-003` (`pending`, depends on `AABP-05-002`).
 
 ### AABP-05-003: Rerun Agent Admin behavior-profile realization terminal verification
 

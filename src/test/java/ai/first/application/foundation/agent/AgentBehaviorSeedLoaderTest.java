@@ -31,6 +31,9 @@ import org.junit.jupiter.api.Test;
 import ai.first.application.coreapp.agentadmin.AgentAdminService;
 
 class AgentBehaviorSeedLoaderTest {
+  private static final int STARTER_SEED_RECORD_COUNT = 54;
+  private static final int CORE_AGENT_COUNT = AgentBehaviorSeedLoader.CORE_V0_AGENT_IDS.size();
+
   private InMemoryTestAgentBehaviorRepository repository;
   private AgentBehaviorSeedLoader loader;
 
@@ -44,7 +47,7 @@ class AgentBehaviorSeedLoaderTest {
   void freshTenantImportCreatesApprovedActiveGovernedRecords() {
     var result = loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-1");
 
-    assertEquals(49, result.createdCount());
+    assertEquals(STARTER_SEED_RECORD_COUNT, result.createdCount());
     var agent = repository.agentDefinition("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_AGENT_ID).orElseThrow();
     var prompt = repository.promptDocument("tenant-1", AgentBehaviorSeedLoader.USER_ADMIN_PROMPT_ID).orElseThrow();
     var skill = repository.skillDocument("tenant-1", AgentBehaviorSeedLoader.ACCESS_REVIEW_SKILL_DOC_ID).orElseThrow();
@@ -83,9 +86,13 @@ class AgentBehaviorSeedLoaderTest {
     assertEquals(AgentBehaviorSeedLoader.CORE_V0_AGENT_IDS, modelConfig.allowedAgentDefinitionIds());
     assertTrue(modelConfig.allowedCapabilityIds().contains("saas_owner.admin.manage"));
     assertTrue(modelConfig.allowedCapabilityIds().contains("customer.user.read"));
+    assertEquals(CORE_AGENT_COUNT, activeBehaviorProfileCount("tenant-1"));
     for (var agentId : AgentBehaviorSeedLoader.CORE_V0_AGENT_IDS) {
       var seededAgent = repository.agentDefinition("tenant-1", agentId).orElseThrow();
+      var behaviorProfile = repository.activeBehaviorProfile("tenant-1", agentId).orElseThrow();
       assertEquals(AgentLifecycleStatus.ACTIVE, seededAgent.status());
+      assertEquals(1, behaviorProfile.profileVersion());
+      assertEquals(seededAgent.promptDocumentId(), behaviorProfile.promptDocumentId());
       assertTrue(seededAgent.traceRequirements().contains("PromptAssemblyTrace"));
       assertTrue(repository.promptDocument("tenant-1", seededAgent.promptDocumentId()).orElseThrow().contentBody().contains("backend"));
       assertFalse(repository.promptDocument("tenant-1", seededAgent.promptDocumentId()).orElseThrow().contentBody().toLowerCase().contains("api_key"));
@@ -190,6 +197,12 @@ class AgentBehaviorSeedLoaderTest {
     assertTrue(govPolicyCombined.contains("action-governance-policy-start-impact-analysis"), "governance-policy seed missing start-impact-analysis path");
     assertTrue(govPolicyCombined.toLowerCase().contains("cannot approve") || govPolicyCombined.toLowerCase().contains("cannot activate"), "governance-policy seed must state chat cannot approve or activate policy");
     assertFalse(govPolicyCombined.toLowerCase().contains("unrestricted mutation authority"), "governance-policy seed must not claim unrestricted mutation authority");
+  }
+
+  private long activeBehaviorProfileCount(String tenantId) {
+    return AgentBehaviorSeedLoader.CORE_V0_AGENT_IDS.stream()
+        .filter(agentId -> repository.activeBehaviorProfile(tenantId, agentId).isPresent())
+        .count();
   }
 
   private String combinedSeedMaterial(String agentId) {
@@ -345,7 +358,7 @@ class AgentBehaviorSeedLoaderTest {
     var second = loader.importStarterDefaults("tenant-1", "bootstrap", "corr-seed-2");
 
     assertEquals(0, second.createdCount());
-    assertEquals(49, second.skippedCount());
+    assertEquals(STARTER_SEED_RECORD_COUNT, second.skippedCount());
     assertEquals(5, repository.agentDefinitions("tenant-1").size());
     assertEquals(10, repository.skillDocuments("tenant-1").size());
     assertEquals(10, repository.referenceDocuments("tenant-1").size());
