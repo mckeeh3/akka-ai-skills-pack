@@ -1358,8 +1358,68 @@ public final class WorkstreamService {
       else throw denied;
     }
     if (result == null) result = new CapabilityActionResult("accepted", action.label(), request.correlationId(), List.of("trace-" + request.actionId()), surfaceForAction(actor, request.actionId(), request.correlationId()));
+    appendMyAccountActionTrace(actor, request, action, result);
     if (actionIdempotencyKey != null) idempotentActionResults.put(actionIdempotencyKey, result);
     return result;
+  }
+
+  private void appendMyAccountActionTrace(AuthContextResolver.ResolvedMe actor, CapabilityActionRequest request, SurfaceAction action, CapabilityActionResult result) {
+    if (!isTraceAuditedMyAccountAction(request.actionId())) return;
+    var resultSurfaceId = result.resultSurface() == null ? null : result.resultSurface().surfaceId();
+    var adapterSource = request.correlationId() != null && request.correlationId().contains(":step-") ? "human_chat_tool_plan" : "surface_action";
+    var resultStatus = firstNonBlank(result.status(), "unknown");
+    var idempotencySummary = request.idempotencyKey() == null || request.idempotencyKey().isBlank()
+        ? "none"
+        : "hash:" + stableSuffix(actor.selectedContext().tenantId() + ":" + actor.account().accountId() + ":" + request.actionId() + ":" + request.idempotencyKey());
+    var summary = "adapterSource=" + adapterSource
+        + "; traceSource=" + adapterSource
+        + "; functionalAgentId=" + MY_ACCOUNT_AGENT_ID
+        + "; actionId=" + request.actionId()
+        + "; browserToolId=" + request.browserToolId()
+        + "; governedToolId=" + request.governedToolId()
+        + "; capabilityId=" + request.capabilityId()
+        + "; selectedContextId=" + actor.selectedContext().membershipId()
+        + "; tenantId=" + actor.selectedContext().tenantId()
+        + "; customerId=" + actor.selectedContext().customerId()
+        + "; actorAccountId=" + actor.account().accountId()
+        + "; result=" + resultStatus
+        + "; resultSurfaceId=" + resultSurfaceId
+        + "; idempotency=" + idempotencySummary
+        + "; correlationId=" + request.correlationId()
+        + "; redaction=browser-safe"
+        + "; traceRefs=" + String.join(",", result.traceIds() == null ? List.of() : result.traceIds());
+    if (List.of("denied", "validation-error", "blocked-runtime").contains(resultStatus)) {
+      authContextResolver.appendDeniedTrace(actor, "MY_ACCOUNT_SURFACE_ACTION", summary, request.correlationId());
+    } else {
+      authContextResolver.appendProtectedReadTrace(actor, "MY_ACCOUNT_SURFACE_ACTION", summary, request.correlationId());
+    }
+  }
+
+  private boolean isTraceAuditedMyAccountAction(String actionId) {
+    return actionId != null && (List.of(
+        "action-show-my-account-dashboard",
+        "action-show-my-profile",
+        "action-show-my-settings",
+        "action-show-my-context",
+        "action-select-my-context",
+        "action-update-my-profile",
+        "action-update-my-settings",
+        "action-show-my-account-notification-center",
+        "action-notification-mark-read",
+        "action-notification-dismiss",
+        "action-notification-archive",
+        "action-notification-snooze",
+        "action-notification-update-preferences",
+        "action-notification-open-source",
+        "action-open-user-admin",
+        "action-open-agent-admin",
+        "action-open-audit-trace",
+        "action-open-governance-policy",
+        "action-start-my-account-personal-attention-digest",
+        "action-read-my-account-personal-attention-digest",
+        "action-cancel-my-account-personal-attention-digest",
+        "action-accept-my-account-personal-attention-digest",
+        "action-reject-my-account-personal-attention-digest").contains(actionId));
   }
 
   private boolean isUserAdminAction(String actionId) {

@@ -105,7 +105,7 @@
 
 ### MAFA-03-001: Durable trace and audit verification
 
-- status: pending
+- status: blocked
 - source: `backlog/01-my-account-automated-alignment-build-backlog.md` B03
 - task brief: `specs/my-account-full-alignment/tasks/03-traces/01-durable-trace-audit-verification.md`
 - depends on: [MAFA-02-001]
@@ -130,8 +130,12 @@
   - durable trace/audit evidence is proven for automated slices or gaps are queued
   - source-alignment trace/audit entry is updated
 - notes:
-  - lifecycle/readiness: backend-ready for trace checks
+  - lifecycle/readiness: blocked-validation for aggregate trace checks
   - vertical contract: My Account / `my-account-agent`; all consequential My Account tools across `surface_action`, `human_chat_tool_plan`, API/internal; selected AuthContext, actor, capability/tool/action id, result, redaction, correlation/idempotency evidence required
+  - implementation evidence: added durable My Account surface-action audit traces and `MyAccountTraceAuditTest`; targeted `mvn -Dtest='MyAccountTraceAuditTest' test` passes and source-alignment trace/audit entry is updated
+  - commit message: `MAFA-03-001 add My Account trace audit evidence` (blocked-validation commit)
+  - blocker: required aggregate command `mvn -Dtest='*Trace*Test,WorkstreamServiceTest,MyAccountPersonalAttentionDigestServiceTest' test` fails in pre-existing `AuditTraceBrowserWorkstreamSmokeTest` disabled Audit/Trace account denial assertions (`Disabled accounts must not resolve an Audit/Trace AuthContext`)
+  - unblock: repair the Audit/Trace browser-smoke disabled-account denial path or isolate/reset the Akka smoke identity fixture, then rerun the required aggregate Maven command and `git diff --check`
 
 ### MAFA-04-001: Notification center lifecycle alignment
 
