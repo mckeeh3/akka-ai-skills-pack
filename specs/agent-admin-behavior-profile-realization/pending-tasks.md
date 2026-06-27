@@ -236,7 +236,7 @@
 
 ### AABP-05-001: Verify Agent Admin behavior-profile realization closure
 
-- status: pending
+- status: blocked
 - source: terminal verification loop for this mini-project
 - task brief: `specs/agent-admin-behavior-profile-realization/tasks/05-validation/01-fullstack-closure-verification.md`
 - depends on: [AABP-04-001]
@@ -262,5 +262,64 @@
   - `git diff --check`
 - done criteria:
   - mini-project done state is either achieved and recorded closed, or remaining material gaps are converted into a further bounded follow-up loop
+  - changes are committed
+- notes:
+  - blocked in terminal verification because `mvn test` failed in `AgentBehaviorSeedLoaderTest` seed-count assertions (`expected: <49> but was: <54>` at lines 47 and 348); frontend checks passed.
+  - verification notes: `specs/agent-admin-behavior-profile-realization/verification-notes.md`
+  - achieved evidence before blocker: `api-smoked` Agent Admin workstream/API path and `frontend-rendered` frontend contracts/build; mini-project is not closed.
+  - unblock path: run `AABP-05-002`, then rerun terminal verification through `AABP-05-003`.
+
+### AABP-05-002: Repair full-suite seed-count blocker from terminal verification
+
+- status: pending
+- source: `AABP-05-001` terminal verification failure
+- task brief: `specs/agent-admin-behavior-profile-realization/tasks/05-validation/02-repair-seed-count-full-suite-blocker.md`
+- depends on: [AABP-04-001]
+- required reads:
+  - `specs/agent-admin-behavior-profile-realization/verification-notes.md`
+  - `specs/agent-admin-behavior-profile-realization/pending-tasks.md`
+  - `src/test/java/ai/first/application/foundation/agent/AgentBehaviorSeedLoaderTest.java`
+  - source files directly needed to explain or repair the seed-count delta
+- skills:
+  - `akka-runtime-feature-verification`
+- expected outputs:
+  - repaired seed-count/accounting evidence or a narrower blocker note if the count delta represents a product defect
+- required checks:
+  - `mvn -Dtest=AgentBehaviorSeedLoaderTest test`
+  - `mvn test`
+  - `git diff --check`
+- done criteria:
+  - full backend suite no longer fails on stale seed-count assertions or the underlying seed-accounting defect is isolated with a bounded blocker
+  - changes and queue update are committed
+- notes:
+  - next runnable task after `AABP-05-001` blockage.
+
+### AABP-05-003: Rerun Agent Admin behavior-profile realization terminal verification
+
+- status: pending
+- source: terminal verification loop appended by `AABP-05-001`
+- task brief: `specs/agent-admin-behavior-profile-realization/tasks/05-validation/03-rerun-fullstack-closure-verification.md`
+- depends on: [AABP-05-002]
+- required reads:
+  - `specs/agent-admin-behavior-profile-realization/README.md`
+  - `specs/agent-admin-behavior-profile-realization/verification-notes.md`
+  - `specs/agent-admin-behavior-profile-realization/pending-tasks.md`
+  - `app-description/domains/core-starter/workstreams/agent-admin/**`
+- skills:
+  - `akka-runtime-feature-verification`
+  - `akka-web-ui-testing`
+  - `akka-agent-testing`
+  - `akka-agent-work-trace`
+- expected outputs:
+  - updated `specs/agent-admin-behavior-profile-realization/verification-notes.md`
+  - mini-project closure or another bounded follow-up loop if material gaps remain
+- required checks:
+  - `mvn test`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - `npm --prefix frontend run build`
+  - `git diff --check`
+- done criteria:
+  - mini-project done state is achieved and recorded closed, or remaining material gaps are converted into a further bounded follow-up loop
   - changes are committed
 - notes: []
