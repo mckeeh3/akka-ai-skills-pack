@@ -474,9 +474,11 @@ function MyAccountCommandCenter({ envelope, onAction, onSignOut }: DashboardSurf
           {counters.map((counter) => {
             const action = counter.actionId ? actionById.get(counter.actionId) : undefined;
             const status = counter.statusText ?? counter.status ?? counter.description ?? 'Backend-owned attention';
-            const body = <><span>{counter.workstreamLabel ?? counter.label}</span><strong>{counter.attentionCount ?? counter.value}</strong><em>{formatStatus(status)}</em>{(counter.purposeSummary ?? counter.description) && <small>{counter.purposeSummary ?? counter.description}</small>}<small>{counter.redactionLevel ?? counter.redaction ?? 'Visible in selected context'}</small></>;
+            const counterLabel = counter.workstreamLabel ?? counter.label;
+            const counterValue = counter.attentionCount ?? counter.value;
+            const body = <><span>{counterLabel}</span><strong>{counterValue}</strong><em>{formatStatus(status)}</em>{(counter.purposeSummary ?? counter.description) && <small>{counter.purposeSummary ?? counter.description}</small>}<small>{counter.redactionLevel ?? counter.redaction ?? 'Visible in selected context'}</small></>;
             const input = { targetFunctionalAgentId: counter.workstreamId ?? '', targetSurfaceId: counter.targetSurfaceId ?? counter.surfaceId ?? '', requiredCapabilityId: counter.sourceCapabilityId ?? counter.requiredCapabilityId ?? '', correlationId: envelope.correlationId };
-            return action ? <button key={counter.counterId} type="button" className={`attention-counter-card ${counter.severity ?? 'info'}`} onClick={() => onAction?.(action, envelope.surfaceId, input)} aria-label={`Open ${counter.label}: ${status}; ${counter.value} attention items`}>{body}</button> : <article key={counter.counterId} className={`attention-counter-card ${counter.severity ?? 'info'}`}>{body}</article>;
+            return action ? <button key={counter.counterId} type="button" className={`attention-counter-card ${counter.severity ?? 'info'}`} onClick={() => onAction?.(action, envelope.surfaceId, input)} aria-label={`Open ${counterLabel}: ${status}; ${counterValue} attention items`}>{body}</button> : <article key={counter.counterId} className={`attention-counter-card ${counter.severity ?? 'info'}`}>{body}</article>;
           })}
         </div>
       </section>
@@ -508,9 +510,10 @@ function MyAccountCommandCenter({ envelope, onAction, onSignOut }: DashboardSurf
             return (
               <article key={panel.panelId} className={`my-account-control-panel ${panel.severity ?? panel.state ?? 'info'}`}>
                 <p className="eyebrow">{panel.state ?? 'Available tool'}</p>
-                <h4>{panel.label}</h4>
+                <h4>{panel.panelLabel ?? panel.label}</h4>
                 <p>{panel.summary}</p>
-                {panel.value !== undefined && <strong>{panel.value}</strong>}
+                {(panel.countOrStatus !== undefined || panel.value !== undefined) && <strong>{panel.countOrStatus ?? panel.value}</strong>}
+                {panel.denialHint && <p className="capability-basis">{panel.denialHint}</p>}
                 {action ? <SurfaceActionBar actions={[cleanMyAccountSurfaceActionLabel(action)]} surfaceId={envelope.surfaceId} onAction={onAction} /> : <p className="capability-basis">No authorized action is available for this panel in the selected context.</p>}
               </article>
             );

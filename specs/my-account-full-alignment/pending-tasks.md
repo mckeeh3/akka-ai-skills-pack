@@ -243,7 +243,7 @@
 
 ### MAFA-07-001: Frontend automated surface coverage
 
-- status: pending
+- status: done
 - source: `backlog/01-my-account-automated-alignment-build-backlog.md` B07
 - task brief: `specs/my-account-full-alignment/tasks/07-frontend/01-frontend-automated-surface-coverage.md`
 - depends on: [MAFA-06-001]
@@ -272,6 +272,9 @@
 - notes:
   - lifecycle/readiness: frontend-rendered by automated tests/typecheck/build
   - vertical contract: My Account / `my-account-agent`; all My Account browser surfaces and `surface_action` controls; frontend renders backend-authored actions but grants no authority; no auto-confirm; selected AuthContext from backend; trace links safe; no raw JWT/session/provider/hidden workstream/category/outbox/model/config/arbitrary CSS rendering
+  - completed 2026-06-27: added frontend automated coverage for My Account dashboard counter-first/evidence rendering, self-service editable-only inputs and named-theme preview boundary, context/recovery no-enumeration surfaces, notification lifecycle/external-control omissions, digest blocker/result/evidence/trace rendering, and raw secret/model/config/arbitrary CSS omissions; source-alignment frontend entries updated.
+  - validation: `npm --prefix frontend test -- --run`, `npm --prefix frontend run typecheck`, `npm --prefix frontend run build`, and `git diff --check` pass.
+  - commit message: `MAFA-07-001 align My Account frontend surfaces`
 
 ### MAFA-08-001: Terminal automated verification
 

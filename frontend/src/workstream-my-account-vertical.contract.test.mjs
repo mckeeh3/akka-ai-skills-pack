@@ -15,7 +15,12 @@ const surfaceRenderer = read('./workstream/surfaces/SurfaceRenderer.tsx');
 const dashboardSurface = read('./workstream/surfaces/DashboardSurface.tsx');
 const notificationCenterSurface = read('./workstream/surfaces/NotificationCenterSurface.tsx');
 const detailEditSurface = read('./workstream/surfaces/DetailEditSurface.tsx');
+const myAccountSurfaces = read('./workstream/surfaces/MyAccountSurfaces.tsx');
 const systemMessageSurface = read('./workstream/surfaces/SystemMessageSurface.tsx');
+const workflowStatusSurface = read('./workstream/surfaces/WorkflowStatusSurface.tsx');
+const outcomeSurface = read('./workstream/surfaces/OutcomeSurface.tsx');
+const surfaceTypes = read('./workstream/types/surfaces.ts');
+const main = read('./main.tsx');
 const actionState = read('./workstream/actions/capabilityActionState.ts');
 const componentsCss = read('./styles/components.css');
 const shell = read('./workstream/shell/WorkstreamShell.tsx');
@@ -76,7 +81,15 @@ test('My Account full-core backend exposes dashboard, profile, settings, context
   for (const capabilityConstant of ['MY_ACCOUNT_DIGEST_START_CAPABILITY', 'MY_ACCOUNT_DIGEST_READ_CAPABILITY', 'MY_ACCOUNT_DIGEST_CANCEL_CAPABILITY', 'MY_ACCOUNT_DIGEST_ACCEPT_CAPABILITY', 'MY_ACCOUNT_DIGEST_REJECT_CAPABILITY']) {
     assert.match(backendWorkstreamService, new RegExp(capabilityConstant));
   }
+  assert.match(backendMyAccountService, /"my_account\.personal_command_center\.v1"/);
+  assert.doesNotMatch(backendMyAccountService, /"my_account\.dashboard\.v1"/);
   assert.match(backendMyAccountService, /personalAttention\(actor, correlationId\)/);
+  assert.match(backendWorkstreamService, /"surfaceContract", dashboard\.surfaceContract\(\)/);
+  assert.match(backendWorkstreamService, /"panelLabel"/);
+  assert.match(backendWorkstreamService, /"countOrStatus"/);
+  assert.match(backendWorkstreamService, /"targetSurfaceId"/);
+  assert.match(backendWorkstreamService, /"capabilityId"/);
+  assert.match(backendWorkstreamService, /"denialHint"/);
   assert.match(backendWorkstreamService, /not_found_or_redacted/);
   assert.match(backendWorkstreamService, /blocked_provider_or_runtime/);
   assert.match(backendWorkstreamService, /noDirectMutation/);
@@ -127,6 +140,11 @@ test('My Account frontend path renders typed dashboard, detail-edit, system_mess
   assert.doesNotMatch(dashboardSurface, /const knownActions: Record<string, string>/);
   assert.doesNotMatch(dashboardSurface, /Next safe steps|Capabilities checked:|Authorized traversal/);
   assert.match(dashboardSurface, /Items that need my attention/);
+  assert.match(dashboardSurface, /const counterLabel = counter\.workstreamLabel \?\? counter\.label/);
+  assert.match(dashboardSurface, /const counterValue = counter\.attentionCount \?\? counter\.value/);
+  assert.match(dashboardSurface, /Open \$\{counterLabel\}: \$\{status\}; \$\{counterValue\} attention items/);
+  assert.match(dashboardSurface, /panel\.panelLabel \?\? panel\.label/);
+  assert.match(dashboardSurface, /panel\.countOrStatus \?\? panel\.value/);
   assert.doesNotMatch(dashboardSurface, /Use these counts to decide where to focus first/);
   assert.match(componentsCss, /\.attention-counter-card \{\n  display: grid;\n  place-items: center;[\s\S]*text-align: center;/);
   assert.match(dashboardSurface, /No personal attention items/);
@@ -168,6 +186,67 @@ test('My Account frontend path renders typed dashboard, detail-edit, system_mess
   assert.match(backendWorkstreamService, /validation-error/);
   assert.match(backendWorkstreamService, /no-op/);
   assert.match(actionState, /denied/);
+});
+
+test('My Account frontend automated coverage proves dashboard, self-service, context, recovery, notification, and digest surface contracts', () => {
+  assert.match(surfaceRenderer, /isMyAccountRebuiltSurface\(selectedEnvelope\)/);
+  assert.match(myAccountSurfaces, /surface-my-profile/);
+  assert.match(myAccountSurfaces, /surface-my-settings/);
+  assert.match(myAccountSurfaces, /surface-my-context/);
+  assert.match(myAccountSurfaces, /surface-my-account-personal-attention-digest-progress/);
+  assert.match(myAccountSurfaces, /surface-my-account-personal-attention-digest-result/);
+  assert.match(myAccountSurfaces, /surface-my-account-personal-attention-digest-blocked/);
+  assert.match(myAccountSurfaces, /surface-my-account-open-denied/);
+  assert.match(dashboardSurface, /Items that need my attention by workstream/);
+  assert.match(dashboardSurface, /Backend attention evidence retained for trace review/);
+  assert.ok(dashboardSurface.indexOf('attention-counter-strip') < dashboardSurface.indexOf('dashboard-evidence-drawer my-account-attention-evidence'));
+  assert.match(surfaceTypes, /attentionCounters\?: Array<\{ counterId: string; label: string; workstreamLabel\?: string; value: string \| number; attentionCount\?: string \| number/);
+  assert.match(surfaceTypes, /controlPanels\?: Array<\{ panelId: string; label: string; panelLabel\?: string; summary: string; state\?: string; countOrStatus\?: string \| number/);
+  assert.match(myAccountSurfaces, /fields\.filter\(\(field: AnyData\) => field\.editable\)\.map/);
+  assert.match(myAccountSurfaces, /Field changes are local preview only until a governed save action succeeds/);
+  assert.match(myAccountSurfaces, /onFieldValueChange\?\.\(fieldId, value, envelope\.surfaceId\)/);
+  assert.doesNotMatch(myAccountSurfaces, /document\.documentElement\.dataset\.theme\s*=/);
+  assert.match(main, /function handleSurfaceFieldValueChange\(fieldId: string, value: string\)/);
+  assert.match(main, /normalizeThemeId\(value\)/);
+  assert.match(main, /persistThemeId\(selectedThemeId\)/);
+  assert.match(myAccountSurfaces, /Client context ids are advisory request inputs; backend decides visibility/);
+  assert.match(myAccountSurfaces, /No enumeration/);
+  assert.match(systemMessageSurface, /hidden workstreams, hidden contexts, source details, provider secrets/);
+  assert.match(notificationCenterSurface, /Personal in-app triage/);
+  assert.match(notificationCenterSurface, /Lifecycle actions clear or defer notification visibility; they do not resolve source attention/);
+  assert.match(notificationCenterSurface, /Hidden categories are not enumerated/);
+  assert.match(myAccountSurfaces, /Provider\/runtime blocker/);
+  assert.match(myAccountSurfaces, /no fixture, deterministic, or model-less digest success is shown/);
+  assert.match(myAccountSurfaces, /Advisory recommendations/);
+  assert.match(myAccountSurfaces, /Digest evidence and authorized source links/);
+  assert.match(myAccountSurfaces, /TraceRefs refs=\{envelope\.data\.traceRefs \?\? envelope\.traceIds\}/);
+  assert.match(workflowStatusSurface, /Personal attention digest/);
+  assert.match(outcomeSurface, /Personal attention digest advisory result/);
+});
+
+test('My Account frontend secret-boundary coverage omits raw browser secrets, hidden controls, external delivery controls, and arbitrary CSS', () => {
+  const myAccountFrontendSources = [dashboardSurface, detailEditSurface, myAccountSurfaces, notificationCenterSurface, workflowStatusSurface, outcomeSurface, systemMessageSurface, surfaceTypes, main].join('\n');
+  for (const forbidden of [
+    /RESEND_API_KEY/,
+    /RESEND_FROM_EMAIL/,
+    /WORKOS_API_KEY/,
+    /JWT_SECRET/,
+    /providerCredential/,
+    /providerSecret/,
+    /rawProviderPayload/,
+    /rawSessionToken/,
+    /channelRegistry/,
+    /deliveryAttempts/,
+    /externalOutbox/,
+    /modelConfig/,
+    /modelProviderConfig/,
+    /dangerouslySetInnerHTML/,
+    /style=\{\{/,
+    /localStorage\.setItem\('seed-ui-theme'/
+  ]) assert.doesNotMatch(myAccountFrontendSources, forbidden);
+  assert.doesNotMatch(notificationCenterSurface, /notification\.email|pushEnabled|emailEnabled|webhook|Slack|Teams/);
+  assert.doesNotMatch(myAccountSurfaces, /role assignment|support-access grants|tenant-wide branding|raw prompt|raw tool payload/i);
+  assert.match(systemMessageSurface, /Provider secrets, raw JWTs, hidden prompts, invitation tokens, and unauthorized tenant\/customer evidence are not shown/);
 });
 
 test('My Account representative chat tool plan path is catalog-bound and confirmation rendered by shared surface', () => {

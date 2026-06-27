@@ -43,7 +43,6 @@ function MyAccountSelfServiceSurface({ envelope, onAction, onFieldValueChange }:
 
   function updateField(fieldId: string, value: string) {
     setFieldValues((current) => ({ ...current, [fieldId]: value }));
-    if (isSettings && fieldId === 'preferredThemeId' && value) document.documentElement.dataset.theme = value;
     onFieldValueChange?.(fieldId, value, envelope.surfaceId);
   }
 
@@ -104,7 +103,8 @@ function MyAccountDigestProgressSurface({ envelope, onAction }: Props) {
     <SurfaceStateFrame envelope={envelope}>
       <section className="my-account-digest-progress" aria-label="Personal attention digest progress">
         <div><p className="eyebrow">Advisory digest progress</p><h3>{envelope.title}</h3><p>{envelope.data.summary ?? 'Digest work is backend-governed, provider-aware, redacted, and does not mutate source attention.'}</p></div>
-        <dl className="authority-summary-grid"><div><dt>Status</dt><dd>{stringify(envelope.data.status ?? envelope.data.phase ?? 'not-started')}</dd></div><div><dt>No direct mutation</dt><dd>{String(envelope.data.noDirectMutation ?? true)}</dd></div><div><dt>Evidence window</dt><dd>{stringify(envelope.data.evidenceWindow ?? 'authorized personal attention only')}</dd></div><div><dt>Blocker</dt><dd>{stringify(envelope.data.blockedReason ?? 'none visible')}</dd></div></dl>
+        <dl className="authority-summary-grid"><div><dt>Status</dt><dd>{stringify(envelope.data.status ?? envelope.data.phase ?? 'not-started')}</dd></div><div><dt>No direct mutation</dt><dd>{String(envelope.data.noDirectMutation ?? true)}</dd></div><div><dt>Evidence window</dt><dd>{stringify(envelope.data.evidenceWindow ?? 'authorized personal attention only')}</dd></div><div><dt>Provider/runtime blocker</dt><dd>{stringify(envelope.data.blockedReason ?? envelope.data.providerReadiness ?? envelope.data.runtimeReadiness ?? 'none visible')}</dd></div></dl>
+        {envelope.data.noFakeSuccess && <p className="surface-state-inline forbidden">Provider/runtime status is fail-closed; no fixture, deterministic, or model-less digest success is shown.</p>}
       </section>
       <section className="surface-timeline" aria-label="Durable digest progress events">{events.map((event: AnyData, index: number) => <article key={event.eventId ?? event.stepId ?? index} className={`surface-timeline-event ${event.status ?? 'ready'}`}><strong>{event.label ?? event.phase ?? event.stepId ?? `Event ${index + 1}`}</strong><p>{event.summary ?? event.explanation ?? event.status}</p></article>)}</section>
       <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} actionInput={digestInput(envelope)} onAction={onAction} />
@@ -122,6 +122,7 @@ function MyAccountDigestResultSurface({ envelope, onAction }: Props) {
         <dl className="authority-summary-grid"><div><dt>Review state</dt><dd>{stringify(envelope.data.reviewState ?? envelope.data.status ?? 'completed-review-required')}</dd></div><div><dt>Advisory only</dt><dd>{String(envelope.data.advisoryOnly ?? true)}</dd></div><div><dt>Omissions</dt><dd>{stringify(envelope.data.omissionSummary ?? envelope.data.redaction ?? 'browser-safe evidence only')}</dd></div><div><dt>Source mutation</dt><dd>{String(envelope.data.noDirectMutation ?? true)}</dd></div></dl>
       </section>
       <section className="surface-section-list" aria-label="Digest evidence and authorized source links">{evidence.map((ref: AnyData, index: number) => <article key={ref.refId ?? ref.traceId ?? index} className="surface-section-card"><h4>{ref.label ?? ref.refId ?? `Evidence ${index + 1}`}</h4><p>{ref.summary ?? ref.refType ?? 'Browser-safe evidence reference'}</p></article>)}</section>
+      {Array.isArray(envelope.data.recommendations) && envelope.data.recommendations.length > 0 && <section className="recommendation-list" aria-label="Digest advisory recommendations"><h4>Advisory recommendations</h4><ul>{envelope.data.recommendations.map((item: AnyData, index: number) => <li key={item.recommendationId ?? item.label ?? index}>{stringify(item.label ?? item.title ?? item)}</li>)}</ul></section>}
       <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} actionInput={digestInput(envelope)} onAction={onAction} />
       <TraceRefs refs={envelope.data.traceRefs ?? envelope.traceIds} />
     </SurfaceStateFrame>
@@ -134,7 +135,7 @@ function MyAccountRecoverySurface({ envelope, onAction }: Props) {
     <SurfaceStateFrame envelope={envelope}>
       <section className="my-account-detail-hero provider-fail-closed" aria-label="My Account recovery message">
         <div><p className="eyebrow">Safe recovery</p><h3>{envelope.data.title ?? envelope.title}</h3><p>{envelope.data.message ?? envelope.data.summary ?? 'The requested work is unavailable, denied, stale, or provider/runtime blocked in the selected context.'}</p></div>
-        <dl className="authority-summary-grid"><div><dt>Reason</dt><dd>{stringify(envelope.data.safeReasonCode ?? envelope.data.blockerCode ?? envelope.data.status)}</dd></div><div><dt>No fake success</dt><dd>{String(envelope.data.noFakeSuccess ?? true)}</dd></div><div><dt>No enumeration</dt><dd>{String(envelope.data.noEnumeration ?? envelope.surfaceId === 'surface-my-account-open-denied')}</dd></div><div><dt>No direct mutation</dt><dd>{String(envelope.data.noDirectMutation ?? true)}</dd></div></dl>
+        <dl className="authority-summary-grid"><div><dt>Reason</dt><dd>{stringify(envelope.data.safeReasonCode ?? envelope.data.blockerCode ?? envelope.data.status)}</dd></div><div><dt>No fake success</dt><dd>{String(envelope.data.noFakeSuccess ?? true)}</dd></div><div><dt>No enumeration</dt><dd>{String(envelope.data.noEnumeration ?? envelope.surfaceId === 'surface-my-account-open-denied')}</dd></div><div><dt>No direct mutation</dt><dd>{String(envelope.data.noDirectMutation ?? true)}</dd></div><div><dt>Provider readiness</dt><dd>{stringify(envelope.data.providerReadiness ?? 'browser-safe readiness only')}</dd></div><div><dt>Runtime readiness</dt><dd>{stringify(envelope.data.runtimeReadiness ?? 'browser-safe readiness only')}</dd></div></dl>
       </section>
       {steps.length > 0 && <section className="surface-section-list" aria-label="Recovery steps"><h4>Recovery steps</h4>{steps.map((step: any, index: number) => <article key={step.stepId ?? step.label ?? index} className="surface-section-card"><h4>{typeof step === 'string' ? step : step.label ?? `Step ${index + 1}`}</h4>{typeof step !== 'string' && <p>{step.description ?? step.disabledReason ?? step.expectedOutcome}</p>}</article>)}</section>}
       <SurfaceActionBar actions={envelope.actions} surfaceId={envelope.surfaceId} actionInput={digestInput(envelope)} onAction={onAction} />

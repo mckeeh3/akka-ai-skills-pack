@@ -309,7 +309,7 @@ export type DashboardSurfaceData = {
   recentActivity?: Array<{ activityId: string; label: string; summary?: string; traceId?: string; redaction?: string; occurredAt?: string }>;
   attentionCounters?: Array<{ counterId: string; label: string; workstreamLabel?: string; value: string | number; attentionCount?: string | number; severity?: string; status?: string; statusText?: string; source?: string; sourceToolId?: string; sourceCapabilityId?: string; actionId?: string; openActionId?: string; surfaceId?: string; targetSurfaceId?: string; workstreamId?: string; description?: string; purposeSummary?: string; requiredCapabilityId?: string; redaction?: string; redactionLevel?: string; disabledOrDeniedReason?: string; traceRefs?: string[] }>;
   needsAttention?: Array<AttentionItem>;
-  controlPanels?: Array<{ panelId: string; label: string; summary: string; state?: string; value?: string | number; surfaceId?: string; actionId?: string; severity?: string }>;
+  controlPanels?: Array<{ panelId: string; label: string; panelLabel?: string; summary: string; state?: string; countOrStatus?: string | number; value?: string | number; surfaceId?: string; targetSurfaceId?: string; actionId?: string; capabilityId?: string; traceRefs?: string[]; denialHint?: string; severity?: string }>;
   authorizedWorkstreamLinks?: Array<{ workstreamId: string; label: string; requiredCapabilityId?: string; surfaceId?: string; actionId?: string; status?: string }>;
   notificationCenter?: Record<string, unknown>;
   personalAttentionDigest?: Record<string, unknown>;
