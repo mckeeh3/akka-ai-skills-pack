@@ -40,7 +40,7 @@
 
 ### MAFA-01-001: Split My Account source-alignment entries
 
-- status: pending
+- status: done
 - source: `backlog/01-my-account-automated-alignment-build-backlog.md` B01
 - task brief: `specs/my-account-full-alignment/tasks/01-alignment/01-source-alignment-split.md`
 - depends on: [MAFA-00-001]
@@ -66,6 +66,8 @@
   - lifecycle/readiness: build-compile planning/alignment; non-runtime docs task
   - source capability ids: `account-context-and-profile`, `my_account.*`, `notification.*`
   - vertical contract: My Account / `my-account-agent`; maps `surface_action`, `human_chat_tool_plan`, API/internal paths; no tool execution; selected AuthContext and tenant/customer safe-denial requirements documented
+  - completed 2026-06-27: split source-alignment entries and lifecycle slice status map; no runtime readiness claimed
+  - commit message: `Split My Account source alignment entries`
 
 ### MAFA-02-001: Backend protected API and action path tests
 
