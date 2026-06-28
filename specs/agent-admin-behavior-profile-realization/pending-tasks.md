@@ -236,7 +236,7 @@
 
 ### AABP-05-001: Verify Agent Admin behavior-profile realization closure
 
-- status: blocked
+- status: done
 - source: terminal verification loop for this mini-project
 - task brief: `specs/agent-admin-behavior-profile-realization/tasks/05-validation/01-fullstack-closure-verification.md`
 - depends on: [AABP-04-001]
@@ -264,10 +264,11 @@
   - mini-project done state is either achieved and recorded closed, or remaining material gaps are converted into a further bounded follow-up loop
   - changes are committed
 - notes:
-  - blocked in terminal verification because `mvn test` failed in `AgentBehaviorSeedLoaderTest` seed-count assertions (`expected: <49> but was: <54>` at lines 47 and 348); frontend checks passed.
+  - completed in this commit with message: `Record Agent Admin verification blocker`
+  - terminal verification found a full-suite blocker because `mvn test` failed in `AgentBehaviorSeedLoaderTest` seed-count assertions (`expected: <49> but was: <54>` at lines 47 and 348); frontend checks passed.
+  - done criteria were satisfied by recording verification notes and appending bounded follow-up tasks `AABP-05-002` and `AABP-05-003`.
+  - blocker was repaired by `AABP-05-002`; closure was verified by `AABP-05-003`.
   - verification notes: `specs/agent-admin-behavior-profile-realization/verification-notes.md`
-  - achieved evidence before blocker: `api-smoked` Agent Admin workstream/API path and `frontend-rendered` frontend contracts/build; mini-project is not closed.
-  - unblock path: run `AABP-05-002`, then rerun terminal verification through `AABP-05-003`.
 
 ### AABP-05-002: Repair full-suite seed-count blocker from terminal verification
 
