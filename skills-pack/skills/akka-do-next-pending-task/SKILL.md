@@ -38,6 +38,7 @@ The skill must:
 - generate or update the requested outputs
 - run the task's required checks and local/runtime validation path when the task implements app behavior
 - record the achieved readiness level and runtime evidence for feature-bearing `done` tasks
+- update the affected workstream lifecycle/readiness/alignment artifact and source-alignment evidence before marking feature-bearing work `done`; if no such artifact exists, record why in task notes or add a follow-up task
 - update the queue status before finishing
 - commit the task changes only when the selected task is marked `done`
 - report any blocking pending question or the next runnable pending task
@@ -146,6 +147,7 @@ Before finishing, verify:
 - required reads and skills were loaded narrowly
 - lifecycle/readiness target and compile contract were honored, or the task was blocked before product/runtime assumptions were invented
 - current-intent provenance was preserved or the task had a valid docs-only/internal/foundation/cross-cutting exemption
+- affected workstream lifecycle/readiness/alignment and source-alignment evidence were updated for feature-bearing work, or the absence of such artifacts was recorded with a follow-up/blocker
 - any AI-first constraints in the task were preserved or explicitly blocked rather than guessed
 - checks were run or explicitly reported as not run
 - generated-SaaS implementation tasks carried a workstream-attention-dashboard/surface-graph-governed-tool-capability/substrate contract, or were explicitly internal-only/foundation/cross-cutting

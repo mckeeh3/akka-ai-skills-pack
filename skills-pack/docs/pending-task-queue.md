@@ -30,13 +30,14 @@ If a project already has an equivalent issue tracker or task queue, the harness 
 3. Do not combine adjacent tasks just because their files are nearby.
 4. Select the first `pending` task whose dependencies are `done` or empty.
 5. Mark a task `done` only after its required checks pass, its done criteria are satisfied, and any feature-bearing runtime path has explicit runtime evidence. A check that is not runnable blocks completion unless the task is explicitly non-runtime/docs-only, or the user/project has accepted the limitation and the task's notes say why the named feature still works without claiming `runtime-ready`.
-6. Mark a task `blocked` when required decisions, pending questions, inputs, dependencies, build/runtime preconditions, or local validation prerequisites are missing.
-7. For AI-first work, unresolved delegated authority, approval, policy/risk threshold, evidence, audit/trace, supervision UI, evaluation, or outcome decisions block only the affected tasks.
-8. Mark a task `deferred` only when the user or plan explicitly chooses to postpone it.
-9. Mark a task `superseded` when a later app-description/spec/PRD change replaces the task and it should not be executed.
-10. Keep the queue stable: append new tasks or update statuses; do not renumber existing task IDs casually.
-11. When a task is complete, blocked, or superseded, report the next runnable pending task if one exists.
-12. At the end of ordinary harness responses, remind the user when runnable pending tasks remain, without automatically starting them.
+6. For feature-bearing work, update the affected workstream lifecycle/readiness/alignment artifact and source-alignment evidence before marking the task `done`; if no such artifact exists, record why in the task notes or add a follow-up task.
+7. Mark a task `blocked` when required decisions, pending questions, inputs, dependencies, build/runtime preconditions, or local validation prerequisites are missing.
+8. For AI-first work, unresolved delegated authority, approval, policy/risk threshold, evidence, audit/trace, supervision UI, evaluation, or outcome decisions block only the affected tasks.
+9. Mark a task `deferred` only when the user or plan explicitly chooses to postpone it.
+10. Mark a task `superseded` when a later app-description/spec/PRD change replaces the task and it should not be executed.
+11. Keep the queue stable: append new tasks or update statuses; do not renumber existing task IDs casually.
+12. When a task is complete, blocked, or superseded, report the next runnable pending task if one exists.
+13. At the end of ordinary harness responses, remind the user when runnable pending tasks remain, without automatically starting them.
 
 ## Status values
 
@@ -272,7 +273,7 @@ Before coding, update the selected task to:
 - status: in-progress
 ```
 
-After coding and validation, update to `done` only when required checks pass and done criteria are satisfied. For generated app features, this includes the intended local runtime/API/UI validation path unless the task is explicitly non-runtime/internal-only:
+After coding and validation, update to `done` only when required checks pass and done criteria are satisfied. For generated app features, this includes the intended local runtime/API/UI validation path unless the task is explicitly non-runtime/internal-only. For feature-bearing work, also update the affected workstream lifecycle/readiness/alignment artifact and source-alignment evidence before marking the task `done`; if no such artifact exists, record why in notes or add a follow-up task:
 
 ```md
 - status: done
