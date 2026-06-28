@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Use this reference when implementing a managed runtime Akka agent whose behavior is selected from tenant-scoped governed records rather than only from static Java code. For generated AI-first SaaS apps, this is **the required AI-first managed-agent invocation pattern**: do not invoke User Admin, Agent Admin, Governance, Audit/Trace, or app-specific managed agents through ad hoc static prompts or static tool registration that bypass `AgentDefinition`, compact expertise manifests, `readSkill(skillId)`, `readReferenceDoc(referenceId)`, tool boundaries, `effects().tools(runtimeTools)`, and traces.
+Use this reference when implementing any generated-app Akka `Agent` or `AutonomousAgent`. For generated AI-first SaaS apps, this is **the required AI-first agent invocation pattern for all agents**: do not invoke User Admin, Agent Admin, Governance, Audit/Trace, evaluator, replay, test-console, internal/background, autonomous, or app-specific agents through ad hoc static prompts or static tool registration that bypass the governed managed `AgentDefinition`, compact expertise manifests, `readSkill(skillId)`, `readReferenceDoc(referenceId)` when references exist, tool boundaries, runtime tool registration, and traces.
 
 This pattern is the implementation handoff between:
 - secure SaaS `AuthContext` and capability authorization;
@@ -14,15 +14,16 @@ This pattern is the implementation handoff between:
 
 ## When to use
 
-Use this pattern for agent invocations started by:
+Use this pattern for all generated-app agent invocations, including invocations started by:
 - protected HTTP/browser APIs;
 - workflows or workflow steps;
 - timed actions;
 - consumers reacting to events;
 - MCP or service boundaries;
-- prompt/skill test consoles, replay, or evaluation runs.
+- prompt/skill test consoles, replay, or evaluation runs;
+- durable Akka `AutonomousAgent` task starts and task-loop runtime setup.
 
-Do not use this pattern for a one-off static example agent unless the product needs tenant-managed agent lifecycle, governed prompts/skills/references, expertise manifests, tool boundaries, or execution traces.
+Every generated-app agent must have a governed managed `AgentDefinition` domain record, even when the Java SDK component is a small internal helper, evaluator, replay agent, test-console agent, or autonomous worker. Static one-off examples may exist only as explicitly non-production reference material and must not be treated as the generated-app runtime path.
 
 ## Runtime sequence
 
@@ -41,9 +42,9 @@ request from HTTP/workflow/timer/consumer/test console
 → resolve ToolPermissionBoundary and model config reference
 → assemble effective system prompt with active prompt plus compact expertise manifest only; do not preload full skill/reference bodies
 → emit PromptAssemblyTrace for allowed or denied assembly, including manifest ids/checksums
-→ resolve approved backend-owned Java tool bindings into `runtimeTools`
-→ invoke Java Agent with assembled prompt/profile context and `effects().tools(runtimeTools)`, including `readSkill(skillId)` and `readReferenceDoc(referenceId)` when assigned
-→ let Akka inject the registered tool list into the model context
+→ resolve approved runtime tools from both governed logical tool/capability ids and approved backend-owned Java binding ids/classes into `runtimeTools`
+→ invoke Java Agent or configure/start the AutonomousAgent task with assembled prompt/profile context and runtime tools, always including `readSkill(skillId)` for managed agents and including `readReferenceDoc(referenceId)` when references are assigned
+→ let Akka inject the registered tool list into the model context where the SDK path supports tool injection
 → enforce ToolPermissionBoundary for every tool/data/readSkill/readReferenceDoc request
 → authorize readSkill(skillId) against the skill manifest and skill version
 → authorize readReferenceDoc(referenceId) against the reference manifest, reference version, use mode, redaction/access rules, and customer scope
@@ -81,13 +82,13 @@ ResolvedAgentRuntime
 - AgentSkillManifest id/version and compact skill entries containing only assigned skill ids, names, descriptions, and when-to-use hints
 - AgentReferenceManifest id/version and compact reference entries containing only assigned reference ids, summaries, when-to-consult hints, allowed use, and access notes
 - compact expertise manifest text with separate skill and reference sections
-- ToolPermissionBoundary snapshot
+- resolved ToolPermissionBoundary/checksum
 - ModelConfigRef
-- trace ids/checksums
+- trace ids/checksums for the resolved prompt, manifests, tool boundary, tool bindings, and model reference
 - allowed mode and authorization basis summary
 ```
 
-The resolver should fail closed with a safe denial result and trace emission when any prerequisite is invalid.
+The resolver should fail closed with a safe denial result and trace emission when any prerequisite is invalid. It should not create or require a separate per-invocation runtime-profile snapshot; use active governed references plus immutable document versions and trace checksums for reproducibility.
 
 ## What should be Akka components
 
@@ -106,7 +107,8 @@ Prefer Akka components for durable governed state and query models:
 | `AgentReferenceManifest` changes | Event Sourced Entity when consequential; Key Value Entity only for intentionally simple state plus audit |
 | trace facts such as `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace` | Event Sourced Entity, audit event entity, or normalized trace consumer pipeline |
 | admin/runtime lookup lists | Views |
-| long-running supervised agent execution | Workflow |
+| long-running supervised request-based agent execution | Workflow |
+| durable internal/background model-driven task execution | AutonomousAgent plus governed managed `AgentDefinition` |
 | deadline/replay/digest execution | Timed Action |
 | event-reactive invocation or trace enrichment | Consumer |
 | browser/service edge | HTTP/gRPC/MCP endpoint |
@@ -128,7 +130,7 @@ These helpers must not become hidden authorization stores. They should consume A
 
 ## Checks before model invocation
 
-Before invoking the Java `Agent`, verify:
+Before invoking the Java `Agent` or starting/configuring an `AutonomousAgent` task, verify:
 
 1. Authenticated caller or trusted runtime actor is present.
 2. Selected `AuthContext` has active tenant/customer membership where required.
@@ -137,9 +139,9 @@ Before invoking the Java `Agent`, verify:
 5. Draft or unapproved prompt/skill versions are used only in authorized test/replay/evaluation modes.
 6. Active prompt version exists and passes checksum/secret-boundary checks.
 7. Compact expertise manifest is rendered with only skills and references assigned to that agent; full skill/reference text is not preloaded.
-8. `readSkill(skillId)` and, when references are assigned, `readReferenceDoc(referenceId)` are registered as normal Akka `@FunctionTool` loaders, and Akka injects them with the rest of the allowed tool list.
+8. `readSkill(skillId)` is registered as a normal Akka `@FunctionTool` loader for every managed agent; when references are assigned, `readReferenceDoc(referenceId)` is registered separately. Where the SDK path supports tool injection, Akka injects these loaders with the rest of the allowed tool list.
 9. `ToolPermissionBoundary` is present, includes explicit `read_skill` and `read_reference` grants as applicable, and defaults to deny.
-10. Runtime tool availability is resolved from active managed configuration to backend-owned Java bindings and passed to the Agent with `effects().tools(runtimeTools)`; tenant-managed records store stable tool ids/capability ids, not arbitrary Java class names.
+10. Runtime tool availability is resolved from active managed configuration to approved backend-owned bindings and passed to the Agent with `effects().tools(runtimeTools)` or the equivalent autonomous-agent setup. Tenant-managed records may store stable governed tool ids/capability ids and approved Java binding ids/classes, but arbitrary model- or tenant-supplied class names are never executed.
 11. `ModelConfigRef` is allowed by tenant/agent/model policy and exposes no provider secrets.
 12. Correlation/work trace ids are available.
 13. `PromptAssemblyTrace` has been recorded or scheduled for durable recording with expert-bundle and manifest references.
@@ -179,7 +181,7 @@ Allowed and denied reads must emit `ReferenceLoadTrace` or a generalized `Docume
 
 ## Tool boundary enforcement
 
-Every registered local tool, component tool, MCP tool, data access helper, or guidance-loading tool must be checked against `ToolPermissionBoundary` before execution. For generated SaaS managed agents, tool registration is part of runtime resolution: construct request-scoped tool objects from backend-owned registry bindings and pass them to the Java Agent with `effects().tools(runtimeTools)`.
+Every registered local tool, component tool, MCP tool, data access helper, or guidance-loading tool must be checked against `ToolPermissionBoundary` before execution. For generated SaaS managed agents, tool registration is part of runtime resolution: construct request-scoped tool objects from backend-owned registry bindings and pass them to the Java Agent with `effects().tools(runtimeTools)` or the equivalent autonomous-agent setup. `readSkill(skillId)` is part of the standard managed-agent tool set even when the active skill manifest is empty; it must deny unassigned or unavailable skills safely and trace the denial.
 
 At minimum enforce:
 - tool id and category allowlist;
@@ -206,22 +208,23 @@ Workflow state should carry tenant/customer scope, capability id, agentDefinitio
 
 Timed actions and consumers must carry provenance and authority basis from the scheduled/event source. They must not invoke agents with platform-wide authority unless a product policy explicitly grants that authority and traces it.
 
-### Replay/evaluation
+### Replay/evaluation/test console
 
-Replay/evaluation mode may use pinned historical prompt/skill/model refs. It must be clearly mode-labeled, authorized, side-effect safe by default, and traceable.
+Replay/evaluation/test-console mode still uses a governed managed `AgentDefinition`, authorized mode-specific prompt/skill/reference/model selection, `readSkill(skillId)`, tool boundaries, and traces. Replay/evaluation mode may use pinned historical prompt/skill/model refs. It must be clearly mode-labeled, authorized, side-effect safe by default, and traceable.
 
 ## Tests to plan
 
 Plan tests for:
-- active profile resolution success;
+- active profile resolution success for request-based Agents and AutonomousAgent workers;
 - disabled/archived/draft agent denial in runtime mode;
 - cross-tenant agent denial;
 - missing permission/capability denial;
 - active prompt assembly with compact expertise manifest entries only, separated into skill and reference sections;
 - draft prompt/skill/reference allowed only in authorized test/replay/evaluation mode;
 - `PromptAssemblyTrace` creation for allowed and denied assembly with manifest refs;
+- `readSkill(skillId)` is registered for every managed agent;
 - `readSkill(skillId)` allowed for assigned active skill;
-- unassigned, inactive, cross-tenant, oversized, or unauthorized `readSkill` denial with `SkillLoadTrace`;
+- unassigned, inactive, empty-manifest, cross-tenant, oversized, or unauthorized `readSkill` denial with `SkillLoadTrace`;
 - `readReferenceDoc(referenceId)` allowed for assigned active reference;
 - unassigned, inactive, cross-tenant, wrong-customer, redaction-denied, oversized, or unauthorized `readReferenceDoc` denial with `ReferenceLoadTrace`;
 - `ToolPermissionBoundary` allowed/denied tool invocation, including missing `read_skill` and `read_reference` grants;
