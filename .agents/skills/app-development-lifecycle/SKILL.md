@@ -1,11 +1,11 @@
 ---
 name: app-development-lifecycle
-description: "Explain and apply the canonical three-phase app development lifecycle for continuous app evolution: interview, build/compile, and manual runtime test. Use when users ask about the app development process, lifecycle phases, request-stream handling, readiness levels, or how app-description changes become implemented and manually verified behavior."
+description: "Explain and apply the canonical three-phase app development lifecycle for continuous app evolution: interview, build/compile, and runtime validation. Use when users ask about the app development process, lifecycle phases, request-stream handling, readiness levels, or how app-description changes become implemented and runtime-validated."
 ---
 
 # App Development Lifecycle
 
-Use this skill when the user asks about the app development lifecycle, development process, request stream, phase model, readiness vocabulary, or how a feature/spec/tweak/fix moves from intent to code to manual runtime validation.
+Use this skill when the user asks about the app development lifecycle, development process, request stream, phase model, readiness vocabulary, or how a feature/spec/tweak/fix moves from intent to code to runtime validation.
 
 ## Lifecycle classification
 
@@ -27,6 +27,7 @@ When applying the lifecycle to a concrete app change, also read the smallest rel
 - `../docs/app-description-component-graph.md`
 - `../docs/app-description-to-code-compile-contract.md`
 - `../docs/app-worker-tool-model.md`
+- `../docs/runtime-validation.md` when runtime-validation scenarios, setup prerequisites, execution modes, or accumulated validation runs are in scope
 - `../docs/manual-test-reconciliation.md`
 - target-project `app-description/**`, `specs/**`, or selected pending-task brief when the user asks about a specific change
 
@@ -37,10 +38,10 @@ The canonical app development lifecycle has three iterative phases:
 ```text
 1. Interview / intent reconciliation
 2. Build / compile / implement
-3. Manual runtime test / reconciliation
+3. Runtime validation / reconciliation (`manual runtime test` legacy wording)
 ```
 
-It is not a waterfall. Every feature request, bug report, issue, tweak, manual test observation, review finding, or clarification is part of a continuous request stream that updates current intent and may start another pass through the loop. Track this state per workstream so app-description changes can flag implementation as stale until reviewed or recompiled.
+It is not a waterfall. Every feature request, bug report, issue, tweak, runtime-validation observation, review finding, or clarification is part of a continuous request stream that updates current intent and may start another pass through the loop. Track this state per workstream so app-description changes can flag implementation as stale until reviewed or recompiled. Every input should advance to `done`, `partially-done-blocked`, `decomposed-to-tasks`, or `blocked-before-work`; do not merely analyze and stop without a concrete state transition.
 
 ### 1. Interview / intent reconciliation
 
@@ -69,16 +70,17 @@ Typical outputs:
 
 Readiness targets: `compile-ready` and then `manual-ready`.
 
-### 3. Manual runtime test / reconciliation
+### 3. Runtime validation / reconciliation
 
-Exercise the real local runtime path and reconcile any mismatch back into app-description, specs, tasks, code, or blockers.
+Exercise the real local runtime path through documented runtime-validation scenarios and reconcile any mismatch back into app-description, specs, tasks, code, runtime-validation runs, or blockers.
 
 Typical outputs:
 
-- manual test notes;
+- runtime-validation scenario/run notes;
+- setup prerequisite evidence;
 - runtime evidence;
 - failure classification;
-- follow-up tasks or confirmation that behavior is runtime-ready.
+- remediation tasks, blocked questions, or confirmation that behavior is runtime-ready.
 
 Readiness target: `runtime-ready`.
 
@@ -89,7 +91,7 @@ Each feature-bearing workstream should have lifecycle state in the app-descripti
 - readiness: `draft`, `description-ready`, `compile-ready`, `manual-ready`, `runtime-ready`, or `blocked`;
 - implementation alignment: `not-started`, `aligned`, `stale-description-changed`, `stale-code-changed`, `partially-aligned`, or `unknown`;
 - latest app-description version/digest or changed-node list;
-- implementation evidence and last compile/alignment/manual-test notes;
+- implementation evidence and last compile/alignment/runtime-validation notes;
 - blockers and next recommended action.
 
 Default rule: when a workstream app-description change affects feature-bearing intent, mark related code as `stale-description-changed` and reduce readiness to no higher than `compile-ready` unless an alignment review explicitly records no code impact.
@@ -99,8 +101,8 @@ Default rule: when a workstream app-description change affects feature-bearing i
 - If the request is ambiguous or changes product behavior, route to Interview/app-description work first.
 - If current intent is clear and a bounded task exists, route to Build/compile implementation.
 - If a workstream changed in app-description, first route to alignment review or compile; do not assume existing code is current.
-- If implementation is present but confidence depends on real behavior, route to Manual runtime test.
-- If manual testing discovers a mismatch, classify it before patching: app-description gap, implementation gap, test gap, provider/config blocker, seed/demo-data gap, UX/state gap, or expectation change.
+- If implementation is present but confidence depends on real behavior, route to runtime validation.
+- If runtime validation discovers a mismatch, classify it before patching: app-description gap, implementation gap, test gap, provider/config blocker, seed/demo-data gap, UX/state gap, or expectation change.
 
 ## Guardrails
 

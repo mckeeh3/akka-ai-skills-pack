@@ -152,7 +152,7 @@ Record required trace events and fields, including:
 - governed tool id, capability id, correlation/idempotency keys;
 - allowed, denied, failed, stale, escalated, approved, completed, cancelled, or accepted/rejected outcome.
 
-## Tests and manual runtime scenarios
+## Tests and runtime-validation scenarios
 
 - Automated tests:
   - allowed path:

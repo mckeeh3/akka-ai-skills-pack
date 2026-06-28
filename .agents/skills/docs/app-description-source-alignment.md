@@ -120,6 +120,6 @@ Update source alignment when:
 
 - lifecycle `implementationAlignment` summarizes the workstream state;
 - source alignment entries identify the files and evidence behind that summary;
-- lifecycle `last alignment review`, `last compile`, and `last manual runtime test` should point to the relevant alignment entries or evidence.
+- lifecycle `last alignment review`, `last compile`, and `last runtime-validation run` should point to the relevant alignment entries or evidence.
 
 See also [Current intent model](current-intent-model.md), [App-description component graph](app-description-component-graph.md), and [App-description to code compile contract](app-description-to-code-compile-contract.md).

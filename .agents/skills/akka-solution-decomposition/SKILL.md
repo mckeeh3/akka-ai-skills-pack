@@ -55,7 +55,8 @@ Read first when present/relevant:
 - `../docs/app-development-lifecycle.md` for interview/build/manual readiness vocabulary;
 - `../docs/app-worker-tool-model.md` for the worker/harness/adapter/governed-tool/capability/Akka separation;
 - `../docs/app-description-to-code-compile-contract.md` before treating any task as implementation-ready;
-- `../docs/manual-test-reconciliation.md` when the plan includes manual/browser runtime validation or tester feedback loops;
+- `../docs/runtime-validation.md` when the plan includes runtime-validation scenarios, setup prerequisites, execution modes, or tester feedback loops;
+- `../docs/manual-test-reconciliation.md` when the plan includes runtime-validation/manual remediation loops;
 - `../core-saas-foundation/SKILL.md` for mandatory secure SaaS scope;
 - `../docs/intent-compiler.md`, `../docs/current-intent-model.md`, and `../docs/intent-to-realization-flow.md` when input needs current-intent provenance or workstream binding before component selection;
 - `../docs/full-core-foundation-readiness.md` for canonical SaaS Foundation App inventory; summarize it, do not paste it;
@@ -180,7 +181,7 @@ Before handoff, verify:
 - scope label is explicit;
 - fixed package `ai.first` is recorded;
 - secure SaaS foundation obligations are included or explicitly out of scope;
-- lifecycle/readiness target, compile contract, and manual/runtime reconciliation path are explicit;
+- lifecycle/readiness target, compile contract, and runtime-validation reconciliation path are explicit;
 - workstreams/surfaces/capabilities/governed-tool catalogs and actor adapters precede component choices;
 - every chosen component has a reason and focused skill route;
 - authority, confirmation/approval, idempotency, transaction boundary, side effects, partial-failure/result surfaces, traces, and tests are explicit;

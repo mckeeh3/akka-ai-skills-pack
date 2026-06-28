@@ -43,7 +43,7 @@ Route every request through the smallest lifecycle phase that can make safe prog
 
 1. **Interview phase** (`interview`): capture, normalize, or reconcile user/business intent until the app-description can represent the requested change. Typical skills: `business-intent-interview`, `business-intent-to-app-input`, `app-description-input-normalization`, `app-description-intake-router`, and focused app-description editors.
 2. **Build/compile phase** (`build-compile`): compile description-ready current intent or a selected queued task into docs, specs, code, tests, configuration, and validation evidence. Typical skills: app-description planning/generation skills, `akka-prd-to-specs-backlog`, `akka-solution-decomposition`, component/endpoint/web UI implementation skills, and queue execution skills.
-3. **Manual runtime test phase** (`manual-test`): exercise the real local/API/UI/agent path, classify failures, and reconcile findings into intent, tasks, code, or blockers. Typical skills: `akka-runtime-feature-verification` and `akka-manual-failure-reconciliation`.
+3. **Runtime validation phase** (`runtime-validation`; `manual-test` legacy alias): exercise the real local/API/UI/agent path through documented scenarios, classify failures, and reconcile findings into intent, tasks, code, runtime-validation runs, or blockers. Typical skills: `akka-runtime-feature-verification` and `akka-manual-failure-reconciliation`.
 4. **Cross-phase** (`cross-phase`): broad routing, architecture, foundation, and maintenance skills that intentionally span phases. Typical skills: `ai-first-saas`, `agent-workstream-apps`, `core-saas-foundation`, `capability-first-backend`, `app-descriptions`, and pack-maintenance planning skills.
 
 Skill contracts use these classification fields when a task, skill header, spec, or manifest entry needs routing metadata: `phase`, `kind`, `family`, `consumes`, `produces`, and `routes-to`. The canonical semantics live in `docs/intent-compiler-skill-contracts.md`; the manifest remains backward compatible and may continue to use the existing `category` field until a later manifest migration validates any schema change.
@@ -113,7 +113,7 @@ Canonical doctrine:
 
 Top-level entry skills:
 
-- `app-development-lifecycle` — explain and apply the three-phase Interview → Build/compile → Manual runtime test loop and route lifecycle/process questions to the right phase.
+- `app-development-lifecycle` — explain and apply the three-phase Interview → Build/compile → Runtime validation loop and route lifecycle/process questions to the right phase.
 - `ai-first-saas` — interpret product intent as a secure AI-first SaaS operating model and route to app-description, decomposition, planning, or implementation.
 - `agent-workstream-apps` — interpret generated full-stack AI-first SaaS apps as role-authorized functional-agent workstream applications.
 - `ai-first-saas-worker-decomposition` — identify human, functional-agent, internal/autonomous/evaluator agent, and system workers before surfaces, capabilities, or components are selected.

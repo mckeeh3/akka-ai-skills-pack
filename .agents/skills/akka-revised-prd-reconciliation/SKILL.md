@@ -104,7 +104,7 @@ Before finishing, verify:
 - AI-first delegation, authority, governance, audit, UI supervision, and outcome implications were compared against the current baseline
 - workstream expertise implications were compared against the current baseline, including expert bundles, governed prompts/skills/references, compact manifests, loader authorization, `ToolPermissionBoundary`, traces, UI/governance surfaces, default-content generation assets, and tests
 - affected app-description/spec/backlog/task files were updated
-- affected task briefs and queue entries preserve or repair lifecycle/readiness, compile-contract, and manual/runtime validation fields
+- affected task briefs and queue entries preserve or repair lifecycle/readiness, compile-contract, and runtime-validation fields
 - queue history was preserved
 - obsolete non-done tasks were superseded, not deleted
 - completed affected work has follow-up tasks

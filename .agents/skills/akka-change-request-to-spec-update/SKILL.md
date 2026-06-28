@@ -114,7 +114,7 @@ Before finishing, verify:
 - the change was classified as an incremental intent delta
 - authoritative current-intent graph nodes and specs were updated before queue edits
 - test impact was handled
-- compile-contract fields, readiness target, and manual/runtime validation expectations were updated for affected task briefs or queue entries
+- compile-contract fields, readiness target, and runtime-validation expectations were updated for affected task briefs or queue entries
 - governance, audit, policy, approval, workstream expertise, generation, and outcome implications were preserved when applicable
 - security, observability, UI/governance, and test impact were considered
 - affected backlog/task files were updated or intentionally left unchanged

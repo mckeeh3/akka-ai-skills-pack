@@ -25,9 +25,9 @@ Use the lifecycle phase to decide which skill family owns the next step:
 
 | Phase | Routing purpose | Typical outputs |
 |---|---|---|
-| `interview` | Convert user/business input, review findings, or manual-test observations into current-intent graph changes or blockers. | normalized input, app-description deltas, pending questions, description-ready task scope |
+| `interview` | Convert user/business input, review findings, or runtime-validation observations into current-intent graph changes or blockers. | normalized input, app-description deltas, pending questions, description-ready task scope |
 | `build-compile` | Compile description-ready graph nodes or one selected queued task into maintained artifacts. | specs, task briefs, docs, code, tests, configuration, automated-check evidence, manual-ready path |
-| `manual-test` | Prove or falsify the real runtime/API/UI/agent path and feed findings back into the request stream. | runtime evidence, reconciliation findings, app-description/spec/task/code/test repairs, blockers |
+| `runtime-validation` (`manual-test` legacy alias) | Prove or falsify the real runtime/API/UI/agent path through documented scenarios and feed findings back into the request stream. | runtime-validation evidence, scenario pass/fail/block results, reconciliation findings, app-description/spec/task/code/test repairs, blockers |
 | `cross-phase` | Route broad architecture, foundation, pack-maintenance, or review work without replacing the focused phase skills. | route decision, impact map, readiness summary, doctrine/metadata updates |
 
 The standard routing metadata fields are `phase`, `kind`, `family`, `consumes`, `produces`, and `routes-to`; see [Intent compiler skill contracts](intent-compiler-skill-contracts.md). These fields are descriptive contracts for humans and harnesses, not permission to skip required reads or task-specific checks.
@@ -45,7 +45,7 @@ worker
           -> Akka implementation
 ```
 
-Interview skills should discover or repair missing workers, harnesses, adapters, tools, capabilities, policies, traces, and tests. Build/compile skills should inherit the chain and implement only the selected adapters and substrates. Manual-test skills should verify the same chain through the real path and classify any break at the exact layer that failed.
+Interview skills should discover or repair missing workers, harnesses, adapters, tools, capabilities, policies, traces, and tests. Build/compile skills should inherit the chain and implement only the selected adapters and substrates. Runtime-validation skills should verify the same chain through the real path and classify any break at the exact layer that failed.
 
 ## Workstream vertical contract
 
@@ -87,12 +87,13 @@ Do not realize the same business operation twice because it is reachable through
 
 ## Runtime validation doctrine
 
-A feature is complete only when the intended local runtime path works at the stated scope. Prefer the real Akka/API/UI path over duplicated deterministic demos or fixture-only checks.
+A feature is complete only when the intended local runtime path works at the stated scope. Prefer the real Akka/API/UI path over duplicated deterministic demos or fixture-only checks. Runtime validation is operational integration testing: it may be performed by a human, browser-capable agent, API agent, or scripted end-to-end runner, but it must exercise the running app through the worker/surface/API/governed-tool/capability/Akka/trace path.
 
 - Provider-backed user-visible behavior should fail closed when configuration is missing and should not be counted as implemented through mocks.
 - Tests may use fixtures and test doubles, but the normal runtime path must remain real and governed.
 - Required validation that cannot run should block completion unless the task is explicitly docs-only, planning-only, or non-runtime.
 - Completion evidence must name the readiness level achieved: `described`, `surface-ready`, `backend-ready`, `frontend-rendered`, `api-smoked`, `browser-smoked`, `manual-ready`, or `runtime-ready`.
+- Runtime-validation tasks should reference durable scenarios under `specs/runtime-validation/scenarios/` when available, including setup prerequisites, execution mode, expected results, and evidence requirements.
 - `runtime-ready` requires evidence for the real path from user/browser/surface action or non-UI trigger through API/endpoint/client, Akka substrate/component/service, authorization, side effect/view/projection, and audit/work trace.
 - Unit/service/contract/typecheck/build evidence may support completion, but cannot alone close a user-visible runtime feature.
 
@@ -103,7 +104,8 @@ Planning and queue skills should preserve provenance:
 - specs should link to current-intent graph nodes;
 - backlog items should identify the capability/workstream/surface/agent/tool/component they realize;
 - task briefs should carry required reads, done criteria, checks, and validation path;
-- pending tasks should execute one bounded realization or maintenance step at a time.
+- pending tasks should execute one bounded realization or maintenance step at a time;
+- runtime-validation scenarios and runs should accumulate as a regression corpus for future app evolution.
 
 ## Drift repair
 

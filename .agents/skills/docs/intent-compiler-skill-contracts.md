@@ -82,7 +82,7 @@ Specs, backlogs, task briefs, pending questions, and pending tasks should:
 - keep one task bounded enough for a fresh harness session;
 - name required reads and focused skills;
 - carry dependencies and blockers explicitly;
-- include done criteria, required checks, canonical runtime path, readiness target, and runtime validation/manual-smoke path when feature-bearing;
+- include done criteria, required checks, canonical runtime path, readiness target, and runtime-validation smoke path when feature-bearing;
 - for browser-rendered structured surfaces or web UI realization, include required reads for `app-description-ui`, `akka-web-ui-ux-design`, `docs/web-ui-style-guide.md`, `docs/web-ui-component-catalog.md`, and `docs/web-ui-quality-checklist.md`, cite the selected app style/named-theme artifact, and confirm the surface-description sufficiency review has passed or is blocking;
 - preserve the workstream vertical contract or state a valid docs-only/internal/foundation/cross-cutting exemption;
 - include the minimum checklist from [App-description to code compile contract](app-description-to-code-compile-contract.md) for feature-bearing build/compile tasks.
@@ -97,7 +97,7 @@ Code-generation or implementation skills should:
 - preserve tenant/customer scope, authorization, policy denials, audit/work traces, provider fail-closed behavior, and frontend secret boundaries;
 - implement tests at the smallest level that proves behavior;
 - run required checks and local runtime/API/UI validation when in scope;
-- record runtime evidence for feature-bearing changes, including readiness level, browser/surface/API/Akka path, role/AuthContext/tenant setup, denial case, provider configured/fail-closed status, trace/audit evidence, and commands/manual-smoke results;
+- record runtime evidence for feature-bearing changes, including readiness level, browser/surface/API/Akka path, role/AuthContext/tenant setup, denial case, provider configured/fail-closed status, trace/audit evidence, and commands/runtime-validation-smoke results;
 - update or report drift in upstream intent/spec/task artifacts.
 
 ## Review and summary contract

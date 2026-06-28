@@ -2,14 +2,14 @@
 
 Use this lightweight template after a solution plan or current-intent slice is accepted and ready to compile into bounded implementation work.
 
-For durable multi-session execution with task status, use `./pending-question-queue.md` for unresolved decisions and `./pending-task-queue.md` for implementation work. Materialize them in the target/root project as `specs/pending-questions.md` and `specs/pending-tasks.md`.
+For durable multi-session execution with task status, use `./pending-question-queue.md` for unresolved decisions and `./pending-task-queue.md` for implementation work. Materialize them in the target/root project as `specs/pending-questions.md` and `specs/pending-tasks.md`, or as the scalable directory queue `specs/task-queue/{pending,in-progress,blocked,completed}/` when the project needs many task files or subagent handoffs.
 
 Purpose:
 - turn unresolved design decisions into a durable clarification queue when needed
 - preserve full-stack secure AI-first SaaS operating-model context, including mandatory foundation, UI surfaces, governance, supervision, audit, and outcomes
 - turn the solution plan into a downstream implementation work queue
 - keep coding focused on one bounded vertical increment at a time
-- make code generation, test generation, local runtime validation, and manual/smoke verification explicit follow-on work
+- make code generation, test generation, local runtime validation, and runtime-validation scenario/smoke verification explicit follow-on work
 
 ## Rule
 
@@ -68,7 +68,7 @@ Then convert them into a vertical queue like this:
    - outputs: <files or file families>
    - skills: <focused skills>
    - required checks: <unit/integration/frontend/security/audit checks>
-   - local validation: <Akka run, endpoint smoke, browser/workstream action, or manual checklist>
+   - local validation: <Akka run, endpoint smoke, browser/workstream action, runtime-validation scenario id, or checklist>
    - done means: <observable behavior that proves this increment works>
 
 2. <Next vertical increment>: <working state>
@@ -87,7 +87,7 @@ For each queue item:
 5. preserve only the AI-first context needed for that queue item; do not reread or duplicate the full doctrine unless the task needs it
 6. keep later increments out of context until their step begins
 
-For reliable follow-on work across sessions, first convert unresolved blocking decisions into `specs/pending-questions.md` and answer them with `akka-do-next-pending-question`. Then convert unblocked implementation work into `specs/pending-tasks.md` and execute it with `akka-do-next-pending-task` one task at a time.
+For reliable follow-on work across sessions, first convert unresolved blocking decisions into `specs/pending-questions.md` and answer them with `akka-do-next-pending-question`. Then convert unblocked implementation and runtime-validation work into `specs/pending-tasks.md` or `specs/task-queue/pending/` and execute it with `akka-do-next-pending-task` one task at a time.
 
 When requirements evolve after the queue exists:
 - reconcile the change against the current workstream graph before appending work: affected workstreams, role-specific dashboards/attention, surface graph nodes/edges, internal workstream agent graph, governed-tools, capabilities, expertise bundles, tests, and existing queued tasks
@@ -103,7 +103,7 @@ The downstream implementation phase may include:
 - endpoint generation
 - web UI generation
 - test generation
-- local run, endpoint smoke, browser/workstream smoke, or manual verification notes
+- local run, endpoint smoke, browser/workstream smoke, runtime-validation scenarios/runs, or manual/human-operated validation notes
 - documentation or snippet generation when the task asks for it
 
 ## Quick checklist
@@ -114,7 +114,7 @@ Before starting code generation, verify that the solution plan already answers:
 - which component/files are first
 - which skills implement them
 - which tests belong with them
-- which local run/manual smoke path proves the named behavior works
+- which local run/runtime-validation smoke path proves the named behavior works
 - which later increments depend on this one
 - whether any open questions still block coding
 - whether blocking questions are resolved or explicitly deferred in `specs/pending-questions.md`

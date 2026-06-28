@@ -115,7 +115,7 @@ The lifecycle artifact records whether the workstream's current intent is aligne
 - implementation alignment: `not-started`, `aligned`, `stale-description-changed`, `stale-code-changed`, `partially-aligned`, or `unknown`;
 - app-description version, digest, or changed-node list used for the latest alignment decision;
 - implementation evidence, usually by linking to `realization/source-alignment.md` entries plus touched source/spec/test paths, commit id, or code digest when available;
-- last description change, last alignment review, last compile, and last manual runtime test timestamps or notes;
+- last description change, last alignment review, last compile, and last runtime-validation run timestamps or notes;
 - blockers, assumptions, and next recommended action.
 
 When app-description input modifies a workstream's feature-bearing intent, the workstream lifecycle must mark related implementation as stale unless an alignment review explicitly classifies the change as description-only/no-code-impact. The default update is:
@@ -126,7 +126,7 @@ readiness: no higher than compile-ready
 nextRecommendedAction: alignment-review or compile selected workstream slice
 ```
 
-A later compile may move the workstream to `manual-ready` only after required checks pass and the real runtime path is known. A manual runtime test may move it to `runtime-ready` only when the real API/UI/agent path works at the claimed scope.
+A later compile may move the workstream to `manual-ready` only after required checks pass and the real runtime path plus validation setup is known. Runtime validation may move it to `runtime-ready` only when the real API/UI/agent path works at the claimed scope.
 
 ## Source alignment realization artifact
 
@@ -148,4 +148,4 @@ See also [Incremental intent processing](incremental-intent-processing.md), [Int
 
 ## Lifecycle relationship
 
-Use [App Development Lifecycle](app-development-lifecycle.md) as the canonical three-phase routing doctrine for moving current intent through interview, build/compile, and manual runtime test phases. The current-intent model remains the living app-description graph that each phase reads from and reconciles back into.
+Use [App Development Lifecycle](app-development-lifecycle.md) as the canonical three-phase routing doctrine for moving current intent through interview, build/compile, and runtime-validation phases. The current-intent model remains the living app-description graph that each phase reads from and reconciles back into.
