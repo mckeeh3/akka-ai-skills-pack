@@ -20,7 +20,7 @@ A compile task starts only when the requested slice has enough current-intent pr
 - trace/audit/work events and outcome evidence;
 - implementation target area and selected or candidate Akka/frontend/API/agent substrates;
 - source-alignment artifact or planned alignment entry mapping app-description files to source/frontend/API/test/validation files;
-- required automated checks and manual runtime scenario, or an explicit docs-only/non-runtime exemption.
+- required automated checks and runtime-validation scenario/setup path, or an explicit docs-only/non-runtime exemption.
 
 If a feature-bearing task only names a page, route, endpoint, component, or agent tool, repair the graph/task brief or block with a pending question before implementation.
 
@@ -33,13 +33,13 @@ accepted intent delta
   -> actor adapters
   -> governed tools
   -> capabilities and data/state
-  -> policies, traces, tests, and manual scenarios
+  -> policies, traces, tests, and runtime-validation scenarios
   -> selected Akka substrates
   -> frontend/API/agent/runtime adapters
   -> source-alignment entries
   -> bounded repository changes
   -> automated checks
-  -> manual runtime test scenario
+  -> runtime-validation scenario/run
   -> reconciliation output
 ```
 
@@ -111,7 +111,7 @@ The implementation slice should include or update the smallest tests that prove:
 - audit/work trace source and correlation differences per adapter;
 - result surface/system message/attention update behavior;
 - component-level behavior and endpoint/API/frontend wiring;
-- manual runtime path at the claimed readiness level.
+- runtime-validation path at the claimed readiness level.
 
 ### 6. Update source alignment
 
@@ -119,7 +119,7 @@ Before final reconciliation, update the owning workstream `realization/source-al
 
 - the app-description files that drove the change;
 - backend, frontend, resources, specs, tests, and validation files that realize the slice;
-- checks and manual runtime scenario evidence used for the latest alignment decision;
+- checks and runtime-validation scenario/run evidence used for the latest alignment decision;
 - unmapped feature-bearing description files or implementation files, with `not-started`, `description-only`, `blocked`, `generated-output`, or `unknown` reasons;
 - no-code-impact review notes when description files changed but implementation did not need to.
 
@@ -127,10 +127,10 @@ If a machine-readable checker exists, update the optional `source-alignment.json
 
 ### 7. Reconcile outcomes
 
-After automated checks and manual/runtime validation when applicable:
+After automated checks and runtime validation when applicable:
 
 - update task status and validation evidence;
-- update workstream lifecycle/alignment state, including links to source-alignment entries, last compile, last alignment review, last manual runtime test, blockers, and next action;
+- update workstream lifecycle/alignment state, including links to source-alignment entries, last compile, last alignment review, last runtime-validation run, blockers, and next action;
 - reconcile review or runtime findings as current-intent updates, implementation repairs, test repairs, follow-up tasks, or blockers;
 - never let implementation details silently supersede app-description intent.
 
@@ -150,7 +150,7 @@ A queued build/compile task or task brief should include:
 - [ ] Source-alignment entry to create/update, including mapped app-description files and expected source/frontend/API/test/validation files.
 - [ ] Expected outputs and changed artifact categories.
 - [ ] Required automated checks.
-- [ ] Manual runtime scenario or explicit statement that runtime evidence is not applicable.
+- [ ] Runtime-validation scenario/setup path or explicit statement that runtime evidence is not applicable.
 - [ ] Done criteria tied to graph completeness, implementation behavior, tests, and validation evidence.
 - [ ] Queue/commit requirements and next-task discovery rule.
 

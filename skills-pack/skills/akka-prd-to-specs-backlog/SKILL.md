@@ -63,7 +63,8 @@ Read first when present/relevant:
 - `../docs/app-development-lifecycle.md`
 - `../docs/app-worker-tool-model.md`
 - `../docs/app-description-to-code-compile-contract.md`
-- `../docs/manual-test-reconciliation.md` when planning manual/browser runtime validation or remediation loops
+- `../docs/runtime-validation.md` when planning runtime-validation scenarios, setup prerequisites, execution modes, or remediation loops
+- `../docs/manual-test-reconciliation.md` when planning runtime-validation/manual/browser remediation loops
 - `../akka-solution-decomposition/SKILL.md`
 - `../core-saas-foundation/SKILL.md`
 - `../docs/intent-compiler.md`
@@ -88,13 +89,21 @@ Read first when present/relevant:
 - `../docs/web-ui-style-guide.md`
 - `../references/akka-entity-comparison.md`
 - `../references/generated-saas-runtime-completion.md`
-- target project path: specs/README.md, `specs/akka-solution-plan.md`, `specs/pending-questions.md`, `specs/pending-tasks.md`, `specs/backlog/README.md`, `specs/tasks/README.md`, and existing slice/sprint/module/backlog/task files as applicable.
+- target project path: specs/README.md, `specs/akka-solution-plan.md`, `specs/pending-questions.md`, `specs/pending-tasks.md`, `specs/task-queue/**`, `specs/runtime-validation/**`, `specs/backlog/README.md`, `specs/tasks/README.md`, and existing slice/sprint/module/backlog/task files as applicable.
 
 If the user provided a PRD/requirements file, read it completely before writing specs.
 
 ## Extraction order for PRD input
 
-Use `../docs/intent-compiler-skill-contracts.md` and `../docs/intent-to-realization-flow.md` for the planning and queue contract. Extract app objective, domains, workstreams, capabilities, surfaces, agents, tools, policies, traces, tests, and realization mappings as current intent; do not keep PRD chronology or superseded alternatives in canonical artifacts. Preserve generated-SaaS/SaaS Foundation App context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
+Use `../docs/intent-compiler-skill-contracts.md` and `../docs/intent-to-realization-flow.md` for the planning and queue contract. Extract app objective, domains, cross-cutting foundation concerns, workstreams, workers, execution harnesses, actor adapters, capabilities/governed tools, surfaces, agents, policies, traces, tests, runtime-validation needs, and realization mappings as current intent; do not keep PRD chronology or superseded alternatives in canonical artifacts.
+
+Decompose coarse-to-fine until the next layer would require guessing:
+
+```text
+PRD/input -> domains/cross-cutting concerns -> workstreams -> workers -> capabilities/tools -> surfaces -> Akka/frontend/API realization -> implementation/runtime-validation tasks
+```
+
+Stop with explicit pending questions or blocked tasks when product authority, security, tenant scope, worker responsibility, approval policy, runtime setup, provider config, or validation evidence is unclear. Preserve generated-SaaS/SaaS Foundation App context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
 
 ## Sizing rules
 
@@ -123,11 +132,11 @@ When updating existing queues:
 
 ## Task brief and queue compile contract
 
-Every generated backlog item, task brief, and pending task that could drive implementation must inherit enough build/compile context for a fresh worker to proceed without guessing. Include the lifecycle phase and readiness target, current-intent/app-description graph nodes or explicit cross-cutting/docs-only scope, responsible workers, harnesses, actor adapters, governed-tool ids, capability ids, AuthContext/scope, confirmation/approval, idempotency/transaction, result/partial-failure surfaces, audit/work trace expectations, selected Akka/frontend/API substrates, required checks, and a manual runtime scenario or explicit non-runtime exemption. If a PRD can only produce page/component/CRUD tasks without that chain, block the affected task for app-description/spec repair instead of materializing it as runnable.
+Every generated backlog item, task brief, and pending task that could drive implementation must inherit enough build/compile context for a fresh worker to proceed without guessing. Include the lifecycle phase and readiness target, current-intent/app-description graph nodes or explicit cross-cutting/docs-only scope, responsible workers, harnesses, actor adapters, governed-tool ids, capability ids, AuthContext/scope, confirmation/approval, idempotency/transaction, result/partial-failure surfaces, audit/work trace expectations, selected Akka/frontend/API substrates, required checks, and a runtime-validation scenario/setup path or explicit non-runtime exemption. If a PRD can only produce page/component/CRUD tasks without that chain, block the affected task for app-description/spec repair instead of materializing it as runnable.
 
 ## Runtime completion and validation
 
-For generated-app implementation tasks, link `../references/generated-saas-runtime-completion.md`. Plans/backlogs must require validation through the intended local Akka/API/UI path for the selected scope. Fixture-only, mock-only, deterministic/model-less normal runtime behavior cannot satisfy named runtime features. Backlogs and pending tasks must distinguish readiness levels (`described`, `surface-ready`, `backend-ready`, `frontend-rendered`, `api-smoked`, `browser-smoked`, `manual-ready`, `runtime-ready`) and require runtime evidence before a feature-bearing task can be marked `done` as `runtime-ready`.
+For generated-app implementation tasks, link `../references/generated-saas-runtime-completion.md`. Plans/backlogs must require validation through the intended local Akka/API/UI path for the selected scope, and should create/update `specs/runtime-validation/` scenarios when feature-bearing behavior needs app/browser/API operation. Fixture-only, mock-only, deterministic/model-less normal runtime behavior cannot satisfy named runtime features. Backlogs and pending tasks must distinguish readiness levels (`described`, `surface-ready`, `backend-ready`, `frontend-rendered`, `api-smoked`, `browser-smoked`, `manual-ready`, `runtime-ready`) and require runtime evidence before a feature-bearing task can be marked `done` as `runtime-ready`.
 
 ## Anti-patterns
 

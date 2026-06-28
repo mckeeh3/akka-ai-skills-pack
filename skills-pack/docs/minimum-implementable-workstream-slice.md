@@ -32,7 +32,7 @@ one workstream id
 | Backend authority | AuthContext checks, tenant/customer isolation, denial behavior, and redaction. |
 | Akka/API/UI path | Selected substrate and how the user/system reaches it. |
 | Trace evidence | Audit/work trace, correlation id, source refs, and visible trace link or explicit no-trace reason for non-runtime docs. |
-| Tests/validation | Smallest command/manual smoke that proves success and forbidden behavior. |
+| Tests/validation | Smallest command/runtime-validation smoke that proves success and forbidden behavior. |
 | Readiness | Honest target level; do not claim `runtime-ready` without real local runtime evidence. |
 
 ## Minimal task brief block

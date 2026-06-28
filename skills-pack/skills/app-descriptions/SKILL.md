@@ -22,7 +22,7 @@ This skill is for a harness operating model where the app description is the fil
 Compile incremental user intent into current app-description artifacts, plans, code, tests, and validation evidence in a way that is:
 
 - current-intent first
-- lifecycle-aware: distinguish interview/current-intent work, build/compile work, and manual/runtime validation handoff
+- lifecycle-aware: distinguish interview/current-intent work, build/compile work, and runtime-validation handoff
 - workstream-centered for user-facing SaaS behavior
 - explicit about app/global/domain/workstream graph nodes, including workers, execution harnesses, actor adapters, governed tools, capabilities, traces, tests, and realization links
 - clear about behavior, tests, security, observability, and realization
@@ -39,7 +39,7 @@ Read only the smallest set needed for the request:
 - `../docs/current-intent-model.md`
 - `../docs/incremental-intent-processing.md`
 - `../docs/intent-compiler-skill-contracts.md`
-- `../docs/app-development-lifecycle.md` when routing between interview, build/compile, and manual/runtime-validation concerns
+- `../docs/app-development-lifecycle.md` when routing between interview, build/compile, and runtime-validation concerns
 - `../docs/app-worker-tool-model.md` and `../docs/app-description-component-graph.md` when workers, surfaces, tools, capabilities, agents, system triggers, or implementation readiness are in scope
 - `../docs/app-description-to-code-compile-contract.md` when planning, generation, code, tests, or validation are requested
 - `../docs/app-description-source-alignment.md` when app-description/source drift, stale code, realization maps, or generation alignment are in scope

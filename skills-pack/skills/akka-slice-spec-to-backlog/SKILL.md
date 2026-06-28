@@ -78,7 +78,7 @@ If a matching backlog file already exists:
 
 ## What this skill must produce
 
-Use `../docs/app-description-to-code-compile-contract.md` for the implementation-ready task-brief/queue checklist and `../docs/app-development-lifecycle.md` for readiness vocabulary. For feature-bearing generated SaaS work, each backlog task should name the manual runtime scenario or explicitly state why runtime evidence is not applicable.
+Use `../docs/app-description-to-code-compile-contract.md` for the implementation-ready task-brief/queue checklist and `../docs/app-development-lifecycle.md` for readiness vocabulary. For feature-bearing generated SaaS work, each backlog task should name the runtime-validation scenario/setup path or explicitly state why runtime evidence is not applicable.
 
 Use `../docs/intent-compiler-skill-contracts.md` and `../docs/intent-to-realization-flow.md` for the detailed backlog and queue output contract. Preserve generated-SaaS/SaaS Foundation App context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
 

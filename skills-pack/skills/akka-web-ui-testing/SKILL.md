@@ -20,7 +20,7 @@ Use `../references/generated-saas-input-contract.md`, `../docs/app-worker-tool-m
 
 - `../docs/app-development-lifecycle.md`
 - `../docs/app-description-to-code-compile-contract.md`
-- `../docs/manual-test-reconciliation.md` when tests are part of a manual/runtime readiness claim or remediation loop
+- `../docs/runtime-validation.md` and `../docs/manual-test-reconciliation.md` when tests are part of a runtime-validation readiness claim or remediation loop
 - `../docs/web-ui-quality-checklist.md`
 - `../docs/web-ui-style-guide.md`
 - `../akka-http-endpoint-testing/SKILL.md`
@@ -63,9 +63,9 @@ If the project has a frontend test setup, test focused frontend logic such as:
 
 Do not add a new heavy frontend test framework unless the user explicitly wants it. If an existing frontend project already has Vitest, React Testing Library, Playwright, or similar, use the existing setup rather than replacing it.
 
-### 4. Browser or manual smoke tests
+### 4. Browser/runtime-validation smoke tests
 
-For feature-bearing generated SaaS UI work, the sprint/task must have a smoke path even if the project does not yet have a browser automation framework. Prefer an existing cheap/stable automated browser or DOM smoke test when available. If adding Playwright/Cypress/etc. would be heavy or unstable, record an explicit manual smoke checklist/result instead. A UI feature must not be marked `runtime-ready` from frontend contract tests, screenshots, typecheck, build, fixture rendering, or story/demo data alone.
+For feature-bearing generated SaaS UI work, the sprint/task must have a runtime-validation smoke path even if the project does not yet have a browser automation framework. Prefer an existing cheap/stable automated browser, browser-agent, or DOM smoke test when available. If adding Playwright/Cypress/etc. would be heavy or unstable, record an explicit runtime-validation checklist/result instead. A UI feature must not be marked `runtime-ready` from frontend contract tests, screenshots, typecheck, build, fixture rendering, or story/demo data alone.
 
 Cover:
 - page loads in the locally running Akka-hosted app for feature-bearing generated SaaS UI; an equivalent test route is acceptable only for non-feature mechanics or an explicitly recorded limitation

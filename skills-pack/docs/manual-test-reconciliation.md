@@ -1,32 +1,49 @@
-# Manual Runtime Test Reconciliation
+# Runtime Validation Reconciliation
 
-Manual runtime testing is a first-class lifecycle phase between implementation verification and further feature work. It is not an informal bug list and it is not permission to patch code before intent is understood. A manual session exercises the locally runnable app through the intended browser, API, worker, tool, capability, and Akka runtime paths; then it feeds findings back into app-description, specs, pending tasks, runtime evidence, and only then implementation changes.
+Runtime validation is a first-class lifecycle phase between implementation verification and further feature work. It is not an informal bug list and it is not permission to patch code before intent is understood. A runtime-validation session exercises the locally runnable app through the intended browser, API, worker, tool, capability, and Akka runtime paths; then it feeds findings back into app-description, specs, pending tasks, runtime-validation evidence, and only then implementation changes.
 
-Use this doctrine with the `akka-runtime-feature-verification` and `akka-manual-failure-reconciliation` skills whenever a feature, workstream, or pending-task group is claimed ready for manual validation or when a human reports runtime failures.
+`Manual runtime testing` remains a compatible legacy phrase for human-operated runtime validation. New task briefs, queues, and specs should prefer `runtime-validation`; use `executionMode: human-manual`, `browser-agent`, `api-agent`, or `scripted-e2e` to say who or what operates the app.
+
+Use this doctrine with the `akka-runtime-feature-verification` and `akka-manual-failure-reconciliation` skills whenever a feature, workstream, or pending-task group is claimed ready for runtime validation or when a human/agent reports runtime failures. See [Runtime validation](runtime-validation.md) for scenario catalogs, setup prerequisites, execution modes, and accumulated validation runs.
 
 ## Position in the lifecycle
 
-Manual runtime testing belongs to the realization loop:
+Runtime validation belongs to the realization loop:
 
 1. Intent exists in app-description/specs and is compiled into implementation tasks.
 2. Implementation tasks produce code, tests, traces, and runtime evidence.
 3. Runtime verification checks whether the real path reaches at least the claimed readiness level.
-4. Manual runtime testing exercises the user-visible and worker/tool flows locally.
-5. Reconciliation classifies findings and updates intent/spec/task/runtime evidence before more product work continues.
+4. Runtime validation exercises the user-visible and worker/tool flows locally through documented scenarios.
+5. Reconciliation classifies findings and updates intent/spec/task/runtime-validation evidence before more product work continues.
 
-A manually tested feature should not be called `runtime-ready` unless the intended local path works at the stated scope with required auth, tenant scope, side effects, trace/audit evidence, provider behavior, and denial/failure behavior. If manual evidence is limited but sufficient for the stated manual scope, use `manual-ready`; otherwise keep the claim at the highest proven lower readiness level.
+A runtime-validated feature should not be called `runtime-ready` unless the intended local path works at the stated scope with required auth, tenant scope, side effects, trace/audit evidence, provider behavior, and denial/failure behavior. If evidence is limited but sufficient for the stated validation scope, use `manual-ready` or the highest proven lower readiness level.
 
-## Manual test session inputs
+## Runtime-validation session inputs
 
-Each manual session starts from an explicit test charter, not ad hoc clicking. Capture these inputs before testing:
+Each runtime-validation session starts from an explicit scenario or test charter, not ad hoc clicking. Capture these inputs before testing:
 
 - **Scope:** feature, workstream, surface, worker, governed tool, capability, or pending-task IDs under test.
 - **Intent sources:** app-description files, specs, task briefs, acceptance criteria, structured surface contracts, and runtime verification notes.
 - **Runtime path hypothesis:** the expected path from browser or non-UI trigger to API/client, actor-adapter, governed tool, backend capability, Akka component/service, view, and trace/audit record.
 - **Role and context:** canonical user role, `AuthContext`, tenant/customer/organization, membership, permission set, and denial persona.
 - **Provider state:** configured external providers, intentionally missing providers, seed data, demo data, and expected fail-closed behavior.
+- **Execution mode:** `human-manual`, `browser-agent`, `api-agent`, or `scripted-e2e`.
 - **Evidence target:** readiness level being tested (`manual-ready`, `runtime-ready`, or a lower level), required screenshots/log snippets/commands, and browser-safe trace/status copy.
 - **Safety constraints:** no provider secrets in browser payloads, no fixture-only production path, no bypass of auth/tenant/provider boundaries.
+
+## Runtime-validation setup
+
+A validation scenario must say how prerequisites are prepared. Prefer reusable setup docs under `specs/runtime-validation/data-setups/` and, when practical, assisted setup commands that exercise the real running app.
+
+Setup should use the highest practical fidelity:
+
+1. browser/admin UI actions;
+2. authenticated API calls;
+3. governed admin/setup tools limited to local/dev/test mode;
+4. Akka component calls through test harnesses only when the scenario allows a lower readiness claim;
+5. direct persistence mutation only for fixture-mode tests.
+
+Record setup mode explicitly: `runtime`, `local-seeded`, `provider-missing-fail-closed`, or `fixture`. Fixture setup is useful for lower-level tests but cannot by itself justify a `runtime-ready` user-visible claim.
 
 ## Worker-centric scenario model
 
@@ -49,11 +66,11 @@ A scenario is weak if it only proves a React component, mock response, isolated 
 
 ## Session outputs
 
-Every manual session produces a reconciliation packet that can be reviewed without rerunning the test immediately:
+Every runtime-validation session produces a reconciliation packet that can be reviewed without rerunning the scenario immediately:
 
 - **Session summary:** date, tester, branch/commit, environment, seed data, providers configured or missing, and commands used to start the app.
 - **Scenario results:** pass/fail per worker-centric scenario, with role/context and runtime path actually exercised.
-- **Failure inventory:** one row per observed failure using the manual failure intake table.
+- **Failure inventory:** one row per observed failure using the runtime-validation failure intake table.
 - **Evidence:** screenshots, browser console/network notes, API responses, logs, trace IDs, audit/work trace references, and provider/fail-closed messages.
 - **Readiness conclusion:** highest justified runtime readiness level and why `runtime-ready` is or is not justified.
 - **Reconciliation actions:** app-description/spec updates, pending-task additions or status changes, implementation/test remediation tasks, blocked provider/config prerequisites, and retest requirements.
@@ -87,21 +104,21 @@ Do not merge multiple unrelated failures into one broad task. A remediation task
 
 ## Intake and evidence templates
 
-Use this failure inventory in manual session notes and remediation specs:
+Use this failure inventory in runtime-validation run notes and remediation specs:
 
-| ID | Manual flow | Role/context | Expected behavior | Actual behavior | Intent present? | Runtime path | Classification | Blocking? | Remediation |
+| ID | Runtime flow | Role/context | Expected behavior | Actual behavior | Intent present? | Runtime path | Classification | Blocking? | Remediation |
 |---|---|---|---|---|---|---|---|---|---|
 | MF-001 | `<click/action/API>` | `<role/AuthContext/tenant>` | `<expected>` | `<actual>` | `<yes/no/unclear>` | `<worker -> adapter -> tool -> capability -> API/Akka -> trace/view>` | `<category>` | `<yes/no>` | `<task/update>` |
 
-Use this evidence matrix when a manual session is part of a runtime readiness claim:
+Use this evidence matrix when a runtime-validation run is part of a runtime readiness claim:
 
-| Claim | Intent source | Runtime path | Manual evidence | Level | Gap |
+| Claim | Intent source | Runtime path | Runtime-validation evidence | Level | Gap |
 |---|---|---|---|---|---|
 | `<feature/action>` | `<app-description/spec/task>` | `<worker/surface -> adapter/API -> tool/capability -> Akka -> trace/view>` | `<screenshots/logs/API/browser notes>` | `<readiness level>` | `<none or category>` |
 
 ## Remediation task minimums
 
-A remediation task created from manual testing must include:
+A remediation task created from runtime validation must include:
 
 - manual failure IDs fixed by the task;
 - canonical runtime path, including worker, actor-adapter, governed tool, backend capability, Akka component/service, and trace/audit view where applicable;
@@ -109,8 +126,8 @@ A remediation task created from manual testing must include:
 - success, validation error, forbidden/hidden/not-found, stale/conflict/idempotency, provider-unconfigured, and recovery expectations where relevant;
 - automated checks and manual/browser/API smoke checklist;
 - provider configuration status and fail-closed expectations;
-- done criteria that forbid closure until the manual failure is retested or blocked by a named external prerequisite.
+- done criteria that forbid closure until the runtime-validation failure is retested or blocked by a named external prerequisite.
 
 ## Stop/continue rule
 
-Stop feature expansion when blocking manual failures remain in the primary path for a claimed feature group. Continue only with focused reconciliation or remediation work until the queue and runtime evidence accurately reflect the highest proven readiness level.
+Stop feature expansion when blocking runtime-validation failures remain in the primary path for a claimed feature group. Continue only with focused reconciliation or remediation work until the queue and runtime evidence accurately reflect the highest proven readiness level.

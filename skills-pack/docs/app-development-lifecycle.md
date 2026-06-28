@@ -1,25 +1,69 @@
 # App Development Lifecycle
 
-This document defines the canonical three-phase lifecycle used by the Akka AI skills pack when turning current intent into a runnable AI-first SaaS application or skills-pack-maintenance change. The lifecycle is intentionally iterative: every user request, review finding, manual test result, and runtime observation is part of a never-ending request stream that updates the app's current intent and may start another pass through the phases.
+This document defines the canonical three-phase lifecycle used by the Akka AI skills pack when turning current intent into a runnable AI-first SaaS application or skills-pack-maintenance change. The lifecycle is intentionally iterative: every user request, review finding, runtime-validation result, and runtime observation is part of a never-ending request stream that updates the app's current intent and may start another pass through the phases.
 
 ## Lifecycle at a glance
 
 1. **Interview phase**: capture and reconcile intent until the app-description can represent the requested change.
 2. **Build/compile phase**: compile the app-description and queued task intent into code, docs, tests, and configuration changes.
-3. **Manual runtime test phase**: run the real local/runtime path, reconcile failures back into current intent, and decide whether the change is runtime-ready or needs another loop.
+3. **Runtime validation phase**: run the real local/runtime path through documented scenarios, reconcile failures back into current intent, and decide whether the change is runtime-ready or needs another loop. `Manual runtime test` remains a compatible legacy label for human-operated runtime validation.
 
 The phases are not a waterfall. A request can move forward, expose a gap, and then loop back with a more precise app-description, task, or implementation fix.
+
+## App-developer input transaction contract
+
+Every app-developer input must produce a concrete state transition. The input may be a high-level PRD, rough business notes, a feature request, a low-level bug report, a failed surface, a manual/runtime observation, or a direct coding ask. The harness should advance it as far as safely possible and then stop with an explicit terminal state.
+
+Allowed terminal states:
+
+- `done` — the requested scope was completed, with evidence and the achieved readiness level.
+- `partially-done-blocked` — safe work was completed, then execution stopped with precise blocking questions or issues.
+- `decomposed-to-tasks` — the input was converted into executable tasks, runtime-validation tasks, pending questions, or blocked items.
+- `blocked-before-work` — no safe state transition was possible without a specific answer, prerequisite, or conflict resolution.
+
+A response must not stop merely because the input was analyzed. It should end with what changed, what task(s) were created, what evidence exists, or the exact question/blocker that prevents the next transition.
+
+Use these stop reasons consistently when relevant:
+
+- `completed`
+- `decomposed-to-tasks`
+- `blocked-by-product-question`
+- `blocked-by-security-question`
+- `blocked-by-runtime-config`
+- `blocked-by-provider-config`
+- `blocked-by-missing-reproduction`
+- `blocked-by-conflicting-intent`
+- `blocked-by-unsafe-assumption`
+- `blocked-by-failing-check`
+- `blocked-by-out-of-scope-dependency`
+- `runtime-validation-required`
+
+## Coarse-to-fine decomposition contract
+
+For broad app input, decompose from coarse intent toward executable work until the next step would require guessing:
+
+```text
+raw input
+  -> app/domain/cross-cutting impact
+    -> workstreams and responsible workers
+      -> execution harnesses, actor adapters, capabilities, and governed tools
+        -> surfaces and runtime paths
+          -> Akka/frontend/API realization choices
+            -> implementation, remediation, or runtime-validation tasks
+```
+
+The source of truth remains the app-description/current-intent graph. The decomposition tree is an execution view that creates graph updates, questions, blockers, task briefs, or queue entries. Stop only with a clear question, blocker, unsafe assumption, validation need, or completed transition.
 
 ## Continuous request and reconciliation loop
 
 Treat app development as a durable stream of requests rather than a finite prompt-response exchange:
 
-- new product asks, clarification answers, user feedback, review findings, failing tests, and manual runtime observations all become request-stream inputs;
+- new product asks, clarification answers, user feedback, review findings, failing tests, and runtime-validation observations all become request-stream inputs;
 - each input is reconciled against the current app-description and pending task queue before implementation scope is changed;
 - contradictions, missing decisions, or unsafe runtime assumptions are captured as questions or blockers instead of being silently implemented;
 - completed work updates the living current-intent graph and leaves evidence that the next task can use without replaying the full conversation.
 
-When a manual runtime test or review discovers a mismatch, the result is not merely a bug note. It is a lifecycle input that should update the app-description, backlog, task queue, implementation, or verification notes at the smallest appropriate scope.
+When a runtime-validation run, manual/browser test, or review discovers a mismatch, the result is not merely a bug note. It is a lifecycle input that should update the app-description, backlog, task queue, implementation, runtime-validation corpus, or verification notes at the smallest appropriate scope.
 
 ## Phase contracts
 
@@ -43,28 +87,30 @@ When a manual runtime test or review discovers a mismatch, the result is not mer
 
 **Outputs:** Focused source, documentation, app-description, spec, test, or configuration changes; updated task status; validation evidence; and a commit when the task is complete.
 
-**Non-goals:** Do not broaden scope to adjacent queued tasks, replace manual runtime verification with static reasoning, or count mock/demo-only behavior as real application completion.
+**Non-goals:** Do not broaden scope to adjacent queued tasks, replace runtime validation with static reasoning, or count mock/demo-only behavior as real application completion.
 
-**Handoff:** The phase hands off when the change is **compile-ready** and then **manual-ready**: compile-ready means repository artifacts are coherent enough for implementation checks; manual-ready means automated checks required by the task pass and the real user/API/runtime path to test has been identified.
+**Handoff:** The phase hands off when the change is **compile-ready** and then **manual-ready**: compile-ready means repository artifacts are coherent enough for implementation checks; manual-ready means automated checks required by the task pass and the real user/API/runtime path plus any needed runtime-validation scenario/setup prerequisites have been identified.
 
-### 3. Manual runtime test phase
+### 3. Runtime validation phase
 
-**Purpose:** Prove the implemented behavior through the real local runtime path at the scope claimed by the task, then reconcile any mismatch.
+**Purpose:** Prove the implemented behavior through documented runtime-validation scenarios on the real local runtime path at the scope claimed by the task, then reconcile any mismatch.
 
-**Inputs:** Manual-ready implementation, runtime configuration, test user or tenant context, expected behavior, required audit/work-trace evidence, and prior validation output.
+**Inputs:** Manual-ready implementation, runtime configuration, test user or tenant context, expected behavior, runtime-validation scenario or charter, required audit/work-trace evidence, setup prerequisites, and prior validation output.
 
-**Outputs:** Manual test notes, runtime evidence, failure reproduction details, app-description/backlog/task updates, follow-up tasks, or confirmation that the change is runtime-ready.
+**Outputs:** Runtime-validation run notes, scenario pass/fail/block results, runtime evidence, failure reproduction details, app-description/backlog/task updates, follow-up remediation tasks, blocked prerequisites, or confirmation that the change is runtime-ready.
 
-**Non-goals:** Do not treat deterministic fixtures, simulations, mocked provider behavior, or screenshots without the governed runtime path as proof of consequential runtime behavior.
+**Non-goals:** Do not treat deterministic fixtures, simulations, mocked provider behavior, frontend-only screenshots, or setup shortcuts that bypass the governed runtime path as proof of consequential runtime behavior.
 
 **Handoff:** The phase hands off when the change is **runtime-ready** or explicitly not runtime-applicable. Runtime-ready means the real local/API/UI/agent path works at the stated scope with required authorization, provider, audit, trace, and error behavior. For docs-only or planning-only skills-pack work, runtime evidence can be not applicable, but the task must say so and still provide the required repository checks.
+
+See [Runtime validation](runtime-validation.md) for scenario catalogs, setup prerequisites, execution modes (`human-manual`, `browser-agent`, `api-agent`, `scripted-e2e`), evidence rules, and accumulated validation runs.
 
 ## App-description as the living current-intent graph
 
 The app-description is the durable current-intent graph, not a disposable scaffold. It should remain aligned with the latest accepted request stream and implementation reality. Lifecycle work should therefore:
 
 - preserve app-description nodes for product goals, workstreams/workers, surfaces, capabilities/tools, data, policies, integrations, verification expectations, and known blockers;
-- update the graph when implementation or manual testing changes the accepted intent;
+- update the graph when implementation or runtime validation changes the accepted intent;
 - avoid treating generated code as the only source of truth when the app-description has not been reconciled;
 - make each pending task small enough to compile one coherent slice of the graph into repository changes.
 
@@ -84,7 +130,7 @@ Recommended alignment states:
 Default rule: when a feature-bearing app-description node under a workstream changes, mark that workstream's implementation alignment as `stale-description-changed` and reduce readiness to no higher than `compile-ready` until either:
 
 1. an alignment review proves the change is description-only or no-code-impact; or
-2. the affected workstream slice is compiled, checked, and then manually verified as needed.
+2. the affected workstream slice is compiled, checked, and then runtime-validated as needed.
 
 This makes queries such as "which workstreams are stale relative to current intent?" first-class lifecycle operations.
 

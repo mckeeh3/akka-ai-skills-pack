@@ -49,7 +49,7 @@ app objective
                 -> Akka implementation substrate(s)
                   -> frontend/API/agent/runtime adapter(s)
                     -> tests
-                      -> manual runtime scenario
+                      -> runtime-validation scenario
                         -> audit/work trace and outcome evidence
 ```
 
@@ -94,7 +94,7 @@ A governed-tool node or binding should state:
 - confirmation, approval, autonomy, idempotency, transaction, and partial-failure semantics;
 - side effects, result surfaces/events/attention updates, audit/work trace events, and trace source per adapter;
 - implementation mapping to Akka components, endpoints, frontend surfaces, agent tools, workflows/timers/consumers/MCP/internal callers;
-- required automated tests and manual runtime scenario.
+- required automated tests and runtime-validation scenario/setup path.
 
 ### Capability nodes
 
@@ -129,7 +129,7 @@ Before a feature-bearing slice can be compiled, verify:
 - [ ] Authorization, tenant/customer scope, confirmation/approval, idempotency, denial, trace, and partial-failure behavior are captured.
 - [ ] Akka substrates are justified by capability shape.
 - [ ] Source-alignment entries map feature-bearing app-description files to source/frontend/API/test/validation artifacts or explicitly mark them not-started, description-only, blocked, or unknown.
-- [ ] Automated tests and at least one manual runtime scenario identify the worker + adapter + governed tool + capability + implementation path.
+- [ ] Automated tests and at least one runtime-validation scenario identify the worker + adapter + governed tool + capability + implementation path.
 
 ## Anti-patterns
 

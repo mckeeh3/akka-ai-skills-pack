@@ -1,6 +1,6 @@
 ---
 name: akka-runtime-feature-verification
-description: Verify that generated SaaS or SaaS Foundation App features marked complete actually work through the intended local Akka/API/UI runtime path, with auth, denials, audit/work traces, provider fail-closed behavior, and manual/browser/API smoke evidence.
+description: Verify that generated SaaS or SaaS Foundation App features marked complete actually work through the intended local Akka/API/UI runtime path, with auth, denials, audit/work traces, provider fail-closed behavior, and runtime-validation/browser/API smoke evidence.
 ---
 
 # Akka Runtime Feature Verification
@@ -19,7 +19,7 @@ worker
 → trace/view/result surface
 ```
 
-When manual runtime testing is part of the readiness claim, apply `../docs/manual-test-reconciliation.md` so tester findings become classified reconciliation outputs before more feature work proceeds.
+When runtime validation is part of the readiness claim, apply `../docs/runtime-validation.md` and `../docs/manual-test-reconciliation.md` so human/browser-agent/API/scripted findings become classified reconciliation outputs before more feature work proceeds.
 
 This is a validator/reviewer and drift-repair skill. It may update specs/queue evidence and append remediation tasks, but it should not implement unrelated product code.
 
@@ -33,7 +33,8 @@ Read these first when present:
 - `../docs/intent-to-realization-flow.md`
 - `../docs/app-worker-tool-model.md`
 - `../docs/app-description-to-code-compile-contract.md`
-- `../docs/manual-test-reconciliation.md` when manual/browser runtime smoke evidence or tester findings are in scope
+- `../docs/runtime-validation.md` when runtime-validation scenarios, setup prerequisites, execution modes, or accumulated runs are in scope
+- `../docs/manual-test-reconciliation.md` when runtime-validation/manual/browser runtime smoke evidence or tester findings are in scope
 - `../docs/pending-task-queue.md`
 - `../docs/structured-surface-contracts.md` when surfaces are in scope
 - `../akka-web-ui-testing/SKILL.md` when browser UI is in scope
@@ -52,8 +53,8 @@ Use these exact labels in verification output:
 - `backend-ready` — backend/service/component behavior is tested, but the user-facing API/UI path is not proven.
 - `frontend-rendered` — browser components render, but action round trips through the real API/runtime path are not proven.
 - `api-smoked` — protected API or workstream endpoint path was exercised locally with role/context/auth expectations.
-- `browser-smoked` — visible local browser/DOM/manual flow was exercised against the intended API/client path.
-- `manual-ready` — the feature has enough local runtime, browser/manual, denial, trace, and provider/fail-closed evidence for the stated manual-testing scope.
+- `browser-smoked` — visible local browser/DOM flow was exercised by a human or browser-capable agent against the intended API/client path.
+- `manual-ready` — the feature has enough local runtime, browser/runtime-validation, denial, trace, and provider/fail-closed evidence for the stated validation scope.
 - `runtime-ready` — the intended local Akka/API/UI path works at the stated scope with required auth, tenant scope, side effects, traces, tests, and provider behavior or explicit fail-closed evidence.
 
 Do not use `complete` without naming which readiness level is complete.
@@ -64,7 +65,7 @@ For each claimed feature or task group, build a small evidence matrix:
 
 | Claim | Intent source | Runtime path | Evidence | Level | Gap |
 |---|---|---|---|---|---|
-| `<feature/action>` | `<app-description/spec/task>` | `<worker -> harness -> actor adapter -> governed tool -> capability -> API/endpoint -> Akka component/service -> trace/view/result surface>` | `<tests/commands/manual notes>` | `<level>` | `<none or gap>` |
+| `<feature/action>` | `<app-description/spec/task>` | `<worker -> harness -> actor adapter -> governed tool -> capability -> API/endpoint -> Akka component/service -> trace/view/result surface>` | `<tests/commands/runtime-validation notes>` | `<level>` | `<none or gap>` |
 
 A feature-bearing claim may be `runtime-ready` only when evidence covers, as applicable:
 
@@ -75,7 +76,7 @@ A feature-bearing claim may be `runtime-ready` only when evidence covers, as app
 - Akka component/service/substrate path used by the governed tool/capability;
 - success, validation error, forbidden/hidden/not-found, stale/conflict/idempotency, and provider-unconfigured behavior where relevant;
 - audit/work trace, correlation id, actor-adapter trace source, and browser-safe trace/status copy;
-- local commands and/or manual/browser/API smoke notes with pass/fail result;
+- local commands and/or runtime-validation/browser/API smoke notes with pass/fail result;
 - no frontend secret exposure and no provider secrets in browser payloads;
 - explicit external-provider status: configured and smoked, or missing and fail-closed with actionable errors.
 
@@ -90,7 +91,7 @@ Keep or move the relevant task to `blocked` instead of `done`, or keep the verif
 - provider-backed behavior is counted as implemented through a mock/default bypass;
 - auth/tenant isolation/authorization denial is not exercised;
 - trace/audit evidence is not recorded or not browser-safe;
-- required manual/browser/API smoke cannot be run and the feature is not explicitly non-runtime/internal-only.
+- required runtime-validation/browser/API smoke cannot be run and the feature is not explicitly non-runtime/internal-only.
 
 ## Tooling
 
@@ -155,4 +156,4 @@ Avoid:
 - accepting fixture-only, mock-only, or frontend-only action paths as user-facing implementation;
 - adding broad new features while runtime verification for the current feature group is failing;
 - marking provider-backed features done because the provider is missing but a mock passed;
-- hiding manual-test failures in notes without adding remediation tasks.
+- hiding runtime-validation failures in notes without adding remediation tasks.

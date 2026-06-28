@@ -40,7 +40,8 @@ Read only what the input requires:
 - `../docs/current-intent-model.md`
 - `../docs/incremental-intent-processing.md`
 - `../docs/intent-compiler-skill-contracts.md`
-- `../docs/app-development-lifecycle.md` when the input mixes interview, build/compile, or manual/runtime-validation concerns
+- `../docs/app-development-lifecycle.md` when the input mixes interview, build/compile, or runtime-validation concerns
+- `../docs/runtime-validation.md` when the input describes runtime validation, manual/browser/API testing, setup prerequisites, or app-operation evidence
 - `../docs/app-worker-tool-model.md` and `../docs/app-description-component-graph.md` when the input implies workers, harnesses, tools, capabilities, agents, surfaces, system triggers, or implementation readiness
 - `../docs/app-description-to-code-compile-contract.md` when planning, generation, code, tests, or validation are requested
 - `../docs/intent-to-realization-flow.md` when planning, generation, code, tests, or validation are requested
@@ -116,6 +117,8 @@ auth_security: <roles, tenant/customer scope, trust boundaries, denials, approva
 traces_tests: <audit/work traces, acceptance, regression, negative tests>
 realization: <Akka/frontend/API/spec/task/runtime-validation implications>
 review_or_generation_request: <none | review | readiness | planning | generate | implement>
+next_transition: <done | partially-done-blocked | decomposed-to-tasks | blocked-before-work>
+stop_reason: <completed | decomposed-to-tasks | blocked-by-product-question | blocked-by-security-question | blocked-by-runtime-config | blocked-by-provider-config | blocked-by-missing-reproduction | blocked-by-conflicting-intent | blocked-by-unsafe-assumption | blocked-by-failing-check | blocked-by-out-of-scope-dependency | runtime-validation-required>
 ambiguities:
   - question: <question>
     blocks: <true/false and affected scope>
@@ -131,6 +134,8 @@ Keep file edits out of pure normalization unless the user explicitly requests ma
 - Preserve workstream centrality: access, workers, surfaces, agents, tools, capabilities, policies, traces, tests, and realization become meaningful at workstream scope.
 - Preserve worker/tool separation: a page, route, prompt, endpoint, or Akka method is not a governed tool; a surface or agent runtime is a harness, not product authority.
 - Ask only blocking questions; otherwise record assumptions and route to the next focused skill.
+- Apply the app-developer input transaction contract: normalize input into a concrete next transition (`done`, `partially-done-blocked`, `decomposed-to-tasks`, or `blocked-before-work`) rather than stopping at analysis.
+- For broad input, cascade from app/domain/cross-cutting impact to workstreams, workers, capabilities/tools, surfaces, Akka/frontend/API realization, and implementation/runtime-validation tasks until the next step would require guessing.
 - Do not normalize directly into code-level tasks unless the user explicitly asks for realization and current intent is description-ready or the missing graph links are captured as blockers.
 
 ## Handoff rules
@@ -171,6 +176,7 @@ Before finishing, verify:
 - workstream, worker, harness, actor-adapter, surface/action, governed-tool, capability, agent/tool, behavior, tests, security, UI, observability, and realization are separated
 - ambiguities are recorded as open questions instead of guessed away
 - recommended route is the smallest safe compiler step
+- next transition and stop reason are explicit
 
 ## Response style
 

@@ -51,7 +51,7 @@ Implementation mode is readiness-aware. Workstreams at `capability-ready` and ab
 | `expertiseBundle` | Optional functional-agent expertise artifact path/name; in the compatibility template this is a file name under `12-workstreams/workstream-expertise/`; required when LLM-backed behavior claims expertise readiness. |
 | `internalWorkers` | Optional structured internal worker entries. Omit or use `[]` when no internal/background worker behavior is claimed; string-only worker ids are not valid. |
 | `traceability` | Markdown traceability map paths that mention this workstream and surfaces. |
-| `localValidation` | Commands/manual smoke needed before raising readiness. |
+| `localValidation` | Commands/runtime-validation smoke needed before raising readiness. |
 
 ## ID taxonomy
 

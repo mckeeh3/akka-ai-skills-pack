@@ -21,7 +21,7 @@ Use this skill to update authoritative app-description surface definitions and w
 - `../docs/current-intent-model.md`
 - `../docs/incremental-intent-processing.md`
 - `../docs/intent-compiler-skill-contracts.md`
-- `../docs/app-development-lifecycle.md` when surface work crosses interview, build/compile, or manual/runtime-validation readiness
+- `../docs/app-development-lifecycle.md` when surface work crosses interview, build/compile, or runtime-validation readiness
 - `../docs/app-worker-tool-model.md` and `../docs/app-description-component-graph.md`
 - `../docs/app-description-skill-output-contracts.md`
 - `../docs/structured-surface-contracts.md`

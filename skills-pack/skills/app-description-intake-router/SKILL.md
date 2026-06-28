@@ -25,7 +25,8 @@ Read only what is needed for the requested route:
 - `../docs/current-intent-model.md`
 - `../docs/incremental-intent-processing.md`
 - `../docs/intent-compiler-skill-contracts.md`
-- `../docs/app-development-lifecycle.md` when routing between interview/current-intent, build/compile, and manual/runtime-validation concerns
+- `../docs/app-development-lifecycle.md` when routing between interview/current-intent, build/compile, and runtime-validation concerns
+- `../docs/runtime-validation.md` when routing validation scenarios, setup prerequisites, execution modes, or runtime evidence
 - `../docs/app-worker-tool-model.md` and `../docs/app-description-component-graph.md` when workers, harnesses, tools, capabilities, agents, surfaces, system triggers, or implementation readiness are in scope
 - `../docs/app-description-to-code-compile-contract.md` when routing planning, generation, code, tests, or validation requests
 - current target `app-description/**`, `specs/**`, and pending question/task queues when present and relevant
@@ -84,6 +85,8 @@ Return a compact routing note with:
 - assumptions and unresolved ambiguities, including whether they block action
 - recommended next skill or route, smallest first
 - whether implementation/generation is safe now or blocked pending current-intent work
+- next transition: `done`, `partially-done-blocked`, `decomposed-to-tasks`, or `blocked-before-work`
+- stop reason when the route cannot continue safely
 
 ## Guardrails
 
@@ -92,4 +95,5 @@ Return a compact routing note with:
 - For generated AI-first SaaS, apply secure SaaS foundation and runtime-completion doctrine unless explicitly out of scope.
 - Do not treat frontend-only mockups, deterministic agent stand-ins, fixture-only behavior, or page/endpoint/`agent_tool_call`-only descriptions as generated-app readiness.
 - Do not generate a parallel app when the repository root app should be extended.
+- Do not stop at a route-only answer when the user's requested outcome can safely advance; continue to the smallest safe next transition or stop with a precise blocker/question.
 - Use `domain-specific` or the user's actual domain name; avoid historical placeholder domains.
