@@ -8,6 +8,8 @@ My Account frontend realization uses the canonical AI-first workstream shell. Co
 
 My Account canonical entry is the signed-in user/account control in the rail. It is not duplicated as a primary top rail workstream list item. Authorized deep links may reopen My Account surfaces through the shell using `/workstreams/my-account?surface=<surfaceId>&ref=<opaqueSafeTargetRef>&mode=<surfaceMode>`; the rail user tile remains the visible navigation owner, focus return target, and accessibility label source.
 
+Frontend/API/realtime path: the browser shell reads signed-in member and selected context from protected `/api/me`, opens My Account through protected workstream API calls, renders typed surface envelopes from `../surfaces/surfaces.md`, submits governed browser actions through backend-authorized workstream APIs, and treats realtime/stale events as prompts to refetch rather than as authority. Deep links and realtime events never expose hidden target ids or replace backend authorization.
+
 ## Rebuilt surface realization targets
 
 | Surface | Frontend realization target | Style/component requirements | Notes |

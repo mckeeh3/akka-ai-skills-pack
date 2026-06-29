@@ -19,6 +19,10 @@ Capability: `account-context-and-profile`.
 - `frontend/src/workstream-composer-message-api.contract.test.mjs`
 - `frontend/src/workstream-attention-update-delivery.contract.test.mjs`
 
+## Runtime-validation ownership
+
+My Account owns workstream-level runtime-validation references for `/api/me` bootstrap evidence where the evidence proves My Account selected-context rendering, profile/settings/context surfaces, open-denied recovery, trace refs, and frontend secret boundaries. Shared auth foundation may separately own provider login/session mechanics. The My Account validation path must exercise protected `/api/me` and workstream API mappings through signed-in member scope; fixture-only, client-selected context, or model-less substitute paths do not satisfy alignment for this workstream.
+
 ## Rebuilt surface contract obligations
 
 - Dashboard API payloads must support a personal command center: context/authority summary, top attention counters, `Needs me` items, control-panel summaries, authorized workstream links, redaction, and trace/correlation fields.

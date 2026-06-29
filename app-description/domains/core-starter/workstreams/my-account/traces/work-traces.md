@@ -10,6 +10,15 @@ workstream-log-trace, admin-audit-event for protected self-service changes, agen
 
 Trace records include worker id/type, execution harness, actor adapter, trace source, actor or service identity, selected `AuthContext`, tenant/customer ids, role/capability basis, correlation/causation/idempotency ids, capability/tool id, policy decision, redaction decisions, denial/failure status, and linked surface/workstream item.
 
+## Account/profile/context trace matrix
+
+| Trace expectation | Required source/adapters | Required facts | User-visible evidence boundary |
+|---|---|---|---|
+| Account/context read trace | `surface_action`, `api_call`, read-only `agent_tool_call`, `internal_call` | worker id/type, selected `AuthContext`, Tenant-backed Organization/customer scope, visible membership/capability basis, `read-current-account-context`, result surface, correlation id | browser-safe trace summary only; no raw JWT/session/provider data or hidden contexts |
+| Profile/settings update trace | `surface_action`, `api_call`, `human_chat_tool_plan` confirmation dispatcher, `internal_call` | requestedBy, confirmedBy when chat-plan execution is used, edited field ids, idempotency key/hash, `my_account.update_profile_settings`, validation/authorization/no-op/conflict result, result surface | edited field names and user-safe outcome only; no provider secrets, immutable provider payload, or raw tool payload |
+| Context/open-denial trace | `surface_action`, `api_call`, read/prepare `agent_tool_call`, `internal_call` | safe target kind, source action when visible, capability decision, no-enumeration assertion, denial category, redaction level, result surface `surface-my-account-open-denied` where applicable | no hidden workstream/source/context names, missing-role internals, or protected target ids |
+| Agent assistance trace | governed agent runtime, read/advisory `agent_tool_call`, `human_chat_tool_plan` proposal | functional agent `my-account-agent`, model/config/tool-boundary decision, prompt/skill/reference refs when authorized, proposal no-mutation state, provider/config fail-closed status, trace source | safe explanation/proposal trace refs only; no raw prompts, model payloads, full skills/references, provider secrets, or authority expansion |
+
 
 ## `human_chat_tool_plan` trace evidence
 

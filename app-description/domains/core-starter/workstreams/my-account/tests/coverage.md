@@ -1,5 +1,18 @@
 # Tests: My Account
 
+## Runtime-validation references
+
+These are description-level runtime-validation expectations for the refreshed My Account graph; they do not add executable tests by themselves.
+
+| Runtime-validation id | Path under validation | Graph coverage proof |
+|---|---|---|
+| `rv-my-account-api-me-auth-context` | WorkOS/AuthKit session or equivalent local auth → `/api/me` → selected `AuthContext` → My Account dashboard/context bootstrap | Proves signed-in member, Tenant-backed Organization/customer membership, browser-safe capability visibility, disabled/no-membership denial, and frontend secret boundary. |
+| `rv-my-account-profile-context-surfaces` | signed-in member → My Account route/deep link → protected workstream API → dashboard/profile/settings/context surfaces | Proves surface graph nodes, `surface_action`/`api_call` adapters, account/profile/context read-update tools, no-op/profile validation outcomes, result/system-message surfaces, and selected context refresh behavior. |
+| `rv-my-account-agent-assistance-boundary` | signed-in member prompt → `my-account-agent` → deterministic route or bounded plan proposal → backend confirmation path when applicable | Proves the functional agent can explain/propose only; `agent_tool_call` remains read/advisory where described; side effects require surface submit or exact `human_chat_tool_plan` confirmation. |
+| `rv-my-account-denial-and-traces` | disabled/inactive/cross-tenant/hidden-context/open-denied requests → protected API/backend authorization → trace refs/result surface | Proves denial behavior, no hidden-target enumeration, tenant/customer isolation, audit/work trace emission, and trace visibility through authorized refs. |
+
+A source-alignment pass may mark these references aligned only after local Akka/API/UI evidence exercises the real protected path rather than fixtures, deterministic demo data, or model-less normal runtime substitutes.
+
 ## Acceptance
 
 - Given an authorized caller with selected `AuthContext`, when they open My Account, then `surface-my-account-dashboard` renders as a personal command center with context/authority, top attention counters as the primary attention UI, secondary/collapsed `needsAttention[]` evidence only where useful, control panels, authorized workstream links, redaction, and trace refs.

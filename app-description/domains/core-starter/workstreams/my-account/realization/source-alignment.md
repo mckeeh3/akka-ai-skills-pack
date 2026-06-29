@@ -1,12 +1,23 @@
 # My Account source alignment
 
 Lifecycle: ../lifecycle.md
-Last reviewed: 2026-06-27
-Alignment state: automated-aligned-with-manual-provider-residuals
+Last reviewed: 2026-06-29
+Alignment state: stale-description-changed
 
-This file was added during the initial source-alignment migration and updated during the current skills-pack My Account app-description review. The user explicitly stated that none of the existing workstreams were aligned before compile work began. The broad candidate mapping has now been split into slice-level entries. MAFA-08-001 terminal automated verification passed the aggregate backend/frontend/typecheck/build/diff checks and found no material remaining automated alignment gap. Manual/browser acceptance and concrete provider-backed digest success remain separate residual checks and are not counted as automated gaps.
+This file was added during the initial source-alignment migration and updated during the current skills-pack My Account app-description review. The user explicitly stated that none of the existing workstreams were aligned before compile work began. The broad candidate mapping has now been split into slice-level entries. MAFA-08-001 terminal automated verification passed the aggregate backend/frontend/typecheck/build/diff checks and found no material remaining automated alignment gap at that time. TASK-ADR-02-001 is a docs-only current-intent refresh after that evidence, so the workstream is now marked `stale-description-changed` until a follow-up alignment/runtime-validation pass rechecks the real protected Akka/API/UI path. Manual/browser acceptance and concrete provider-backed digest success remain separate residual checks and are not counted as automated gaps.
 
-## Alignment status summary
+## TASK-ADR-02-001 graph coverage proof
+
+| Graph edge | Refreshed source coverage | Runtime-validation reference |
+|---|---|---|
+| Worker → execution harness → actor adapter | `../workers/signed-in-member-human.md`, `../workers/my-account-functional-agent-worker.md`, `../workers/my-account-system-worker.md`, `../workstream.md`, and `../access.md` define signed-in human, functional agent, and deterministic system worker paths through `surface_action`, `api_call`, bounded `human_chat_tool_plan`, and described read/advisory `agent_tool_call` adapters. | `rv-my-account-api-me-auth-context`, `rv-my-account-agent-assistance-boundary` in `../tests/coverage.md`. |
+| Actor adapter → governed tool → capability | `../tools/governed-tools.md` binds account/context reads, profile/settings updates, authorized opens, and trace refs to shared governed tool ids and capability `account-context-and-profile`; `../access.md` binds selected `AuthContext`, Tenant-backed Organization/customer scope, membership, and denial rules. | `rv-my-account-profile-context-surfaces`, `rv-my-account-denial-and-traces`. |
+| Surface graph → result/system-message surfaces | `../surfaces/surfaces.md` records dashboard/profile/settings/context/open-denied and shared chat-plan nodes, action edges, result surfaces, no-op/validation/conflict/forbidden behavior, and frontend secret boundaries. | `rv-my-account-profile-context-surfaces`. |
+| Realization → tests/runtime-validation → traces | `api-contracts.md`, `frontend-routes.md`, and `akka-components.md` map `/api/me`, protected workstream APIs, frontend shell/routes, and Akka component evidence; `../tests/coverage.md` names runtime-validation references; `../traces/work-traces.md` names account/context read/update/denial/agent-assistance traces. | All four `rv-my-account-*` references. |
+
+Because this proof updates app-description intent only, prior automated evidence below is historical alignment evidence rather than a current aligned claim.
+
+## Historical alignment status summary before TASK-ADR-02-001
 
 | Entry id | Slice | Status | Runtime readiness claim |
 | --- | --- | --- | --- |
@@ -107,8 +118,8 @@ Result: non-manual My Account automated alignment is closed for this mini-projec
 
 ## Alignment notes
 
-- Current state is `automated-aligned-with-manual-provider-residuals` because MAFA-08 terminal verification passed aggregate automated checks across the split My Account entries.
-- `compile-ready` remains a description/build-planning state. This file records automated alignment evidence but does not claim manual-ready or runtime-ready status.
+- Current state is `stale-description-changed` because TASK-ADR-02-001 changed app-description intent after the MAFA-08 automated alignment evidence.
+- `description-ready` is the current My Account graph-readiness state. This file records historical automated alignment evidence plus the new description delta, but it does not claim manual-ready or runtime-ready status.
 - If mapped app-description files are newer than mapped implementation/test files, set the lifecycle implementation alignment to `stale-description-changed` unless a no-code-impact review is recorded.
 - If mapped implementation files changed without app-description reconciliation, set the lifecycle implementation alignment to `stale-code-changed` or `partially-aligned`.
 - Do not use this source-alignment file as runtime-readiness evidence. Runtime readiness still requires automated checks and real local API/UI/agent-path verification for the selected scope.

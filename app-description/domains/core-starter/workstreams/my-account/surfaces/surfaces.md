@@ -26,6 +26,20 @@ All My Account surfaces use the canonical AI-first workstream shell, structured 
 | `surface-my-account-personal-attention-digest-blocked` | `system-message` | `my_account.personal_attention_digest.blocked.v1` | Provider/runtime fail-closed explanation and recovery. | Rebuilt contract |
 | `surface-my-account-open-denied` | `system-message` | `my_account.open_denied.v1` | Safe not-found/redacted/unavailable workstream recovery. | Rebuilt contract |
 
+## Surface graph refresh contract
+
+The required account/profile/context surface graph for TASK-ADR-02-001 is:
+
+| Source node | Action edge | Actor adapter | Governed tool / capability | Result node |
+|---|---|---|---|---|
+| `surface-my-account-dashboard` | refresh/open profile/open settings/open context/open authorized workstream | `surface_action` via protected browser API | `read-current-account-context`, `my_account.open_authorized_workstream` / `account-context-and-profile` | dashboard/profile/settings/context surface or `surface-my-account-open-denied` |
+| `surface-my-profile` | refresh profile / save editable profile fields | `surface_action`; matching `human_chat_tool_plan` only after exact confirmation | `read-current-account-context`, `my_account.update_profile_settings` / `account-context-and-profile` | updated profile, no-op, validation-error, conflict, forbidden, or failure system message |
+| `surface-my-settings` | preview named theme / save preferences / open notification preferences | browser-local preview for preview; `surface_action` or confirmed `human_chat_tool_plan` for save | `my_account.update_profile_settings`, `notification.list_my_account_center` / `account-context-and-profile` | updated settings, notification center, no-op, validation-error, conflict, forbidden, or failure system message |
+| `surface-my-context` | refresh selected context / select authorized context / open trace | `surface_action` and protected `/api/me`/workstream APIs | `read-current-account-context`, `core.access.context.select`, `my_account.view_own_trace_refs` / `account-context-and-profile` | refreshed context/dashboard, stale-surface marker, no-op, `not_found_or_redacted`, or trace/open-denied surface |
+| shared chat-plan surfaces | propose/confirm/result/system-message | `human_chat_tool_plan` | same shared governed tool ids as matching surface actions | typed proposal, confirmation, result, partial-failure, or system-message surface |
+
+All result and system-message surfaces preserve selected `AuthContext`, tenant/Organization/customer scope, trace refs, no-enumeration behavior, and frontend secret boundaries. No browser-rendered control grants authority without backend reauthorization.
+
 ## My Account personal command center surface
 
 ### Intent

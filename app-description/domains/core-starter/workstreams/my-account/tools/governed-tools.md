@@ -20,6 +20,19 @@ Tools are exposed as browser, agent, internal, workflow/timer/consumer, API, or 
 
 Forbidden tool exposure: role/capability grants, tenant/customer administration, provider secrets, external notification provider controls, fake digest success, hidden workstream enumeration, or client-side authority changes.
 
+## Account/profile/context refresh contract
+
+The core TASK-ADR-02-001 account/profile/context tool chain is intentionally small and shared across adapters:
+
+| Governed tool id | Tool type | Exposure / adapter | Confirmation or approval | Idempotency and result behavior |
+|---|---|---|---|---|
+| `read-current-account-context` | read/evidence | `surface_action`, `api_call`, read-only `agent_tool_call`, `internal_call` | none | Read-only selected `AuthContext`, profile, membership/Organization context, and visible capability summary; returns dashboard/profile/context surfaces or safe recovery. |
+| `my_account.update_profile_settings` / `update-own-profile-settings` | self-service command | `surface_action`, `api_call`, `internal_call`, bounded `human_chat_tool_plan` after exact confirmation | form submit for surface/API; exact plan snapshot confirmation for chat execution; no extra approval unless a field policy requires it | One self-account profile/settings transaction per idempotency key; repeated identical updates return no-op/prior result; unsupported fields return validation/forbidden system messages without mutation. |
+| `my_account.open_authorized_workstream` / `attention.open_attention_item` | authorized open/read edge | `surface_action`, `api_call`, read/prepare-only `agent_tool_call`, `internal_call` | none unless target surface has its own gate | Reauthorize target on every open; no source mutation; result is target surface or `surface-my-account-open-denied` / `not_found_or_redacted`. |
+| `my_account.view_own_trace_refs` | trace/evidence read | `surface_action`, `api_call`, read-only `agent_tool_call`, `internal_call` | none beyond trace authorization | Returns browser-safe trace summaries for the signed-in member's visible context or a redacted denial surface. |
+
+Prompt text, frontend visibility, and agent tool descriptions never add tool exposure. `agent_tool_call` is limited to the read/advisory paths above and any other entries explicitly marked read/proposal-only in this file; side-effecting profile/settings changes are human surface/API submissions or confirmed chat-plan executions by the backend dispatcher.
+
 ## Adapter binding matrix
 
 | Governed tool id | Capability id | Workers | Allowed actor adapters | Authority / side-effect boundary | Result surfaces / events |

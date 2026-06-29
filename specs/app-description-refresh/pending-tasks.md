@@ -119,7 +119,7 @@
 
 ### TASK-ADR-02-001: Refresh My Account workstream app-description
 
-- status: pending
+- status: done
 - source: specs/app-description-refresh/workstreams/my-account-migration-plan.md
 - task brief: specs/app-description-refresh/tasks/02-workstreams/01-refresh-my-account.md
 - depends on:
@@ -145,6 +145,8 @@
   - My Account graph links worker/adapter/governed-tool/capability/realization/tests/runtime-validation/traces coherently
   - task changes and queue update are committed
 - notes:
+  - commit message: `app-desc-refresh: refresh my account workstream`
+  - graph coverage proof: My Account workstream files now link signed-in member / functional-agent / system workers through `surface_action`, `api_call`, bounded `human_chat_tool_plan`, and described read/advisory `agent_tool_call` adapters to shared account/profile/context governed tools, capability `account-context-and-profile`, dashboard/profile/settings/context/open-denied surfaces, realization API/frontend mappings, runtime-validation references, and account/context read-update/denial/agent-assistance traces; lifecycle/source-alignment is `stale-description-changed` because this docs-only refresh postdates prior automated evidence.
   - vertical contract: My Account functional-agent workstream; attention category account/profile context and non-attention member self-service status; role-specific dashboard / surface My Account dashboard/profile/context surfaces; surface graph node/action edge account-context/profile read-update actions and result/system-message surfaces; governed-tool id/type/exposure governed account/profile/context tools; actor adapter/source `surface_action`, API call, `human_chat_tool_plan` or `agent_tool_call` only where described; confirmation/approval behavior none unless profile update requires confirmation; idempotency/transaction/result behavior profile/context update result surfaces and no-op semantics described; capability or foundation scope account context/profile and membership context; AuthContext / roles / tenant scope signed-in member tenant/Organization scope; API / frontend / realtime path My Account route/API mappings in realization; audit/work trace expectation context read/update/denial/agent assistance traces; source-alignment and runtime-validation references updated; validation path `git diff --check`
 
 ### TASK-ADR-02-002: Refresh User Admin workstream app-description

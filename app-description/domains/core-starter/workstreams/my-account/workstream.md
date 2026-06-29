@@ -28,9 +28,21 @@ Primary capability: `../../capabilities/account-context-and-profile.md`.
 
 Backend-owned attention includes personal action items, notification acknowledgements, context problems, digest/export status, unavailable-source recovery, and provider/configuration denials visible to the current user. Counts feed the signed-in user rail tile and My Account personal command-center aggregation.
 
+Non-attention member self-service status includes profile completeness, selected context, membership/Organization scope, personal preference save state, no-access recovery, and disabled/inactive membership guidance. These states belong in My Account dashboard/profile/context/settings surfaces even when they do not create attention items.
+
+## Current-intent graph contract (TASK-ADR-02-001)
+
+My Account is the signed-in member functional-agent workstream for account/profile context. The graph is authoritative in this order:
+
+```text
+signed-in-member-human or my-account-agent → structured My Account surface or governed assistant turn → actor adapter (`surface_action`, `api_call`, bounded `human_chat_tool_plan`, or described read/advisory `agent_tool_call`) → shared governed account/profile/context tool → capability `account-context-and-profile` plus selected membership/Organization context → Akka/API/frontend realization mapping → test/runtime-validation expectation → durable audit/work trace
+```
+
+Required surface graph nodes are `surface-my-account-dashboard`, `surface-my-profile`, `surface-my-settings`, `surface-my-context`, and result/system-message surfaces such as `surface-my-account-open-denied` and shared chat-plan result/system-message surfaces. Account/context reads require no confirmation, profile/settings updates require a form submission or exact chat-plan confirmation when chat execution is used, and context opening/selection is backend-reauthorized without granting new authority. The functional agent may explain, summarize, route, and propose catalog-bound plans; it cannot autonomously mutate account/profile/context state or broaden membership, role, tenant, or Organization scope.
+
 ## Readiness posture
 
-This node captures current intent only and is compile-ready for focused build/alignment tasks, not runtime-ready. Runtime readiness still requires local Akka/API/UI validation and model/provider fail-closed proof where applicable. Because this review added current skills-pack worker bindings and adapter clarity, mapped implementation should be treated as `stale-description-changed` until a source-alignment review or compile updates evidence.
+This node captures current intent only and is description-ready for focused build/alignment tasks, not runtime-ready. Runtime readiness still requires local Akka/API/UI validation and model/provider fail-closed proof where applicable. Because TASK-ADR-02-001 refreshed the current-intent graph after the last automated alignment evidence, mapped implementation should be treated as `stale-description-changed` until a source-alignment review or runtime-validation pass updates evidence.
 
 
 ## Confirmed human chat tool-plan exposure

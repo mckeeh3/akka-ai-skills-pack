@@ -2,19 +2,19 @@
 
 Workstream id: `my-account`
 Owning domain: `core-starter`
-Current readiness: `compile-ready`
-Ready-to-build assessment: 2026-06-26 — see `../ready-to-build-status.md`; normalized to current skills-pack lifecycle term `compile-ready` during My Account review.
-Automated alignment readiness: `automated-aligned` for non-manual My Account slices verified by MAFA-08-001; manual browser/API acceptance and concrete provider-backed digest success remain separate residual checks.
-Implementation alignment: `automated-aligned-with-manual-provider-residuals`
+Current readiness: `description-ready`
+Ready-to-build assessment: 2026-06-29 — TASK-ADR-02-001 refreshed the My Account current-intent graph for worker/adapter/governed-tool/capability/realization/test/runtime-validation/trace coverage.
+Automated alignment readiness: `historical-automated-aligned` for non-manual My Account slices verified by MAFA-08-001; manual browser/API acceptance and concrete provider-backed digest success remain separate residual checks.
+Implementation alignment: `stale-description-changed`
 Source alignment: `realization/source-alignment.md`
-Last description change: 2026-06-26 — current skills-pack review added explicit worker bindings and adapter/tool-chain clarification.
-Last alignment review: 2026-06-27 — MAFA-08-001 terminal automated verification passed the aggregate Maven/frontend/typecheck/build/diff checks and found no material remaining automated gaps.
-Last compile: 2026-06-27 — command-center surface contract id, frontend-safe control-panel schema aliases, and accessible counter rendering aligned to current surface contract.
+Last description change: 2026-06-29 — TASK-ADR-02-001 clarified the My Account functional-agent workstream graph, account/profile/context surfaces, governed tool adapter boundaries, AuthContext scope, runtime-validation references, and trace obligations.
+Last alignment review: 2026-06-29 — source alignment records this as a docs-only description refresh; previous MAFA automated evidence remains historical until a follow-up alignment/runtime-validation pass revalidates it against the refreshed graph.
+Last compile: 2026-06-27 — command-center surface contract id, frontend-safe control-panel schema aliases, and accessible counter rendering aligned to the prior surface contract.
 Last manual runtime test: unknown
 
 ## Current alignment posture
 
-This workstream is automated-aligned for the non-manual My Account scope covered by MAFA-01 through MAFA-08. Evidence now spans the protected WorkstreamEndpoint/API path, service/action adapters, governed My Account/notification/digest/chat-plan tools, selected `AuthContext` and safe-denial cases, durable audit/work trace facts, frontend contract rendering, and the terminal aggregate verification commands.
+This workstream is description-ready after TASK-ADR-02-001. The refreshed description explicitly links signed-in member and My Account functional-agent workers to `surface_action`, `api_call`, bounded `human_chat_tool_plan`, and described `agent_tool_call` adapters; governed account/profile/context tools; capability `account-context-and-profile`; realization mappings; test/runtime-validation references; and durable trace expectations. Because the description changed after the MAFA-08 automated verification evidence, implementation alignment is now `stale-description-changed` until a follow-up source-alignment/runtime-validation pass confirms the local runtime still matches the refreshed graph.
 
 Overall runtime readiness is still not claimed by this lifecycle record. Human manual browser/API acceptance, real WorkOS/AuthKit production login smoke, concrete provider-backed digest success, production export/vendor delivery, and broader stale/reconnect manual review remain residual checks outside the automated mini-project.
 
@@ -34,7 +34,7 @@ Overall runtime readiness is still not claimed by this lifecycle record. Human m
 ## Blockers and assumptions
 
 - File-level source alignment has been split by My Account runtime slice and terminal automated verification found no material remaining automated gap.
-- `compile-ready` remains the app-description lifecycle term; automated-aligned records implementation/test evidence for the non-manual mini-project scope, not full manual/runtime acceptance.
+- `description-ready` is the refreshed app-description lifecycle term for TASK-ADR-02-001; historical automated-aligned entries record prior implementation/test evidence for the non-manual mini-project scope, not full manual/runtime acceptance or current alignment after this description change.
 - Runtime-ready/manual-ready is not claimed by this lifecycle record because manual browser/API acceptance and concrete provider-backed digest success were not exercised.
 - Provider-backed digest success is not claimed unless concrete provider/test runtime configuration is exercised; the current automated evidence proves fail-closed/no-fake-success behavior.
 - Future workstream-specific validation must classify any new app-description or implementation changes as aligned, stale-description-changed, stale-code-changed, partially-aligned, blocked, or intentionally description-only.
