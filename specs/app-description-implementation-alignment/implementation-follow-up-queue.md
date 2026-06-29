@@ -27,6 +27,8 @@ Readiness claim: queue-authoring only. No runtime-validation scenario has passed
 ### TASK-ADIA-FU-001: Execute My Account login/account-context runtime-validation scenario
 
 - status: blocked
+- blocker classification: `runtime-validation-gap`, `auth-setup-blocker`, `seed-data-blocker`
+- blocker evidence: `specs/runtime-validation/runs/2026-06-29-RV-MY-ACCOUNT-001-blocked-auth-seed.md` records that `tools/runtime-validation` start/seed contracts are absent, the checked-in `.env` still has a placeholder `WORKOS_JWT_AUDIENCE` despite process-environment overrides, and no seeded member or disabled/inactive fixture was available to execute login, `/api/me`, account context, denial, browser-safe payload, or trace capture through the local Akka/API/UI path.
 - source: `TASK-ADIA-02-001`; `specs/runtime-validation/scenarios/my-account/RV-MY-ACCOUNT-001-login-and-account-context.md`
 - depends on: []
 - required reads:
