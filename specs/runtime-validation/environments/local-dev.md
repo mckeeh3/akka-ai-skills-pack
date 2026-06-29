@@ -11,13 +11,15 @@ Defines the intended local runtime environment for the first runtime-validation 
 
 # Start contract
 
-A later execution task should record the concrete command used. The preferred command contract is:
+Use the checked-in local runtime-validation start script:
 
 ```bash
 ./tools/runtime-validation/start-local.sh --empty
 ```
 
-If that command is not available, the run record must name the project-specific backend/frontend start commands, local URLs, persistence reset steps, and any differences from this contract.
+The script loads `.env` when present, validates that WorkOS/AuthKit public/JWT values are not placeholders, enables the local-only runtime-validation seed endpoint, writes a private seed token to `.runtime-validation/local.env`, and starts the Akka dev runtime with `mvn compile exec:java` on `http://localhost:9000`. Use `--foreground` when a human wants to keep the server in the current terminal.
+
+If this command fails, the run record must capture the exit status, `.runtime-validation/logs/backend.log` path when present, the missing/placeholder auth keys reported by the script, and any differences from this contract.
 
 # Expected local endpoints
 

@@ -15,7 +15,7 @@ Prepare the shared organization, tenant scope, and test identities needed by the
 ./tools/runtime-validation/seed.sh base-organization
 ```
 
-If this command is unavailable, the run record must document the manual or API steps used and classify missing seed tooling as `seed tooling gap` when it blocks execution.
+The app must first be started with `./tools/runtime-validation/start-local.sh --empty`, which enables the local-only seed endpoint and writes `.runtime-validation/local.env`. The seed script calls the Akka runtime at `/internal/runtime-validation/seed/base-organization` with the generated seed token. If this command fails, the run record must document the HTTP status/body and classify the blocker as auth/setup, seed tooling, or runtime-validation setup according to the failure.
 
 # State to create or reuse
 
@@ -27,7 +27,9 @@ If this command is unavailable, the run record must document the manual or API s
   - `support.operator@example.com` as `support-operator`.
 - Active membership for member and organization admin in the base organization.
 - SaaS/platform authority for the SaaS admin only.
-- Optional disabled or inactive member state for denial checks, with the exact account/membership id recorded.
+- Disabled and inactive member fixtures for denial checks:
+  - `disabled.member@example.com` with a disabled account and active tenant membership.
+  - `inactive.member@example.com` with an active account and suspended tenant membership.
 - Optional support-access grant data for the Audit/Trace scenario, with expiry and scope recorded.
 
 # Setup boundaries
