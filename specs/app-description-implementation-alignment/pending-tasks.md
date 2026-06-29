@@ -142,7 +142,7 @@
 
 ### TASK-ADIA-02-002: Align User Admin implementation evidence
 
-- status: pending
+- status: done
 - source: specs/app-description-implementation-alignment/workstreams/user-admin-alignment-plan.md
 - task brief: specs/app-description-implementation-alignment/tasks/02-workstreams/02-align-user-admin.md
 - depends on:
@@ -165,6 +165,9 @@
   - User Admin alignment posture is recorded without overclaiming runtime readiness
   - task changes and queue update are committed
 - notes:
+  - commit message: `app-desc-align: align user admin evidence`
+  - validation: `git diff --check` passed; mapped evidence proof verified 30 User Admin implementation/test/frontend paths and `specs/runtime-validation/scenarios/user-admin/RV-USER-ADMIN-001-invite-user.md`.
+  - result: lifecycle/source-alignment updated to `partially-aligned` at source-evidence level; implementation follow-up queue now records exact runtime-validation, provider, auth, and scenario-coverage follow-ups without runtime-ready, manual-ready, live Resend, model-provider, or WorkOS/AuthKit success claims.
   - vertical contract: User Admin functional-agent workstream; attention category invitation/access-review/risky-admin-action; role-specific dashboard / surface User Admin dashboard/user list/user detail/invite/access-review/admin-audit; surface graph node/action edge invite, membership, role, support-access, access-review result surfaces; governed-tool id/type/exposure invitation/membership/role/access/admin-audit tools; actor adapter/source `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/workflow/timer/consumer/internal; confirmation/approval behavior chat confirmation, last-admin/risky approvals; idempotency/transaction/result behavior invitation idempotency and role/support transaction/result/partial-failure surfaces; capability or foundation scope user-and-access-administration; AuthContext / roles / tenant scope admin tenant/Organization scope; API / frontend / realtime path User Admin route/API/projection mappings; audit/work trace expectation admin action, invitation, denial, requestedBy/confirmedBy traces; validation path `git diff --check` plus mapped evidence proof
 
 ### TASK-ADIA-02-003: Align Agent Admin implementation evidence
