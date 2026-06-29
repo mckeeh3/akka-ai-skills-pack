@@ -68,3 +68,17 @@ Each time an agent handles a request, it resolves the tenant-specific active beh
 - Backend authorization changes or `ToolPermissionBoundary` implementation changes; Agent Admin may change the per-agent allowed generated tool list but cannot make tool code bypass backend checks.
 - Whole-agent lifecycle activation/disable/archive controls beyond safe profile inspection unless later scoped.
 - Using prompt/skill/reference text to expand authority, model policy, approval rights, or tenant/customer scope.
+
+## Linked graph nodes
+
+- Global workers: `../../../global/workers/foundation-workers.md`
+- Global agents: `../../../global/agents/foundation-functional-agents.md`
+- Global tools: `../../../global/tools/foundation-governed-tools.md`
+- Data/state: `../data-state/managed-agent-behavior-state.md`
+- Workstream: `../workstreams/agent-admin/workstream.md`
+- Workers: `../workstreams/agent-admin/workers/`
+- Agent binding: `../workstreams/agent-admin/agents/functional-agent.md`
+- Tools: `../workstreams/agent-admin/tools/governed-tools.md`
+- Surfaces: `../workstreams/agent-admin/surfaces/surfaces.md`
+- Tests: `../workstreams/agent-admin/tests/coverage.md`
+- Traces: `../workstreams/agent-admin/traces/work-traces.md`

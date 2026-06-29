@@ -52,6 +52,10 @@ Resend/Resend-like provider delivery, bounce, complaint, and failure callbacks a
 
 Organization-level business domains may own customer-scoped records such as CRM accounts, customer health, renewals, sales opportunities, billing entitlements, or customer intelligence by referencing the foundation Customer boundary. Support/service may span organization-level objects such as queues, SLA policies, escalation rules, and incidents and customer-level objects such as cases, comments, attachments, SLA clocks, and escalations. Those domains must bind each capability to explicit organization, customer, affected-customer, assigned-case, or support-access scope and must not rely on browser state or prompt text as authority.
 
+## Ownership and graph links
+
+Owned by the `account-context-and-profile` and `user-and-access-administration` capabilities. Governed tool families include `read-current-account-context`, `my_account.update_profile_settings`, notification/source-opening tools, `manage-organizations`, `manage-customers`, invitation tools, membership/role/status tools, support-access tools, and first-admin/onboarding internal paths. Workstream refresh tasks bind exact `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, `api_call`, onboarding, workflow, consumer, timer, and internal paths to My Account and User Admin realization files, tests, traces, and runtime-validation scenarios or gaps.
+
 ## Retention and traces
 
 Security-sensitive transitions emit admin audit/work trace events with tenant/customer, actor, selected `AuthContext`, role/capability, target scope, idempotency key where applicable, correlation id, policy decision, and denial evidence. Customer lifecycle and Customer Admin membership/invitation traces must preserve enough evidence to reconstruct who acted, which tenant/customer boundary was affected, which capability was used, whether the action was a no-op/replay/conflict, and why a denial was safe. Browser payloads and logs never expose provider secrets, raw invitation tokens, raw provider ids, hidden counts, sibling-customer existence, or private cross-scope evidence.

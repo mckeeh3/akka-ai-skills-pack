@@ -17,6 +17,10 @@ Durable workstream logs, stream items, attention items, notifications, audit/adm
 - Audit/work trace records are immutable evidence. Correction or cleanup is represented by new linked facts rather than mutation of original evidence; for the Audit/Trace tenant-admin activity-log scope, removal occurs only by retention expiry.
 - Trace-gap, investigation-note, and export-request lifecycle state are not part of the Audit/Trace tenant-admin activity-log scope unless a later current-intent change reintroduces those features.
 
+## Ownership and graph links
+
+Owned by Audit/Trace and Governance/Policy capabilities and consumed by all five workstreams for workstream logs, admin audit events, policy decisions, denials, provider/model/outbox blockers, and source-alignment/runtime-validation evidence. Current Audit/Trace tenant-admin activity-log tools are limited to search/detail/tool-call-detail/retention read-update paths. Export, investigation-note, and AI-summary task lifecycle state is deferred/non-current until a later accepted capability adds authorization, redaction, approval, tests, and runtime-validation contracts.
+
 ## Retention and traces
 
 Trace records must answer who or what acted, under which tenant/customer context and authority, which policy/tool/data/model was used, what was denied or allowed, which effective policy source applied, and what outcome evidence followed.

@@ -84,7 +84,7 @@
 
 ### TASK-ADR-01-002: Refresh shared foundation app-description artifacts
 
-- status: pending
+- status: done
 - source: specs/app-description-refresh/backlog/01-app-description-refresh-build-backlog.md#adr-02-refresh-shared-foundation-app-description-artifacts
 - task brief: specs/app-description-refresh/tasks/01-shared/02-refresh-shared-foundation.md
 - depends on:
@@ -113,6 +113,8 @@
   - shared artifacts are ready for per-workstream refresh tasks
   - task changes and queue update are committed
 - notes:
+  - commit message: `app-desc-refresh: refresh shared foundation`
+  - shared refresh complete: app/domain/global/capability/data-state artifacts now define the worker -> execution harness -> actor adapter -> governed tool -> capability -> realization/test/runtime-validation -> trace chain; shared worker contracts and adapter vocabulary; canonical governed-tool id/alias, current/deferred tool scope, confirmation/approval, idempotency, transaction, result, denial, and runtime-validation semantics; Organization/Tenant/Customer `AuthContext` conventions; capability/data-state ownership links; source-alignment default `stale-description-changed`; and Audit/Trace 90-day activity-log retention with deferred export/note/summary ids held non-current.
   - vertical contract: description-only shared foundation refresh; non-attention reason cross-cutting shared definition work; role-specific dashboard / surface none except shared surface patterns; surface graph node/action edge none implemented; governed-tool id/type/exposure shared definitions only; actor adapter/source none implemented but must define `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/internal conventions where applicable; confirmation/approval behavior and idempotency/transaction/result behavior defined as shared semantics only; capability or foundation scope core-starter foundation; AuthContext / roles / tenant scope shared Organization/Tenant conventions; API / frontend / realtime path definition-only; audit/work trace expectation shared trace patterns; validation path `git diff --check` plus graph vocabulary proof
 
 ### TASK-ADR-02-001: Refresh My Account workstream app-description

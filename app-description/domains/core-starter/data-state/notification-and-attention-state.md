@@ -21,6 +21,10 @@ Durable personal notification, workstream attention, dashboard-count, and source
 
 Source workstreams own the canonical lifecycle of the source object: User Admin owns invitations/access reviews/identity exceptions, Agent Admin owns AI-assisted edit sessions, saved document versions, permanent skill/reference deletions, restore actions, and runtime skill/reference read trace surfaces, Governance/Policy owns SaaS defaults, tenant overrides, effective-policy history, and runtime policy-decision evidence, Audit/Trace owns trace investigations/exports/summary tasks, and My Account owns personal digest/export tasks. Notification and attention state stores only browser-safe routing metadata, source refs, redaction summaries, lifecycle projection state, and personal read/dismiss/snooze/archive state.
 
+## Ownership and graph links
+
+Owned primarily by the `account-context-and-profile` capability and consumed by source workstreams through their local attention/result bindings. Governed tools include notification list/lifecycle/preference tools, `my_account.open_authorized_workstream`, and `attention.open_attention_item`. Source workstreams remain authoritative for invitation, access-review, policy-decision, agent-edit, trace, or task lifecycles; notification actions only mutate personal notification state unless the source workstream returns a separate governed result.
+
 ## Retention and traces
 
 Notification state changes emit work traces with actor account, selected `AuthContext`, source kind/ref when visible, personal lifecycle transition, idempotency/no-op status, redaction decision, and correlation id. Browser payloads never expose raw source payloads, JWT/session data, provider/model/tool internals, hidden object ids, raw trace ids beyond authorized trace refs, or fixture/demo notification data as normal runtime.

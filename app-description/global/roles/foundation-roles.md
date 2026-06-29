@@ -13,4 +13,16 @@ Role definitions are aligned to the reusable foundation doctrine and current imp
 - `agent-steward`: manages governed managed-agent behavior records and proposals only through a SaaS Owner/App Admin platform-governance context or tenant/organization-admin selected context with explicit `agent_admin.*` capabilities.
 - `support-access-operator`: time-bound/support-scoped actor whose access is explicit, expiring, approved, and audited.
 
-Backend roles/capabilities and selected context are authoritative; frontend visibility is never an authorization grant.
+## Shared AuthContext and capability conventions
+
+| Selected context | User-facing language | Internal enforcement scope | Typical roles | Shared authorization rule |
+| --- | --- | --- | --- | --- |
+| SaaS Owner | SaaS Owner / app owner context | platform/SaaS-owner partition, reserved owner scope, no tenant app-data scope by implication | `saas-owner-admin`, `agent-steward` when owner-scoped, selected auditors/support where explicitly granted | May administer platform/Organization/bootstrap/default-agent/default-policy operations only through `saas_owner.*`, platform `agent_admin.*`, or owner default-governance capabilities. |
+| Organization | Organization workspace | one internal Tenant boundary | `tenant-admin`, `tenant-employee`, tenant-scoped `agent-steward`, auditor/support when explicitly granted | May act only inside the selected Organization-backed Tenant and explicit role/capability grants. Organization administration does not imply support access, app-data access to managed Organizations, billing authority, or SaaS Owner authority. |
+| Customer | Customer area inside one Organization | one tenant-owned Customer boundary plus parent Tenant | `customer-admin`, `customer-user`, scoped auditor/support when explicitly granted | May act only on target Customer-boundary resources and explicitly granted future customer workstream capabilities. Sibling customers and parent Organization Admin/SaaS Owner authority are denied. |
+| Account recovery / no selected context | My Account recovery surface | no workstream authority | disabled, orphaned, zero-membership, or no-active-context account states | `/api/me` and My Account recovery may render safe status only. No protected surface action, chat-plan execution, agent tool, trace read, API, workflow, timer, consumer, or internal caller may infer authority from this state. |
+| Support access | Support access posture visible in selected Organization/Customer context | expiring approved support scope | `support-access-operator` | Support access is explicit, expiring, purpose-bound, redacted, audited, and never granted by billing records, frontend state, trace links, or Organization administration alone. |
+
+Shared denial behavior: forbidden, hidden, disabled, inactive, archived/suspended-parent, cross-tenant/customer, missing-capability, policy-blocked, provider/outbox/model-blocked, and tool-boundary denials return safe result/system-message surfaces or scoped API errors without hidden-object enumeration and emit audit/work trace evidence.
+
+Backend roles/capabilities and selected context are authoritative; frontend visibility, rail entries, prompt text, model output, hidden fields, route availability, and trace links are never authorization grants.

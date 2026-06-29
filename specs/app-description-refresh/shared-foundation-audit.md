@@ -83,8 +83,22 @@ Severity key: **high** means `TASK-ADR-01-002` should address before per-workstr
 - Keep `app-description/global/surfaces/workstream-shell.md` as the shared UI shell authority; only add graph-link conventions around actions, traces, and runtime validation.
 - Define the source-alignment convention once, then let per-workstream tasks mark implementation alignment and runtime-validation gaps in their own lifecycle/realization files.
 
+## TASK-ADR-01-002 shared refresh decisions
+
+The shared app-description refresh resolved the audit questions as description-only graph conventions:
+
+1. Namespaced capability-operation ids are canonical for new bindings. Broad ids such as `manage-organizations`, `create-or-resend-invitation`, and `change-membership-role-or-status` remain governed tool family aliases for compatibility/evidence references and must map to canonical operation ids instead of creating duplicate operations.
+2. Retention is capability-scoped. The current Audit/Trace tenant-admin activity-log scope keeps the 90-day default and 30-365 day tenant-admin range. Non-current export, investigation, legal-hold, compliance bundle, and cross-scope governance features must define separate retention/redaction/approval/test contracts before exposure.
+3. Deferred Audit/Trace export, investigation-note, and AI-summary ids remain listed only under a deferred/non-current section in the global governed-tool artifact. Per-workstream refresh tasks must not bind them as current authority.
+
+Shared graph conventions now live in the refreshed artifacts:
+
+- `app-description/app.md` and `app-description/domains/core-starter/domain.md` record the shared graph chain, lifecycle/source-alignment default, actor adapter vocabulary, and description-only refresh posture.
+- `app-description/global/workers/foundation-workers.md` defines reusable worker contracts, execution harnesses, actor adapters, authority/failure behavior, trace obligations, and source-alignment expectations.
+- `app-description/global/tools/foundation-governed-tools.md` defines governed-tool contract fields, canonical id/alias rules, exposure adapters, confirmation/approval, idempotency/transaction/result behavior, trace/test/runtime-validation expectations, and deferred tool scope.
+- `app-description/global/traces/foundation-trace-patterns.md` defines adapter trace sources, required facts, redaction/retention scope, denial evidence, and runtime-validation evidence format.
+- `app-description/global/roles/foundation-roles.md`, `app-description/global/surfaces/foundation-surface-patterns.md`, capability README, and data-state README define shared `AuthContext`, surface action, capability, data-state, trace, and runtime-validation conventions for workstream tasks.
+
 ## Pending questions
 
-1. Should broad legacy governed-tool ids such as `manage-organizations` remain canonical family ids, or should namespaced ids such as `saas_owner.organization.create` and `tenant.customer.create` become canonical with legacy ids treated as aliases?
-2. Should the global redaction/export policy retain a one-year default only for non-Audit/Trace export/governance scopes, while the Audit/Trace tenant-admin activity-log scope keeps the 90-day default and 30-365 day range?
-3. Should deferred Audit/Trace export/investigation-note/summary task ids stay in the global tool inventory under an explicit deferred section, or be removed until a future accepted intent change reintroduces them?
+None for the shared foundation refresh. Per-workstream tasks may still record local blockers when binding exact surfaces, tools, source-alignment, tests, and runtime-validation scenarios.

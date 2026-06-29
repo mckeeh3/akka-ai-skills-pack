@@ -10,6 +10,19 @@ The built-in Customer concept is a foundation customer boundary: a tenant-owned 
 
 The app is a SaaS Foundation App with role-authorized functional-agent workstreams. Human users supervise work through a WorkOS/AuthKit-gated web shell; backend capabilities and governed tools enforce local authorization, policy denials, trace capture, and provider fail-closed behavior.
 
+## Shared current-intent graph contract
+
+All built-in foundation workstreams inherit this shared chain before any runtime/API/UI implementation is treated as ready:
+
+```text
+app -> domain -> workstream -> worker -> execution harness
+  -> actor adapter -> governed tool -> capability
+  -> Akka/frontend/API realization -> tests
+  -> runtime-validation scenario or scenario gap -> audit/work trace evidence
+```
+
+Shared definitions live under `global/` for actors, roles, workers, agents, policies, surfaces, governed tools, and trace patterns. Workstream directories bind those definitions to local surfaces, agents, tools, access rules, tests, and realization files. The built-in workstreams are My Account, User Admin, Agent Admin, Audit/Trace, and Governance/Policy. This refresh is description-only; per-workstream refresh tasks must mark implementation alignment as `stale-description-changed` unless they record a no-code-impact alignment review.
+
 ## Current domain
 
 - Primary domain: [`domains/core-starter/domain.md`](domains/core-starter/domain.md)
@@ -28,7 +41,7 @@ Reusable foundation doctrine is referenced rather than duplicated here:
 
 ## Tenant, security, and validation posture
 
-- Every current-intent node must preserve tenant/customer scope, authenticated account context, backend authorization, audit/work trace obligations, and frontend secret boundaries.
+- Every current-intent node must preserve Organization-facing language, Tenant/Customer internal isolation, authenticated account context, backend authorization, selected `AuthContext`, audit/work trace obligations, and frontend secret boundaries.
 - Normal runtime behavior must not depend on deterministic demos, mocks, fixtures, or model-less substitutes.
 - Provider-dependent behavior must fail closed with actionable errors when required configuration is missing.
 - Runtime readiness is proven through the intended local Akka/API/UI path at the stated scope, not by description alone.

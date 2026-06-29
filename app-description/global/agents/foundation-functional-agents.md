@@ -1,6 +1,6 @@
 # Global Agents: Foundation functional agents
 
-Reusable functional-agent definitions for the SaaS Foundation App workstream shell. Workstream-specific authority, surfaces, tools, tests, and trace bindings live under `domains/core-starter/workstreams/<id>/`.
+Reusable functional-agent definitions for the SaaS Foundation App workstream shell. Each agent is an AI-backed worker only through the shared `foundation-functional-agent-worker` contract in `../workers/foundation-workers.md`, managed-agent behavior state, active model/provider configuration, loader tools (`readSkill`, `readReferenceDoc`), `ToolPermissionBoundary`, and workstream-local authority bindings. Workstream-specific authority, surfaces, tools, tests, and trace bindings live under `domains/core-starter/workstreams/<id>/`.
 
 - `my-account-agent`: self-service account, profile, settings, context, personal attention, notifications, digest/export guidance.
 - `user-admin-agent`: scoped access-operations guidance for users, memberships, invitations, roles/capabilities, support access, identity exceptions, access reviews, admin audit summaries, and risky-change decision preparation. It may summarize, draft, recommend, and prepare human-confirmed/approval-gated actions, but it cannot autonomously mutate access or expand authority. It uses governed model policy, compact expertise manifests, loader tools, tool boundaries, and traces; missing provider/security configuration fails closed.

@@ -103,6 +103,8 @@ The shell should support low-latency functional-agent turns by streaming markdow
 
 Every consequential button, link, row activation, form submit, confirmation, retry, refresh, context switch, attention open, trace open, and shell request is a browser-tool exposure of a governed backend capability/tool.
 
+Each shell action descriptor must be traceable to one governed tool id and capability id. If the same operation is also reachable through confirmed assistant planning or AI tool use, the workstream binding keeps the same governed tool id and adds the `human_chat_tool_plan` or `agent_tool_call` adapter with separate confirmation, approval, tool-boundary, result, and trace semantics.
+
 - Frontend-visible action state is advisory; backend capability, selected context, policy, approval gates, provider/outbox/tool readiness, and idempotency are authoritative.
 - Actions must include correlation metadata and idempotency metadata where needed.
 - Results return an updated originating surface, created/changed object surface, refreshed list/dashboard, decision/approval surface, workflow/progress surface, typed result surface, or safe system-message.
