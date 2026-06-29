@@ -66,14 +66,17 @@ find specs/runtime-validation/scenarios/my-account -type f | sort
 
 Observed output: 19 mapped source/test/frontend paths exist; `specs/runtime-validation/scenarios/my-account/RV-MY-ACCOUNT-001-login-and-account-context.md` exists. This proof supports mapping only; it is not runtime-ready evidence.
 
-## TASK-ADIA-FU-001 runtime-validation run attempt
+## TASK-ADIA-FU-001 runtime-validation run attempts
 
 Review date: 2026-06-29.
-Run record: `specs/runtime-validation/runs/2026-06-29-RV-MY-ACCOUNT-001-blocked-auth-seed.md`.
+Latest run record: `specs/runtime-validation/runs/2026-06-29-RV-MY-ACCOUNT-001-blocked-auth-config.md`.
+Prior run record: `specs/runtime-validation/runs/2026-06-29-RV-MY-ACCOUNT-001-blocked-auth-seed.md`.
 Scenario: `specs/runtime-validation/scenarios/my-account/RV-MY-ACCOUNT-001-login-and-account-context.md`.
-Result: `blocked` with `runtime-validation-gap`, `auth-setup-blocker`, and `seed-data-blocker`.
+Latest result: `blocked` with primary `auth-setup-blocker` plus `runtime-validation-gap` and consequential `seed-data-blocker`.
 
-The local runtime-validation path was not counted as executed. At the time of the blocked run, the preferred start contract `./tools/runtime-validation/start-local.sh --empty` and seed contract `./tools/runtime-validation/seed.sh base-organization` were absent, and the local `.env` still had a placeholder `WORKOS_JWT_AUDIENCE` even though process-environment overrides were present. A later remediation added the runtime-validation start script, seed script, and local-only Akka seed endpoint for `base-organization`, including member and disabled/inactive fixtures. The scenario still must be rerun with real local WorkOS/AuthKit values to capture login, `/api/me`, browser-safe payload, denial, and trace evidence. My Account remains `partially-aligned`; no `manual-ready` or `runtime-ready` claim is made from the blocked run or setup-tool remediation alone.
+The local runtime-validation path is still not counted as executed. The latest attempt confirmed the preferred start and seed contracts now exist, and `tools/runtime-validation/start-local.sh --empty` generated local seed state, but startup exited before Akka runtime execution because `WORKOS_JWT_AUDIENCE` remained a placeholder in the effective runtime environment. Since the app did not start on `http://localhost:9000`, `tools/runtime-validation/seed.sh base-organization` could not connect, no base member or disabled/inactive fixtures were prepared, and no browser login, `/api/me`, workstream surface, denial/open-disabled payload, or trace evidence was captured.
+
+My Account remains `partially-aligned`; no `manual-ready` or `runtime-ready` claim is made from the blocked runs or setup-tool availability alone. Rerun `RV-MY-ACCOUNT-001` only after valid local WorkOS/AuthKit values and test-user/token mapping are available, then capture sanitized `/api/me`, account-context, denial/open-disabled, browser-safe payload, and trace evidence through the local Akka/API/UI path.
 
 ## Historical alignment status summary before TASK-ADR-02-001
 
