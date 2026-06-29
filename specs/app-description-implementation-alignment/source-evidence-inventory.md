@@ -1,45 +1,94 @@
 # Source Evidence Inventory
 
-This file starts as a template. `TASK-ADIA-01-001` must replace placeholders with concrete evidence.
+Task: `TASK-ADIA-01-001`
+Last reviewed: 2026-06-29
+Readiness claim: evidence inventory only; no runtime-ready claim.
 
-## Evidence areas
+## Evidence areas inspected
 
-- Backend source: `src/main/java/ai/first/**`
-- Backend tests: `src/test/java/ai/first/**`
-- Frontend source/tests: `frontend/**`
-- Resources/config: `src/main/resources/**`
-- Current intent: `app-description/**`
-- Runtime validation: `specs/runtime-validation/**` if present
-- Active specs/docs that constrain implementation
+- Backend source: `src/main/java/ai/first/**` — 257 Java files found.
+- Backend tests: `src/test/java/ai/first/**` — 87 Java test/support files found.
+- Frontend source/tests: `frontend/src/**` — 130 TypeScript/TSX/MJS files found.
+- Resources/config: `src/main/resources/**` — application config, static frontend output, and governed agent behavior seed resources found.
+- Current intent: `app-description/domains/core-starter/workstreams/**/realization/source-alignment.md` — 5 workstream source-alignment files found.
+- Runtime validation: `specs/runtime-validation/**` — directory is absent in this checkout, so there are no durable runtime-validation scenarios or run records yet.
+- Active specs/docs constraining this inventory: `specs/app-description-refresh/terminal-verification.md`, this mini-project README, and the selected task brief.
+
+## Proof commands used
+
+```bash
+find src/main/java/ai/first -type f -name '*.java' | wc -l
+find src/test/java/ai/first -type f -name '*.java' | wc -l
+find frontend/src -type f \( -name '*.ts' -o -name '*.tsx' -o -name '*.mjs' \) | wc -l
+find app-description/domains/core-starter/workstreams -path '*/realization/source-alignment.md' -type f | wc -l
+if [ -d specs/runtime-validation ]; then find specs/runtime-validation -type f | sort; else echo 'specs/runtime-validation: absent'; fi
+```
+
+Observed output: 257 backend source files, 87 backend test/support files, 130 frontend source/test files, 5 workstream source-alignment files, and `specs/runtime-validation: absent`.
+
+```bash
+for ws in myaccount useradmin agentadmin governance audit; do
+  find src/main/java/ai/first/application/coreapp -path "*${ws}*" -type f -name '*.java' | sort
+  find src/main/java/ai/first/domain/coreapp -path "*${ws}*" -type f -name '*.java' | sort
+  find src/test/java/ai/first/application/coreapp -path "*${ws}*" -type f -name '*.java' | sort
+done
+```
+
+Observed output identified concrete backend source and test paths for all five workstreams, listed in the table below.
+
+```bash
+find frontend/src -maxdepth 1 -type f -name '*workstream*vertical.contract.test.mjs' -o -name 'governance-audit-admin-profile.contract.test.mjs' | sort
+find frontend/src/workstream/surfaces -type f -name '*.tsx' | sort
+```
+
+Observed output identified workstream vertical frontend contract tests and shared workstream surface renderers listed below.
+
+```bash
+grep -RIn --include='*.java' -E '@HttpEndpoint|class .*Endpoint|AutonomousAgent|Agent|KeyValueEntity|EventSourcedEntity|View' src/main/java/ai/first
+grep -RIn --include='*.java' -E 'human_chat_tool_plan|surface_action|governedToolId|capabilityId|provider|blocked|idempot|approval|AuthContext|trace' src/main/java/ai/first/application/coreapp src/test/java/ai/first/application/coreapp src/test/java/ai/first/application/foundation
+grep -RIn --include='*.mjs' -Ei 'my-account|user-admin|agent-admin|governance|audit-trace|human_chat_tool_plan|trace|provider|idempot|approval' frontend/src
+grep -RIn --include='*.tsx' -Ei 'my-account|user-admin|agent-admin|governance|audit|trace|policy' frontend/src/workstream
+grep -RIn -Ei 'model|provider|workos|resend|agent|seed|openai' src/main/resources
+```
+
+Observed output confirmed protected HTTP endpoints, Akka agents/autonomous agents/entities/views, workstream service surface/action routing, chat tool-plan catalogs/traces, provider fail-closed/resource configuration, frontend surface renderers, frontend vertical contract tests, and governed behavior seeds. Long grep output was used as evidence only; it was not treated as runtime-validation evidence.
+
+## Shared implementation evidence
+
+| Area | Concrete evidence | Notes |
+| --- | --- | --- |
+| Protected endpoints | `src/main/java/ai/first/api/foundation/security/MeEndpoint.java`, `src/main/java/ai/first/api/foundation/invitation/InvitationAcceptanceEndpoint.java`, `src/main/java/ai/first/api/coreapp/admin/AdminEndpoint.java`, `src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java`, `src/main/java/ai/first/api/coreapp/workstream/StarterFrontendEndpoint.java` | `/api/me`, invitation acceptance, admin APIs, workstream surfaces/actions/chat plans/SSE, and hosted frontend endpoint exist as source evidence. |
+| Workstream shell and governed surface/action dispatcher | `src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java`, `DefaultSurfaceIntentRouter.java`, `SurfaceIntentRouter.java`; `frontend/src/workstream/**`; `frontend/src/api/**` | Single large backend dispatcher contains surface ids, action ids, governed-tool/capability checks, `surface_action`, `human_chat_tool_plan`, trace calls, and frontend surface contracts. Needs slice-level follow-up because breadth is too large for a single aligned claim. |
+| Identity/auth/tenant foundation | `src/main/java/ai/first/application/foundation/identity/**`, `src/main/java/ai/first/domain/foundation/identity/**`, `src/test/java/ai/first/application/foundation/identity/**` | `AuthContextResolver`, `MeService`, WorkOS resolver, durable identity repository/entity, fail-closed ports, bootstrap seed, tests for selected context, durability, WorkOS boundary, and provider smoke gating. |
+| Audit/work traces | `src/main/java/ai/first/application/foundation/audit/**`, `src/main/java/ai/first/application/foundation/workstream/**`, `src/main/java/ai/first/application/foundation/agent/AgentRuntimeTrace*`, trace-link frontend components | Durable/admin audit, workstream log/event, agent runtime trace sink/entity/view, and trace-link frontend components exist. Runtime trace visibility still needs per-workstream real-path validation. |
+| Agent runtime/governed loaders | `src/main/java/ai/first/application/foundation/agent/**`, `src/main/resources/agent-behavior-seeds/starter-v1/**`, `src/test/java/ai/first/application/foundation/agent/**` | Managed-agent definitions, prompt/skill/reference documents, manifests, tool boundaries, model provider client, runtime service, traces, seed loader, and tests exist. Provider-backed normal runtime remains config-dependent and must fail closed when missing. |
+| Provider/config | `src/main/resources/application.conf`, `OpenAiModelProviderClient.java`, `ResendEmailService.java`, `WorkosIdentityResolver.java`, optional live smoke tests | Config names backend-only WorkOS, Resend, and OpenAI env vars and records fail-closed model-provider behavior. Optional real provider smokes are not durable runtime-validation evidence for this task. |
 
 ## Workstream evidence table
 
 | Workstream | App-description source-alignment files | Implementation evidence | Test evidence | Runtime-validation evidence | Gap classification | Follow-up |
 | --- | --- | --- | --- | --- | --- | --- |
-| My Account | TBD | TBD | TBD | TBD | TBD | TBD |
-| User Admin | TBD | TBD | TBD | TBD | TBD | TBD |
-| Agent Admin | TBD | TBD | TBD | TBD | TBD | TBD |
-| Governance/Policy | TBD | TBD | TBD | TBD | TBD | TBD |
-| Audit/Trace | TBD | TBD | TBD | TBD | TBD | TBD |
+| My Account | `app-description/domains/core-starter/workstreams/my-account/realization/source-alignment.md` plus workstream `workstream.md`, `access.md`, `behavior.md`, `workers/**`, `agents/**`, `surfaces/**`, `tools/**`, `policies/**`, `traces/**`, `tests/**`, `realization/**`, and capability `account-context-and-profile.md`. Current source-alignment state is `stale-description-changed`. | `src/main/java/ai/first/application/coreapp/myaccount/MyAccountService.java`; `DigestExportService.java`; `MyAccountEvidenceTools.java`; `MyAccountPersonalAttentionDigestService.java`; `MyAccountPersonalAttentionDigestAutonomousAgent.java`; `ComponentClientMyAccountPersonalAttentionDigestAutonomousAgentRuntime.java`; `FailClosedMyAccountPersonalAttentionDigestAutonomousAgentRuntime.java`; `DurableMyAccountPersonalAttentionDigestTaskRepositoryEntity.java`; `AkkaMyAccountPersonalAttentionDigestTaskRepository.java`; domain files `DigestExportRequest.java`, `MyAccountNotificationCenter.java`, `MyAccountPersonalAttentionDigestTask.java`; shared `WorkstreamService.java`, `WorkstreamEndpoint.java`, `MeEndpoint.java`, identity/attention/notification/audit/workstream foundations; frontend `MyAccountSurfaces.tsx`, `NotificationCenterSurface.tsx`, `DashboardSurface.tsx`, `DetailEditSurface.tsx`, `WorkflowStatusSurface.tsx`, `OutcomeSurface.tsx`, `SystemMessageSurface.tsx`, `ChatToolPlanSurface.tsx`, shell/API/realtime files. | Backend: `MyAccountBrowserWorkstreamSmokeTest.java`, `MyAccountTraceAuditTest.java`, `WorkstreamServiceTest.java`, `MeServiceTest.java`, `DigestExportServiceTest.java`, `MyAccountEvidenceToolsTest.java`, `MyAccountPersonalAttentionDigestServiceTest.java`, `MyAccountPersonalAttentionDigestAutonomousAgentTest.java`, notification/attention/audit/workstream foundation tests. Frontend: `workstream-my-account-vertical.contract.test.mjs`, `workstream-chat-tool-plan.contract.test.mjs`, `workstream-shell.contract.test.mjs`, `workstream-surfaces.contract.test.mjs`, `workstream-actions.contract.test.mjs`, `workstream-attention-*` tests. | `specs/runtime-validation` is absent. Historical source-alignment records automated `api-smoked`, `backend-ready`, and `frontend-rendered` evidence before the 2026-06-29 description refresh, but that is historical and not a current runtime-ready claim. Provider-backed digest success and manual browser runtime remain unverified. | `partially-aligned`; `source-alignment-gap`; `runtime-validation-gap`; `provider-config-blocker` for model/provider-backed digest success. | After `TASK-ADIA-01-002`, start `TASK-ADIA-02-001` by splitting My Account evidence into current dashboard/profile/context/notification/digest/chat-plan/trace entries, checking whether TASK-ADR-02-001 was no-code-impact or requires code/test/runtime work, and linking scenario ids without claiming runtime-ready. |
+| User Admin | `app-description/domains/core-starter/workstreams/user-admin/realization/source-alignment.md` plus workstream `workstream.md`, `access.md`, `behavior.md`, `workers/**`, `agents/**`, `surfaces/**`, `tools/**`, `policies/**`, `traces/**`, `tests/**`, `realization/**`, and capability `user-and-access-administration.md`. Current source-alignment state is `stale-description-changed`. | `src/main/java/ai/first/application/coreapp/useradmin/**` including `UserAdminService.java`, `SaasOwnerOrganizationAdminService.java`, `TenantCustomerAdminService.java`, `UserAdminAccessReviewService.java`, `UserAdminAccessReviewAutonomousAgent.java`, `UserAdminAccessReviewWorker.java`, `UserAdminEvidenceTools.java`, `UserDirectoryView.java`, durable access-review repository/entity/runtime ports; domain `AccessReviewTask.java`; foundation identity/invitation/email/audit/workstream; `AdminEndpoint.java`, `InvitationAcceptanceEndpoint.java`, `WorkstreamService.java`; frontend shared workstream surfaces plus `OrganizationAdminSurface.tsx`, `UserAdminTaskSurface.tsx`, `UserAdminRoleChangePreviewSurface.tsx`, `UserAdminScopedAdminSurface.tsx`; resources `user-admin-system.md`, `user-admin-agent-expertise.yaml`, invitation/role/access-review/support/audit seed docs. | Backend: `AdminEndpointIntegrationTest.java`, `InvitationAndUserAdminServiceTest.java`, `SaasOwnerOrganizationAdminServiceTest.java`, `UserAdminAccessReviewServiceTest.java`, `UserAdminAccessReviewWorkerTest.java`, `UserAdminAccessReviewAutonomousAgentTest.java`, `DurableAccessReviewTaskRepositoryEntityTest.java`, invitation/identity/email/audit foundation tests, optional `RealResendProviderSmokeTest.java`. Frontend: `workstream-user-admin-vertical.contract.test.mjs`, `workstream-user-admin-expertise.contract.test.mjs`, `workstream-organization-admin-vertical.contract.test.mjs`, shell/surface/action/chat-plan tests. | `specs/runtime-validation` is absent. Source and tests cover many protected API/workstream flows, idempotency, invitation outbox/provider failure, role/status/support, access review, and traces, but there are no durable runtime-validation scenarios/run records and refreshed current-intent validation has not been re-run. | `partially-aligned`; `source-alignment-gap`; `runtime-validation-gap`; `provider-config-blocker` for live Resend/model paths; `auth-setup-blocker` for real WorkOS/AuthKit local runtime validation. | `TASK-ADIA-02-002` should split the broad source-alignment entry into invitation, org/customer/admin, user/member, role/status/support, access-review agent, chat-plan, frontend, and trace slices; verify which existing tests still match the refreshed graph; queue exact runtime-validation/provider/auth blockers. |
+| Agent Admin | `app-description/domains/core-starter/workstreams/agent-admin/realization/source-alignment.md` plus refreshed Agent Admin workstream graph and legacy managed-agent governance capability artifact `agent-doc-administration.md`. Current source-alignment state is `stale-description-changed`. | `src/main/java/ai/first/application/coreapp/agentadmin/**` including `AgentAdminService.java`, `AgentAdminDocAdministrationService.java`, `AgentMarketplaceGovernanceService.java`, `AgentAdminDocEditingAgent.java`, `AgentAdminDocEditingRuntime.java`, `AgentAdminPromptRiskReviewService.java`, `AgentAdminPromptRiskAutonomousAgent.java`, `AgentAdminEvidenceTools.java`, prompt-risk durable repository/entity/runtime ports; domain `PromptRiskReviewTask.java`; foundation managed-agent files `AgentDefinitionEntity/View`, prompt/skill/reference documents/views, manifests, `ToolPermissionBoundaryEntity`, `AgentRuntimeService`, `AgentRuntimeLoaderTools`, `AgentRuntimeTraceEntity/View/Sink`, `ToolRegistry`; `AdminEndpoint.java`, `WorkstreamService.java`; frontend `AgentAdminDocEditingSurface.tsx`, `AgentAdminTaskSurface.tsx`, `DetailEditSurface.tsx`, `ListSearchSurface.tsx`, `GovernanceDiffSurface.tsx`, `ChatToolPlanSurface.tsx`; resources `agent-admin-system.md`, starter guidance/scope docs, manifest entries for `agent-agent-admin`. | Backend: `AgentAdminDocAdministrationServiceTest.java`, `AgentAdminDocEditingAgentTest.java`, `AgentAdminPromptRiskAutonomousAgentTest.java`, `AgentAdminPromptRiskReviewServiceTest.java`, `AgentAdminServicePlatformScopeTest.java`, `AgentMarketplaceGovernanceServiceTest.java`, `DurablePromptRiskReviewTaskRepositoryEntityTest.java`, `AgentAdminBrowserWorkstreamSmokeTest.java`, foundation agent entity/view/runtime/tool-boundary/trace tests. Frontend: `workstream-agent-admin-vertical.contract.test.mjs`, `workstream-surfaces.contract.test.mjs`, `workstream-actions.contract.test.mjs`, shared shell/chat-plan/action tests. | `specs/runtime-validation` is absent. Historical source-alignment cites older AABP-05-003 `api-smoked/frontend-rendered` evidence, but the 2026-06-29 refresh added/changed current intent for attention, canonical ids, test console, model policy/tool-boundary semantics, loader traces, provider blockers, chat confirmations, and runtime-validation expectations. | `partially-aligned`; `source-alignment-gap`; `runtime-validation-gap`; `provider-config-blocker`; possible `implementation-gap` for refreshed canonical managed-agent governance semantics until a focused review proves them. | `TASK-ADIA-02-003` should verify canonical/legacy governed-tool ids, proposal lifecycle, loader/tool-boundary denials, provider fail-closed test console, Agent Admin chat-plan categories, prompt/skill/reference trace visibility, frontend secret boundaries, and whether source-alignment needs correction or code/test follow-ups. |
+| Governance/Policy | `app-description/domains/core-starter/workstreams/governance-policy/realization/source-alignment.md` plus workstream graph and capability `governance-policy-lifecycle.md`. Current source-alignment state is `stale-description-changed`. | `src/main/java/ai/first/application/coreapp/governance/**` including `GovernancePolicyImpactService.java`, `GovernancePolicyImpactAutonomousAgent.java`, `GovernancePolicyEvidenceTools.java`, impact task repository/entity/runtime ports; domain `GovernancePolicyImpactTask.java`; foundation governance repository/entity/service; foundation audit/workstream; `AdminEndpoint.java`, `WorkstreamEndpoint.java`, `WorkstreamService.java`; frontend `GovernanceDiffSurface.tsx`, governance branches in `ListSearchSurface.tsx`, `DecisionSurface.tsx`, `OutcomeSurface.tsx`, `SystemMessageSurface.tsx`, `ChatToolPlanSurface.tsx`; resources `governance-policy-system.md`, starter guidance/scope docs, manifest entries for `agent-governance-policy`. | Backend: `GovernancePolicyImpactServiceTest.java`, `DurableGovernancePolicyRepositoryEntityTest.java`, `GovernancePolicyServiceTest.java`, `GovernancePolicyBrowserWorkstreamSmokeTest.java`, shared `WorkstreamServiceTest.java`, foundation audit/workstream tests. Frontend: `workstream-governance-policy-vertical.contract.test.mjs`, `governance-audit-admin-profile.contract.test.mjs`, `goal-decision-flows.contract.test.mjs`, `workstream-chat-tool-plan.contract.test.mjs`, action/surface/shell tests. | `specs/runtime-validation` is absent. Existing source/test evidence is strongest for policy inventory/proposal/simulation/impact-analysis surfaces and fail-closed impact tasks; refreshed app-description additionally expects lifecycle activation, rollback, exception review, separation-of-duty, runtime policy decision traces, and broader runtime-validation evidence. | `partially-aligned`; `implementation-gap`; `test-gap`; `source-alignment-gap`; `runtime-validation-gap`; `provider-config-blocker` for model-backed impact analysis. | `TASK-ADIA-02-004` should split lifecycle slices and verify which description expectations are implemented versus only surfaced as frontend/static contracts; focus first on draft/simulate/decision/activation/rollback/exception authority, then trace/runtime-validation gaps. |
+| Audit/Trace | `app-description/domains/core-starter/workstreams/audit-trace/realization/source-alignment.md` plus workstream graph and capability `audit-and-trace-investigation.md`. Current source-alignment state is `stale-description-changed`. | `src/main/java/ai/first/application/coreapp/audit/**` including `AuditTraceSummaryService.java`, `AuditTraceSummaryAutonomousAgent.java`, `AuditTraceEvidenceTools.java`, summary task repository/entity/runtime ports; domain `AuditTraceSummaryTask.java`; foundation audit `AuditTraceService.java`, `AuditTraceRepository.java`, `AdminAuditView.java`, `AkkaAuditTraceRepository.java`; foundation workstream log/event/view; foundation agent runtime trace entity/view/sink; `WorkstreamService.java`, `WorkstreamEndpoint.java`, `AdminEndpoint.java`; frontend `AuditTimelineSurface.tsx`, audit branches in `ListSearchSurface.tsx`, `DetailEditSurface.tsx`, `TraceLinkList.tsx`, `SystemMessageSurface.tsx`, `ChatToolPlanSurface.tsx`; resources `audit-trace-system.md`, starter guidance/scope docs, audit summary skill/reference docs, manifest entries for `agent-audit-trace`. | Backend: `AuditTraceSummaryServiceTest.java`, `AuditTraceSummaryAutonomousAgentTest.java`, `AuditTraceBrowserWorkstreamSmokeTest.java`, `MyAccountTraceAuditTest.java`, foundation audit tests, foundation agent runtime trace tests, workstream log/event tests. Frontend: `workstream-audit-trace-vertical.contract.test.mjs`, `governance-audit-admin-profile.contract.test.mjs`, `workstream-surfaces.contract.test.mjs`, `workstream-chat-tool-plan.contract.test.mjs`, shell/action tests. | `specs/runtime-validation` is absent. Source-alignment records future scenario ids only. Existing implementation has audit summary tasks, trace read/render surfaces, foundation trace repositories/views, and tests, but no durable runtime-validation scenario/run records proving tenant-admin/SaaS-support search/detail/correlation/denial/export/runtime-validation evidence paths. | `partially-aligned`; `implementation-gap`; `test-gap`; `source-alignment-gap`; `runtime-validation-gap`; `provider-config-blocker` for model-backed summary/provider paths; possible `auth-setup-blocker` for SaaS-support/support-access runtime validation. | `TASK-ADIA-02-005` should verify search/detail/timeline/correlation/denial/support-access/export/summary slices, redaction/no-enumeration behavior, support-access gates, read-only chat-plan behavior, bounded agent tools, trace-gap handling, and source-alignment evidence links. |
 
-## Gap classification vocabulary
+## Gap classification vocabulary applied
 
-- `aligned`
-- `partially-aligned`
-- `implementation-gap`
-- `test-gap`
-- `runtime-validation-gap`
-- `source-alignment-gap`
-- `app-description-overreach`
-- `provider-config-blocker`
-- `auth-setup-blocker`
-- `seed-data-blocker`
+- `aligned`: Not applied to any full workstream in this inventory because every workstream source-alignment file is currently `stale-description-changed` and no runtime-validation corpus/run records exist.
+- `partially-aligned`: Applied where concrete backend/frontend/test evidence exists for meaningful slices but the refreshed current-intent graph has not been re-reviewed through the real path.
+- `implementation-gap`: Applied where refreshed app-description breadth appears broader than visible implementation/test slices, especially Governance/Policy and Audit/Trace lifecycle/export/correlation/support-access depth, and possibly refreshed Agent Admin canonical governance semantics until proven.
+- `test-gap`: Applied where source evidence exists but refreshed current-intent slices lack obvious dedicated automated tests or need split review before alignment can be claimed.
+- `runtime-validation-gap`: Applied to every workstream because `specs/runtime-validation/**` is absent and no run records exist.
+- `source-alignment-gap`: Applied to every workstream because current files remain broad or stale after the refresh and need focused slice-level reconciliation.
+- `provider-config-blocker`: Applied to model-backed agent/digest/impact/summary paths and live Resend/OpenAI-dependent behavior where config is intentionally backend-only and absent by default.
+- `auth-setup-blocker`: Applied where real local WorkOS/AuthKit or SaaS-support/support-access validation is required before runtime-ready claims.
+- `seed-data-blocker`: Not broadly applied yet; later runtime-validation tasks may identify explicit seed/bootstrap gaps.
+- `app-description-overreach`: Not applied by this inventory; later focused reviews should use it if refreshed current intent proves unsupported or unsafe rather than queuing code by assumption.
 
-## Required output from TASK-ADIA-01-001
+## Exact recommended next alignment task focus
 
-Replace this section with:
-
-- proof commands used;
-- key source/test/frontend/resource files by workstream;
-- existing runtime-validation state;
-- exact recommended next alignment task focus.
+1. Run `TASK-ADIA-01-002: Author runtime-validation corpus scaffold` next, because all five workstreams currently have a `runtime-validation-gap` and `specs/runtime-validation/**` is absent.
+2. Then start focused workstream alignment in queue order with `TASK-ADIA-02-001: Align My Account implementation evidence`, using this inventory to split current evidence into source-alignment entries without relying on historical runtime-readiness claims.
+3. For each later workstream, update lifecycle/source-alignment with one of: aligned slice, partially aligned slice, implementation/test/runtime-validation gap, provider/config blocker, auth/setup blocker, seed-data blocker, or app-description correction required. Do not mark a workstream runtime-ready until real local Akka/API/UI/provider/fail-closed validation evidence exists.

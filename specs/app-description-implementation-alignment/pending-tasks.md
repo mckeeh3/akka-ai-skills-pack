@@ -50,7 +50,7 @@
 
 ### TASK-ADIA-01-001: Inventory current source/runtime evidence
 
-- status: pending
+- status: done
 - source: specs/app-description-implementation-alignment/backlog/01-implementation-alignment-build-backlog.md#adia-01-inventory-sourceruntime-evidence
 - task brief: specs/app-description-implementation-alignment/tasks/01-evidence/01-inventory-source-evidence.md
 - depends on:
@@ -76,6 +76,8 @@
   - future workstream alignment tasks can proceed without guessing source/test/frontend evidence
   - task changes and queue update are committed
 - notes:
+  - commit message: `app-desc-align: inventory source evidence`
+  - validation: `git diff --check` passed; evidence proof commands inventoried backend, tests, frontend, app-description source-alignment files, resources/config, and absent `specs/runtime-validation` state.
   - vertical contract: cross-workstream evidence inventory; non-attention reason source-alignment audit; role-specific dashboard / surface all foundation surfaces inspected as evidence only; surface graph node/action edge inspected not implemented; governed-tool id/type/exposure inspected from app-description/source evidence; actor adapter/source inspected; confirmation/approval behavior and idempotency/transaction/result behavior inspected; capability or foundation scope all core-starter capabilities; AuthContext / roles / tenant scope inspected; API / frontend / realtime path inventoried; audit/work trace expectation inventoried; validation path `git diff --check` plus evidence proof
 
 ### TASK-ADIA-01-002: Author runtime-validation corpus scaffold
