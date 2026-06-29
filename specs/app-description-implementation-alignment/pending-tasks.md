@@ -82,7 +82,7 @@
 
 ### TASK-ADIA-01-002: Author runtime-validation corpus scaffold
 
-- status: pending
+- status: done
 - source: specs/app-description-implementation-alignment/backlog/01-implementation-alignment-build-backlog.md#adia-02-author-runtime-validation-corpus-scaffold
 - task brief: specs/app-description-implementation-alignment/tasks/01-evidence/02-author-runtime-validation-corpus.md
 - depends on:
@@ -106,6 +106,8 @@
   - runtime-validation scenario skeletons exist for the five foundation workstreams without claiming pass results
   - task changes and queue update are committed
 - notes:
+  - commit message: `app-desc-align: author runtime validation corpus`
+  - validation: `git diff --check` passed; `find specs/runtime-validation -type f | sort` listed the authored corpus files.
   - vertical contract: all five foundation workstreams; attention category scenario-dependent; role-specific dashboard / surface scenario files name target surfaces; surface graph node/action edge documented per scenario; governed-tool id/type/exposure documented per scenario; actor adapter/source documented; confirmation/approval behavior and idempotency/transaction/result behavior documented as expected results; capability or foundation scope all core-starter capabilities; AuthContext / roles / tenant scope documented per persona; API / frontend / realtime path documented; audit/work trace expectation documented; validation path `git diff --check` and scenario file proof
 
 ### TASK-ADIA-02-001: Align My Account implementation evidence
