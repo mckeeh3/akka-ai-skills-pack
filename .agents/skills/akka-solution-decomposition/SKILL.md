@@ -52,11 +52,11 @@ Read first when present/relevant:
 
 - target project path: AGENTS.md for authoritative project rules and coding constraints;
 - `../README.md` for current skill routing;
-- `../docs/app-development-lifecycle.md` for interview/build/manual readiness vocabulary;
+- `../docs/app-development-lifecycle.md` for interview/build/runtime-validation readiness vocabulary;
 - `../docs/app-worker-tool-model.md` for the worker/harness/adapter/governed-tool/capability/Akka separation;
 - `../docs/app-description-to-code-compile-contract.md` before treating any task as implementation-ready;
 - `../docs/runtime-validation.md` when the plan includes runtime-validation scenarios, setup prerequisites, execution modes, or tester feedback loops;
-- `../docs/manual-test-reconciliation.md` when the plan includes runtime-validation/manual remediation loops;
+- `../docs/runtime-validation-reconciliation.md` when the plan includes runtime-validation remediation loops;
 - `../core-saas-foundation/SKILL.md` for mandatory secure SaaS scope;
 - `../docs/intent-compiler.md`, `../docs/current-intent-model.md`, and `../docs/intent-to-realization-flow.md` when input needs current-intent provenance or workstream binding before component selection;
 - `../docs/full-core-foundation-readiness.md` for canonical SaaS Foundation App inventory; summarize it, do not paste it;
@@ -79,7 +79,7 @@ Before coding, produce a compact component plan; link canonical references inste
 - AI-first, secure foundation, workstream, workforce, attention/dashboard, surface graph, internal-agent, and workstream-expertise decisions;
 - capability/governed-tool inventory with actor adapters or exposure channels, confirmation/approval, idempotency/transaction boundary, result/partial-failure surface, and trace source;
 - capability-to-component mapping, chosen components with reasons, implementation skill routing, vertical order, and required tests;
-- inherited compile contract: graph nodes, workers, harnesses, adapters, governed tools, capabilities, traces, selected substrates, checks, and manual scenario or non-runtime exemption;
+- inherited compile contract: graph nodes, workers, harnesses, adapters, governed tools, capabilities, traces, selected substrates, checks, and runtime-validation scenario or non-runtime exemption;
 - open questions only where implementation would otherwise guess authority, scope, risk, evidence, or runtime behavior.
 
 A plan is incomplete if it names components without saying which current-intent graph nodes, functional agent, workstream, surface, capability, authority boundary, trace, and tests each increment belongs to.
@@ -156,7 +156,7 @@ Prefer vertical increments:
 7. agent/runtime/tool governance;
 8. endpoints/API clients;
 9. frontend surface rendering;
-10. tests and local smoke/manual validation.
+10. tests and local smoke/runtime-validation.
 
 Each increment should identify the next focused skills to load.
 

@@ -103,7 +103,7 @@ The downstream implementation phase may include:
 - endpoint generation
 - web UI generation
 - test generation
-- local run, endpoint smoke, browser/workstream smoke, runtime-validation scenarios/runs, or manual/human-operated validation notes
+- local run, endpoint smoke, browser/workstream smoke, runtime-validation scenarios/seed plans/runs, including human-operated validation scripts and notes when applicable
 - documentation or snippet generation when the task asks for it
 
 ## Quick checklist
@@ -114,7 +114,7 @@ Before starting code generation, verify that the solution plan already answers:
 - which component/files are first
 - which skills implement them
 - which tests belong with them
-- which local run/runtime-validation smoke path proves the named behavior works
+- which local run/runtime-validation smoke path proves the named behavior works, including clean-local startup, bootstrap, seed plan/command, auth/test-user setup, setup evidence, validation evidence, and run-record path when runtime validation is in scope
 - which later increments depend on this one
 - whether any open questions still block coding
 - whether blocking questions are resolved or explicitly deferred in `specs/pending-questions.md`

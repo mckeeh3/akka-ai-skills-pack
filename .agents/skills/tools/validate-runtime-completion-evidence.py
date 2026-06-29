@@ -30,11 +30,11 @@ IMPLEMENTATION_HINT_RE = re.compile(
     re.IGNORECASE,
 )
 REAL_PATH_RE = re.compile(
-    r"\b(real|intended|local|runtime|akka-hosted|protected|browser|api|endpoint|route|workstream|surface action|manual smoke|browser smoke|api smoke|app-run|running app)\b",
+    r"\b(real|intended|local|runtime|akka-hosted|protected|browser|api|endpoint|route|workstream|surface action|runtime-validation smoke|browser smoke|api smoke|app-run|running app)\b",
     re.IGNORECASE,
 )
 VALIDATION_RE = re.compile(
-    r"\b(mvn|npm|curl|httpie|playwright|cypress|vitest|test|typecheck|build|manual smoke|browser smoke|api smoke|runtime smoke|smoke path|checks?:|validation|passed|failed|blocked)\b",
+    r"\b(mvn|npm|curl|httpie|playwright|cypress|vitest|test|typecheck|build|runtime-validation smoke|browser smoke|api smoke|runtime smoke|smoke path|checks?:|validation|passed|failed|blocked)\b",
     re.IGNORECASE,
 )
 INSUFFICIENT_ONLY_RE = re.compile(
@@ -83,7 +83,7 @@ def validate_task(task: Task) -> list[str]:
     if not REAL_PATH_RE.search(body):
         missing.append("intended real local runtime/API/UI path evidence")
     if not VALIDATION_RE.search(body):
-        missing.append("validation command/result or explicit manual smoke result")
+        missing.append("validation command/result or explicit runtime-validation smoke result")
     if re.search(r"\b(auth|admin|workstream|surface|api|endpoint|tenant|organization|user|membership|role)\b", body, re.IGNORECASE):
         if not AUTH_SCOPE_RE.search(body):
             missing.append("role/AuthContext/tenant or selected-scope evidence")
@@ -94,12 +94,12 @@ def validate_task(task: Task) -> list[str]:
     if re.search(r"\b(provider|workos|resend|model|llm|credential|secret)\b", body, re.IGNORECASE) and not PROVIDER_STATUS_RE.search(body):
         missing.append("provider configured or fail-closed evidence")
 
-    has_runtime_smoke = bool(re.search(r"\b(runtime smoke|browser smoke|api smoke|manual smoke|app-run|akka-hosted|curl|httpie|playwright|cypress|api-smoked|browser-smoked|manual-ready|runtime-ready)\b", body, re.IGNORECASE))
+    has_runtime_smoke = bool(re.search(r"\b(runtime smoke|browser smoke|api smoke|runtime-validation smoke|app-run|akka-hosted|curl|httpie|playwright|cypress|api-smoked|browser-smoked|manual-ready|runtime-ready)\b", body, re.IGNORECASE))
     has_only_weak = bool(INSUFFICIENT_ONLY_RE.search(body)) and not has_runtime_smoke
     if has_only_weak:
         missing.append("evidence beyond unit/service/contract/typecheck-only checks")
 
-    if BLOCKER_RE.search(body) and re.search(r"\b(required|local|manual|browser|api|runtime)\b[^\n]*(blocked|not run|unable to run)", body, re.IGNORECASE) and not re.search(r"\b(outside named scope|explicitly non-runtime|live .* remains blocked|provider smoke remains blocked)\b", body, re.IGNORECASE):
+    if BLOCKER_RE.search(body) and re.search(r"\b(required|local|runtime-validation|browser|api|runtime)\b[^\n]*(blocked|not run|unable to run)", body, re.IGNORECASE) and not re.search(r"\b(outside named scope|explicitly non-runtime|live .* remains blocked|provider smoke remains blocked)\b", body, re.IGNORECASE):
         missing.append("done status conflicts with blocked/deferred/unrun runtime evidence")
     return missing
 

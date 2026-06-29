@@ -89,7 +89,7 @@ When realization is requested, preserve the description-level functional-agent a
 - integrated shell/deep-link example: `frontend/src/main.tsx`
 - User Admin dashboard → list/search → detail/edit contract references: `frontend/src/workstream-user-admin-vertical.contract.test.mjs` plus shared test fixtures under `frontend/src/__tests__/fixtures/**` when needed
 
-Fixtures are contract/test references only. Generated user-facing SaaS UI must connect to real backend API/realtime endpoints and governed capabilities with authorization, audit/trace, failure, and local smoke/manual validation paths. Fixture-backed, frontend-only, or simulated data paths must not satisfy runtime completion for a named feature.
+Fixtures are contract/test references only. Generated user-facing SaaS UI must connect to real backend API/realtime endpoints and governed capabilities with authorization, audit/trace, failure, and local smoke/runtime-validation paths. Fixture-backed, frontend-only, or simulated data paths must not satisfy runtime completion for a named feature.
 
 Do not realize new generated SaaS UI as a primary `screens/**` or page-route tree; see `../docs/retired-content-boundaries.md` for migration boundaries.
 

@@ -56,7 +56,8 @@ Read these first if present:
 - `../docs/app-worker-tool-model.md`
 - `../docs/app-description-to-code-compile-contract.md`
 - `../docs/runtime-validation.md` when queue entries include runtime-validation scenarios, setup prerequisites, or validation tasks
-- `../docs/manual-test-reconciliation.md` when queue entries include runtime-validation/manual remediation work
+- `../docs/runtime-validation-task-authoring.md` when queue entries include generated runtime-validation tasks, seed plans, WorkOS test-user setup, or human UI scripts
+- `../docs/runtime-validation-reconciliation.md` when queue entries include runtime-validation remediation work
 - `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS baseline and first-slice implementation order
 - `../docs/intent-compiler.md`
 - `../docs/current-intent-model.md`
@@ -117,6 +118,7 @@ Before finishing, verify:
 - dependencies are neither missing nor over-serialized
 - required reads are minimal and sufficient, including AI-first doctrine or specs only where they affect the task
 - lifecycle/readiness target, compile contract, required checks, and runtime-validation scenario/non-runtime exemption are explicit for each runnable task
+- runtime-validation queue entries are surface-driven or name an explicit non-UI workstream trigger, and include local-empty startup, bootstrap expectation, seed plan/command, auth/test-user mapping when applicable, human UI script, setup evidence, validation evidence, and run-record path
 - skills match the component family plus any necessary AI-first companion skill
 - required checks and done criteria are concrete
 - consequential generated-SaaS entries carry the tool-use contract: governed-tool id, capability id, actor adapter/exposure channel, confirmation/approval behavior, idempotency/transaction boundary, result/partial-failure surface, and trace evidence; if those fields are missing, the entry is blocked for backlog/task-brief repair rather than guessed

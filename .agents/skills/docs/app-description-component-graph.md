@@ -6,7 +6,7 @@ The app-description is the file-backed current-intent graph for an app. This doc
 
 Use the component graph to keep product semantics ahead of implementation mechanics:
 
-- model workers, harnesses, actor adapters, governed tools, capabilities, surfaces, agents, traces, tests, and manual scenarios as explicit graph nodes or bindings;
+- model workers, harnesses, actor adapters, governed tools, capabilities, surfaces, agents, traces, tests, and runtime-validation scenarios as explicit graph nodes or bindings;
 - preserve one governed operation across human surface actions, confirmed human chat plans, AI agent tools, API/workflow/timer/consumer/MCP/internal callers, and Akka implementation paths;
 - prevent page-only, component-only, or prompt-only work from becoming the de facto app design;
 - make every implementation task traceable from accepted intent to runtime evidence.
@@ -26,12 +26,12 @@ Use the component graph to keep product semantics ahead of implementation mechan
 | Capability | `domains/<domain>/capabilities/**` | Product-level backend contract and grouping for governed tools. | Governed tools, AuthContext, data-state, Akka components, endpoints, views, tests, traces. |
 | Data/state | `domains/<domain>/data-state/**` | Durable state, lifecycle, invariants, retention, projections, and trace obligations. | Capabilities, Event Sourced Entity/Key Value Entity/View/Workflow state, tests. |
 | Policy/security | `global/policies/**`, `workstreams/<workstream>/policies/**`, access files | Authorization, tenant/customer scope, approval, denial, sensitive-data, retention, and risk rules. | Workers, actor adapters, governed tools, capabilities, endpoints, traces, negative tests. |
-| Trace/observability | `global/traces/**`, `workstreams/<workstream>/traces/**` | Audit/work trace events, correlation, source, visibility, outcome metrics, and investigation surfaces. | Worker, adapter, tool, capability, Akka component, tests, manual scenarios. |
+| Trace/observability | `global/traces/**`, `workstreams/<workstream>/traces/**` | Audit/work trace events, correlation, source, visibility, outcome metrics, and investigation surfaces. | Worker, adapter, tool, capability, Akka component, tests, runtime-validation scenarios. |
 | Akka component | `workstreams/<workstream>/realization/akka-components.md` or capability realization section | Selected implementation substrates: Entity, Workflow, View, Consumer, Timed Action, Agent, AutonomousAgent, endpoint, MCP, service. | Capability and governed tool, package path, component tests, runtime path. |
 | Frontend/API realization | `realization/frontend-routes.md`, `realization/api-contracts.md` | Browser routes/components, structured surface renderer bindings, endpoint contracts, API clients, subscriptions. | Surface, actor adapter, governed tool, capability, AuthContext, UI/API tests. |
-| Source alignment | `realization/source-alignment.md` and optional `source-alignment.json` | File-level mapping from app-description graph files to implementation, frontend, test, spec, and manual validation evidence; staleness signal for lifecycle state. | Workstream lifecycle, graph nodes, realization files, source/test/frontend paths, commits/checks/manual scenarios. |
+| Source alignment | `realization/source-alignment.md` and optional `source-alignment.json` | File-level mapping from app-description graph files to implementation, frontend, test, spec, and runtime-validation evidence; staleness signal for lifecycle state. | Workstream lifecycle, graph nodes, realization files, source/test/frontend paths, commits/checks/runtime-validation scenarios. |
 | Test expectation | `workstreams/<workstream>/tests/**`, specs/tasks | Acceptance, regression, negative, idempotency, tenant-isolation, approval/confirmation, trace, UI, and component tests. | Worker + adapter + governed tool + capability + Akka/frontend path. |
-| Manual scenario | Workstream tests, specs, task briefs, or manual verification notes | Real local runtime/API/UI path to exercise after automated checks. | Role/AuthContext/tenant setup, surface or trigger, governed tool, expected trace/outcome, reconciliation result. |
+| Runtime-validation scenario | Workstream tests, specs, task briefs, or runtime validation notes | Real local runtime/API/UI path to exercise after automated checks. | Role/AuthContext/tenant setup, surface or trigger, governed tool, expected trace/outcome, reconciliation result. |
 
 ## Required graph links
 
@@ -62,7 +62,7 @@ Additional mandatory cross-links:
 - `workflow_step | timer_invocation | consumer_reaction | api_call | mcp_tool_call | internal_call -> governed tool -> capability -> provenance/correlation trace`
 - `capability -> data/state -> Akka substrate -> projection/view/query -> dashboard or evidence surface`
 - `test -> worker + adapter + governed tool + AuthContext + tenant/customer scope + trace expectation`
-- `manual scenario -> runtime path + expected evidence + reconciliation destination for failures`
+- `runtime-validation scenario -> runtime path + expected evidence + reconciliation destination for failures`
 
 ## Node contract details
 
@@ -104,7 +104,7 @@ A capability node should remain the backend product contract. It should not be r
 
 Realization nodes describe how graph semantics compile to repository artifacts. They should identify selected Akka components only after the worker, adapter, governed tool, capability, authority, side effects, and trace contracts are clear.
 
-Every feature-bearing workstream should include `realization/source-alignment.md` once it has or expects implementation. That artifact maps app-description files to source, frontend, test, spec, and manual-validation files so lifecycle alignment can be checked mechanically. If mapped app-description files are newer than mapped source/test files, treat implementation as stale unless an explicit no-code-impact review is recorded. See [App-description source alignment](app-description-source-alignment.md).
+Every feature-bearing workstream should include `realization/source-alignment.md` once it has or expects implementation. That artifact maps app-description files to source, frontend, test, spec, and runtime-validation files so lifecycle alignment can be checked mechanically. If mapped app-description files are newer than mapped source/test files, treat implementation as stale unless an explicit no-code-impact review is recorded. See [App-description source alignment](app-description-source-alignment.md).
 
 ## Adapter consistency rules
 
@@ -140,7 +140,7 @@ Avoid compiling or accepting graph updates that:
 - define an agent tool as a separate business operation from the matching human surface action;
 - grant agent authority because a human has a visible browser action;
 - omit system workers and provenance for workflows, timers, consumers, projections, integrations, and internal calls;
-- skip negative, tenant-isolation, approval/confirmation, idempotency, trace, or manual runtime validation expectations;
+- skip negative, tenant-isolation, approval/confirmation, idempotency, trace, or runtime-validation expectations;
 - change feature-bearing workstream intent without updating `realization/source-alignment.md`, flagging the related implementation as stale, or recording an explicit no-code-impact alignment decision.
 
 See also [App-description source alignment](app-description-source-alignment.md), [App-description to code compile contract](app-description-to-code-compile-contract.md), and [Intent to realization flow](intent-to-realization-flow.md).

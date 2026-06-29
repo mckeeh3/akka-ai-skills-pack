@@ -94,7 +94,7 @@ Each `specs/sprints/NN-<sprint>.md` should be a full-stack delivery contract:
 - pending questions that block or affect the sprint
 - implementation task groups
 - module-level full-stack test plan
-- done criteria, including local-run/manual-test expectations for the named sprint goal
+- done criteria, including local-run/runtime-validation expectations for the named sprint goal
 - explicit defer list, with impact on whether the sprint goal remains fully working
 
 A sprint should end with a named, working app state. For generated full-stack Akka apps, the sprint goal is not complete until the user-visible capability named by the sprint can be exercised through the locally running Akka app, including the relevant backend, API, frontend/workstream surface, authorization boundary, audit/trace behavior, and required tests. If a planned deferral prevents that capability from working end to end, narrow or rename the sprint goal, mark the affected work blocked/incomplete, or split the sprint; do not call the original feature implemented.
@@ -119,7 +119,7 @@ The backlog should break the sprint into harness-sized vertical tasks. Each impl
 - selected Akka substrate and endpoint/tool/workflow/timer/consumer exposure;
 - frontend/API/realtime work where user-facing;
 - required success, validation, forbidden, tenant-isolation, idempotency, audit/trace, rendering/API/realtime, and smoke tests;
-- the local app-run or manual verification path that proves the task contributes to the sprint's working state, or an explicit statement that the task is non-runtime/internal-only.
+- the local app-run or runtime-validation path that proves the task contributes to the sprint's working state, or an explicit statement that the task is non-runtime/internal-only.
 
 Prefer this order when applicable:
 
@@ -192,7 +192,7 @@ A module sprint is done only when:
 - frontend checks/tests pass for generated full-stack AI-first SaaS
 - at least one module-level integration or smoke path verifies the full stack for the sprint
 - the app has been run locally, or the sprint completion summary records the exact reason local execution was not possible and whether that blocks completion
-- a manual test checklist exists for the sprint's visible feature(s), including sign-in/context, happy path, forbidden/disabled/tenant-scope behavior where relevant, and the expected audit/trace evidence
+- a runtime-validation scenario/checklist exists for the sprint's visible feature(s), including sign-in/context, happy path, forbidden/disabled/tenant-scope behavior where relevant, and the expected audit/trace evidence
 - deferred items and blocked questions are visible in the sprint spec, backlog, or queues and state whether they narrow the sprint goal or block completion
 - AI-first authority, policy, trace, evaluation, and outcome constraints required for the named goal are implemented; constraints may be deferred only when the sprint scope explicitly excludes the affected behavior and the output is not described as fully implemented
 

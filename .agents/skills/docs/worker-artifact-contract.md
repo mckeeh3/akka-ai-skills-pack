@@ -13,7 +13,7 @@ Use it with `./workforce-decomposition.md` and `./app-worker-tool-model.md`. A w
 
 All worker types have behavior profiles. Humans, model-backed agents, and deterministic system participants differ by reasoning/execution engine, not by whether they have instructions, skills, tools, policies, evidence scope, or trace obligations. For a human worker, the reasoning engine is the authenticated human and the behavior profile is a role/workstream operating brief plus skills and governed tools. For a model-backed worker, the reasoning engine is a configured model and the behavior profile includes prompt/skill/reference/model/tool-boundary governance. For a deterministic worker, the execution engine is workflow/timer/consumer/projection/service logic and the behavior profile records deterministic instructions, policies, allowed tools, provenance, and failure behavior.
 
-A worker artifact is not an implementation file. It is the product contract that downstream surface, agent, capability, Akka, frontend, API, test, and manual-runtime artifacts preserve.
+A worker artifact is not an implementation file. It is the product contract that downstream surface, agent, capability, Akka, frontend, API, test, and runtime-validation artifacts preserve.
 
 ## Global definition vs workstream binding
 
@@ -161,7 +161,7 @@ Record required trace events and fields, including:
   - idempotency/replay/stale behavior:
   - approval/confirmation behavior:
   - trace/audit evidence:
-- Manual runtime scenario:
+- Runtime-validation scenario:
   - worker → adapter → governed tool → capability → Akka/API/UI path → trace/view evidence
 
 ## Realization links

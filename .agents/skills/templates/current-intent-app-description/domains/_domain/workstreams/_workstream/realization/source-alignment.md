@@ -4,7 +4,7 @@ Lifecycle: ../lifecycle.md
 Last reviewed: unknown
 Alignment state: not-started
 
-This file maps feature-bearing app-description files to the source, frontend, API, test, spec, and manual validation artifacts that realize them. Keep it consistent with the owning workstream lifecycle record.
+This file maps feature-bearing app-description files to the source, frontend, API, test, spec, and runtime-validation artifacts that realize them. Keep it consistent with the owning workstream lifecycle record.
 
 ## Alignment entries
 

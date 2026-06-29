@@ -13,7 +13,7 @@ This is an **evolution skill** for Capturing Incremental Intent. It compiles a l
 
 Turn a change request into a controlled planning delta that:
 - preserves the current app-description/spec structure
-- classifies the lifecycle impact of the change and updates compile/manual readiness expectations before code is widened
+- classifies the lifecycle impact of the change and updates compile/runtime-validation readiness expectations before code is widened
 - preserves AI-first operating-model meaning when delegated work, governance, decisions, audit, or outcomes are in scope
 - preserves workstream identity, role-specific dashboard contracts, attention items, surface graph nodes/edges, governed-tool ids, capability ids, internal workstream agent graph delegations/results, AutonomousAgent task candidates, notifications/projections, and audit/work traces when the change affects generated SaaS planning
 - preserves workstream expertise meaning when a functional agent's prompt intent, governed skills, references, expertise manifest, governed-tool help/denial guidance, loaders, tool boundary, traces, or tests change
@@ -36,7 +36,7 @@ The task sounds like:
 
 Use `akka-revised-prd-reconciliation` instead when the input is a full revised PRD or replacement requirements document.
 
-Use `akka-manual-failure-reconciliation` instead when the input is primarily a manual tester failure list or a report that many claimed features do not work through the browser/API/runtime path.
+Use `akka-manual-failure-reconciliation` instead when the input is primarily a runtime-validation tester failure list or a report that many claimed features do not work through the browser/API/runtime path.
 
 Use `akka-do-next-pending-task` instead when the user wants to execute an existing queue item without changing the plan.
 
@@ -49,7 +49,7 @@ Read these first if present:
 - `../docs/app-development-lifecycle.md`
 - `../docs/app-worker-tool-model.md`
 - `../docs/app-description-to-code-compile-contract.md`
-- `../docs/manual-test-reconciliation.md` when the change comes from runtime/manual findings
+- `../docs/runtime-validation-reconciliation.md` when the change comes from runtime-validation findings
 - `../docs/ai-first-saas-application-architecture.md` when the change involves delegated work, agents, governance, approvals, exceptions, audit, or outcomes
 - `../docs/intent-compiler.md`
 - `../docs/current-intent-model.md`

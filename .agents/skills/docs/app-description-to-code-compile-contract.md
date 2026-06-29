@@ -20,7 +20,7 @@ A compile task starts only when the requested slice has enough current-intent pr
 - trace/audit/work events and outcome evidence;
 - implementation target area and selected or candidate Akka/frontend/API/agent substrates;
 - source-alignment artifact or planned alignment entry mapping app-description files to source/frontend/API/test/validation files;
-- required automated checks and runtime-validation scenario/setup path, or an explicit docs-only/non-runtime exemption.
+- required automated checks and runtime-validation scenario/setup path, or an explicit docs-only/non-runtime exemption. Runtime-validation setup should name the workstream surface or non-UI trigger, clean-local startup, owner/bootstrap expectation, seed plan/command, auth/test-user mapping when applicable, human UI script, setup evidence, validation evidence, and run-record path.
 
 If a feature-bearing task only names a page, route, endpoint, component, or agent tool, repair the graph/task brief or block with a pending question before implementation.
 
@@ -39,7 +39,7 @@ accepted intent delta
   -> source-alignment entries
   -> bounded repository changes
   -> automated checks
-  -> runtime-validation scenario/run
+  -> runtime-validation scenario/seed plan/run
   -> reconciliation output
 ```
 
@@ -150,7 +150,7 @@ A queued build/compile task or task brief should include:
 - [ ] Source-alignment entry to create/update, including mapped app-description files and expected source/frontend/API/test/validation files.
 - [ ] Expected outputs and changed artifact categories.
 - [ ] Required automated checks.
-- [ ] Runtime-validation scenario/setup path or explicit statement that runtime evidence is not applicable.
+- [ ] Runtime-validation scenario/setup path or explicit statement that runtime evidence is not applicable. For runtime-validation tasks, include surface/non-UI trigger, local-empty start, bootstrap, seed plan/CLI, auth/test-user mapping, human UI script, setup evidence, validation evidence, and run-record output.
 - [ ] Done criteria tied to graph completeness, implementation behavior, tests, and validation evidence.
 - [ ] Queue/commit requirements and next-task discovery rule.
 
@@ -170,7 +170,7 @@ A slice is too narrow when it:
 - leaves a declared adapter without authorization, result, trace, or test behavior;
 - implements only frontend visibility without backend capability enforcement;
 - implements only an endpoint/component method without the surface/agent/system adapter that exposes it;
-- omits tests or manual scenario for a feature-bearing behavior.
+- omits tests or runtime-validation scenario for a feature-bearing behavior.
 
 ## Completion evidence levels
 
@@ -178,7 +178,7 @@ Use the readiness vocabulary from [App Development Lifecycle](app-development-li
 
 - `description-ready`: graph intent is complete enough for a bounded task;
 - `compile-ready`: task inputs are coherent enough for implementation without guessing;
-- `manual-ready`: required automated checks pass and the runtime/manual path is known;
+- `manual-ready`: required automated checks pass and the runtime-validation path is known;
 - `runtime-ready`: the real local API/UI/agent path works at the claimed scope, or the task is explicitly non-runtime and has satisfied its stated checks.
 
 Docs-only skills-pack tasks may complete at `manual-ready` with `runtime evidence: not applicable` when their required repository checks pass and their link/search evidence proves discoverability.
@@ -206,6 +206,6 @@ Block or create a pending question when safe compilation would require guessing:
 - Duplicate human and AI implementations for the same business operation.
 - Surface visibility or route access treated as authorization.
 - Runtime completion claimed from fixture/demo/mock behavior for normal app paths.
-- Missing denial, approval, idempotency, tenant-isolation, trace, or manual runtime expectations.
+- Missing denial, approval, idempotency, tenant-isolation, trace, or runtime-validation expectations.
 
 See also [App-description source alignment](app-description-source-alignment.md), [Intent to realization flow](intent-to-realization-flow.md), and [Intent compiler skill contracts](intent-compiler-skill-contracts.md).

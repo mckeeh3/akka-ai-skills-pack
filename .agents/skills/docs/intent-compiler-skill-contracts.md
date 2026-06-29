@@ -10,7 +10,7 @@ Use these fields in task briefs, skill front matter, routing notes, or manifest 
 
 | Field | Required meaning | Typical values |
 |---|---|---|
-| `phase` | Lifecycle phase where the skill primarily operates. Use `cross-phase` only when a skill intentionally routes or spans phases. | `interview`, `build-compile`, `manual-test`, `cross-phase` |
+| `phase` | Lifecycle phase where the skill primarily operates. Use `cross-phase` only when a skill intentionally routes or spans phases. | `interview`, `build-compile`, `runtime-validation`, `cross-phase` |
 | `kind` | The skill's routing shape or responsibility style. | `orchestrator`, `focused`, `planning`, `testing`, `verification`, `docs` |
 | `family` | The domain of concern used for smallest-safe-skill selection. | `app-description`, `worker`, `tool`, `capability`, `agent`, `web-ui`, `akka-component`, `endpoint`, `queue`, `verification`, `foundation`, `business-intake` |
 | `consumes` | Artifact, graph, runtime, or evidence inputs the skill expects before acting. | user request, current-intent graph nodes, worker roster, governed-tool contract, capability contract, task brief, code, runtime evidence |
@@ -20,8 +20,8 @@ Use these fields in task briefs, skill front matter, routing notes, or manifest 
 ### Phase fit
 
 - **Interview** skills capture, normalize, and reconcile current intent until the app-description can represent the requested change.
-- **Build/compile** skills compile description-ready intent or a selected queued task into repository artifacts, checks, and manual-ready evidence.
-- **Manual-test** skills run or interpret the real local/API/UI/agent path and reconcile failures into intent, specs, tasks, code, tests, or blockers.
+- **Build/compile** skills compile description-ready intent or a selected queued task into repository artifacts, checks, and runtime-validation-ready evidence.
+- **Runtime-validation** skills run or interpret the real local/API/UI/agent path and reconcile failures into intent, specs, tasks, code, tests, or blockers.
 - **Cross-phase** skills route across phases, preserve doctrine, or coordinate architecture/foundation decisions without replacing focused skills.
 
 ### Worker/tool/capability route

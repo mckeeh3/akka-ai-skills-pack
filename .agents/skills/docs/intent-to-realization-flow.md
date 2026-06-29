@@ -26,8 +26,8 @@ Use the lifecycle phase to decide which skill family owns the next step:
 | Phase | Routing purpose | Typical outputs |
 |---|---|---|
 | `interview` | Convert user/business input, review findings, or runtime-validation observations into current-intent graph changes or blockers. | normalized input, app-description deltas, pending questions, description-ready task scope |
-| `build-compile` | Compile description-ready graph nodes or one selected queued task into maintained artifacts. | specs, task briefs, docs, code, tests, configuration, automated-check evidence, manual-ready path |
-| `runtime-validation` (`manual-test` legacy alias) | Prove or falsify the real runtime/API/UI/agent path through documented scenarios and feed findings back into the request stream. | runtime-validation evidence, scenario pass/fail/block results, reconciliation findings, app-description/spec/task/code/test repairs, blockers |
+| `build-compile` | Compile description-ready graph nodes or one selected queued task into maintained artifacts. | specs, task briefs, docs, code, tests, configuration, automated-check evidence, runtime-validation-ready path |
+| `runtime-validation` (`runtime-validation` legacy alias) | Prove or falsify the real runtime/API/UI/agent path through documented scenarios and feed findings back into the request stream. | runtime-validation evidence, scenario pass/fail/block results, reconciliation findings, app-description/spec/task/code/test repairs, blockers |
 | `cross-phase` | Route broad architecture, foundation, pack-maintenance, or review work without replacing the focused phase skills. | route decision, impact map, readiness summary, doctrine/metadata updates |
 
 The standard routing metadata fields are `phase`, `kind`, `family`, `consumes`, `produces`, and `routes-to`; see [Intent compiler skill contracts](intent-compiler-skill-contracts.md). These fields are descriptive contracts for humans and harnesses, not permission to skip required reads or task-specific checks.
@@ -93,7 +93,7 @@ A feature is complete only when the intended local runtime path works at the sta
 - Tests may use fixtures and test doubles, but the normal runtime path must remain real and governed.
 - Required validation that cannot run should block completion unless the task is explicitly docs-only, planning-only, or non-runtime.
 - Completion evidence must name the readiness level achieved: `described`, `surface-ready`, `backend-ready`, `frontend-rendered`, `api-smoked`, `browser-smoked`, `manual-ready`, or `runtime-ready`.
-- Runtime-validation tasks should reference durable scenarios under `specs/runtime-validation/scenarios/` when available, including setup prerequisites, execution mode, expected results, and evidence requirements.
+- Runtime-validation tasks should reference durable scenarios under `specs/runtime-validation/scenarios/` when available, including workstream surface or non-UI trigger, dependency scenarios, clean-local startup, bootstrap, seed plan/CLI command, auth/test-user mapping when applicable, execution mode, expected results, setup evidence, validation evidence, and run-record requirements.
 - `runtime-ready` requires evidence for the real path from user/browser/surface action or non-UI trigger through API/endpoint/client, Akka substrate/component/service, authorization, side effect/view/projection, and audit/work trace.
 - Unit/service/contract/typecheck/build evidence may support completion, but cannot alone close a user-visible runtime feature.
 
@@ -105,7 +105,7 @@ Planning and queue skills should preserve provenance:
 - backlog items should identify the capability/workstream/surface/agent/tool/component they realize;
 - task briefs should carry required reads, done criteria, checks, and validation path;
 - pending tasks should execute one bounded realization or maintenance step at a time;
-- runtime-validation scenarios and runs should accumulate as a regression corpus for future app evolution.
+- runtime-validation scenarios, seed plans, human UI scripts, and runs should accumulate as a regression corpus for future app evolution.
 
 ## Drift repair
 

@@ -136,7 +136,7 @@ New feature-bearing app-description workstreams should include:
 app-description/domains/<domain>/workstreams/<workstream>/realization/source-alignment.md
 ```
 
-This file maps app-description graph files to the source, frontend, resources, tests, specs, and manual validation evidence that realize them. If a mapped app-description file changes after its mapped implementation files, default the owning workstream to `stale-description-changed` unless an explicit no-code-impact alignment review says otherwise. If mapped implementation changes without description reconciliation, default to `stale-code-changed` or `partially-aligned`.
+This file maps app-description graph files to the source, frontend, resources, tests, specs, and runtime-validation evidence that realize them. If a mapped app-description file changes after its mapped implementation files, default the owning workstream to `stale-description-changed` unless an explicit no-code-impact alignment review says otherwise. If mapped implementation changes without description reconciliation, default to `stale-code-changed` or `partially-aligned`.
 
 See [App-description source alignment](app-description-source-alignment.md) for the required Markdown contract, optional JSON shape, and staleness rules.
 

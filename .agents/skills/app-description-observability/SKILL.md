@@ -28,7 +28,7 @@ Create or update observability-oriented app-description artifacts that:
 - define diagnosability expectations for important failures and workflows
 - preserve AI-first work traces, decision traces, policy/tool/data access evidence, evaluations, digests, and outcome visibility for generated AI-first SaaS apps
 - link observability expectations back to behavior, security, and tests
-- improve readiness for generation and manual evaluation
+- improve readiness for generation and runtime evaluation
 
 ## Required reading
 

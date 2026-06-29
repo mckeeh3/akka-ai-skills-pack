@@ -1,6 +1,6 @@
 ---
 name: app-description-readiness-assessment
-description: Assess whether the current app description is sufficiently complete and unambiguous for reliable generation, testing, and manual evaluation, and recommend whether to continue description work or proceed to app realization.
+description: Assess whether the current app description is sufficiently complete and unambiguous for reliable generation, testing, and runtime evaluation, and recommend whether to continue description work or proceed to app realization.
 ---
 
 # App Description Readiness Assessment
@@ -24,7 +24,7 @@ Assess whether the current application description is sufficiently complete to s
 - code generation
 - test generation
 - app execution
-- manual testing and evaluation
+- runtime validation and evaluation
 
 The result should tell the harness and the user whether to:
 - continue description work
@@ -101,7 +101,7 @@ Use when important semantics are still too incomplete or ambiguous for responsib
 Use only for a narrowed realization step when the remaining assumptions are non-runtime, explicitly listed, low-risk, and do not affect backend behavior, API contracts, auth/security, tenant isolation, agent/provider binding, governed-tools, audit/work traces, UI action wiring, tests, or local validation.
 
 ### `ready`
-Use when the description is sufficiently complete for reliable generation, local runtime validation, and downstream manual evaluation.
+Use when the description is sufficiently complete for reliable generation, local runtime validation, and downstream runtime evaluation.
 
 ## Standard readiness output shape
 
@@ -141,7 +141,7 @@ For generated full-stack AI-first SaaS apps, missing workstream functional-agent
 
 For AI-first/delegated operations, missing global/domain/workstream operating-model semantics are blocking when generation would otherwise invent authority, policies, approval gates, decision evidence, trace obligations, outcome metrics, or supervision surfaces.
 
-### 4. Treat manual evaluation as a runtime target, not a lower bar
+### 4. Treat human-operated evaluation as a runtime target, not a lower bar
 If the user wants an early evaluation build, narrow the scope aggressively but still require the selected scope to run through real local Akka/API/UI paths with Akka component-backed normal runtime state and fail-closed provider/security handling. Do not use mock, fixture, deterministic, simulated, frontend-only, provider-bypass behavior, or missing internal Akka persistence as the normal runtime substitute for a named generated-app feature. Missing runtime behavior remains `not-ready`, blocked, or explicitly outside the narrowed scope.
 
 ### 5. Check source-alignment readiness before generation

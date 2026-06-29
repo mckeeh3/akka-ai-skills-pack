@@ -23,7 +23,7 @@ Reconcile a revised PRD with the current project plan by identifying:
 - pending tasks that remain valid
 - pending tasks that must be updated, blocked, deferred, or superseded
 - new queue tasks to append
-- lifecycle/readiness and compile/manual-test contract changes needed by affected task briefs and queue entries
+- lifecycle/readiness and compile/runtime-validation contract changes needed by affected task briefs and queue entries
 
 The output should preserve useful planning history and produce a trustworthy next implementation queue. For generated secure AI-first SaaS, reconciliation must preserve the existing workstream graph instead of starting a fresh parallel app plan: workstreams → role-specific dashboard attention contracts → human surface graph nodes and actions → internal workstream agent graph delegations/results → governed-tools inside capabilities and surface/action maps → Akka substrate/exposure channels → request-based workstream Agent turns or durable AutonomousAgent task candidates → notifications/projections → audit/work traces.
 
@@ -49,7 +49,7 @@ Read these first if present:
 - `../docs/app-development-lifecycle.md`
 - `../docs/app-worker-tool-model.md`
 - `../docs/app-description-to-code-compile-contract.md`
-- `../docs/manual-test-reconciliation.md` when reconciling tester/runtime findings in the revised requirements
+- `../docs/runtime-validation-reconciliation.md` when reconciling tester/runtime findings in the revised requirements
 - `../docs/ai-first-saas-application-architecture.md`
 - `../docs/intent-compiler.md`
 - `../docs/current-intent-model.md`

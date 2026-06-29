@@ -105,7 +105,7 @@ This style guide is visual and interaction guidance for the legacy numbered temp
   - `frontend/src/styles/components.css`
   - reusable workstream components under `frontend/src/workstream/**`
 - reference mockups: `skills-pack/examples/web-ui/ai-first-workstream-enterprise/*.html` show the intended visual craft; copy anatomy and token roles, not demo content
-- tests/manual checks:
+- tests/runtime-validation checks:
   - selected style guide exists and is linked by UI tasks
   - all named themes have color-token bundles
   - no dark/light/system mode selector is exposed as the primary preference

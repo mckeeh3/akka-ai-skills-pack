@@ -52,7 +52,7 @@ Vertical contract:
 - Akka substrate/API/UI path: `<entity/workflow/view/agent/autonomous agent/consumer/timed action/endpoint/frontend>`
 - auth/denial/redaction: `<expected forbidden and redacted behavior>`
 - trace/audit: `<trace records and correlation/source refs>`
-- local validation: `<mvn/npm/api/browser smoke/manual check>`
+- local validation: `<mvn/npm/api/browser/runtime-validation smoke>`
 - readiness target: `described|surface-ready|backend-ready|frontend-rendered|api-smoked|browser-smoked|manual-ready|runtime-ready`
 ```
 
