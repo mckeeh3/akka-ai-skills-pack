@@ -6,44 +6,51 @@ Global tool inventory: `../../../../../global/tools/foundation-governed-tools.md
 
 ## Workstream exposure
 
-Agent Admin exposes governed tools for SaaS-admin-only agent document editing:
+Agent Admin exposes governed tools for SaaS-admin-only managed-agent governance. Canonical ids below may coexist with legacy implementation aliases such as `list-agent-doc-agents` while source alignment is stale.
 
-- `list-agent-doc-agents`: list/filter all generated agents by name, workstream/domain, placement, and scope provenance; returns agent name, short purpose, resolved profile scope, and last edit time.
-- `read-agent-doc-agent`: read one generated agent's identity/provenance, purpose, placement, lifecycle status, steward, authority level, prompt link, assigned skills, allowed generated tools, reference links, profile history, and trace entry points.
-- `inspect-agent-runtime-profile`: read safe `AgentDefinition`, `ModelConfigRef`, `AgentSkillManifest`, `AgentReferenceManifest`, allowed generated tool list, and `ToolPermissionBoundary` summaries without provider secrets or hidden policy internals.
-- `update-agent-model-config-ref`: select an approved model config reference for an existing generated agent by creating a new behavior-profile version.
-- `read-agent-prompt-doc`: read current or historical prompt doc version.
-- `read-agent-skill-doc`: read current or historical skill doc version.
-- `read-agent-skill-reference-doc`: read current or historical governed reference version associated with a skill/reference manifest.
-- `draft-agent-doc-edit`: invoke the editing agent against the current active or draft version using free-form user instructions and relevant same-agent context; returns a structured behavior-change proposal, risk classification, authority-expansion flags, suggested tests/replay evidence, and proposed full content.
-- `revise-agent-doc-edit`: send additional user instructions during the current editing session and return an updated proposal.
-- `save-agent-doc-edit`: save the proposed prompt/skill/reference content as a non-active draft/proposal version.
-- `submit-agent-doc-proposal-for-review`: route a proposal to review or decision-card workflow when risk/authority policy requires it.
-- `approve-agent-doc-proposal`: record human review approval for a proposal when the caller has approval authority.
-- `reject-agent-doc-proposal`: record rejection with rationale and leave active behavior unchanged.
-- `activate-agent-doc-version`: activate an approved prompt/skill/reference version or low-risk reviewed draft through protected backend checks.
-- `cancel-agent-doc-edit`: discard the current proposed edit and return to the current active version.
-- `read-agent-doc-version-history`: list version numbers for a prompt, skill, or reference doc.
-- `read-agent-doc-version-diff`: show version `N` diffed only against version `N-1`.
-- `restore-agent-doc-version`: create a restore proposal copied from historical version `N` with edit request `Restored from version N`; activation is separate.
-- `read-agent-behavior-profile-history`: list and inspect behavior-profile versions containing model config reference, prompt version, assigned skills, allowed generated tools, scope, and provenance.
-- `restore-agent-behavior-profile-version`: create a restore proposal copied from a historical behavior-profile version; activation is separate.
-- `assign-agent-skills`: assign/unassign independently managed skills for an existing generated agent by creating a new behavior-profile version.
-- `assign-agent-generated-tools`: assign/unassign static generated tools for an existing generated agent by creating a new behavior-profile version; does not create, edit, or delete tool code.
-- `list-agent-skill-library`: list/filter tenant-scoped skills independent of specific agents.
-- `create-agent-skill`: create a tenant-scoped skill-library proposal using name, purpose/description, compact manifest hint, and editing-agent-drafted initial content.
-- `delete-agent-skill`: deprecate by default or permanently delete a skill only when lifecycle policy permits, update manifest membership, and remove/reassign references after confirmation.
-- `create-agent-skill-reference-doc`: create a governed reference proposal associated with a skill/reference manifest using title/name, short description/when-to-consult hint, and editing-agent-drafted initial content.
-- `delete-agent-skill-reference-doc`: permanently delete or deprecate a reference according to lifecycle policy after confirmation.
-- `read-agent-doc-runtime-traces`: read runtime `readSkill` / `readReferenceDoc` trace metadata.
-- Runtime tools available to all agents: `readSkill` and `readReferenceDoc`.
+| Governed tool id | Type / governed artifact | Exposure adapters | Result / trace obligations |
+| --- | --- | --- | --- |
+| `agent-definition.catalog.read` | `AgentDefinition` catalog read | `surface_action`, read-only `human_chat_tool_plan`, read-only `agent_tool_call`, API | catalog result or denied system message; trace read decision |
+| `agent-definition.detail.read` | `AgentDefinition` detail/profile inspect | `surface_action`, read-only `human_chat_tool_plan`, read-only `agent_tool_call`, API | agent detail result; safe model/tool-boundary summaries only |
+| `agent-behavior-profile.history.read` | behavior profile version read | `surface_action`, read-only `agent_tool_call`, API | profile history result; profile-resolution trace links |
+| `agent-behavior-profile.proposal.create` | behavior profile/model/manifest/tool assignment proposal | `surface_action`, confirmed `human_chat_tool_plan`, bounded proposal `agent_tool_call` | draft/proposal result; no runtime change |
+| `agent-behavior-profile.version.activate` | reviewed profile version activation | `surface_action`, confirmed `human_chat_tool_plan`, API | active/no-op/stale/approval-required result; audit/work trace |
+| `prompt-document.read` | `PromptDocument` current/historical read | `surface_action`, read-only `agent_tool_call`, API | document result or safe denial |
+| `prompt-document.proposal.create` | prompt edit proposal / restore proposal | `surface_action`, confirmed `human_chat_tool_plan`, bounded proposal `agent_tool_call` | `BehaviorChangeProposal`; `PromptAssemblyTrace` impact noted |
+| `prompt-version.activate` | approved prompt version activation | `surface_action`, confirmed `human_chat_tool_plan`, API | immutable active version; activation trace |
+| `skill-document.catalog.read` | `SkillDocument` library read | `surface_action`, read-only `agent_tool_call`, API | skill library result |
+| `skill-document.proposal.create` | create/edit/deprecate skill proposal | `surface_action`, confirmed `human_chat_tool_plan`, bounded proposal `agent_tool_call` | draft/proposal/deprecated result; no hidden loader access |
+| `skill-version.activate` | approved skill version activation | `surface_action`, confirmed `human_chat_tool_plan`, API | active skill version; loader visibility updated |
+| `reference-document.catalog.read` | `ReferenceDocument` catalog/read | `surface_action`, read-only `agent_tool_call`, API | reference result with access/redaction summary |
+| `reference-document.proposal.create` | create/edit/deprecate reference proposal | `surface_action`, confirmed `human_chat_tool_plan`, bounded proposal `agent_tool_call` | draft/proposal/deprecated result; no hidden manifest access |
+| `reference-version.activate` | approved reference version activation | `surface_action`, confirmed `human_chat_tool_plan`, API | active reference version; reference-load visibility updated |
+| `agent-skill-manifest.assign` | `AgentSkillManifest` assignment | `surface_action`, confirmed `human_chat_tool_plan`, bounded proposal `agent_tool_call` | behavior-profile proposal/version; `SkillLoadTrace` expectations updated |
+| `agent-reference-manifest.assign` | `AgentReferenceManifest` assignment | `surface_action`, confirmed `human_chat_tool_plan`, bounded proposal `agent_tool_call` | behavior-profile proposal/version; `ReferenceLoadTrace` expectations updated |
+| `model-policy.select` | approved `ModelConfigRef` / model-policy selection | `surface_action`, confirmed `human_chat_tool_plan` | behavior-profile proposal/version; provider/config blocker on unavailable config |
+| `tool-permission-boundary.assign` | generated-tool / `ToolPermissionBoundary` assignment | `surface_action`, confirmed `human_chat_tool_plan`, bounded proposal `agent_tool_call` | proposal/version; approval-required when authority expands |
+| `agent-test-console.run` | safe test-console run/preflight/replay | `surface_action`, confirmed `human_chat_tool_plan`, internal runtime loader | test result, provider/config blocker, loader/tool-boundary denial, or partial-failure surface |
+| `agent-runtime-trace.read` | prompt/skill/reference/tool/test trace read | `surface_action`, read-only `agent_tool_call`, API | `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace` metadata result |
+| `readSkill` | runtime governed skill loader | `agent_tool_call`, internal runtime loader | allowed/denied `SkillLoadTrace`; fail closed |
+| `readReferenceDoc` | runtime governed reference loader | `agent_tool_call`, internal runtime loader | allowed/denied `ReferenceLoadTrace`; fail closed |
+
+## Legacy aliases retained for source alignment
+
+Existing realization may still expose aliases such as `list-agent-doc-agents`, `read-agent-doc-agent`, `inspect-agent-runtime-profile`, `draft-agent-doc-edit`, `revise-agent-doc-edit`, `save-agent-doc-edit`, `submit-agent-doc-proposal-for-review`, `approve-agent-doc-proposal`, `reject-agent-doc-proposal`, `activate-agent-doc-version`, `read-agent-doc-version-history`, `read-agent-doc-version-diff`, `restore-agent-doc-version`, `assign-agent-skills`, `assign-agent-generated-tools`, `list-agent-skill-library`, `create-agent-skill`, `delete-agent-skill`, `create-agent-skill-reference-doc`, `delete-agent-skill-reference-doc`, and `read-agent-doc-runtime-traces`. Current intent treats those as adapter/implementation aliases for the canonical governed-tool ids above, not separate authority grants.
 
 ## Tool boundaries
 
-All Agent Admin browser and agent tools require SaaS Owner/Admin authorization. Browser controls are advisory; backend authorization, current-version consistency, proposal lifecycle, approval/activation rules, delete confirmation, version creation, and trace emission are authoritative. Model-facing editing-agent tools are available only when the active `AgentDefinition`, model policy, selected `AuthContext`, and `ToolPermissionBoundary` explicitly allow them.
+All Agent Admin tools require SaaS Owner/Admin authorization, selected tenant scope, backend capability checks, and result tracing. Browser controls are advisory; backend authorization, current-version consistency, proposal lifecycle, approval/activation rules, confirmation, idempotency, delete/deprecate policy, version creation, and trace emission are authoritative.
 
-There is no Agent Admin tool for provider-secret administration, generated tool code creation/edit/deletion, raw model settings mutation beyond selecting approved model config references, backend authorization implementation changes, authority expansion through text, activation without backend review checks, rollback without a restore proposal, or whole-agent creation/deletion. Per-agent generated tool assignment is allowed only as a versioned behavior-profile change and remains subject to backend authorization and tool-boundary enforcement.
+Model-facing tools are available only when the active `AgentDefinition`, workstream tool catalog, selected `AuthContext`, model policy, and `ToolPermissionBoundary` explicitly allow the adapter. Prompt/skill/reference text cannot expand the tool catalog, add tenant/customer scope, bypass confirmation, approve activation, or grant side effects.
+
+There is no Agent Admin tool for provider-secret administration, generated tool code creation/edit/deletion, arbitrary backend class execution, raw model setting mutation beyond selecting approved model config references, backend authorization implementation changes, activation without backend review checks, rollback without a restore proposal, or whole-agent creation/deletion.
 
 ## `human_chat_tool_plan` posture
 
-The composer may route requests to available Agent Admin tools when the workstream agent can safely identify the target and action. Otherwise it should ask a clarifying question or return a system message. Consequential changes first create proposals/drafts and then execute only through protected backend review/activation tools such as Save Draft, Submit for Review, Approve, Activate, Restore Proposal, Change Model Config Reference, Assign Skills, Assign Generated Tools, Create Skill, Delete/Deprecate Skill, Create Reference, and Delete/Deprecate Reference.
+The composer may propose only catalog-bound Agent Admin plans. Consequential plans must show exact target artifacts, tools, proposed version/profile effects, confirmation copy, idempotency key, approval requirement, possible partial-failure result, and trace expectations. No governed tool executes until the human explicitly confirms that exact plan and backend checks pass.
+
+## Runtime loader and test-console posture
+
+`readSkill` and `readReferenceDoc` are registered for managed agents but deny unassigned, inactive, deprecated, cross-tenant/customer, wrong-agent, wrong-purpose, missing-boundary, oversized, redaction-denied, or secret-like content requests. Denied loads return safe non-enumerating text to the model and protected trace details to Agent Admin.
+
+`agent-test-console.run` may assemble prompts and execute provider-backed tests only in authorized test/replay/evaluation mode. Missing provider/runtime config, inactive model config, disabled/archived agent, missing prompt/manifest/docs, unassigned loader ids, and tool-boundary denial fail closed with provider/config blocker or loader/tool-boundary denial traces. Test-console mode must not perform production side effects unless explicitly modeled, approved, and traced.

@@ -184,7 +184,7 @@
 
 ### TASK-ADR-02-003: Refresh Agent Admin workstream app-description
 
-- status: pending
+- status: done
 - source: specs/app-description-refresh/workstreams/agent-admin-migration-plan.md
 - task brief: specs/app-description-refresh/tasks/02-workstreams/03-refresh-agent-admin.md
 - depends on:
@@ -215,6 +215,8 @@
   - Agent Admin graph links worker/adapter/governed-tool/capability/realization/tests/runtime-validation/traces coherently
   - task changes and queue update are committed
 - notes:
+  - commit message: `app-desc-refresh: refresh agent admin workstream`
+  - graph coverage proof: Agent Admin workstream files now link SaaS admin human, Agent Admin functional agent, behavior-editor internal agent, and runtime system worker through `surface_action`, confirmed `human_chat_tool_plan`, bounded `agent_tool_call`, API, and internal runtime loader adapters to canonical AgentDefinition/PromptDocument/SkillDocument/ReferenceDocument/manifest/model-policy/tool-boundary/test-console/trace governed tools; managed-agent governance capability scope; refreshed dashboard/catalog/detail/governance/test-console/proposal/result/system-message surfaces; realization API/frontend/Akka/source-alignment maps; runtime-validation scenarios; and PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace, provider fail-closed, loader-denial, tool-boundary-denial, idempotency, and partial-failure trace obligations. Lifecycle/source-alignment is `stale-description-changed` because this docs-only refresh changed current intent without runtime/API/UI validation.
   - vertical contract: Agent Admin functional-agent workstream; attention category behavior-change proposal, approval, provider/config blocker, denied loader/tool-boundary event; role-specific dashboard / surface Agent Admin catalog/detail/governance/test-console/proposal surfaces; surface graph node/action edge behavior profile, prompt/skill/reference/manifest/tool-boundary/test-console actions and result/partial-failure/system-message surfaces; governed-tool id/type/exposure AgentDefinition/PromptDocument/SkillDocument/ReferenceDocument/manifest/tool-boundary/model policy/test-console governed tools; actor adapter/source `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, internal runtime loader/API where described; confirmation/approval behavior approval-required authority expansion and explicit chat confirmation; idempotency/transaction/result behavior draft/proposal/version activation boundaries and partial-failure surfaces; capability or foundation scope managed-agent governance; AuthContext / roles / tenant scope SaaS admin tenant scope, provider secret boundary and denials; API / frontend / realtime path Agent Admin route/API/runtime loader mappings; audit/work trace expectation PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace, provider fail-closed and loader denial traces; validation path `git diff --check`
 
 ### TASK-ADR-02-004: Refresh Governance/Policy workstream app-description

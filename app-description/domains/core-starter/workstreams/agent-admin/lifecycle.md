@@ -2,45 +2,45 @@
 
 Workstream id: `agent-admin`
 Owning domain: `core-starter`
-Current readiness: `compile-ready`
-Ready-to-build assessment: 2026-06-26 — see `../ready-to-build-status.md`; normalized to current lifecycle term `compile-ready` after behavior-profile realization.
-Automated alignment readiness: `partially-aligned` for the Agent Admin behavior-profile slice verified by AABP-05-003; manual browser/API acceptance and real external provider smoke remain residual checks.
-Implementation alignment: `partially-aligned`
+Current readiness: `description-ready`
+Ready-to-build assessment: 2026-06-29 — refreshed current-intent graph covers Agent Admin managed-agent governance, proposal-first behavior changes, governed documents, manifests, tool boundaries, test console, traces, and runtime-validation expectations.
+Automated alignment readiness: `stale-description-changed` because this docs-only refresh postdates the prior AABP-05-003 implementation evidence.
+Implementation alignment: `stale-description-changed`
 Source alignment: `realization/source-alignment.md`
-Last description change: 2026-06-27 — current app-description prioritizes SaaS-admin-only behavior-profile proposal/review/activation over stale direct document-save and governance-console flows.
-Last alignment review: 2026-06-27 — AABP-05-003 terminal verification passed backend/frontend/typecheck/build/diff checks after AABP-05-002 repaired the full-suite seed-count blocker.
-Last compile: 2026-06-27 — Agent Admin behavior-profile realization mini-project closed at `api-smoked/frontend-rendered`.
+Last description change: 2026-06-29 — current app-description now explicitly models managed-agent governance graph coverage, attention categories, governed tool ids, test-console behavior, provider/config blockers, loader/tool-boundary denials, and runtime trace obligations.
+Last alignment review: 2026-06-29 — docs-only refresh; no runtime/API/UI validation beyond `git diff --check` in this task.
+Last compile: 2026-06-27 — prior Agent Admin behavior-profile realization mini-project closed at `api-smoked/frontend-rendered`; current description changes are not yet recompiled.
 Last manual runtime test: unknown
 
 ## Current alignment posture
 
-This workstream is partially aligned for the implemented Agent Admin behavior-profile realization scope. Evidence now spans protected WorkstreamEndpoint/API routing, SaaS Owner/Admin authorization and safe non-admin denials, proposal-first save/activation, stale/high-risk denial behavior, restore proposals, skill/reference lifecycle, behavior-profile versions and assignments, active-profile runtime loader/tool-boundary traces, model-backed editing-agent tests with fail-closed missing-runtime behavior, and frontend current surface contracts.
+This workstream is description-ready and stale relative to implementation. Earlier AABP-05-003 evidence still indicates a partially aligned behavior-profile slice for protected WorkstreamEndpoint/API routing, SaaS Owner/Admin authorization and safe denials, proposal-first save/activation, stale/high-risk denial behavior, restore proposals, skill/reference lifecycle, behavior-profile versions and assignments, active-profile runtime loader/tool-boundary traces, model-backed editing-agent tests with fail-closed missing-runtime behavior, and frontend current surface contracts.
 
-Overall runtime readiness is still not claimed by this lifecycle record. Manual browser acceptance, real WorkOS/AuthKit production login smoke, real external provider-backed editing-agent smoke, and broader UI/operator acceptance remain residual checks outside the completed automated mini-project.
+The 2026-06-29 refresh adds or sharpens current-intent requirements for dashboard attention categories, governance center/test-console surfaces, canonical governed-tool ids, model-policy/tool-boundary assignment semantics, explicit chat confirmation, idempotent/no-op/partial-failure results, provider/config blockers, `ReferenceLoadTrace`, and graph proof across worker/adapter/tool/capability/realization/test/runtime-validation/trace nodes. Those description changes require future implementation/source-alignment review before claiming partial or runtime alignment for the refreshed scope.
 
 ## Slice status map
 
 | Slice | Current status | Evidence level | Next validation owner |
 | --- | --- | --- | --- |
-| SaaS-admin access and denial | `partially-aligned` | AABP-05-003 `api-smoked` evidence through `/api/workstream/*`, selected `AuthContext`, SaaS Owner/Admin allow path, and browser-safe non-admin denial. | Manual browser login/context smoke only. |
-| Catalog/detail/profile inspection | `partially-aligned` | AABP-05-003 protected workstream/API and frontend contract evidence for generated-agent behavior-profile inspection and stale whole-agent mutation de-exposure. | Manual catalog/detail UX acceptance only. |
-| Proposal-first prompt/doc editing | `partially-aligned` | AABP-05-003 service/API smoke for draft proposal, approve/activate, stale activation denial, traces, and active-version update only after activation. | Manual editor workflow acceptance and real provider smoke. |
-| Risk and authority-expansion handling | `partially-aligned` | AABP-05-003 service-level high-risk/authority-expansion direct activation denial and browser stale proposal recovery evidence. | Broader browser/API high-risk review-route smoke if required. |
-| Restore and version history | `partially-aligned` | AABP-05-003 backend evidence that restore creates proposal and historical versions remain read-oriented. | Dedicated browser restore smoke if required. |
-| Skill/reference lifecycle | `partially-aligned` | AABP-05-003 backend evidence for proposal-first create/deprecate semantics and loader access removal. | Browser create/deprecate UX smoke if required. |
-| Behavior-profile versions/assignments | `partially-aligned` | AABP-05-003 API/frontend evidence for model config ref, skill assignment, generated tool assignment, tenant/global profile version summaries, and no generated tool code mutation. | Manual assignment workflow smoke only. |
-| Runtime loader and traces | `partially-aligned` | AABP-05-003 runtime service/tool resolver/trace tests plus browser runtime trace surface smoke for active-profile docs, assigned skill/reference reads, generated-tool decisions, and tool-boundary denials. | Real provider/model invocation and manual trace investigation smoke. |
-| Editing-agent model path | `partially-aligned-provider-success-config-blocked` | AABP-05-003 Akka `AgentAdminDocEditingAgent` tests with `TestModelProvider` plus fail-closed missing-runtime behavior; no fake normal provider success claimed. | Real external provider configuration smoke. |
-| Frontend current surfaces | `partially-aligned` | AABP-05-003 frontend tests, typecheck, and build for current Agent Admin surfaces/contracts and secret-boundary checks. | Manual responsive/accessibility browser review. |
+| SaaS-admin access and denial | `stale-description-changed` | Prior AABP-05-003 API/frontend evidence; refreshed access adds managed-agent-governance wording and denial categories. | Re-run protected API/UI auth smoke. |
+| Catalog/detail/profile inspection | `stale-description-changed` | Prior catalog/detail evidence; refreshed graph adds governance center, attention badges, model-policy/tool-boundary summary expectations. | Reconcile frontend/API contracts and smoke. |
+| Proposal-first prompt/doc/profile editing | `stale-description-changed` | Prior proposal-first evidence; refreshed graph expands manifest/model/tool-boundary proposal semantics and partial-failure/idempotency outcomes. | Re-run proposal lifecycle validation. |
+| Attention and dashboard | `description-only` | Newly described attention categories for proposals, approvals, provider blockers, and denied loader/tool-boundary events. | Implement/validate dashboard attention read model. |
+| Governance/test-console surfaces | `description-only` | Newly explicit governance center and safe test-console current intent. | Implement/validate provider fail-closed and test-mode behavior. |
+| Skill/reference lifecycle and manifests | `stale-description-changed` | Prior skill/reference evidence; refreshed graph adds first-class manifest editor and `ReferenceLoadTrace` expectations. | Reconcile runtime loader and trace assertions. |
+| Behavior-profile versions/assignments | `stale-description-changed` | Prior API/frontend evidence; refreshed graph adds model-policy/tool-boundary assignment and idempotency/no-op semantics. | Re-run profile assignment/activation validation. |
+| Runtime loader and traces | `stale-description-changed` | Prior service/tool resolver/trace evidence; refreshed graph requires `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, `AgentWorkTrace`, provider fail-closed, test-console, and denial trace coverage. | Re-run runtime loader/provider/trace validation. |
+| Editing-agent model path | `stale-description-changed-provider-success-config-blocked` | Prior tests used `TestModelProvider` and fail-closed missing-runtime behavior; no fake normal provider success claimed. | Real external provider configuration smoke remains required. |
+| Frontend current surfaces | `stale-description-changed` | Prior frontend tests/typecheck/build; refreshed surface inventory requires reconciliation. | Re-run frontend contract/typecheck/build after implementation. |
 
 ## Blockers and assumptions
 
-- File-level source alignment records automated `api-smoked/frontend-rendered` evidence for the behavior-profile realization mini-project, not full runtime readiness.
-- `compile-ready` remains the app-description lifecycle term; `partially-aligned` records implementation/test evidence for the completed mini-project scope.
+- This task is docs-only and does not update runtime/API/UI code.
 - Runtime-ready/manual-ready is not claimed because manual browser/API acceptance and real external provider-backed editing-agent success were not exercised.
-- The service-internal generated-agent profile update seam is de-exposed from the current product/API path but has not been physically removed.
-- Future workstream-specific validation must classify any new app-description or implementation changes as aligned, stale-description-changed, stale-code-changed, partially-aligned, blocked, or intentionally description-only.
+- Prior AABP-05-003 evidence remains useful historical context but no longer proves alignment for the refreshed graph.
+- The shared capability artifact may still use the legacy `agent-doc-administration` name; current workstream intent describes the foundation capability scope as managed-agent governance.
+- Future validation must classify implementation as aligned, stale-description-changed, stale-code-changed, partially-aligned, blocked, or intentionally description-only after reconciling these files.
 
 ## Next recommended action
 
-Run a separate Agent Admin runtime-ready smoke mini-project if manual/browser/API/provider evidence is required beyond the completed `api-smoked/frontend-rendered` behavior-profile realization scope.
+Run a focused Agent Admin implementation/source-alignment follow-up that reconciles the refreshed managed-agent governance graph with backend/API/frontend/runtime-loader/test-console traces, including real provider fail-closed and, when configured, provider-backed smoke evidence.
