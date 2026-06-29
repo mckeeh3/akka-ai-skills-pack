@@ -360,7 +360,7 @@
 
 ### TASK-ADR-99-001: Terminal app-description refresh verification
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/app-description-refresh/tasks/99-verification/01-terminal-verification.md
 - depends on:
@@ -384,4 +384,7 @@
   - mini-project done state is verified, or follow-up bounded tasks are appended before declaring incomplete
   - task changes and queue update are committed
 - notes:
+  - commit message: `app-desc-refresh: terminal verification`
+  - terminal verification complete: `specs/app-description-refresh/terminal-verification.md` verifies the README done state, all five refreshed foundation workstreams, shared/global/domain artifacts, lifecycle/source-alignment posture, governed-tool ids/types/exposure, actor adapters/sources, surface graph node/action edges, confirmation/approval/idempotency/transaction/result behavior, AuthContext/roles/tenant scope, API/frontend/realtime realization references, trace obligations, runtime-validation references/gaps, and queue state. No material description-refresh gaps remain and no follow-up tasks were appended.
+  - readiness outcome: app-description refresh mini-project is complete and ready for focused app realization/build-compile task authoring; no runtime-ready or implementation-aligned claim is made. All five workstreams remain `stale-description-changed` until future source-alignment and real local Akka/API/UI runtime-validation work.
   - vertical contract: terminal verification across all five foundation workstreams; non-runtime; non-attention reason terminal verification; role-specific dashboard / surface all refreshed surfaces verified; surface graph node/action edge verified; governed-tool id/type/exposure verified; actor adapter/source verified; confirmation/approval behavior and idempotency/transaction/result behavior verified; capability or foundation scope all core-starter capabilities; AuthContext / roles / tenant scope verified; API / frontend / realtime path realization references verified; audit/work trace expectation verifies app-description graph, source-alignment, lifecycle, runtime-validation references, trace obligations, and queue state; validation path `git diff --check` plus graph/queue proof
