@@ -4,6 +4,8 @@ Runtime validation is the app-facing integration test layer that proves a genera
 
 Runtime validation is the three-phase lifecycle's final phase. Human-operated validation is represented with `executionMode: human-manual`; new tasks and specs should use `runtime-validation` vocabulary.
 
+Runtime-validation tasks are first-class generated artifacts, created from the same app-input cascade that creates implementation tasks. They are the durable executable acceptance contracts for generated code. See [Runtime-validation task authoring](runtime-validation-task-authoring.md) for the surface-driven scenario, clean local app, seed-plan, WorkOS test-user, and human UI script doctrine.
+
 ## Definition
 
 A runtime-validation scenario exercises the running app through the same operational path a worker would use:
@@ -43,9 +45,13 @@ specs/runtime-validation/
     local-dev.md
     local-dev-with-providers.md
   personas/
+    saas-owner.md
     org-admin.md
     member.md
     support-operator.md
+  seed-plans/
+    SEED-BOOTSTRAP-OWNER.md
+    SEED-ORG-WITH-ADMIN.md
   data-setups/
     base-tenant.md
     invited-user.md
@@ -62,8 +68,9 @@ specs/runtime-validation/
 ```
 
 - `scenarios/` are stable validation definitions the app should continue to satisfy.
-- `environments/`, `personas/`, and `data-setups/` define reusable prerequisites.
-- `runs/` record actual executions, evidence, failures, blockers, and readiness conclusions.
+- `environments/`, `personas/`, `seed-plans/`, and `data-setups/` define reusable prerequisites.
+- `seed-plans/` are preferred for CLI-driven local setup from empty persistence; they should prepare only scenario prerequisites through the highest-fidelity available app process.
+- `runs/` record actual executions, seed evidence, validation evidence, failures, blockers, and readiness conclusions.
 
 A project may start with a small `specs/runtime-validation.md` file, but directory form is preferred once scenarios need reusable setup or run history.
 
@@ -80,6 +87,9 @@ persona: <persona-id>
 environment: local-dev
 dataSetup:
   - base-tenant
+seedPlans:
+  - SEED-BOOTSTRAP-OWNER
+authMode: workos-test-users
 executionMode: human-manual
 readinessClaim: runtime-ready
 ```
@@ -105,7 +115,11 @@ worker -> surface/trigger -> API/client/adapter -> governed tool -> capability -
 
 # Setup
 
-How to prepare state. Prefer real app capabilities over fixture mutation.
+How to prepare state. Prefer real app capabilities over fixture mutation. For the default local validation model, start from empty local persistence, run the owner bootstrap/base setup, then execute the scenario seed command.
+
+# Human UI validation script
+
+For `executionMode: human-manual`, provide persona login instructions, local URLs or deep links, numbered UI actions, expected visible state, and evidence to capture.
 
 # Steps
 
@@ -126,7 +140,7 @@ Likely categories such as implementation gap, app-description gap, provider/conf
 
 ## Setup levels
 
-Runtime validation requires reproducible prerequisites. Use the highest practical setup level:
+Runtime validation requires reproducible prerequisites. Default generated-app validation starts the local app with empty persistence, bootstraps only the SaaS app owner/base local runtime prerequisite, then runs a scenario-specific seed plan. Use the highest practical setup level:
 
 1. **Documented setup** — the scenario explains the human-operated or API steps needed to create tenant, users, roles, domain records, provider state, and route entry.
 2. **Assisted setup** — a helper command prepares most prerequisites and prints remaining instructions.
@@ -140,13 +154,15 @@ Prefer setup through real application pathways:
 4. Akka component calls through test harnesses when the scenario explicitly permits a lower readiness claim;
 5. direct persistence mutation only for narrow fixture-mode tests, never as proof of a production-like runtime path.
 
-Setup docs and commands must state their mode:
+Seed/setup docs and commands must state their mode:
 
 ```yaml
 setupMode: runtime | local-seeded | provider-missing-fail-closed | fixture
 ```
 
 Only `runtime`, `local-seeded`, or explicit `provider-missing-fail-closed` setup can support a `runtime-ready` claim for user-visible behavior. `fixture` setup may support lower-level evidence but must not be presented as full runtime readiness.
+
+A seed plan may use special local-dev system authority to simplify setup, but that authority is setup-only: it must be unavailable in production, traceable, and never counted as proof that normal user authorization works. For WorkOS/AuthKit apps, prefer known WorkOS test users mapped to local authorization state by the seed plan; the human validation step should still log in through WorkOS/AuthKit and call protected APIs with real JWTs.
 
 ## Runtime-validation task
 
@@ -162,13 +178,20 @@ scenarios:
 executionMode: browser-agent
 environment: local-dev
 readinessTarget: runtime-ready
+startCommand: ./tools/runtime-validation/start-local.sh --empty
+seedCommand: ./tools/runtime-validation/seed.sh RV-ADMIN-001
+seedPlans:
+  - SEED-BOOTSTRAP-OWNER
+  - SEED-ORG-WITH-ADMIN
+authMode: workos-test-users
 ```
 
 A runtime-validation task must record:
 
 - scenario pass/fail/block status;
-- actual environment, commit, branch, start commands, and provider/config state;
-- evidence captured;
+- actual environment, commit, branch, start commands, bootstrap state, seed command, and provider/config state;
+- setup evidence produced by seed plans;
+- validation evidence captured from the UI/API/runtime path;
 - readiness conclusion;
 - remediation tasks or blocking questions created.
 

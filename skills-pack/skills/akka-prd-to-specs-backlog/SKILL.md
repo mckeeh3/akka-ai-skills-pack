@@ -64,6 +64,7 @@ Read first when present/relevant:
 - `../docs/app-worker-tool-model.md`
 - `../docs/app-description-to-code-compile-contract.md`
 - `../docs/runtime-validation.md` when planning runtime-validation scenarios, setup prerequisites, execution modes, or remediation loops
+- `../docs/runtime-validation-task-authoring.md` when generating runtime-validation tasks, seed plans, clean-local startup, WorkOS test-user setup, or human UI scripts
 - `../docs/runtime-validation-reconciliation.md` when planning runtime-validation/browser remediation loops
 - `../akka-solution-decomposition/SKILL.md`
 - `../core-saas-foundation/SKILL.md`
@@ -136,7 +137,7 @@ Every generated backlog item, task brief, and pending task that could drive impl
 
 ## Runtime completion and validation
 
-For generated-app implementation tasks, link `../references/generated-saas-runtime-completion.md`. Plans/backlogs must require validation through the intended local Akka/API/UI path for the selected scope, and should create/update `specs/runtime-validation/` scenarios when feature-bearing behavior needs app/browser/API operation. Fixture-only, mock-only, deterministic/model-less normal runtime behavior cannot satisfy named runtime features. Backlogs and pending tasks must distinguish readiness levels (`described`, `surface-ready`, `backend-ready`, `frontend-rendered`, `api-smoked`, `browser-smoked`, `manual-ready`, `runtime-ready`) and require runtime evidence before a feature-bearing task can be marked `done` as `runtime-ready`.
+For generated-app implementation tasks, link `../references/generated-saas-runtime-completion.md`. Plans/backlogs must require validation through the intended local Akka/API/UI path for the selected scope, and should create/update `specs/runtime-validation/` scenarios when feature-bearing behavior needs app/browser/API operation. Runtime-validation scenarios are first-class generated acceptance contracts: derive them from workstream surfaces or explicit non-UI workstream triggers, assume clean local startup with owner/bootstrap setup, name scenario seed plans/CLI commands, include WorkOS test-user/auth mapping when browser auth is in scope, and provide detailed human UI validation scripts for `human-manual` execution. Fixture-only, mock-only, deterministic/model-less normal runtime behavior cannot satisfy named runtime features. Backlogs and pending tasks must distinguish readiness levels (`described`, `surface-ready`, `backend-ready`, `frontend-rendered`, `api-smoked`, `browser-smoked`, `manual-ready`, `runtime-ready`) and require runtime evidence before a feature-bearing task can be marked `done` as `runtime-ready`.
 
 ## Anti-patterns
 

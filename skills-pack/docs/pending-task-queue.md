@@ -93,6 +93,8 @@ Each task body should include:
 - required checks or runtime-validation scenarios;
 - expected status transition and evidence notes.
 
+For `type: runtime-validation` tasks, also include or reference the runtime-validation task authoring contract from `docs/runtime-validation-task-authoring.md`: workstream surface or explicit non-UI trigger, scenario id(s), dependency scenarios, local-empty start command, owner/bootstrap expectation, seed plan ids and seed command, auth mode/test-user mapping when applicable, human UI validation script, setup evidence, validation evidence, provider/fail-closed expectations, and run-record output path.
+
 Allowed file-state transitions:
 
 ```text
@@ -190,7 +192,7 @@ Use this structure. For SaaS app queues, the first runnable tasks must cover the
   - source requirement ids: <optional stable requirement IDs when available>
   - source capability ids: <optional app-description capability IDs when available>
   - vertical contract: <workstreamId/functional agent or internal/foundation scope; attention category or non-attention reason; role-specific dashboard id/purpose; human surface graph node/state/action edge or non-UI trigger; workstream tool catalog context; governed-tool id/type/exposure and actor adapter/source (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, `workflow_step`, `timer_invocation`, `consumer_reaction`, `api_call`, `mcp_tool_call`, or `internal_call`); capability id/class; confirmation/approval behavior; idempotency/transaction boundary; result/partial-failure surface; API/exposure channel; selected Akka substrate; internal workstream agent graph delegation/result surface when relevant; events/notifications/projections; audit/work trace; tests/local validation>
-  - runtime evidence: <required for feature-bearing `done` tasks: readiness level; real path tested browser/surface/action or non-UI trigger -> API/endpoint/client -> Akka component/service/substrate -> trace/audit/view; role/AuthContext/tenant setup; denial case; commands/runtime-validation smoke result; provider configured or fail-closed evidence>
+  - runtime evidence: <required for feature-bearing `done` tasks: readiness level; real path tested browser/surface/action or non-UI trigger -> API/endpoint/client -> Akka component/service/substrate -> trace/audit/view; role/AuthContext/tenant setup; denial case; commands/runtime-validation smoke result; setup evidence from seed plans; validation evidence from the actual scenario; provider configured or fail-closed evidence>
   - autonomous task contract: <optional AutonomousAgent task definition, start/query/result/lifecycle capability ids, notification mapping, result/progress surface ids, failure/cancellation attention behavior, and lifecycle tests>
   - foundation scope: <optional AgentDefinition/PromptDocument/SkillDocument/AgentSkillManifest/readSkill/PromptAssemblyTrace/SkillLoadTrace/AgentWorkTrace scope for managed-agent foundation tasks>
   - supersedes: <optional task IDs this task replaces>
@@ -221,6 +223,7 @@ Use this section in task briefs:
 - API / frontend / realtime path: <route/API/SSE/WebSocket/workstream surface path or non-UI reason>
 - Audit/work trace requirements: <audit, trace, correlation, prompt/tool/data access, denial, or explicit none for docs-only>
 - Local validation path: <mvn/npm/API/browser/runtime-validation smoke command or explicit non-runtime/internal-only reason>
+- Runtime-validation setup when applicable: <scenario id, local-empty start command, bootstrap expectation, seed plan/command, authMode/test users, human UI script, setup evidence, validation evidence, run-record path>
 ```
 
 For `specs/pending-tasks.md`, put the same content under the task's `notes` as a `vertical contract:` line or as equivalent bullet notes. A task may omit workstream/surface/action fields only when it explicitly says `internal-only`, `foundation-only`, `cross-cutting`, `docs-only`, or `non-runtime` and explains the non-attention/non-UI reason, capability/foundation scope, trace expectations, and validation path.

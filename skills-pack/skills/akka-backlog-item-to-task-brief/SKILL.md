@@ -56,6 +56,7 @@ Read these first if present:
 - `../docs/app-worker-tool-model.md`
 - `../docs/app-description-to-code-compile-contract.md`
 - `../docs/runtime-validation.md` when the brief covers runtime-validation scenarios, setup prerequisites, or validation tasks
+- `../docs/runtime-validation-task-authoring.md` when the brief covers runtime-validation task creation, seed plans, WorkOS test-user setup, or human UI scripts
 - `../docs/runtime-validation-reconciliation.md` when the brief covers runtime-validation remediation
 - `../akka-prd-to-specs-backlog/SKILL.md`
 - `../akka-slice-spec-to-backlog/SKILL.md`
@@ -84,7 +85,7 @@ If a matching task brief already exists:
 
 ## What this skill must produce
 
-Use `../docs/app-description-to-code-compile-contract.md` as the minimum task-brief checklist. A feature-bearing brief must name the responsible worker, harness, actor adapter, governed-tool id, capability id, AuthContext/scope, selected substrates, trace obligations, required checks, and runtime-validation scenario/setup path; otherwise mark the queue entry blocked for graph repair instead of making it runnable.
+Use `../docs/app-description-to-code-compile-contract.md` as the minimum task-brief checklist. A feature-bearing brief must name the responsible worker, harness, actor adapter, governed-tool id, capability id, AuthContext/scope, selected substrates, trace obligations, required checks, and runtime-validation scenario/setup path; otherwise mark the queue entry blocked for graph repair instead of making it runnable. A runtime-validation brief must additionally define the workstream surface or explicit non-UI trigger, local-empty app start, owner/bootstrap expectation, seed plan/CLI setup, WorkOS test-user/auth mapping when relevant, human UI validation script, setup evidence, validation evidence, and run-record path.
 
 Use `../docs/intent-compiler-skill-contracts.md` and `../docs/intent-to-realization-flow.md` for the detailed task-brief and queue output contract. Preserve generated-SaaS/SaaS Foundation App context when in scope, including invitation lifecycle, email delivery, UserDirectoryView, MembershipView, InvitationView, AdminAuditView, AccessReviewQueueView, AI admin/AdminRiskAgent/AccessReviewAgent, decision cards for risky admin, AgentDefinition, PromptDocument, SkillDocument, AgentSkillManifest, readSkill, PromptAssemblyTrace, SkillLoadTrace, behavior editing, agent catalog, and agent detail coverage across the generated specs/backlog/task sequence.
 
@@ -152,6 +153,7 @@ Before finishing, verify:
 - unresolved AI-first blockers are captured as pending questions and block only affected queue entries
 - required tests are named clearly
 - local app-run, endpoint smoke, browser/workstream smoke, or runtime-validation path is named for tasks that implement runtime behavior, or the task explicitly says it is non-runtime/internal-only
+- runtime-validation task briefs are generated as acceptance contracts from workstream surfaces/non-UI triggers and include reusable seed plans rather than ad hoc fixture assumptions
 - feature-bearing task briefs name the target readiness level and canonical runtime path: browser/surface/action or confirmed chat tool-plan/non-UI trigger -> API/endpoint/client -> Akka component/service/substrate -> trace/audit/view
 - feature-bearing task briefs require runtime evidence in queue notes before `done`: role/AuthContext/tenant setup, governed-tool id and actor adapter exercised, confirmation/approval and idempotency/transaction evidence when consequential tool use is in scope, denial case, provider configured or fail-closed status, commands/runtime-validation-smoke result, and trace/audit evidence
 - the listed skills match the task's component type

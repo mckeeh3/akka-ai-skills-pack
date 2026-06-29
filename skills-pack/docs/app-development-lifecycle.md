@@ -6,7 +6,7 @@ This document defines the canonical three-phase lifecycle used by the Akka AI sk
 
 1. **Interview phase**: capture and reconcile intent until the app-description can represent the requested change.
 2. **Build/compile phase**: compile the app-description and queued task intent into code, docs, tests, and configuration changes.
-3. **Runtime validation phase**: run the real local/runtime path through documented scenarios, reconcile failures back into current intent, and decide whether the change is runtime-ready or needs another loop. Human-operated app testing is one execution mode of runtime validation, not a separate lifecycle phase.
+3. **Runtime validation phase**: run the real local/runtime path through documented scenarios, reconcile failures back into current intent, and decide whether the change is runtime-ready or needs another loop. Human-operated app testing is one execution mode of runtime validation, not a separate lifecycle phase. Runtime-validation tasks are first-class generated artifacts produced from the app-input cascade and workstream-surface decomposition, not QA afterthoughts.
 
 The phases are not a waterfall. A request can move forward, expose a gap, and then loop back with a more precise app-description, task, or implementation fix.
 
@@ -97,13 +97,13 @@ When a runtime-validation run, runtime-validation/browser test, or review discov
 
 **Inputs:** Manual-ready implementation, runtime configuration, test user or tenant context, expected behavior, runtime-validation scenario or charter, required audit/work-trace evidence, setup prerequisites, and prior validation output.
 
-**Outputs:** Runtime-validation run notes, scenario pass/fail/block results, runtime evidence, failure reproduction details, app-description/backlog/task updates, follow-up remediation tasks, blocked prerequisites, or confirmation that the change is runtime-ready.
+**Outputs:** Runtime-validation scenarios/tasks, seed plans, human UI scripts, run notes, scenario pass/fail/block results, setup evidence, runtime validation evidence, failure reproduction details, app-description/backlog/task updates, follow-up remediation tasks, blocked prerequisites, or confirmation that the change is runtime-ready.
 
 **Non-goals:** Do not treat deterministic fixtures, simulations, mocked provider behavior, frontend-only screenshots, or setup shortcuts that bypass the governed runtime path as proof of consequential runtime behavior.
 
 **Handoff:** The phase hands off when the change is **runtime-ready** or explicitly not runtime-applicable. Runtime-ready means the real local/API/UI/agent path works at the stated scope with required authorization, provider, audit, trace, and error behavior. For docs-only or planning-only skills-pack work, runtime evidence can be not applicable, but the task must say so and still provide the required repository checks.
 
-See [Runtime validation](runtime-validation.md) for scenario catalogs, setup prerequisites, execution modes (`human-manual`, `browser-agent`, `api-agent`, `scripted-e2e`), evidence rules, and accumulated validation runs.
+See [Runtime validation](runtime-validation.md) for scenario catalogs, setup prerequisites, execution modes (`human-manual`, `browser-agent`, `api-agent`, `scripted-e2e`), evidence rules, and accumulated validation runs. See [Runtime-validation task authoring](runtime-validation-task-authoring.md) for clean local app startup, owner bootstrap, CLI seed plans, WorkOS test-user auth setup, human UI scripts, and progressive scenario ladders.
 
 ## App-description as the living current-intent graph
 
@@ -151,5 +151,5 @@ For skills-pack maintenance tasks:
 
 - planning skills should capture the lifecycle phase and the readiness target in task briefs;
 - implementation skills should compile only the selected task and preserve the app-description/current-intent contract;
-- verification skills should feed failures and gaps back into the request stream as reconciled current intent, follow-up tasks, or blockers;
+- verification skills should feed failures and gaps back into the request stream as reconciled current intent, seed/setup repairs, follow-up tasks, or blockers;
 - queue updates and commits are part of lifecycle evidence, not administrative afterthoughts.

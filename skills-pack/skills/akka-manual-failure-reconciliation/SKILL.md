@@ -7,7 +7,7 @@ description: Convert runtime-validation or runtime-validation tester failures in
 
 Use this skill when a human tester, browser-capable agent, API agent, scripted runner, or reviewer reports that runtime validation found features or flows not working, especially in core SaaS workstreams such as User Admin, My Account, Agent Admin, Audit/Trace, or Governance/Policy.
 
-Use `../docs/runtime-validation.md` for runtime-validation scenarios/setup/execution modes and `../docs/runtime-validation-reconciliation.md` as the reconciliation doctrine for runtime-validation sessions, worker-centric scenario evidence, finding categories, and reconciliation outputs. Reconcile failures against the compiled path:
+Use `../docs/runtime-validation.md` for runtime-validation scenarios/setup/execution modes, `../docs/runtime-validation-task-authoring.md` for seed plans, WorkOS test-user setup, and human UI scripts, and `../docs/runtime-validation-reconciliation.md` as the reconciliation doctrine for runtime-validation sessions, worker-centric scenario evidence, finding categories, and reconciliation outputs. Reconcile failures against the compiled path:
 
 ```text
 worker
@@ -32,6 +32,7 @@ Read these first when present:
 - `../docs/app-worker-tool-model.md`
 - `../docs/app-description-to-code-compile-contract.md`
 - `../docs/runtime-validation.md`
+- `../docs/runtime-validation-task-authoring.md`
 - `../docs/runtime-validation-reconciliation.md`
 - `../docs/pending-task-queue.md`
 - `../akka-runtime-feature-verification/SKILL.md`
@@ -56,6 +57,9 @@ Classification values:
 - `implementation gap` — intent/spec exists but code does not realize it through the intended path.
 - `test gap` — behavior may exist but lacks regression/runtime/runtime-validation coverage.
 - `provider/config blocker` — behavior requires WorkOS, Resend, model provider, secrets, external service, or local seed data not available; must fail closed and be documented.
+- `bootstrap gap` — empty local startup or owner/base bootstrap does not establish required base state.
+- `auth/setup gap` — WorkOS test-user mapping, local account linking, membership, role, tenant, or persona handoff is wrong.
+- `seed tooling gap` — CLI/setup tooling fails despite specified app capabilities.
 - `seed/demo-data gap` — local runtime-validation path lacks safe bootstrap data or fixture setup, but production behavior is otherwise specified.
 - `UX/state gap` — behavior works technically but state, copy, accessibility, stale/error handling, or recovery is incomplete.
 - `not a bug / expectation change` — reported expectation conflicts with accepted current intent; route to app-description change if desired.
@@ -66,7 +70,7 @@ Classification values:
 2. If intent is missing or ambiguous, update app-description/specs before implementation tasks.
 3. If intent exists, do not expand the description; create implementation/test remediation tasks against the same governed-tool/capability path.
 4. If a provider/config blocker exists, require fail-closed browser-safe behavior and trace evidence; do not mark provider-backed normal behavior done through a mock.
-5. If runtime validation needs seed data, make seed/bootstrap requirements explicit rather than treating production auth/authorization as optional.
+5. If runtime validation needs seed data, make clean-local startup, owner/bootstrap, seed plan/command, WorkOS test-user mapping, and setup evidence explicit rather than treating production auth/authorization as optional.
 6. For each blocking failure in a feature group claimed done, update queue/verification notes so the group is not reported as `runtime-ready` until repaired.
 
 ## Remediation task requirements
@@ -75,7 +79,7 @@ Each remediation task must include:
 
 - the runtime-validation failure IDs it fixes;
 - canonical runtime path: worker, execution harness, actor adapter, governed tool, backend capability, API/endpoint/client, Akka component/service/substrate, trace/audit path, and result surface where applicable;
-- role/AuthContext/tenant setup and denial scenario;
+- role/AuthContext/tenant setup, seed plan, auth/test-user mapping, and denial scenario;
 - success and failure state expectations;
 - required automated checks and runtime-validation/browser/API smoke checklist;
 - done criteria that forbid `done` until the runtime-validation failure is retested or explicitly blocked by a named external prerequisite.

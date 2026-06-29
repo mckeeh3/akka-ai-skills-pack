@@ -19,7 +19,7 @@ worker
 → trace/view/result surface
 ```
 
-When runtime validation is part of the readiness claim, apply `../docs/runtime-validation.md` and `../docs/runtime-validation-reconciliation.md` so human/browser-agent/API/scripted findings become classified reconciliation outputs before more feature work proceeds.
+When runtime validation is part of the readiness claim, apply `../docs/runtime-validation.md`, `../docs/runtime-validation-task-authoring.md`, and `../docs/runtime-validation-reconciliation.md` so human/browser-agent/API/scripted findings become classified reconciliation outputs before more feature work proceeds.
 
 This is a validator/reviewer and drift-repair skill. It may update specs/queue evidence and append remediation tasks, but it should not implement unrelated product code.
 
@@ -34,6 +34,7 @@ Read these first when present:
 - `../docs/app-worker-tool-model.md`
 - `../docs/app-description-to-code-compile-contract.md`
 - `../docs/runtime-validation.md` when runtime-validation scenarios, setup prerequisites, execution modes, or accumulated runs are in scope
+- `../docs/runtime-validation-task-authoring.md` when runtime-validation tasks, seed plans, WorkOS test-user setup, or human UI scripts are in scope
 - `../docs/runtime-validation-reconciliation.md` when runtime-validation/browser runtime smoke evidence or tester findings are in scope
 - `../docs/pending-task-queue.md`
 - `../docs/structured-surface-contracts.md` when surfaces are in scope
@@ -77,6 +78,7 @@ A feature-bearing claim may be `runtime-ready` only when evidence covers, as app
 - success, validation error, forbidden/hidden/not-found, stale/conflict/idempotency, and provider-unconfigured behavior where relevant;
 - audit/work trace, correlation id, actor-adapter trace source, and browser-safe trace/status copy;
 - local commands and/or runtime-validation/browser/API smoke notes with pass/fail result;
+- setup evidence from clean local startup, owner/bootstrap, seed plan/CLI command, and WorkOS test-user mapping when applicable;
 - no frontend secret exposure and no provider secrets in browser payloads;
 - explicit external-provider status: configured and smoked, or missing and fail-closed with actionable errors.
 

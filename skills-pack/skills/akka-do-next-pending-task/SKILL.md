@@ -44,7 +44,7 @@ The skill must:
 - require or inherit the generated-SaaS vertical contract before coding: workstream/functional agent or internal/foundation scope, attention category, role-specific dashboard, human surface graph node/action edge, deterministic surface intent route/no-route context when applicable, governed-tool id and qualified exposure, capability id/API exposure, selected Akka substrate, internal workstream agent graph delegation/result mapping when applicable, autonomous task/result/notification mapping when applicable, auth, traces, and tests
 - generate or update the requested outputs
 - run the task's required checks and local/runtime validation path when the task implements app behavior
-- create or update a `runtime-validation` task/scenario when a feature-bearing implementation reaches `manual-ready` but still needs explicit runtime validation
+- create or update a `runtime-validation` task/scenario when a feature-bearing implementation reaches `manual-ready` but still needs explicit runtime validation; the task should be surface-driven, start from clean local app assumptions, name bootstrap/seed commands, and include human UI validation instructions when appropriate
 - record the achieved readiness level and runtime evidence for feature-bearing `done` tasks
 - update the affected workstream lifecycle/readiness/alignment artifact and source-alignment evidence before marking feature-bearing work `done`; if no such artifact exists, record why in task notes or add a follow-up task
 - update the queue status before finishing
@@ -59,6 +59,7 @@ Read these first if present:
 - `../docs/app-worker-tool-model.md`
 - `../docs/app-description-to-code-compile-contract.md`
 - `../docs/runtime-validation.md` when the selected task creates, runs, or reconciles runtime-validation scenarios or setup prerequisites
+- `../docs/runtime-validation-task-authoring.md` when the selected task creates or executes runtime-validation tasks, seed plans, WorkOS test-user setup, or human UI scripts
 - `../docs/runtime-validation-reconciliation.md` when the selected task is runtime-validation remediation or runtime verification repair
 - `../docs/ai-first-saas-application-architecture.md` when the selected task or its listed skills include AI-first SaaS concerns
 - `../docs/workstream-expertise-model.md` when the selected task includes LLM-backed functional-agent expertise, reference governance, `readReferenceDoc`, model binding, manifests, loader authorization, tool boundaries, load traces, or expertise surfaces
@@ -166,7 +167,7 @@ Before finishing, verify:
 - affected workstream lifecycle/readiness/alignment and source-alignment evidence were updated for feature-bearing work, or the absence of such artifacts was recorded with a follow-up/blocker
 - any AI-first constraints in the task were preserved or explicitly blocked rather than guessed
 - checks were run or explicitly reported as not run
-- runtime-validation scenarios/tasks were created or updated when a feature-bearing change needs app/browser/API validation beyond automated checks
+- runtime-validation scenarios/tasks were created or updated when a feature-bearing change needs app/browser/API validation beyond automated checks, with workstream surface/non-UI trigger, seed plan, auth/test-user setup, setup evidence, validation evidence, and run-record expectations
 - generated-SaaS implementation tasks carried a workstream-attention-dashboard/surface-graph-governed-tool-capability/substrate contract, or were explicitly internal-only/foundation/cross-cutting
 - feature-bearing `done` tasks include a `runtime evidence:` note naming readiness level, real path tested, role/AuthContext/tenant setup, denial/provider/fail-closed coverage, trace/audit evidence, and commands or runtime-validation-smoke results
 - `python3 skills-pack/tools/validate-runtime-completion-evidence.py specs/pending-tasks.md` or installed equivalent was run when available after marking runtime tasks done, or the reason was recorded

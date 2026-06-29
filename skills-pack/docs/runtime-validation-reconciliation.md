@@ -2,7 +2,7 @@
 
 Runtime validation is a first-class lifecycle phase between implementation verification and further feature work. It is not an informal bug list and it is not permission to patch code before intent is understood. A runtime-validation session exercises the locally runnable app through the intended browser, API, worker, tool, capability, and Akka runtime paths; then it feeds findings back into app-description, specs, pending tasks, runtime-validation evidence, and only then implementation changes.
 
-Human-operated validation is one runtime-validation execution mode. New task briefs, queues, and specs should use `runtime-validation`; use `executionMode: human-manual`, `browser-agent`, `api-agent`, or `scripted-e2e` to say who or what operates the app.
+Human-operated validation is one runtime-validation execution mode. New task briefs, queues, and specs should use `runtime-validation`; use `executionMode: human-manual`, `browser-agent`, `api-agent`, or `scripted-e2e` to say who or what operates the app. Runtime-validation tasks are generated acceptance contracts; see [Runtime-validation task authoring](runtime-validation-task-authoring.md) for seed plans, WorkOS test-user setup, clean local startup, and human UI scripts.
 
 Use this doctrine with the `akka-runtime-feature-verification` and `akka-manual-failure-reconciliation` skills whenever a feature, workstream, or pending-task group is claimed ready for runtime validation or when a human/agent reports runtime failures. See [Runtime validation](runtime-validation.md) for scenario catalogs, setup prerequisites, execution modes, and accumulated validation runs.
 
@@ -33,7 +33,7 @@ Each runtime-validation session starts from an explicit scenario or test charter
 
 ## Runtime-validation setup
 
-A validation scenario must say how prerequisites are prepared. Prefer reusable setup docs under `specs/runtime-validation/data-setups/` and, when practical, assisted setup commands that exercise the real running app.
+A validation scenario must say how prerequisites are prepared. Prefer reusable setup docs under `specs/runtime-validation/data-setups/` and seed plans under `specs/runtime-validation/seed-plans/`. For generated apps, the expected shape is empty local persistence at startup, local SaaS owner/bootstrap setup, a scenario-specific CLI seed command, then the human/browser/API validation step. When practical, assisted setup commands should exercise the real running app.
 
 Setup should use the highest practical fidelity:
 
@@ -44,6 +44,8 @@ Setup should use the highest practical fidelity:
 5. direct persistence mutation only for fixture-mode tests.
 
 Record setup mode explicitly: `runtime`, `local-seeded`, `provider-missing-fail-closed`, or `fixture`. Fixture setup is useful for lower-level tests but cannot by itself justify a `runtime-ready` user-visible claim.
+
+Seed setup may use special local-dev system authority, but only as setup authority. It must be local/dev-only, auditable, and not counted as normal authorization evidence. For WorkOS/AuthKit apps, seed plans may map known WorkOS test users to local accounts, memberships, and roles; the validation step should still log in through WorkOS/AuthKit with the test persona and exercise the real JWT-backed browser/API path.
 
 ## Worker-centric scenario model
 
@@ -71,7 +73,7 @@ Every runtime-validation session produces a reconciliation packet that can be re
 - **Session summary:** date, tester, branch/commit, environment, seed data, providers configured or missing, and commands used to start the app.
 - **Scenario results:** pass/fail per worker-centric scenario, with role/context and runtime path actually exercised.
 - **Failure inventory:** one row per observed failure using the runtime-validation failure intake table.
-- **Evidence:** screenshots, browser console/network notes, API responses, logs, trace IDs, audit/work trace references, and provider/fail-closed messages.
+- **Evidence:** setup evidence from seed commands plus validation evidence such as screenshots, browser console/network notes, API responses, logs, trace IDs, audit/work trace references, and provider/fail-closed messages.
 - **Readiness conclusion:** highest justified runtime readiness level and why `runtime-ready` is or is not justified.
 - **Reconciliation actions:** app-description/spec updates, pending-task additions or status changes, implementation/test remediation tasks, blocked provider/config prerequisites, and retest requirements.
 
@@ -85,6 +87,9 @@ Classify every finding before changing code:
 | `implementation gap` | Intent exists, but code does not realize it through the intended runtime path. | Create or update focused implementation remediation tasks. |
 | `test gap` | Behavior may work, but lacks regression, API, browser, runtime, or runtime-validation evidence. | Add test/evidence remediation without claiming higher readiness. |
 | `provider/config blocker` | Normal behavior requires WorkOS, Resend, model provider, secrets, external service, or local config that is unavailable. | Require documented fail-closed behavior and name the external prerequisite. |
+| `bootstrap gap` | Empty local startup or SaaS owner/base bootstrap does not establish the required base state. | Repair bootstrap intent, setup, or implementation before dependent scenarios run. |
+| `auth/setup gap` | WorkOS test user mapping, local account linking, persona handoff, membership, tenant, or role setup is wrong. | Repair seed/auth setup without weakening normal browser/JWT authorization checks. |
+| `seed tooling gap` | The CLI/setup tool fails despite the app capability being specified and otherwise implemented. | Repair seed tooling or command docs; keep validation blocked until setup is repeatable. |
 | `seed/demo-data gap` | Runtime-validation path lacks safe bootstrap data or setup, but production behavior is specified. | Define seed/demo setup without weakening auth, tenant scope, or provider boundaries. |
 | `UX/state gap` | Technical behavior works, but copy, loading, stale/conflict handling, accessibility, recovery, or operator status is incomplete. | Create UX/state remediation tied to the same runtime path. |
 | `not a bug / expectation change` | Tester expectation conflicts with accepted current intent. | Route to app-description change request if product intent should change. |
@@ -97,7 +102,7 @@ Do not merge multiple unrelated failures into one broad task. A remediation task
 2. **Check intent first.** Decide whether the expected behavior is already present in app-description/specs. If not, stop implementation and reconcile intent through interview/change-impact/spec update.
 3. **Map the runtime path.** Identify the actual and expected browser/API/worker/tool/capability/Akka/trace path.
 4. **Classify the gap.** Use exactly one primary category and optional secondary notes.
-5. **Update planning artifacts.** Keep blocking failures out of `done`; add remediation tasks with role/context, denial cases, success/failure states, checks, and retest criteria.
+5. **Update planning artifacts.** Keep blocking failures out of `done`; add remediation tasks with role/context, seed/setup prerequisites, denial cases, success/failure states, checks, and retest criteria.
 6. **Preserve provider fail-closed behavior.** Missing provider configuration may justify a blocked normal flow, but it must still produce actionable, browser-safe errors and trace evidence.
 7. **Retest before closure.** A failure-linked task is not `done` until the failing runtime-validation scenario is rerun or explicitly blocked by a named external prerequisite.
 8. **Re-run runtime verification.** Use `akka-runtime-feature-verification` after remediation to update readiness evidence.
@@ -122,7 +127,7 @@ A remediation task created from runtime validation must include:
 
 - runtime-validation failure IDs fixed by the task;
 - canonical runtime path, including worker, actor-adapter, governed tool, backend capability, Akka component/service, and trace/audit view where applicable;
-- role, `AuthContext`, tenant/customer/organization, permission setup, and denial scenario;
+- role, `AuthContext`, tenant/customer/organization, permission setup, seed plan, auth/test-user mapping, and denial scenario;
 - success, validation error, forbidden/hidden/not-found, stale/conflict/idempotency, provider-unconfigured, and recovery expectations where relevant;
 - automated checks and runtime-validation/browser/API smoke checklist;
 - provider configuration status and fail-closed expectations;

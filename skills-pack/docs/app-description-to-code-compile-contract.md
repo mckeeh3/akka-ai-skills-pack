@@ -20,7 +20,7 @@ A compile task starts only when the requested slice has enough current-intent pr
 - trace/audit/work events and outcome evidence;
 - implementation target area and selected or candidate Akka/frontend/API/agent substrates;
 - source-alignment artifact or planned alignment entry mapping app-description files to source/frontend/API/test/validation files;
-- required automated checks and runtime-validation scenario/setup path, or an explicit docs-only/non-runtime exemption.
+- required automated checks and runtime-validation scenario/setup path, or an explicit docs-only/non-runtime exemption. Runtime-validation setup should name the workstream surface or non-UI trigger, clean-local startup, owner/bootstrap expectation, seed plan/command, auth/test-user mapping when applicable, human UI script, setup evidence, validation evidence, and run-record path.
 
 If a feature-bearing task only names a page, route, endpoint, component, or agent tool, repair the graph/task brief or block with a pending question before implementation.
 
@@ -39,7 +39,7 @@ accepted intent delta
   -> source-alignment entries
   -> bounded repository changes
   -> automated checks
-  -> runtime-validation scenario/run
+  -> runtime-validation scenario/seed plan/run
   -> reconciliation output
 ```
 
@@ -150,7 +150,7 @@ A queued build/compile task or task brief should include:
 - [ ] Source-alignment entry to create/update, including mapped app-description files and expected source/frontend/API/test/validation files.
 - [ ] Expected outputs and changed artifact categories.
 - [ ] Required automated checks.
-- [ ] Runtime-validation scenario/setup path or explicit statement that runtime evidence is not applicable.
+- [ ] Runtime-validation scenario/setup path or explicit statement that runtime evidence is not applicable. For runtime-validation tasks, include surface/non-UI trigger, local-empty start, bootstrap, seed plan/CLI, auth/test-user mapping, human UI script, setup evidence, validation evidence, and run-record output.
 - [ ] Done criteria tied to graph completeness, implementation behavior, tests, and validation evidence.
 - [ ] Queue/commit requirements and next-task discovery rule.
 

@@ -48,7 +48,7 @@ Use the fixed Java base package `ai.first`. Keep extension work additive and mer
 
 ## Runtime completion doctrine
 
-A generated feature is complete only when the real local runtime path works at the stated scope. Do not count deterministic/demo/mock/simulated/model-less normal runtime behavior as implemented for auth, durability, provider calls, protected capabilities, authorization denials, audit/work traces, or workstream agents. Report the achieved readiness level (`described`, `surface-ready`, `backend-ready`, `frontend-rendered`, `api-smoked`, `browser-smoked`, `manual-ready`, or `runtime-ready`) and do not call user-visible behavior complete when only lower-level evidence exists. When a feature reaches implementation readiness but still needs app/browser/API operation, create or update a runtime-validation scenario/task rather than leaving runtime validation ambiguous.
+A generated feature is complete only when the real local runtime path works at the stated scope. Do not count deterministic/demo/mock/simulated/model-less normal runtime behavior as implemented for auth, durability, provider calls, protected capabilities, authorization denials, audit/work traces, or workstream agents. Report the achieved readiness level (`described`, `surface-ready`, `backend-ready`, `frontend-rendered`, `api-smoked`, `browser-smoked`, `manual-ready`, or `runtime-ready`) and do not call user-visible behavior complete when only lower-level evidence exists. When a feature reaches implementation readiness but still needs app/browser/API operation, create or update a runtime-validation scenario/task rather than leaving runtime validation ambiguous. Runtime-validation tasks are generated acceptance contracts derived from workstream surfaces or explicit non-UI triggers; they should include clean-local startup, owner/bootstrap setup, seed plan/CLI command, WorkOS test-user/auth mapping when applicable, human UI validation instructions, setup evidence, validation evidence, and run-record expectations.
 
 Model-backed workstream behavior must invoke a concrete Akka `Agent` through the governed runtime path with active configuration, governed loader tools, tool permission boundaries, registered runtime tools, and durable traces. Missing provider or security configuration must fail closed with actionable browser-safe errors and trace references.
 
@@ -73,7 +73,7 @@ Depending on scope, update all applicable artifacts together:
 - frontend source under `frontend/**` and rebuilt static resources when required
 - app-description extensions, `realization/source-alignment.md`, or readiness state when implementation discoveries change the authoritative model
 - specs/task brief/pending queue or directory task-queue status
-- runtime-validation scenarios, setup docs, or run notes when the change adds or changes feature-bearing behavior
+- runtime-validation scenarios, seed plans, human UI scripts, setup docs, or run notes when the change adds or changes feature-bearing behavior
 - docs/run notes only when useful to future maintainers
 - tests proving backend, UI, security, traces, and negative paths in the selected scope
 
@@ -83,7 +83,7 @@ Final handoff must include:
 
 - generated/changed files grouped by backend, frontend, description/spec/docs/tests, including any `realization/source-alignment.md` updates
 - runtime path exercised and commands run with exit codes
-- runtime evidence for feature-bearing changes: readiness level, browser/surface/API/Akka path, role/AuthContext/tenant setup, governed tool ids and actor adapters exercised, deterministic route/prefill/no-mutation evidence when applicable, human chat confirmation/partial-failure evidence when in scope, agent-tool boundary evidence when in scope, denial/provider fail-closed coverage, trace/audit evidence, and runtime-validation/browser/API smoke result
+- runtime evidence for feature-bearing changes: readiness level, browser/surface/API/Akka path, role/AuthContext/tenant setup, seed/setup evidence when runtime validation was generated or run, governed tool ids and actor adapters exercised, deterministic route/prefill/no-mutation evidence when applicable, human chat confirmation/partial-failure evidence when in scope, agent-tool boundary evidence when in scope, denial/provider fail-closed coverage, trace/audit evidence, and runtime-validation/browser/API smoke result
 - what passed, failed, or could not be run
 - description/spec assumptions or drift discovered
 - incomplete/blocked items with recommended next task
