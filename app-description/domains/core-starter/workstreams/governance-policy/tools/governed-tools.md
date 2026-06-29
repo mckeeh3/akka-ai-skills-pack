@@ -8,163 +8,216 @@ Global tool inventory: `../../../../../global/tools/foundation-governed-tools.md
 
 Canonical capability id for every tool in this file: `governance-policy-lifecycle`.
 
-Exact actor adapters replace older ambiguous exposure labels. Browser realization normally uses `surface_action` plus protected `api_call`; model-backed reads use `agent_tool_call` only when the `governance-policy-agent` tool boundary grants them; side-effecting chat execution uses `human_chat_tool_plan` only after exact human confirmation and backend reauthorization.
+Exact actor adapters replace ambiguous exposure labels. Browser realization normally uses `surface_action` plus protected `api_call`; model-backed reads/draft/simulation assistance use `agent_tool_call` only when the `governance-policy-agent` tool boundary grants them; side-effecting chat execution uses `human_chat_tool_plan` only after exact human confirmation and backend reauthorization; approval/exception/activation/rollback lifecycles may also run through `workflow_step`; runtime enforcement uses `internal_call`.
 
 ## Governed-tool contracts
 
-### `governance.policy.list`
+### `governance.policy.search`
 
 - toolType: `search_or_list`
-- purpose: read the visible policy catalog, supported scopes, effective-value summaries, and overridden indicators.
+- purpose: read the visible policy catalog, active/draft/rolled-back versions, pending approvals, simulation findings, exceptions, and history summary.
 - allowedWorkerTypes: human, functional-agent, system
 - allowedActorAdapters: `surface_action`, `agent_tool_call`, `api_call`, `internal_call`
 - authorityLevel: observe
-- authContextScope: backend-selected SaaS-owner/defaults or tenant/customer/account context with read capability.
-- inputSchema: search/filter/page/sort request with policy name text, workstream, agent, tool/action, role, and visible scope hints.
-- outputSchema: scoped/redacted inventory surface rows with value type, default, visible override, effective value, supported scopes, winning scope, action availability, freshness, and trace refs.
-- validationAndSafeDefaults: unsupported filters are rejected or ignored with validation state; hidden scopes are omitted.
-- redactionAndEvidenceRules: no hidden tenant/customer/account facts, raw secrets, raw prompts/model payloads, raw tool payloads, raw correlation/idempotency internals.
+- authContextScope: backend-selected SaaS/defaults or tenant/customer/account context with read capability.
+- inputSchema: search/filter/page/sort request with policy name text, category, lifecycle state, workstream, agent, governed tool/action, role, exception state, and visible scope hints.
+- outputSchema: scoped/redacted catalog rows with category, active version, draft/approval state, simulation status, exception count, rollback availability, action availability, freshness, and trace refs.
 - confirmationPolicy: none.
 - approvalPolicy: none.
 - idempotencyAndTransactionBoundary: read-only scoped query.
 - sideEffects: optional read/workstream trace only.
-- resultSurfacesAndEvents: `surface-governance-policy-dashboard`, `surface-governance-policy-inventory`, or `system_message`.
+- resultSurfacesAndEvents: `surface-governance-policy-dashboard`, `surface-governance-policy-catalog`, or `system_message`.
 - denialBehavior: safe forbidden/not-found-or-redacted system state with trace ref when visible.
-- implementationMapping: governance policy service/repository, workstream/admin endpoint, frontend list/search surfaces, agent evidence read tool.
-- requiredTests: scoped inventory, filters, tenant isolation, support/auditor boundaries, redaction, trace links, agent read-tool boundary.
+- requiredTests: scoped catalog, filters, tenant isolation, support/auditor boundaries, redaction, trace links, agent read-tool boundary.
 
-### `governance.policy.read_effective`
+### `governance.policy.read`
 
 - toolType: `read_evidence`
-- purpose: read one policy's default, visible override, effective value, winning scope, precedence explanation, and runtime decision semantics.
+- purpose: read one policy's active version, draft versions, clauses/values, scope precedence, exception state, runtime decision semantics, rollback targets, and decision evidence.
 - allowedWorkerTypes: human, functional-agent, system
 - allowedActorAdapters: `surface_action`, `agent_tool_call`, `api_call`, `internal_call`
 - authorityLevel: observe/evaluate
 - authContextScope: selected context plus policy/scope read capability; runtime `internal_call` uses service/caller provenance.
-- inputSchema: policy id, requested scope, optional runtime decision context, freshness token where applicable.
-- outputSchema: effective-detail surface/result with default, override, effective value, source, winning scope, last-change summary, reset availability, decision explanation, and trace refs.
-- validationAndSafeDefaults: unsupported policy ids/scopes/value types return validation/not-found-or-redacted; browser-supplied scope is an untrusted hint.
-- redactionAndEvidenceRules: scoped/redacted values and summaries only.
+- inputSchema: policy id, requested scope, optional runtime decision context, version id, freshness token where applicable.
+- outputSchema: policy detail/effective result with active version, draft status, clause/value summary, exceptions, winning scope, decision explanation, available actions, and trace refs.
 - confirmationPolicy: none.
 - approvalPolicy: none.
-- idempotencyAndTransactionBoundary: read-only query or runtime check; repeated checks may create deduped policy-decision traces where practical.
+- idempotencyAndTransactionBoundary: read-only query or runtime check; repeated runtime checks may create deduped policy-decision traces where practical.
 - sideEffects: policy-decision trace for runtime checks; optional workstream read trace for UI/agent reads.
-- resultSurfacesAndEvents: `surface-governance-policy-effective-detail` or `system_message`.
+- resultSurfacesAndEvents: `surface-governance-policy-detail` or `system_message`.
 - denialBehavior: safe denial without confirming hidden policy/scope existence.
-- implementationMapping: effective-policy evaluator, governance service/repository, trace services, detail surface, agent read tool.
-- requiredTests: precedence, source explanation, hidden target redaction, runtime decision trace, agent read-tool boundary.
+- requiredTests: precedence, active-version explanation, hidden target redaction, runtime decision trace, agent read-tool boundary.
 
-### `governance.policy.set_default`
+### `governance.policy.draft`
 
-- toolType: `admin`
-- purpose: SaaS-owner/defaults-context update of a simple boolean or counter/limit default.
+- toolType: `proposal`
+- purpose: create or update a versioned policy draft/proposal without affecting runtime.
+- allowedWorkerTypes: human, functional-agent, system
+- allowedActorAdapters: `surface_action`, `agent_tool_call`, `human_chat_tool_plan`, `api_call`, `workflow_step`
+- authorityLevel: draft/propose
+- authContextScope: actor must have draft capability for selected scope and policy category.
+- inputSchema: policy id/category, target scope, proposed clauses or simple values, rationale, risk/impact/confidence notes, affected workstreams/tools/roles, required reason, idempotency key, correlation id, optional base version.
+- outputSchema: draft/proposal summary, validation blockers, required simulation/approval gates, next actions, history ref, trace ref, and result surface id.
+- validationAndSafeDefaults: validate catalog membership, value/clauses, supported scope/category, reason, base version freshness, and hard-platform boundary.
+- confirmationPolicy: surface submit or exact chat-plan snapshot confirmation for human-backed draft commands; agent tool call may draft only when boundary permits and cannot activate.
+- approvalPolicy: draft itself does not require final approval; activation later does.
+- idempotencyAndTransactionBoundary: one draft create/update per policy/scope/base-version/idempotency key.
+- sideEffects: draft state/history/trace; no runtime policy change.
+- resultSurfacesAndEvents: `surface-governance-policy-draft`, `surface-governance-policy-result`, or `system_message`.
+- partialFailureBehavior: validation/evidence gaps return result blockers and no active version change.
+- denialBehavior: missing capability, hidden target, unsupported category/scope, hard-platform override denied safely.
+- requiredTests: draft creation, reason required, unsupported category denial, idempotency, no runtime mutation, agent boundary.
+
+### `governance.policy.simulate`
+
+- toolType: `simulation`
+- purpose: evaluate draft/rollback/exception candidates against selected policy state, representative traces, and affected runtime actions before decision.
+- allowedWorkerTypes: human, functional-agent, system
+- allowedActorAdapters: `surface_action`, `agent_tool_call`, `human_chat_tool_plan`, `api_call`, `workflow_step`, `internal_call`
+- authorityLevel: evaluate
+- authContextScope: actor or service must have simulation capability for selected scope and evidence set.
+- inputSchema: draft id or rollback target, selected scope, evidence selector, affected action/tool/workstream filters, requested simulation depth, correlation id, optional idempotency key.
+- outputSchema: simulation result with expected allow/deny/governed outcomes, changed decisions, risk/impact/confidence, evidence gaps, partial-failure markers, required approval gates, and trace refs.
+- confirmationPolicy: none for read/evidence simulation; exact chat-plan confirmation only when a user asks chat to start a simulation job.
+- approvalPolicy: simulation never approves or activates.
+- idempotencyAndTransactionBoundary: one result per draft/version/scope/evidence selector/correlation id where practical.
+- sideEffects: simulation result/history/trace; no active policy change.
+- resultSurfacesAndEvents: `surface-governance-policy-simulation`, `surface-governance-policy-partial-failure`, or `system_message`.
+- partialFailureBehavior: unavailable evidence or replay gaps produce partial-failure findings and review blockers, not success.
+- denialBehavior: hidden evidence, unsupported simulation scope, missing capability, or hard-platform override denied safely.
+- requiredTests: simulation evidence, no mutation, partial failure, hidden evidence redaction, required approval detection, agent boundary.
+
+### `governance.policy.submit_for_approval`
+
+- toolType: `workflow`
+- purpose: move a validated draft and simulation evidence into human review with a decision-card surface.
 - allowedWorkerTypes: human, system
-- allowedActorAdapters: `surface_action`, `human_chat_tool_plan`, `api_call`
-- authorityLevel: administer
-- authContextScope: authenticated SaaS owner admin in SaaS-owner/defaults selected context with default-management capability.
-- inputSchema: policy id, value type, requested default value, required reason, idempotency key, correlation id, optional freshness token.
-- outputSchema: refreshed effective/default summary, history ref, trace ref, validation blockers, and action availability.
-- validationAndSafeDefaults: validate catalog membership, value type, supported default scope, reason, stale version, and hard-platform boundary.
-- redactionAndEvidenceRules: never expose hidden tenant overrides except safe aggregate/impact copy when authorized; no raw internals.
-- confirmationPolicy: surface submit or exact chat-plan snapshot confirmation; no mutation during proposal.
-- approvalPolicy: no additional approval in current SMB scope unless future policy adds one.
-- idempotencyAndTransactionBoundary: one default update per policy/scope/idempotency key; replay returns existing result without duplicate history/traces.
-- sideEffects: default value update, history entry, effective-value recomputation for tenants without overrides, audit/work trace; no default notification.
-- resultSurfacesAndEvents: `surface-governance-policy-edit`, `surface-governance-policy-effective-detail`, `surface-governance-policy-history`, or `system_message`.
-- partialFailureBehavior: no partial cross-tenant overwrite; failed recomputation/trace produces safe failure and does not masquerade as success.
-- denialBehavior: tenant admins/support/auditors/cross-context callers denied; hard-platform controls denied.
-- implementationMapping: governance service/repository, workstream/admin endpoint, edit surface, confirmed chat-plan executor.
-- requiredTests: SaaS-owner write, tenant override non-overwrite, reason required, idempotency, stale conflict, hard-platform denial, chat-plan confirmation.
+- allowedActorAdapters: `surface_action`, `human_chat_tool_plan`, `api_call`, `workflow_step`
+- authorityLevel: request_review
+- authContextScope: actor must have approval-request capability for the selected policy scope.
+- inputSchema: draft id, simulation result refs, evidence bundle refs, requested reviewers or reviewer group, required reason, idempotency key, correlation id, deadline/SLA if applicable.
+- outputSchema: decision-card request, review state, reviewer eligibility summary, trace ref, and next action surface.
+- confirmationPolicy: surface submit or exact chat-plan snapshot confirmation.
+- approvalPolicy: creates review; does not approve.
+- idempotencyAndTransactionBoundary: one approval request per draft/idempotency key.
+- sideEffects: workflow review item, attention item, work/audit trace.
+- resultSurfacesAndEvents: `surface-governance-policy-decision-card`, `surface-governance-policy-result`, or `system_message`.
+- denialBehavior: invalid draft, missing simulation, missing capability, hidden scope, stale base version denied safely.
+- requiredTests: approval request, decision-card payload, idempotency, attention item, denial and trace.
 
-### `governance.policy.set_override`
+### `governance.policy.approve`
 
-- toolType: `command`
-- purpose: tenant-admin update of a tenant-owned business-governance override for an authorized scope.
+- toolType: `approval_decision`
+- purpose: record approve, reject, request-evidence, modify, defer, escalate, or exception-required decisions on a policy decision card.
 - allowedWorkerTypes: human, system
-- allowedActorAdapters: `surface_action`, `human_chat_tool_plan`, `api_call`
-- authorityLevel: execute
-- authContextScope: active tenant admin membership with override capability for the selected tenant/customer/account scope.
-- inputSchema: policy id, target scope, value type, requested override value, required reason, idempotency key, correlation id, optional freshness token.
-- outputSchema: refreshed effective-policy summary, override indicator, history ref, trace ref, validation blockers, and action availability.
-- validationAndSafeDefaults: validate catalog membership, supported tenant scope, value type, reason, stale version, hidden target, and hard-platform boundary.
-- redactionAndEvidenceRules: browser-safe scoped values only; no hidden customer/account enumeration.
-- confirmationPolicy: surface submit or exact chat-plan snapshot confirmation; no mutation during proposal.
-- approvalPolicy: no additional approval in current SMB scope unless future policy adds one.
-- idempotencyAndTransactionBoundary: one override update per policy/scope/idempotency key; replay returns existing result without duplicate history/traces.
-- sideEffects: tenant override active immediately, history entry, audit/work trace, effective-policy recomputation; no default notification.
-- resultSurfacesAndEvents: `surface-governance-policy-edit`, `surface-governance-policy-effective-detail`, `surface-governance-policy-history`, or `system_message`.
-- partialFailureBehavior: single override transaction succeeds or fails; no silent partial write.
-- denialBehavior: missing capability, SaaS-owner/defaults context, cross-tenant/customer, hidden target, unsupported scope/type, missing reason, and hard-platform override attempts denied safely.
-- implementationMapping: governance service/repository, workstream/admin endpoint, edit surface, confirmed chat-plan executor.
-- requiredTests: tenant override, precedence, reason/idempotency, hidden target denial, hard-platform denial, chat-plan confirmation.
+- allowedActorAdapters: `surface_action`, `api_call`, `workflow_step`
+- authorityLevel: decide
+- authContextScope: reviewer must have decision authority for policy scope and meet separation-of-duty rules.
+- inputSchema: decision card id, action, rationale, evidence refs reviewed, risk/impact/confidence acknowledgement, optional requested changes, idempotency key, correlation id.
+- outputSchema: immutable decision record, updated workflow state, required next action, trace ref, and result surface.
+- confirmationPolicy: reviewer submit confirmation.
+- approvalPolicy: this is the approval/denial action; activation remains separate.
+- idempotencyAndTransactionBoundary: one immutable decision per card/action/idempotency key.
+- sideEffects: decision record, workflow transition, attention update, audit/work trace.
+- resultSurfacesAndEvents: `surface-governance-policy-decision-card`, `surface-governance-policy-result`, or `system_message`.
+- denialBehavior: missing reviewer authority, stale card, self-approval violation, hidden scope, or missing rationale denied safely.
+- requiredTests: approve/reject/request-evidence/modify/escalate, separation of duty, stale card, idempotency, decision trace.
 
-### `governance.policy.reset_override`
+### `governance.policy.activate`
 
-- toolType: `command`
-- purpose: tenant-admin removal of a visible tenant override so effective value falls back to inherited/default behavior.
+- toolType: `commit`
+- purpose: activate an approved policy version and publish it for runtime enforcement.
 - allowedWorkerTypes: human, system
-- allowedActorAdapters: `surface_action`, `human_chat_tool_plan`, `api_call`
-- authorityLevel: execute
-- authContextScope: active tenant admin membership with override capability for the selected tenant/customer/account scope.
-- inputSchema: policy id, target scope, required reason, idempotency key, correlation id, optional freshness token.
-- outputSchema: refreshed effective-policy summary, removed override marker, inherited/default value, history ref, trace ref, validation blockers, and action availability.
-- validationAndSafeDefaults: validate override exists or return idempotent no-op where safe; reject unsupported/hidden/hard-platform scopes.
-- redactionAndEvidenceRules: no hidden override enumeration; values are scoped/redacted.
-- confirmationPolicy: surface submit or exact chat-plan snapshot confirmation; no mutation during proposal.
-- approvalPolicy: no additional approval in current SMB scope unless future policy adds one.
-- idempotencyAndTransactionBoundary: one reset per policy/scope/idempotency key; replay returns existing result without duplicate history/traces.
-- sideEffects: override removal, effective-value recomputation, history entry, audit/work trace.
-- resultSurfacesAndEvents: `surface-governance-policy-edit`, `surface-governance-policy-effective-detail`, `surface-governance-policy-history`, or `system_message`.
-- partialFailureBehavior: single reset transaction succeeds or fails; no silent partial state.
-- denialBehavior: missing authority, hidden/cross-scope target, stale version, hard-platform override, or missing reason denied safely.
-- implementationMapping: governance service/repository, workstream/admin endpoint, edit surface, confirmed chat-plan executor.
-- requiredTests: reset-to-default, inherited value, idempotency/no duplicate history, hidden target denial, chat-plan confirmation.
+- allowedActorAdapters: `surface_action`, `human_chat_tool_plan`, `api_call`, `workflow_step`, `internal_call`
+- authorityLevel: commit_approved_version
+- authContextScope: actor/service must have activation capability for selected scope; approved decision card is required.
+- inputSchema: approved proposal/version id, decision ref, target scope, freshness token, required reason, idempotency key, correlation id, publication target.
+- outputSchema: active version summary, superseded version ref, publication status, effective-policy summary, history ref, trace ref, validation blockers, and result/partial-failure markers.
+- confirmationPolicy: surface submit or exact chat-plan snapshot confirmation.
+- approvalPolicy: approved decision card required; unapproved activation denied.
+- idempotencyAndTransactionBoundary: single policy-version activation transaction per policy/scope/version/idempotency key; partial publication is reported separately.
+- sideEffects: active policy version commit, supersede prior version, runtime publication/projection, attention resolution, history/audit/work traces.
+- resultSurfacesAndEvents: `surface-governance-policy-result`, `surface-governance-policy-detail`, `surface-governance-policy-history`, `surface-governance-policy-partial-failure`, or `system_message`.
+- partialFailureBehavior: committed vs not-committed vs partial-publication states are explicit; no silent partial success.
+- denialBehavior: unapproved/stale/cross-context/hidden-target/hard-platform attempts denied safely.
+- requiredTests: approved activation, unapproved denial, transaction boundary, partial publication, idempotency, trace evidence.
+
+### `governance.policy.rollback`
+
+- toolType: `rollback`
+- purpose: restore a prior approved policy version or revoke a problematic exception through a rollback decision.
+- allowedWorkerTypes: human, system
+- allowedActorAdapters: `surface_action`, `human_chat_tool_plan`, `api_call`, `workflow_step`, `internal_call`
+- authorityLevel: restore_prior_version
+- authContextScope: actor/service must have rollback capability for selected scope; rollback decision card is required.
+- inputSchema: active version id, target prior version or exception id, rollback decision ref, reason, impact summary, idempotency key, correlation id, freshness token.
+- outputSchema: rollback commit summary, restored version/exception state, publication status, history ref, trace ref, partial-failure markers, and recovery actions.
+- confirmationPolicy: surface submit or exact chat-plan snapshot confirmation.
+- approvalPolicy: rollback decision card required.
+- idempotencyAndTransactionBoundary: single policy-version rollback transaction per policy/scope/target/idempotency key.
+- sideEffects: rollback commit, runtime publication/projection, attention update, history/audit/work trace.
+- resultSurfacesAndEvents: `surface-governance-policy-result`, `surface-governance-policy-history`, `surface-governance-policy-partial-failure`, or `system_message`.
+- partialFailureBehavior: publication or downstream projection failure is surfaced and trace-linked.
+- denialBehavior: missing authority, missing decision, hidden/cross-scope target, stale version, hard-platform override, or missing reason denied safely.
+- requiredTests: approved rollback, missing-decision denial, prior-version restoration, idempotency, partial failure, rollback trace.
+
+### `governance.policy.review_exception`
+
+- toolType: `exception_review`
+- purpose: grant, deny, revoke, expire, or request evidence for scoped policy exceptions.
+- allowedWorkerTypes: human, system
+- allowedActorAdapters: `surface_action`, `human_chat_tool_plan`, `api_call`, `workflow_step`
+- authorityLevel: exception_decision
+- authContextScope: reviewer must have exception authority for policy scope and exception type.
+- inputSchema: exception request id or policy/version/scope, requested action, allowed deviation, reason, evidence refs, expiry, owner, idempotency key, correlation id.
+- outputSchema: exception state summary, decision record, expiry/review state, runtime enforcement effect, trace ref, and result surface.
+- confirmationPolicy: reviewer submit confirmation or exact chat-plan snapshot confirmation.
+- approvalPolicy: exception decision card required for grants/revocations where policy marks consequential.
+- idempotencyAndTransactionBoundary: one exception state transaction per exception/action/idempotency key.
+- sideEffects: exception grant/deny/revoke/expire state, runtime enforcement projection when applicable, attention update, audit/work trace.
+- resultSurfacesAndEvents: `surface-governance-policy-exception`, `surface-governance-policy-result`, or `system_message`.
+- denialBehavior: unsupported exception, expired/hidden target, missing authority, missing evidence/reason, hard-platform-control exception denied safely.
+- requiredTests: grant/deny/revoke/expire, expiry not authorizing runtime behavior, idempotency, hidden target denial, trace evidence.
 
 ### `governance.policy.read_history`
 
 - toolType: `read_evidence`
-- purpose: read authorized direct policy changes and practical runtime outcome links.
+- purpose: read authorized policy changes, decisions, simulations, exceptions, rollback records, and runtime outcome links.
 - allowedWorkerTypes: human, functional-agent, system
-- allowedActorAdapters: `surface_action`, `agent_tool_call`, `api_call`
+- allowedActorAdapters: `surface_action`, `agent_tool_call`, `api_call`, `internal_call`
 - authorityLevel: observe
 - authContextScope: selected context with policy history/audit read capability; support requires active scoped support access.
-- inputSchema: policy/scope/actor/time/filter/page request with browser-provided ids treated as hints.
-- outputSchema: scoped/redacted history timeline, runtime outcome links, actor display summaries, reasons, values, trace refs, and redaction metadata.
-- validationAndSafeDefaults: unsupported filters produce validation state; hidden events are omitted or redacted.
-- redactionAndEvidenceRules: no raw trace payloads, secrets, prompts/model/tool payloads, hidden facts, or raw idempotency/correlation internals.
+- inputSchema: policy/scope/actor/time/state/filter/page request with browser-provided ids treated as hints.
+- outputSchema: scoped/redacted history timeline, decision/simulation/exception/rollback events, runtime outcome links, actor display summaries, reasons, values, trace refs, and redaction metadata.
 - confirmationPolicy: none.
 - approvalPolicy: none.
 - idempotencyAndTransactionBoundary: read-only scoped query.
 - sideEffects: optional read/workstream trace.
 - resultSurfacesAndEvents: `surface-governance-policy-history` or `system_message`.
 - denialBehavior: safe forbidden/not-found-or-redacted response without hidden event enumeration.
-- implementationMapping: governance history repository, audit/workstream trace services, history surface, agent read tool.
 - requiredTests: auditor/support scoping, redaction, runtime outcome links, filters, tenant isolation, agent read-tool boundary.
 
 ## Surface-intent and `human_chat_tool_plan` catalog
 
-Deterministic no-mutation surface routing runs first for read/open/prefill requests. Prompts like `show policy settings`, `show effective policy for SalesAgent email`, and `show overridden policies` should open or prefill `surface-governance-policy-inventory` or `surface-governance-policy-effective-detail` through surface-intent routes, not execute a chat plan.
+Deterministic no-mutation surface routing runs first for read/open/prefill requests. Prompts like `show policy approval queue`, `show effective policy for this tool`, `open exceptions expiring this week`, and `show simulation results for draft GP-42` should open or prefill catalog/detail/simulation/decision/exception/history surfaces through surface-intent routes, not execute a chat plan.
 
-Confirmed `human_chat_tool_plan` is reserved for side-effecting command plans:
+Confirmed `human_chat_tool_plan` is reserved for side-effecting command plans or starting simulation/draft workflows that the human explicitly confirms:
 
 | Classification | Representative prompts | Surface action ids | Shared governed tool ids | Capability id | Result surface(s) |
 |---|---|---|---|---|---|
-| `chat-proposal-only` | `allow SalesAgent to send emails immediately`; `reset this policy to default`; `set max retries to 3`; `set the SaaS default for this policy to false` | `action-governance-policy-set-override`; `action-governance-policy-reset-override`; `action-governance-policy-set-default` | `governance.policy.set_override`; `governance.policy.reset_override`; `governance.policy.set_default` | `governance-policy-lifecycle` | `surface-governance-policy-edit`; `surface-governance-policy-effective-detail`; `surface-governance-policy-history`; `system_message` |
+| `chat-proposal-only` | `draft a policy requiring approval before this agent sends email`; `simulate this policy change`; `send this draft for approval`; `activate the approved policy`; `roll back to the prior version`; `grant a 7 day exception for this customer` | `action-governance-policy-draft`; `action-governance-policy-simulate`; `action-governance-policy-submit-approval`; `action-governance-policy-activate`; `action-governance-policy-rollback`; `action-governance-policy-review-exception` | `governance.policy.draft`; `governance.policy.simulate`; `governance.policy.submit_for_approval`; `governance.policy.activate`; `governance.policy.rollback`; `governance.policy.review_exception` | `governance-policy-lifecycle` | `surface-governance-policy-draft`; `surface-governance-policy-simulation`; `surface-governance-policy-decision-card`; `surface-governance-policy-exception`; `surface-governance-policy-result`; `surface-governance-policy-partial-failure`; `system_message` |
 
 Blocked or out-of-scope entries:
 
 - complex policy scripts or arbitrary rule expressions;
-- policy simulations or impact-analysis tasks;
-- legal compliance workflows;
-- policy-edit approval workflows;
-- default notifications for policy changes;
-- enterprise delegation models;
+- legal compliance workflow suites;
+- unbounded autonomous policy commits;
+- enterprise delegation models not represented in app-description;
 - any request to override hard platform security controls.
 
 Execution requirements for every accepted confirmed plan:
 
-- validate catalog membership, supported policy type, supported scope, selected context, actor capability, exact plan snapshot, required reason for writes, idempotency, freshness, and trace emission;
-- recompute and return effective policy after writes;
-- reject hidden scope targets, unsupported value types, cross-tenant/customer scope, missing reasons, stale versions, and hard platform-security overrides;
-- idempotent replay returns prior write results without duplicate history or traces;
+- validate catalog membership, supported policy category/type/scope, selected context, actor capability, exact plan snapshot, required reason, approval state where needed, idempotency, freshness, and trace emission;
+- reject hidden scope targets, unsupported categories/value types, cross-tenant/customer scope, missing reasons, stale versions, unapproved activation/rollback/exception grants, and hard platform-security overrides;
+- idempotent replay returns prior results without duplicate decisions, commits, history, or traces;
 - no workstream agent, prompt, frontend route, visible control, or tool description grants authority beyond backend authorization.

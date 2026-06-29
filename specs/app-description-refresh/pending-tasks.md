@@ -221,7 +221,7 @@
 
 ### TASK-ADR-02-004: Refresh Governance/Policy workstream app-description
 
-- status: pending
+- status: done
 - source: specs/app-description-refresh/workstreams/governance-policy-migration-plan.md
 - task brief: specs/app-description-refresh/tasks/02-workstreams/04-refresh-governance-policy.md
 - depends on:
@@ -249,6 +249,8 @@
   - Governance/Policy graph links worker/adapter/governed-tool/capability/realization/tests/runtime-validation/traces coherently
   - task changes and queue update are committed
 - notes:
+  - commit message: `app-desc-refresh: refresh governance policy workstream`
+  - graph coverage proof: Governance/Policy files now link human operators, functional agent, and system worker through `surface_action`, confirmed `human_chat_tool_plan`, bounded `agent_tool_call`, `api_call`, `workflow_step`, and `internal_call` adapters to policy catalog/read/draft/simulate/submit-for-approval/approve/activate/rollback/exception/history governed tools, capability `governance-policy-lifecycle`, dashboard/catalog/detail/draft/simulation/decision/exception/history/result/partial-failure/system-message surfaces, realization API/frontend/Akka/source-alignment maps, runtime-validation expectations, and policy draft/simulation/decision/activation/rollback/exception/denial/runtime-decision traces. Lifecycle/source-alignment is `stale-description-changed` because this docs-only refresh changed current intent without runtime/API/UI validation.
   - vertical contract: Governance/Policy functional-agent workstream; attention category policy approval, exception, simulation finding, rollback decision; role-specific dashboard / surface Governance/Policy dashboard, policy catalog/detail/draft/simulation/decision surfaces; surface graph node/action edge policy draft/simulate/approve/activate/rollback/exception actions and result/partial-failure/system-message surfaces; governed-tool id/type/exposure policy draft/simulate/approve/activate/rollback/exception governed tools; actor adapter/source `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, workflow/internal/API where described; confirmation/approval behavior human approval and decision-card requirements; idempotency/transaction/result behavior policy version activation/rollback transaction boundaries and result surfaces; capability or foundation scope governance-policy lifecycle; AuthContext / roles / tenant scope admin/policy operator tenant scope and denials; API / frontend / realtime path Governance/Policy route/API mappings; audit/work trace expectation policy change, decision, simulation, exception, denial, rollback traces; validation path `git diff --check`
 
 ### TASK-ADR-02-005: Refresh Audit/Trace workstream app-description

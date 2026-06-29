@@ -2,47 +2,67 @@
 
 ## Current-state behavior
 
-Governance/Policy manages simple policy settings for SaaS defaults and tenant overrides. It starts from an all-policy searchable list, shows effective values and overridden indicators, supports tenant-admin override changes, supports reset-to-default, and records policy-change history and runtime policy-decision evidence.
+Governance/Policy owns the policy lifecycle for foundation AI-first SaaS controls. It starts from a role-scoped dashboard, policy catalog, policy detail, draft/edit, simulation, decision-card, exception, rollback, and history surfaces. It records policy versions and decision evidence so downstream workstreams can enforce and explain policy-bound behavior.
 
 ## Agent behavior
 
-`governance-policy-agent` may explain effective policy, summarize defaults and overrides, help find policies, draft simple boolean/counter changes, and prepare reason text. It cannot grant authority through prompt text, bypass backend authorization, bypass tenant isolation, expose secrets, override hard platform security controls, or invent policy types outside the catalog.
+`governance-policy-agent` may explain active policy, summarize draft/active/rolled-back versions, help find impacted tools/workstreams, draft policy proposals, prepare simulation inputs, summarize simulation findings, assemble decision-card evidence, draft exception requests, and prepare rollback plans.
 
-Model-backed turns use governed runtime configuration or fail closed.
+It cannot grant authority through prompt text, bypass backend authorization, approve decisions, activate policies, roll back versions, grant exceptions, expose secrets, override hard platform controls, or invent policy types outside the catalog. Model-backed turns use governed runtime configuration or fail closed.
 
-## Policy catalog behavior
+## Mandatory policy categories
 
-The policy catalog is not fixed up front. App-description changes for agents, workstreams, governed tools/actions, roles, and customer/account behavior may introduce new simple policy definitions. Each definition declares its id/name, value type, SaaS default, allowed scopes, effective-value calculation, and trace/history requirements.
+Foundation policy categories are:
 
-Initial allowed value types are:
+- agent/tool authority and ToolPermissionBoundary policy;
+- approval gates, risk/confidence/impact thresholds, and human-review requirements;
+- exception policies with scoped reason, owner, expiry, evidence, and review state;
+- runtime enforcement policies with simple boolean/counter/limit values where appropriate;
+- model, prompt, skill, reference, rubric, and governed-document activation policy when behavior-shaping authority changes;
+- trace visibility, retention, redaction, and downstream enforcement evidence policy, subordinate to hard platform controls.
 
-- `boolean`;
-- `counter` / `limit`.
+Domain-specific business policies are extension-owned until a business domain adds them. Complex scripting, arbitrary rule expressions, legal workflow engines, and autonomous authority-expanding commits are outside current foundation scope.
 
-Additional value types require explicit future app-description intent and must remain SMB-simple.
+## Draft behavior
 
-## Defaults, overrides, and precedence
+Draft creation produces a versioned `PolicyProposal` with policy id/category, proposed clauses or simple values, target scope, affected agents/workstreams/tools/roles/customers/accounts, rationale, risk/impact/confidence, expected behavior changes, requester, idempotency key, and trace reference. Drafts do not affect runtime until approved and activated.
 
-SaaS owner default values apply where no more specific tenant override exists. Tenant admins can set tenant-owned overrides at supported scopes. Tenant overrides become active immediately after a successful backend-authorized write.
+Draft surfaces and chat-plan proposals must make side effects explicit and require a reason. Duplicate draft requests with the same idempotency key return the existing draft/result without duplicate traces.
 
-When multiple settings match a runtime decision, the finer-grained/more specific matching scope wins. Resetting an override removes the tenant value and recomputes the effective value from SaaS defaults or less-specific overrides. SaaS owner default changes do not overwrite tenant overrides.
+## Simulation behavior
 
-## Change behavior
+Simulation evaluates a draft or rollback candidate against selected current-policy state, representative traces, affected tool/workstream mappings, known exceptions, and approval gates. It returns expected allow/deny/governed outcomes, changed decisions, risk/impact/confidence, evidence gaps, partial-failure markers, and whether human approval is required before activation.
 
-Every policy write requires a human-entered reason. Policy changes do not require additional confirmation beyond the normal committed action/request and do not notify anyone by default.
+Simulation is evidence, not activation. Missing evidence or unavailable replay data yields partial-failure results and review blockers rather than silent success.
 
-Every write records history including actor, selected `AuthContext`, old value, new value, effective timestamp, scope, affected policy id, affected agents/workstreams/tools/roles/customers/accounts where applicable, reason, idempotency key, and trace reference.
+## Decision behavior
 
-## Runtime decision behavior
+Human reviewers decide from decision cards. Available actions are approve, reject, request evidence, modify/counterpropose, defer, escalate, mark exception-required, activate approved version when allowed, or start rollback review. Each decision stores reviewer, selected `AuthContext`, role/capability basis, evidence considered, policy clauses, simulation refs, rationale, alternatives, uncertainty, risk/impact/confidence, deadline/SLA when present, and trace links.
 
-Runtime policy checks return an effective decision with a human-readable explanation. The trace should identify whether the value came from SaaS default or tenant override, which scope won, who last changed the winning override when applicable, when it changed, and the recorded reason.
+Approval is required before activating policy changes that expand authority, alter approval gates, grant exceptions, affect governed agent/tool permissions, change trace visibility/retention, or roll back active policy versions. Rejections and requests for evidence do not change active runtime policy.
 
-Example: one agent/action can be allowed to send email immediately while another agent/action is governed differently because a more specific tenant override applies.
+## Activation behavior
+
+Activation converts an approved proposal into the active policy version for its authorized scope. Activation validates approval state, freshness, catalog membership, selected scope, separation-of-duty requirements, idempotency key, and publication target. It records old version, new version, activation time, actor, approval ref, simulation ref, affected workstreams/tools/roles, and runtime publication status.
+
+Activation is a policy-version transaction boundary. If publication to one scope or downstream projection fails, the result surface distinguishes committed, not-committed, and partial-publication states and links trace evidence. Unapproved, stale, cross-context, or hidden-target activations are denied.
+
+## Exception behavior
+
+Exception review grants, denies, revokes, or expires scoped deviations from active policy only where the policy allows exceptions. Each exception has owner, reason, affected policy/version/scope, allowed action, expiry, evidence, reviewer, and trace links. Expired exceptions must not authorize runtime behavior. Exception denial returns a safe result/system-message surface and trace.
+
+## Rollback behavior
+
+Rollback restores a prior approved version or revokes a problematic exception through a separate rollback decision card. Rollback requires reviewer authority, reason, impact summary, prior-version target, idempotency key, and runtime publication checks. It creates a new rollback commit record instead of deleting history.
+
+Rollback is a single-version transaction boundary with result and partial-failure surfaces. Repeated rollback with the same idempotency key returns the original result without duplicate commits or traces.
+
+## Runtime enforcement behavior
+
+Runtime policy checks return an effective decision with human-readable explanation, active version, matching policy clauses, exception status, approval requirement if any, and trace reference. Downstream workstreams must cite governance-policy enforcement traces when policy affects action availability, agent/tool execution, approval routing, denials, exception use, or rollback recovery.
 
 ## Edge cases
 
-Repeated writes with the same idempotency key return the existing result and must not duplicate history or traces. Unsupported policy ids, unsupported scopes, unsupported value types, missing reasons, stale versions, inactive users/memberships, missing selected context, and unauthorized cross-tenant/customer attempts return safe validation/denial states and emit traces.
+Unsupported policy ids/categories/scopes/value types, missing reasons, missing simulation evidence, stale versions, conflicting active versions, expired exceptions, inactive users/memberships, missing selected context, unauthorized cross-tenant/customer attempts, duplicate idempotency keys, and attempts to override hard platform controls return safe validation/denial/result states and emit traces.
 
-Attempts to override hard platform security controls, such as tenant isolation, secret protection, backend authorization, redaction boundaries, and platform integrity controls, are denied even for tenant admins.
-
-Unsupported business-domain requests are routed to extension guidance rather than silently adding complex policy machinery.
+Unsupported business-domain requests are routed to domain extension guidance rather than silently adding complex policy machinery.
