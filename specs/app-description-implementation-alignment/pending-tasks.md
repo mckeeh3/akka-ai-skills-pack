@@ -112,7 +112,7 @@
 
 ### TASK-ADIA-02-001: Align My Account implementation evidence
 
-- status: pending
+- status: done
 - source: specs/app-description-implementation-alignment/workstreams/my-account-alignment-plan.md
 - task brief: specs/app-description-implementation-alignment/tasks/02-workstreams/01-align-my-account.md
 - depends on:
@@ -135,6 +135,9 @@
   - My Account alignment posture is recorded without overclaiming runtime readiness
   - task changes and queue update are committed
 - notes:
+  - commit message: `app-desc-align: align my account evidence`
+  - validation: `git diff --check` passed; mapped evidence proof verified 19 My Account implementation/test/frontend paths and `specs/runtime-validation/scenarios/my-account/RV-MY-ACCOUNT-001-login-and-account-context.md`.
+  - result: lifecycle/source-alignment updated to `partially-aligned` at source-evidence level without runtime-ready, manual-ready, or provider-success claims.
   - vertical contract: My Account functional-agent workstream; attention category account/profile context; role-specific dashboard / surface My Account dashboard/profile/context; surface graph node/action edge account/profile/context read-update and result surfaces; governed-tool id/type/exposure account/profile/context tools; actor adapter/source `surface_action`, `api_call`, bounded `human_chat_tool_plan`, read/advisory `agent_tool_call`; confirmation/approval behavior profile/chat confirmation where applicable; idempotency/transaction/result behavior profile/context no-op/result surfaces; capability or foundation scope account-context-and-profile; AuthContext / roles / tenant scope signed-in member tenant/Organization scope; API / frontend / realtime path My Account route/API mappings; audit/work trace expectation account/context read-update/denial/agent-assistance traces; validation path `git diff --check` plus mapped evidence proof
 
 ### TASK-ADIA-02-002: Align User Admin implementation evidence

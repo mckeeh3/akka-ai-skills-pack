@@ -5,18 +5,18 @@ Owning domain: `core-starter`
 Current readiness: `description-ready`
 Ready-to-build assessment: 2026-06-29 — TASK-ADR-02-001 refreshed the My Account current-intent graph for worker/adapter/governed-tool/capability/realization/test/runtime-validation/trace coverage.
 Automated alignment readiness: `historical-automated-aligned` for non-manual My Account slices verified by MAFA-08-001; manual browser/API acceptance and concrete provider-backed digest success remain separate residual checks.
-Implementation alignment: `stale-description-changed`
+Implementation alignment: `partially-aligned`
 Source alignment: `realization/source-alignment.md`
 Last description change: 2026-06-29 — TASK-ADR-02-001 clarified the My Account functional-agent workstream graph, account/profile/context surfaces, governed tool adapter boundaries, AuthContext scope, runtime-validation references, and trace obligations.
-Last alignment review: 2026-06-29 — source alignment records this as a docs-only description refresh; previous MAFA automated evidence remains historical until a follow-up alignment/runtime-validation pass revalidates it against the refreshed graph.
+Last alignment review: 2026-06-29 — TASK-ADIA-02-001 rechecked the refreshed My Account graph against the source evidence inventory, mapped implementation/test/frontend files, and runtime-validation scaffold. The posture is now source-evidence mapped and `partially-aligned`; no local runtime-ready or provider-backed success claim is made.
 Last compile: 2026-06-27 — command-center surface contract id, frontend-safe control-panel schema aliases, and accessible counter rendering aligned to the prior surface contract.
 Last manual runtime test: unknown
 
 ## Current alignment posture
 
-This workstream is description-ready after TASK-ADR-02-001. The refreshed description explicitly links signed-in member and My Account functional-agent workers to `surface_action`, `api_call`, bounded `human_chat_tool_plan`, and described `agent_tool_call` adapters; governed account/profile/context tools; capability `account-context-and-profile`; realization mappings; test/runtime-validation references; and durable trace expectations. Because the description changed after the MAFA-08 automated verification evidence, implementation alignment is now `stale-description-changed` until a follow-up source-alignment/runtime-validation pass confirms the local runtime still matches the refreshed graph.
+This workstream is description-ready after TASK-ADR-02-001. The refreshed description explicitly links signed-in member and My Account functional-agent workers to `surface_action`, `api_call`, bounded `human_chat_tool_plan`, and described `agent_tool_call` adapters; governed account/profile/context tools; capability `account-context-and-profile`; realization mappings; test/runtime-validation references; and durable trace expectations. TASK-ADIA-02-001 reconciled that refreshed graph to existing source/test/frontend evidence and the runtime-validation scaffold, so the implementation alignment posture is `partially-aligned` rather than stale. This is a source-evidence posture only: prior MAFA automated evidence remains historical, and this review did not exercise the local protected Akka/API/UI runtime path.
 
-Overall runtime readiness is still not claimed by this lifecycle record. Human manual browser/API acceptance, real WorkOS/AuthKit production login smoke, concrete provider-backed digest success, production export/vendor delivery, and broader stale/reconnect manual review remain residual checks outside the automated mini-project.
+Overall runtime readiness is still not claimed by this lifecycle record. Human manual browser/API acceptance, real WorkOS/AuthKit production login smoke, concrete provider-backed digest success, production export/vendor delivery, runtime-validation run records, and broader stale/reconnect manual review remain residual checks outside this evidence-alignment task.
 
 ## Slice status map
 
@@ -33,8 +33,8 @@ Overall runtime readiness is still not claimed by this lifecycle record. Human m
 
 ## Blockers and assumptions
 
-- File-level source alignment has been split by My Account runtime slice and terminal automated verification found no material remaining automated gap.
-- `description-ready` is the refreshed app-description lifecycle term for TASK-ADR-02-001; historical automated-aligned entries record prior implementation/test evidence for the non-manual mini-project scope, not full manual/runtime acceptance or current alignment after this description change.
+- File-level source alignment has been split by My Account runtime slice and TASK-ADIA-02-001 rechecked the refreshed current-intent graph against mapped source/test/frontend evidence.
+- `description-ready` is the refreshed app-description lifecycle term for TASK-ADR-02-001; historical automated-aligned entries record prior implementation/test evidence for the non-manual mini-project scope, not full manual/runtime acceptance.
 - Runtime-ready/manual-ready is not claimed by this lifecycle record because manual browser/API acceptance and concrete provider-backed digest success were not exercised.
 - Provider-backed digest success is not claimed unless concrete provider/test runtime configuration is exercised; the current automated evidence proves fail-closed/no-fake-success behavior.
 - Future workstream-specific validation must classify any new app-description or implementation changes as aligned, stale-description-changed, stale-code-changed, partially-aligned, blocked, or intentionally description-only.

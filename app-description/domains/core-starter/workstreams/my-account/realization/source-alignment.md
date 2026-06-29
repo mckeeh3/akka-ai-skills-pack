@@ -2,9 +2,9 @@
 
 Lifecycle: ../lifecycle.md
 Last reviewed: 2026-06-29
-Alignment state: stale-description-changed
+Alignment state: partially-aligned
 
-This file was added during the initial source-alignment migration and updated during the current skills-pack My Account app-description review. The user explicitly stated that none of the existing workstreams were aligned before compile work began. The broad candidate mapping has now been split into slice-level entries. MAFA-08-001 terminal automated verification passed the aggregate backend/frontend/typecheck/build/diff checks and found no material remaining automated alignment gap at that time. TASK-ADR-02-001 is a docs-only current-intent refresh after that evidence, so the workstream is now marked `stale-description-changed` until a follow-up alignment/runtime-validation pass rechecks the real protected Akka/API/UI path. Manual/browser acceptance and concrete provider-backed digest success remain separate residual checks and are not counted as automated gaps.
+This file was added during the initial source-alignment migration and updated during the current skills-pack My Account app-description review. The user explicitly stated that none of the existing workstreams were aligned before compile work began. The broad candidate mapping has now been split into slice-level entries. MAFA-08-001 terminal automated verification passed the aggregate backend/frontend/typecheck/build/diff checks and found no material remaining automated alignment gap at that time. TASK-ADR-02-001 is a docs-only current-intent refresh after that evidence. TASK-ADIA-02-001 rechecked the refreshed current-intent graph against mapped source/test/frontend evidence and the runtime-validation scaffold, so the workstream is now `partially-aligned` at source-evidence level. Manual/browser acceptance, local runtime-validation run records, and concrete provider-backed digest success remain separate residual checks and are not counted as automated gaps.
 
 ## TASK-ADR-02-001 graph coverage proof
 
@@ -15,7 +15,56 @@ This file was added during the initial source-alignment migration and updated du
 | Surface graph → result/system-message surfaces | `../surfaces/surfaces.md` records dashboard/profile/settings/context/open-denied and shared chat-plan nodes, action edges, result surfaces, no-op/validation/conflict/forbidden behavior, and frontend secret boundaries. | `rv-my-account-profile-context-surfaces`. |
 | Realization → tests/runtime-validation → traces | `api-contracts.md`, `frontend-routes.md`, and `akka-components.md` map `/api/me`, protected workstream APIs, frontend shell/routes, and Akka component evidence; `../tests/coverage.md` names runtime-validation references; `../traces/work-traces.md` names account/context read/update/denial/agent-assistance traces. | All four `rv-my-account-*` references. |
 
-Because this proof updates app-description intent only, prior automated evidence below is historical alignment evidence rather than a current aligned claim.
+Because this proof updates app-description intent only, prior automated evidence below is historical alignment evidence rather than a current runtime-ready claim.
+
+## TASK-ADIA-02-001 focused evidence review
+
+Review date: 2026-06-29.
+Review scope: My Account account/profile/context, notification, digest, chat-plan, no-access recovery, frontend rendering, API mapping, and trace evidence described by `TASK-ADR-02-001`.
+Review basis: required app-description reads, `specs/app-description-implementation-alignment/source-evidence-inventory.md`, mapped source/test/frontend file-existence proof, and the My Account runtime-validation scenario scaffold. This pass did not run Maven/npm checks, start Akka, authenticate through WorkOS/AuthKit, use a concrete model provider, or execute browser/runtime-validation scenarios.
+
+Current posture: `partially-aligned`. Existing source/test/frontend evidence maps to the refreshed My Account graph, but runtime readiness is not claimed because the protected local Akka/API/UI path and provider-backed digest success still lack current run records.
+
+| Slice | Current evidence mapping | Evidence level | Remaining gap / exact follow-up |
+| --- | --- | --- | --- |
+| `/api/me` and selected account context | `MeEndpoint.java`, foundation identity services/tests, `ContextAuthorityBar.tsx`, and `rv-my-account-api-me-auth-context` cover the intended protected account-context bootstrap path at source/spec level. | `source-evidence-mapped`; historical `api-smoked` evidence only. | Run the runtime-validation scenario through real local auth or an approved local equivalent; keep disabled/no-membership/secret-boundary denials in scope. |
+| Dashboard, profile, settings, and context surfaces | `WorkstreamEndpoint.java`, `WorkstreamService.java`, `MyAccountService.java`, `DashboardSurface.tsx`, `DetailEditSurface.tsx`, My Account vertical/frontend shell contract tests, and `rv-my-account-profile-context-surfaces` map to the refreshed surface graph and governed profile/context actions. | `source-evidence-mapped`; historical `api-smoked/frontend-rendered` evidence only. | Execute current protected workstream API/UI validation for dashboard/profile/settings/context, including no-op, validation error, stale/context switch, and trace visibility. |
+| Notification center | Notification foundation services, `WorkstreamService.java`, `NotificationCenterSurface.tsx`, vertical/surface/action frontend contracts, and notification lifecycle test evidence map to the refreshed in-app-only notification center contract. | `source-evidence-mapped`; historical `backend-ready/frontend-rendered` evidence only. | Runtime-smoke refresh, lifecycle actions, source-open reauthorization, hidden-notification denial, responsive rendering, and stale/reconnect handling. |
+| Personal digest/export | `DigestExportService.java`, `MyAccountPersonalAttentionDigestService.java`, `MyAccountPersonalAttentionDigestAutonomousAgent.java`, durable digest task repository/runtime ports, workflow/outcome/system-message frontend surfaces, and digest tests map to progress/result/blocked contracts. | `source-evidence-mapped`; historical `backend-ready/frontend-rendered` fail-closed evidence only. | Provider-backed happy path remains `provider-config-blocker`; run configured provider success or keep fail-closed blocker explicit. Production export/vendor delivery remains unclaimed. |
+| `human_chat_tool_plan` and agent assistance boundary | `WorkstreamService.java`, `WorkstreamEndpoint.java`, managed-agent seed loader evidence, chat-plan frontend contract tests, `rv-my-account-agent-assistance-boundary`, and trace tests map to bounded proposal/confirmation/result/system-message semantics. | `source-evidence-mapped`; historical `backend-ready/frontend-contract` evidence only. | Run current runtime-validation for deterministic routing before planning, exact confirmation, expired/stale/cross-context denial, provider/model fail-closed behavior, and no pre-confirm mutation. |
+| Denials, no-access recovery, and traces | `MyAccountTraceAuditTest`, `WorkstreamServiceTest`, foundation audit/workstream trace services, `SystemMessageSurface.tsx`, `TraceLinkList.tsx`, and `rv-my-account-denial-and-traces` map to no-enumeration denial, trace refs, and recovery surfaces. | `source-evidence-mapped`; historical `backend-ready` / `api-smoked/frontend-rendered` evidence only. | Execute local denial/trace runtime-validation and manual trace-link browser review; preserve no hidden workstream/source/context leakage. |
+
+Targeted proof command recorded for this review:
+
+```bash
+set -euo pipefail
+paths=(
+  src/main/java/ai/first/api/foundation/security/MeEndpoint.java
+  src/main/java/ai/first/api/coreapp/workstream/WorkstreamEndpoint.java
+  src/main/java/ai/first/application/coreapp/workstream/WorkstreamService.java
+  src/main/java/ai/first/application/coreapp/myaccount/MyAccountService.java
+  src/main/java/ai/first/application/coreapp/myaccount/DigestExportService.java
+  src/main/java/ai/first/application/coreapp/myaccount/MyAccountPersonalAttentionDigestService.java
+  src/main/java/ai/first/application/coreapp/myaccount/MyAccountPersonalAttentionDigestAutonomousAgent.java
+  src/main/java/ai/first/application/coreapp/myaccount/MyAccountEvidenceTools.java
+  frontend/src/workstream/surfaces/DashboardSurface.tsx
+  frontend/src/workstream/surfaces/DetailEditSurface.tsx
+  frontend/src/workstream/surfaces/NotificationCenterSurface.tsx
+  frontend/src/workstream/surfaces/WorkflowStatusSurface.tsx
+  frontend/src/workstream/surfaces/OutcomeSurface.tsx
+  frontend/src/workstream/surfaces/SystemMessageSurface.tsx
+  frontend/src/workstream-chat-tool-plan.contract.test.mjs
+  frontend/src/workstream-my-account-vertical.contract.test.mjs
+  src/test/java/ai/first/application/coreapp/workstream/WorkstreamServiceTest.java
+  src/test/java/ai/first/application/coreapp/myaccount/MyAccountPersonalAttentionDigestServiceTest.java
+  src/test/java/ai/first/application/coreapp/myaccount/MyAccountPersonalAttentionDigestAutonomousAgentTest.java
+)
+for path in "${paths[@]}"; do test -e "$path" || { echo "missing: $path"; exit 1; }; done
+printf 'verified %s mapped My Account implementation/test/frontend paths exist\n' "${#paths[@]}"
+find specs/runtime-validation/scenarios/my-account -type f | sort
+```
+
+Observed output: 19 mapped source/test/frontend paths exist; `specs/runtime-validation/scenarios/my-account/RV-MY-ACCOUNT-001-login-and-account-context.md` exists. This proof supports mapping only; it is not runtime-ready evidence.
 
 ## Historical alignment status summary before TASK-ADR-02-001
 
@@ -118,8 +167,8 @@ Result: non-manual My Account automated alignment is closed for this mini-projec
 
 ## Alignment notes
 
-- Current state is `stale-description-changed` because TASK-ADR-02-001 changed app-description intent after the MAFA-08 automated alignment evidence.
-- `description-ready` is the current My Account graph-readiness state. This file records historical automated alignment evidence plus the new description delta, but it does not claim manual-ready or runtime-ready status.
+- Current state is `partially-aligned` because TASK-ADIA-02-001 mapped the TASK-ADR-02-001 description delta to existing source/test/frontend evidence and runtime-validation scaffold without exercising the current runtime path.
+- `description-ready` is the current My Account graph-readiness state. This file records historical automated alignment evidence plus the TASK-ADIA-02-001 source-evidence review, but it does not claim manual-ready or runtime-ready status.
 - If mapped app-description files are newer than mapped implementation/test files, set the lifecycle implementation alignment to `stale-description-changed` unless a no-code-impact review is recorded.
 - If mapped implementation files changed without app-description reconciliation, set the lifecycle implementation alignment to `stale-code-changed` or `partially-aligned`.
 - Do not use this source-alignment file as runtime-readiness evidence. Runtime readiness still requires automated checks and real local API/UI/agent-path verification for the selected scope.
