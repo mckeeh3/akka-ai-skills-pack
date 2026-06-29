@@ -172,7 +172,7 @@
 
 ### TASK-ADIA-02-003: Align Agent Admin implementation evidence
 
-- status: pending
+- status: done
 - source: specs/app-description-implementation-alignment/workstreams/agent-admin-alignment-plan.md
 - task brief: specs/app-description-implementation-alignment/tasks/02-workstreams/03-align-agent-admin.md
 - depends on:
@@ -199,6 +199,9 @@
   - Agent Admin alignment posture is recorded without overclaiming runtime readiness
   - task changes and queue update are committed
 - notes:
+  - commit message: `app-desc-align: align agent admin evidence`
+  - validation: `git diff --check` passed; mapped evidence proof verified 20 Agent Admin implementation/domain source files, 8 Agent Admin backend tests, 34 foundation agent source files, 18 foundation agent tests, `frontend/src/workstream-agent-admin-vertical.contract.test.mjs`, and `specs/runtime-validation/scenarios/agent-admin/RV-AGENT-ADMIN-001-provider-fail-closed-test-console.md`.
+  - result: lifecycle/source-alignment updated to `partially-aligned` at source-evidence level; implementation follow-up queue now records exact runtime-validation, canonical-id/surface, dashboard-attention, chat-plan/idempotency/partial-failure, and trace-visibility follow-ups without runtime-ready, manual-ready, live provider, or provider-secret-boundary runtime claims.
   - vertical contract: Agent Admin functional-agent workstream; attention category behavior-change proposal/provider-config/loader-denial; role-specific dashboard / surface Agent Admin catalog/detail/governance/test-console/proposal; surface graph node/action edge AgentDefinition/PromptDocument/SkillDocument/ReferenceDocument/manifest/tool-boundary/model/test-console actions and results; governed-tool id/type/exposure managed-agent governance tools; actor adapter/source `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/internal runtime loader; confirmation/approval behavior authority-expansion approval and chat confirmation; idempotency/transaction/result behavior draft/proposal/version activation/result/partial-failure surfaces; capability or foundation scope managed-agent governance; AuthContext / roles / tenant scope SaaS admin tenant scope and provider secret boundary; API / frontend / realtime path Agent Admin route/API/runtime-loader mappings; audit/work trace expectation PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, AgentWorkTrace, provider fail-closed and loader denial traces; validation path `git diff --check` plus mapped evidence proof
 
 ### TASK-ADIA-02-004: Align Governance/Policy implementation evidence
