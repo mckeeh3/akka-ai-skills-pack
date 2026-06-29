@@ -4,70 +4,82 @@
 
 Global traces: `../../../../../global/traces/foundation-trace-patterns.md`.
 
-## Required tenant-admin activity-log scope evidence
+## Required evidence families
 
-Audit/Trace tenant-admin activity-log scope uses durable audit trace records as product data, not merely operational logs. Trace records are immutable until retention expiry.
+Audit/Trace treats audit/work traces as governed product evidence, not merely operational logs. Required event families include:
 
-Required event families:
-
-- `audit_trace.human_request_response_recorded`
-- `audit_trace.agent_request_response_recorded`
-- `audit_trace.tool_call_recorded`
+- `audit_trace.human_surface_action_recorded`
+- `audit_trace.api_call_recorded`
+- `audit_trace.human_chat_plan_proposed`
+- `audit_trace.human_chat_plan_confirmed`
+- `audit_trace.human_chat_plan_tool_executed`
+- `audit_trace.agent_tool_call_recorded`
+- `audit_trace.agent_tool_call_denied`
+- `audit_trace.prompt_skill_reference_model_used`
+- `audit_trace.governed_tool_invocation_recorded`
+- `audit_trace.data_access_recorded`
+- `audit_trace.policy_invocation_recorded`
+- `audit_trace.decision_or_approval_recorded`
 - `audit_trace.action_denied`
-- `audit_trace.search_performed`
-- `audit_trace.detail_viewed`
-- `audit_trace.retention_setting_viewed`
-- `audit_trace.retention_setting_updated`
-- `audit_trace.retention_setting_update_denied`
+- `audit_trace.trace_read_performed`
+- `audit_trace.trace_read_denied`
+- `audit_trace.correlation_lookup_performed`
+- `audit_trace.denial_investigation_performed`
+- `audit_trace.investigation_summary_generated`
+- `audit_trace.support_access_granted`
+- `audit_trace.support_access_used`
+- `audit_trace.support_access_denied`
+- `audit_trace.support_access_expired_or_revoked`
+- `audit_trace.export_requested`
+- `audit_trace.export_approval_required`
+- `audit_trace.export_denied`
+- `audit_trace.export_prepared_redacted`
+- `audit_trace.runtime_validation_evidence_linked`
+- `audit_trace.trace_gap_detected`
 - `audit_trace.retention_expired`
 
 ## Minimum trace fields
 
 Every consequential trace record includes:
 
-- event id and time;
-- worker id and worker type;
-- execution harness, actor adapter, and trace source where applicable;
-- tenant id/safe tenant label;
-- optional customer/account id/safe label;
-- worker type: human, agent, tool, or system;
-- human identity where applicable: email, role, org;
-- agent identity where applicable: agent name, role/workstream, model, prompt/skill/version, session/conversation id, requested-by user;
-- action type;
-- status: success, failure, or denied;
-- deterministic app-generated summary;
-- correlation id and session/conversation id where applicable;
-- authorization basis summary;
-- denial reason and policy reference for denied actions;
+- event id, timestamp, tenant id/safe tenant label, optional customer/account safe label;
+- correlation id, causation/parent event id, session/conversation id, and workTraceId where applicable;
+- worker id/type, execution harness, actor adapter/source (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, `api_call`, `consumer_reaction`, `projection_update`, `internal_call`, `timer_invocation`, or `runtime_validation`);
+- human actor identity where applicable: account id, email/display label, role, org, support-access grant id/scope/expiry;
+- agent identity where applicable: AgentDefinition id/version, workstream, model config ref, prompt/skill/reference/manifest versions, requested-by user, ToolPermissionBoundary decision;
+- governed tool id, adapter tool id where applicable, capability id `audit-and-trace-investigation`, data resource summary, policy/approval/guardrail refs;
+- action type, status, authorization decision, authorization basis summary, denial reason/policy reference when denied;
+- input/output/evidence summary that is safe for the caller and result surface refs;
+- redaction classification: safe, sensitive, redacted, or secret-never-store;
+- partial-failure summary, trace-gap classification, runtime-validation evidence refs, export/support-access refs where applicable;
 - retention classification and expiry time where known.
-
-Request/response trace detail also retains full request and response payloads for tenant-admin detail viewing.
-
-Tool-call trace detail additionally includes:
-
-- tool name;
-- tool purpose;
-- input payload;
-- output payload;
-- authorization result;
-- duration;
-- status/error;
-- linked parent request/response trace id or safe handle.
-
-Retention configuration change traces include old value, new value, tenant, actor, timestamp, status, correlation id, governed tool/capability id, actor adapter, validation/denial reason when applicable, and idempotency/no-op outcome when applicable.
 
 ## Redaction, visibility, and indexing
 
-Tenant admins can view full payloads in authorized detail surfaces. The detail UI must display **"Sensitive full payload — tenant admin access only."**
+Search rows and keyword indexes use deterministic metadata/summary fields only. Full payloads, raw prompt/model outputs, provider credentials, bearer/session tokens, invite secret tokens, backend secrets, frontend-secret material, and hidden cross-tenant identifiers are never indexed or exposed to unauthorized readers.
 
-Search rows and keyword indexes use deterministic metadata/summary fields only. Full payloads are not indexed for keyword search in the tenant-admin activity-log scope.
+Default detail surfaces show safe summaries and redacted evidence. Sensitive detail requires explicit capability such as `trace.sensitive.read`. Sensitive/raw export requires explicit approval and grant; redacted export is the default allowed form when export is enabled.
 
-Trace views must not expose secrets, bearer/session tokens, provider credentials, hidden cross-tenant identifiers, frontend-secret material, or raw implementation internals.
+Trace read access does not imply access to the underlying domain record. If underlying access is denied, Audit/Trace shows redacted summary, denial evidence, or `not_found_or_redacted` according to caller scope.
 
 ## Correlation model
 
-Tool-call traces link to their parent human or agent request/response. Agent traces include session/conversation id, behavior profile/model/prompt/skill/reference version refs where applicable, and requested-by user where applicable. Retention-setting changes correlate to the tenant admin settings action that produced them. Search/detail/retention-read traces must distinguish `surface_action`, `api_call`, `internal_call`, `consumer_reaction`, and `timer_invocation` sources so source-alignment and runtime validation can prove the worker/adapter path.
+Audit/Trace preserves correlation across:
+
+```text
+human surface action → api_call/internal_call → governed tool → capability → result surface
+human chat request → proposed plan → confirmation → per-tool execution → result/partial failure
+agent turn → prompt/skill/reference/model assembly → agent_tool_call/data access/policy decision → response/result
+workflow/consumer/timer/internal call → trace event/projection update → dashboard/search/timeline
+runtime-validation run → source-alignment evidence → trace/correlation/denial/runtime gap finding
+```
+
+Tool-call traces link to parent human/agent/workflow requests. Support-access traces link grant/use/read/export events. Denial traces link attempted actor adapter, governed tool, policy ref, and safe target handle. Timeline/correlation views must preserve causation links and show trace gaps instead of inventing missing events.
+
+## Trace reads and investigation summaries
+
+Trace reads, denied trace reads, correlation lookups, denial investigations, summary generation, support-access review, and export request/result reads are themselves durable trace events. Summary traces include evidence refs, selected scope, redaction disclaimer, requestedBy/confirmedBy where applicable, result surface, and unresolved unknowns.
 
 ## Retention model
 
-Default retention is 90 days. Tenant admins may configure 30 to 365 days. Records are removed only by retention expiry. Retention expiry itself should be diagnosable through retained operational evidence that does not reveal expired payloads beyond authorized retention status.
+Default retention is 90 days unless a governed tenant policy records another supported value. Records are immutable until retention expiry. Retention expiry itself remains diagnosable through retained operational evidence that does not reveal expired payloads beyond authorized retention status.

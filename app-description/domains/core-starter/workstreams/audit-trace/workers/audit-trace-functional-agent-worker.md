@@ -6,20 +6,21 @@ reasoningEngine: model
 scope: workstream-binding
 owningDomain: core-starter
 owningWorkstream: audit-trace
-runtimeReadiness: compile-ready
+runtimeReadiness: description-ready
 
 ## Purpose
 
-The Audit/Trace functional-agent worker is the user-facing workstream assistant behind `audit-trace-agent`. In the tenant-admin activity-log scope it provides navigation wording, safe explanation of visible UI states, and retention-setting help without receiving audit evidence retrieval authority.
+The Audit/Trace functional-agent worker is the user-facing investigation assistant behind `audit-trace-agent`. It helps authorized tenant admins and scoped SaaS support operators search, correlate, explain denials, review support-access evidence, and summarize investigations from authorized/redacted trace evidence.
 
 ## Responsibility
 
 - Owns/does:
-  - Explain how to use visible activity-log filters and detail/retention surfaces.
-  - Explain visible forbidden, validation, stale, retention-expired, and not-found/redacted states without hidden-target enumeration.
-  - Direct tenant admins to protected browser surfaces for search/detail/retention work.
+  - Explain visible Audit/Trace surface states, redaction, trace gaps, denials, and support-access review states.
+  - Propose confirmed read-only chat plans for trace search/read/correlation/denial investigation/summary.
+  - Use bounded read-only `agent_tool_call` adapters where the tool-boundary grants exact scope and model-safe result payloads.
+  - Produce evidence-cited investigation summaries with scope/redaction disclaimers and unresolved unknowns.
 - Does not own/do:
-  - Search traces, read trace detail, reveal full payloads, open tool-call detail, update retention, export evidence, draft notes, acknowledge suspicious activity, generate audit summaries, or execute chat plans.
+  - Widen tenant/support scope, approve support access, approve exports, reveal hidden targets, mutate trace records, change retention, delete traces, bypass redaction, or expose secrets/provider/prompt/raw payloads.
 
 ## Behavior profile
 
@@ -27,89 +28,64 @@ The Audit/Trace functional-agent worker is the user-facing workstream assistant 
   - artifact id/path: `../agents/functional-agent.md`
   - type: agent-system-prompt
   - version/governance state: governed managed-agent configuration for `audit-trace-agent`
-  - summary: assistance only; never retrieve or reveal audit payloads through chat or agent tools.
+  - summary: read-only investigation assistant; authority comes only from governed tools, selected AuthContext, support-access scope, confirmation/approval gates, and redaction policy.
 - Skills:
-  - `at.activity-log-navigation.v1`, `at.denial-message-explanation.v1`, `at.retention-settings-help.v1`.
+  - `at.trace-search-investigation.v1`, `at.timeline-correlation.v1`, `at.denial-investigation.v1`, `at.support-access-review.v1`, `at.redaction-export-boundaries.v1`, `at.runtime-validation-evidence.v1`.
 - Tools:
-  - No tenant-admin activity-log scope trace-search/detail/payload/retention mutation governed tools. Skill/reference loader tools only if authorized by managed-agent governance and redaction policy.
-- Policies/rubrics/examples:
-  - `../policies/policy-bindings.md`, model policy `foundation-audit-trace-model-policy`, tool-boundary entries for `audit-trace-agent`.
+  - read-only search/detail/correlation/denial/summary governed tools through confirmed `human_chat_tool_plan` and bounded `agent_tool_call`; export request only as approval-gated surface handoff where policy allows.
 - Evidence profile:
-  - allowed: visible surface state already provided to the browser, safe denial category, documented retention range/default, non-sensitive navigation labels.
-  - forbidden/redacted: audit rows not already visible in the surface context, full payloads, trace ids/handles not visible to the user, hidden target existence, secrets/tokens/provider/model/prompt payloads.
-- Assistance mode:
-  - workstream assistant / functional agent may explain role guidance: yes.
-  - workstream assistant / functional agent may interpret human text into tool plans: no.
-  - consequential tools require confirmation: not applicable; no consequential tools are granted.
+  - allowed: authorized/redacted trace summaries, safe handles, correlation/timeline summaries, denial reason summaries, support-access review facts, runtime-validation evidence refs, visible surface context.
+  - forbidden/redacted: hidden records, cross-tenant data, secrets/tokens/provider credentials, frontend-secret material, raw prompt/model outputs, raw sensitive payloads without grant, support-only notes outside scope.
 
 ## Authority and scope
 
-- authorityLevel: recommend/observe visible UI state only; no governed evidence read or mutation authority.
-- AuthContext scope: selected tenant context may appear only as visible surface context; not a tool authority basis for the agent.
-- Allowed decisions: answer with safe help, ask clarification, direct to browser surfaces, refuse out-of-scope evidence requests.
-- Requires approval when: not applicable; no execution path is granted.
-- Denied/hidden behavior: refuse and direct to authorized browser surfaces or safe recovery; never confirm hidden trace existence.
-- Retained human authority: tenant admin uses protected browser surfaces for all trace search/detail/retention work.
-
-## Supervision and handoffs
-
-- Supervising human workers: `tenant-admin-human` for visible UI assistance.
-- Supports: `tenant-admin-human`.
-- Handoffs to: protected browser surfaces only; no agent-executed tools.
-- Escalates to: safe denial/system-message guidance when requests ask for payloads, exports, notes, summaries, or authority expansion.
-- Fallback worker or process: deterministic surfaces and Audit/Trace system worker return authoritative data/denials.
-
-## Inputs, evidence, and outputs
-
-- Inputs/triggers: composer/help requests, visible surface context, denial/system-message context.
-- Evidence allowed: visible surface labels, filter names, validation text, retention range/default, safe correlation id when already visible.
-- Evidence forbidden: hidden rows/detail, full payloads, tool-call payloads, secrets, raw provider/model/prompt content, cross-tenant facts.
-- Outputs produced: safe explanations, markdown/system messages, navigation suggestions, refusal/recovery guidance.
-- Result/progress/failure surfaces: explanatory `markdown_response` or `surface-audit-trace-system-message` where implemented; protected evidence remains in browser surfaces.
+- authorityLevel: observe/recommend/read-only investigation; no autonomous mutation or approval authority.
+- AuthContext scope: selected tenant/Organization plus optional customer/account; support operators require active support-access/platform support scope.
+- Allowed decisions: ask clarification, propose read-only plan, execute confirmed plan, refuse unsafe requests, summarize authorized evidence, route to approval-required surfaces.
+- Requires approval when: export/support-access policy requires it, sensitive/raw access is requested, or plan/tool boundary marks the operation approval-required.
+- Denied/hidden behavior: refuse safely, return redacted/not-found/approval-required/forbidden system-message, never enumerate hidden targets.
+- Retained human authority: users confirm chat plans and approve/request export/support-access through governed surfaces; backend enforces policy.
 
 ## Harnesses and actor adapters
 
 | Harness | Actor adapter | Exposure channel | Trace source | Notes |
 |---|---|---|---|---|
-| Akka Agent / governed agent runtime | agent_tool_call | runtime tool catalog | agent_tool_call | No trace search/detail/retention mutation tools granted in this scope. |
-| Workstream assistant chat | none for execution | browser composer | agent_turn | Explanation-only; no `human_chat_tool_plan`. |
-| Structured surfaces | surface_action | browser shell | surface_action | Agent may direct users to surfaces but does not inherit surface authority. |
+| Workstream assistant chat | `human_chat_tool_plan` | browser composer + confirmation surface | `human_chat_tool_plan` | Read-only plan must name tools, scope, redaction, result surfaces, and correlation id before confirmation. |
+| Akka Agent / governed agent runtime | `agent_tool_call` | runtime tool catalog | `agent_tool_call` | Bounded model-safe reads only; missing grant fails closed and traces denial. |
+| Structured surfaces | `surface_action` | browser workstream shell | `surface_action` | Agent may route users to surfaces but does not inherit human surface authority. |
 
 ## Governed tools and capabilities
 
 | Governed tool id | Capability id | Allowed adapter(s) | Authority | Approval/confirmation | Idempotency/transaction boundary |
 |---|---|---|---|---|---|
-| search-audit-traces | audit-and-trace-investigation | none for this worker | none | not applicable | not applicable |
-| read-trace-detail | audit-and-trace-investigation | none for this worker | none | not applicable | not applicable |
-| read-trace-tool-call-detail | audit-and-trace-investigation | none for this worker | none | not applicable | not applicable |
-| read-audit-retention-setting | audit-and-trace-investigation | none for this worker | none | not applicable | not applicable |
-| update-audit-retention-setting | audit-and-trace-investigation | none for this worker | none | not applicable | not applicable |
+| `search-audit-traces` | `audit-and-trace-investigation` | `human_chat_tool_plan`, bounded `agent_tool_call` | read redacted summaries | chat confirmation unless bounded non-sensitive call | read-only; search trace emitted |
+| `search-work-traces` | `audit-and-trace-investigation` | `human_chat_tool_plan`, bounded `agent_tool_call` | read work traces | chat confirmation unless bounded non-sensitive call | read-only |
+| `read-audit-trace-detail` | `audit-and-trace-investigation` | confirmed `human_chat_tool_plan`; bounded redacted `agent_tool_call` | read authorized detail | confirmation; sensitive fields redacted unless granted | read-only detail trace emitted |
+| `read-work-trace-detail` | `audit-and-trace-investigation` | confirmed `human_chat_tool_plan`; bounded redacted `agent_tool_call` | read authorized work trace | confirmation | read-only |
+| `lookup-trace-correlation` | `audit-and-trace-investigation` | `human_chat_tool_plan`, bounded `agent_tool_call` | read timeline/correlation | confirmation when spanning sensitive evidence | read-only |
+| `investigate-denied-trace-access` | `audit-and-trace-investigation` | `human_chat_tool_plan`, bounded `agent_tool_call` | read denial evidence | confirmation when requested by chat | read-only |
+| `summarize-investigation-evidence` | `audit-and-trace-investigation` | `human_chat_tool_plan`, bounded `agent_tool_call` | generate summary from authorized evidence | confirmation for chat plan | result surface; no trace mutation beyond summary evidence |
+| `request-redacted-trace-export` | `audit-and-trace-investigation` | surface handoff only for this worker | request only, no approval | approval gate where policy allows | idempotent export request/result workflow |
 
 ## Policies, constraints, and fail-closed behavior
 
-- Tenant/customer isolation: the agent cannot use selected context to retrieve hidden evidence.
-- Redaction and sensitive data: visible UI context only; no payload disclosure through chat.
-- Tool-boundary or role/capability constraints: no Audit/Trace governed-tool entries in the agent tool boundary for tenant-admin activity-log scope.
-- Provider/configuration preconditions for model-backed workers: missing model/provider/skill/reference/tool-boundary config fails closed; browser surfaces remain deterministic where available.
-- Idempotency/replay/stale handling: not applicable to mutation; stale/expired plan-like requests are refused because chat plans are not supported.
-- Failure behavior: return safe unavailable/refusal/help text with trace refs only if already visible.
-- Denial behavior: do not enumerate hidden targets or imply the agent can inspect evidence.
+- Tenant/customer isolation and support-access checks are backend-enforced for every tool call.
+- Missing model/provider/skill/reference/tool-boundary config fails closed with actionable error and trace evidence.
+- Prompt/skill/reference text cannot expand authority.
+- Tool results are model-safe summaries by default; sensitive detail is surfaced only through role-gated browser surfaces.
+- Partial failures return a structured result surface with per-tool outcome and trace refs.
 
 ## Audit and work traces
 
-Record agent id, worker id/type, selected visible context summary, prompt/skill/reference/model/tool-boundary refs, no-evidence-tool policy decision, refusal/recovery category, and output surface/message id. Do not store or expose raw payloads in agent traces beyond approved audit retention/redaction policy.
+Record agent id, worker id/type, prompt/skill/reference/model/tool-boundary refs, `requestedBy`, `confirmedBy` and confirmation id where applicable, selected AuthContext/support scope, governed tool ids, actor adapter, authorization decision, redaction class, result surface, partial-failure summary, denial/refusal reason, correlation/causation ids, and output summary.
 
 ## Tests and manual runtime scenarios
 
-- Automated tests:
-  - allowed path: navigation/explanation help without evidence retrieval.
-  - denied/forbidden path: prompt asks for search/detail/full payload/export/note/summary/retention mutation.
-  - tenant isolation: hidden/cross-tenant prompt content is not confirmed.
-  - idempotency/replay/stale behavior: not applicable to mutation.
-  - approval/confirmation behavior: no chat-plan execution surfaces are available.
-  - trace/audit evidence: agent refusals and help turns are traced without payload leakage.
-- Manual runtime scenario:
-  - tenant admin prompt → Audit/Trace assistant explanation/refusal → protected browser surface path remains authoritative → trace evidence.
+- Authorized read-only chat plan proposal → confirmation → search/correlation/detail/summary tools → redacted result surface and trace chain.
+- Missing confirmation or missing tool-boundary grant → no tool execution, safe denial, denial trace.
+- Cross-tenant/support-scope prompt → refusal/denial without hidden target enumeration.
+- Summary generation cites only authorized evidence and records redaction/unknowns.
+- Export/support-access request routes to approval-required surface and cannot be self-approved by the agent.
 
 ## Realization links
 

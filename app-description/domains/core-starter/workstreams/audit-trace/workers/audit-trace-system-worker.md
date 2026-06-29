@@ -6,114 +6,76 @@ reasoningEngine: deterministic
 scope: local-workstream
 owningDomain: core-starter
 owningWorkstream: audit-trace
-runtimeReadiness: compile-ready
+runtimeReadiness: description-ready
 
 ## Purpose
 
-The Audit/Trace system worker represents deterministic backend/API/projection/retention participants that record immutable audit traces, execute authorized tenant-admin search/detail/retention operations, enforce retention expiry, and emit trace evidence for reads, denials, validation failures, and updates.
+The Audit/Trace system worker represents deterministic backend/API/projection/consumer/runtime-validation participants that ingest immutable audit/work trace facts, execute authorized search/read/correlation/export workflows, enforce redaction and support-access policy, detect trace gaps, and emit evidence for every read, denial, summary, support-access, export, and runtime-validation path.
 
 ## Responsibility
 
 - Owns/does:
-  - Persist human request/response, agent request/response, tool-call, denial, search/detail-view, retention-view/update, and retention-expiry trace events.
-  - Execute backend-authorized searches over deterministic metadata/summary fields only.
-  - Return authorized full-payload detail with the sensitive tenant-admin warning and secret redaction.
-  - Validate and update retention settings, including idempotent no-op handling.
-  - Enforce tenant scope, no-enumeration denials, and retention expiry.
+  - Persist human, chat-plan, agent-tool, workflow, consumer, API, internal, policy, support-access, export, runtime-validation, denial, and trace-gap events as durable trace facts until retention expiry.
+  - Build tenant/support-scoped search, timeline, correlation, denial-investigation, support-access review, and runtime-validation evidence projections.
+  - Reauthorize every read/export/support-access action server-side.
+  - Apply redaction, secret-never-store, sensitive-detail, retention, and no-enumeration rules.
+  - Execute asynchronous redacted export preparation where policy permits.
+  - Emit read, denial, partial-failure, trace-gap, retention-expiry, and runtime-validation evidence traces.
 - Does not own/do:
-  - Let frontend state authorize trace access, index full payload keyword text, expose secrets/tokens/provider credentials, manually edit/delete audit records, or run export/notes/acknowledgement/AI-summary features in this scope.
-
-## Behavior profile
-
-- Instructions/prompt:
-  - artifact id/path: this worker binding plus `../behavior.md`, `../tools/governed-tools.md`, and realization files.
-  - type: deterministic-instruction
-  - version/governance state: current app-description
-  - summary: enforce backend authorization, immutable trace semantics, scoped search/detail DTOs, retention policy, and traceability.
-- Skills:
-  - trace ingestion, scoped search, detail read, tool-call linkage, retention settings validation/update, retention expiry, denial evidence.
-- Tools:
-  - protected API/internal/consumer/timer adapters for Audit/Trace governed tools and audit trace ingestion/expiry internals.
-- Policies/rubrics/examples:
-  - backend-authorization-default-deny, tenant-customer-isolation, frontend-secret-boundary, redaction/export governance.
-- Evidence profile:
-  - allowed: protected trace store, authorized scoped DTOs, redacted payload detail, retention configuration state.
-  - forbidden/redacted: secrets/tokens/provider credentials/frontend-secret material, cross-tenant records, hidden existence in denials.
-- Assistance mode:
-  - workstream assistant / functional agent may explain role guidance: not applicable.
-  - workstream assistant / functional agent may interpret human text into tool plans: not applicable.
-  - consequential tools require confirmation: enforce validation/idempotency for retention updates; no chat-plan path.
+  - Let frontend state or agent text authorize access, index full payload keyword text, expose secrets/tokens/provider credentials, manually edit/delete audit records, or approve support/export decisions.
 
 ## Authority and scope
 
-- authorityLevel: execute deterministic backend operations under authenticated/service authority; no discretionary audit-admin authority beyond policy.
-- AuthContext scope: selected tenant/Organization, optional customer/account filter inside tenant, service provenance for ingestion/expiry.
-- Allowed decisions: authorize/deny, validate filters/retention values, classify retention-expired/not-found/redacted, no-op duplicate settings submissions, redact secrets.
-- Requires approval when: a future policy adds approval; not currently modeled.
-- Denied/hidden behavior: produce safe forbidden/not-found-redacted/validation surfaces and denial traces without protected existence leakage.
-- Retained human authority: tenant admin chooses search/detail/retention actions; system enforces policy and emits evidence.
-
-## Supervision and handoffs
-
-- Supervising human workers: none directly; behavior is governed by app policies and tests.
-- Supports: `tenant-admin-human`, `audit-trace-functional-agent-worker`, workstream shell, and other workstreams that emit trace records.
-- Handoffs to: none for export/notes/acknowledgements/summaries because those are out of scope.
-- Escalates to: safe system-message/denial surfaces and operational diagnostics where applicable.
-- Fallback worker or process: validation/forbidden/not-found/redacted/retention-expired states.
-
-## Inputs, evidence, and outputs
-
-- Inputs/triggers: audit event ingestion from human/agent/tool/system actions, tenant-admin API calls, retention setting submissions, scheduled retention expiry.
-- Evidence allowed: tenant-scoped trace records, metadata/summary indexes, authorized full-payload detail, retention state.
-- Evidence forbidden: cross-tenant records, hidden trace existence in denials, full payload keyword indexes, raw secrets/tokens/provider credentials to browser/agent.
-- Outputs produced: trace records, search results, detail DTOs, retention setting DTOs, retention update/no-op results, denial/validation/system messages, retention-expiry evidence.
-- Result/progress/failure surfaces: `../surfaces/surfaces.md` inventory.
+- authorityLevel: deterministic backend execution under authenticated/service authority; no discretionary support/admin authority beyond policy.
+- AuthContext scope: selected tenant/Organization, optional customer/account, support-access grant, service provenance for ingestion/projection/retention/runtime-validation.
+- Allowed decisions: authorize/deny, validate filters, redact fields, detect trace gaps, link runtime-validation evidence, classify retention-expired/not-found/redacted, return idempotent export/read states.
+- Requires approval when: export/support-access/sensitive detail policy requires it.
+- Denied/hidden behavior: safe forbidden/not-found-redacted/approval-required/validation surfaces and denial traces without protected existence leakage.
 
 ## Harnesses and actor adapters
 
 | Harness | Actor adapter | Exposure channel | Trace source | Notes |
 |---|---|---|---|---|
-| Protected HTTP/workstream endpoint | api_call | browser/API | api_call | Resolves selected tenant/AuthContext server-side. |
-| Internal audit trace service/store | internal_call | backend | internal_call | Records immutable events and reads scoped DTOs. |
-| Consumer/projection | consumer_reaction | event/entity/topic stream | consumer_reaction | Captures action/tool/denial events from source workstreams where selected. |
-| Timer/timed action | timer_invocation | scheduled backend | timer_invocation | Applies retention expiry according to tenant setting. |
+| Protected HTTP/workstream endpoint | `api_call` | browser/API | `api_call` | Resolves selected tenant/AuthContext/support scope server-side. |
+| Internal audit/work trace service/store | `internal_call` | backend | `internal_call` | Records immutable events and reads scoped DTOs. |
+| Consumer/projection | `consumer_reaction` / `projection_update` | event/entity/topic stream | `consumer_reaction` | Normalizes source workstream events into searchable projections. |
+| Timer/timed action | `timer_invocation` | scheduled backend | `timer_invocation` | Applies retention expiry and trace-gap checks. |
+| Runtime-validation linker | `internal_call` | validation evidence ingestion | `runtime_validation` | Links validation runs/evidence to trace/search/source-alignment views. |
 
 ## Governed tools and capabilities
 
 | Governed tool id | Capability id | Allowed adapter(s) | Authority | Approval/confirmation | Idempotency/transaction boundary |
 |---|---|---|---|---|---|
-| search-audit-traces | audit-and-trace-investigation | api_call, internal_call | observe | none | scoped read query; search trace emitted |
-| read-trace-detail | audit-and-trace-investigation | api_call, internal_call | observe sensitive detail | sensitive warning required | scoped read; detail-view trace emitted |
-| read-trace-tool-call-detail | audit-and-trace-investigation | api_call, internal_call | observe sensitive linked detail | sensitive warning required | scoped read; linked-detail trace emitted |
-| read-audit-retention-setting | audit-and-trace-investigation | api_call, internal_call | observe | none | scoped read; view trace emitted |
-| update-audit-retention-setting | audit-and-trace-investigation | api_call, internal_call | execute retention setting | validation/submit; no chat plan | one tenant setting transaction or idempotent no-op |
-| audit trace ingestion/retention expiry internals | audit-and-trace-investigation | internal_call, consumer_reaction, timer_invocation | execute system bookkeeping | service provenance/policy | append immutable record or expire by retention policy |
+| `search-audit-traces` | `audit-and-trace-investigation` | `api_call`, `internal_call` | read scoped audit summaries | none | read-only; search trace emitted |
+| `search-work-traces` | `audit-and-trace-investigation` | `api_call`, `internal_call` | read scoped work traces | none | read-only |
+| `read-audit-trace-detail` | `audit-and-trace-investigation` | `api_call`, `internal_call` | read authorized detail | sensitive warning/redaction | read-only detail trace emitted |
+| `read-work-trace-detail` | `audit-and-trace-investigation` | `api_call`, `internal_call` | read authorized work trace | sensitive warning/redaction | read-only |
+| `lookup-trace-correlation` | `audit-and-trace-investigation` | `api_call`, `internal_call`, `projection_update` | read correlation timeline | none | read-only projection query |
+| `investigate-denied-trace-access` | `audit-and-trace-investigation` | `api_call`, `internal_call` | read denial evidence | none | read-only denial trace emitted |
+| `summarize-investigation-evidence` | `audit-and-trace-investigation` | `api_call`, `internal_call` | assemble authorized summary evidence | confirmation/approval inherited from caller adapter | summary result fact |
+| `request-redacted-trace-export` | `audit-and-trace-investigation` | `api_call`, `internal_call` | prepare/request redacted export | approval gate where policy requires | idempotent export workflow |
+| `review-support-access-traces` | `audit-and-trace-investigation` | `api_call`, `internal_call` | read support-access evidence | none for read | read-only review trace emitted |
+| trace ingestion / projection / retention / gap internals | `audit-and-trace-investigation` | `internal_call`, `consumer_reaction`, `projection_update`, `timer_invocation` | system bookkeeping | service provenance/policy | append immutable record, update projection, expire by retention, or emit trace-gap fact |
+| runtime-validation evidence link internals | `audit-and-trace-investigation` | `internal_call` | link validation evidence | service provenance/policy | append validation evidence fact |
 
 ## Policies, constraints, and fail-closed behavior
 
-- Tenant/customer isolation: all queries/details/settings are tenant-scoped; optional customer/account filters never cross tenant.
-- Redaction and sensitive data: full payload detail is authorized and warning-gated, but secrets/tokens/provider credentials/frontend-secret material are still absent.
-- Tool-boundary or role/capability constraints: no agent/chat tools for evidence retrieval or mutation in this scope.
-- Provider/configuration preconditions for model-backed workers: not required; no AI summary/search feature in this scope.
-- Idempotency/replay/stale handling: retention update idempotency/no-op; repeated searches/details are read-only; expired refs return safe retention/redaction outcome.
-- Failure behavior: validation/forbidden/not-found/redacted/stale/system-message states plus trace evidence.
-- Denial behavior: no hidden target enumeration, no protected data leakage, safe reason categories.
+- Tenant/customer isolation and support-access checks are server-side and default-deny.
+- Redaction strips secrets/tokens/provider credentials/frontend-secret material from stored/displayed summaries and exports.
+- Projection lag or missing source evidence emits trace-gap diagnostics rather than fabricated timeline entries.
+- Export requests are idempotent; repeated request/scope/correlation returns existing state.
+- Retention expiry is the only normal removal path for immutable trace records.
 
 ## Audit and work traces
 
-Record worker id/type, adapter/source, tenant/admin/service identity, selected context, filters/safe handles, correlation/causation/session ids, governed tool/capability id, authorization decision, full-payload-detail flag, sensitive-warning flag, status/error, retention old/new values, validation/denial reason, redaction decisions, idempotency/no-op outcome, and result surface.
+Record worker id/type, adapter/source, tenant/admin/support/service identity, selected AuthContext/support grant, filters/safe handles, governed tool/capability id, authorization decision, redaction/sensitive flags, support-access/export/runtime-validation refs, status/error, validation/denial reason, idempotency/no-op outcome, trace-gap classification, and result surface.
 
 ## Tests and manual runtime scenarios
 
-- Automated tests:
-  - allowed path: authorized search/detail/tool-call detail/retention view-update.
-  - denied/forbidden path: unauthorized roles, disabled/inactive, cross-tenant, hidden/expired/malformed refs.
-  - tenant isolation: storage/query/detail isolation.
-  - idempotency/replay/stale behavior: retention no-op and retention-expired refs.
-  - approval/confirmation behavior: no chat-plan path; retention form validation.
-  - trace/audit evidence: ingestion, search/read/update/expiry/denial traces.
-- Manual runtime scenario:
-  - API/surface trigger or source event → system worker adapter → governed tool/internal trace operation → audit-and-trace-investigation → typed surface/event/trace evidence.
+- API/surface/chat/agent trigger → system worker adapter → governed tool/internal trace operation → `audit-and-trace-investigation` → typed surface/event/trace evidence.
+- Consumer/projection event missing correlation → trace-gap attention and diagnostic evidence.
+- Runtime-validation result links to source-alignment evidence without exposing secrets.
+- Export request approval/denial/result emits full trace chain.
 
 ## Realization links
 

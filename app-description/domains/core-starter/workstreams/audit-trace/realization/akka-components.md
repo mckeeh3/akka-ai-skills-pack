@@ -2,26 +2,30 @@
 
 Capability: `audit-and-trace-investigation`.
 
-This map is docs-only. It states the tenant-admin activity-log scope component responsibilities implied by current intent and does not prove implementation alignment.
+This map is docs-only. It states component responsibilities implied by current intent and does not prove implementation alignment.
 
 ## Required component responsibilities
 
 | Intent binding | Runtime responsibility |
 |---|---|
-| Immutable audit trace store | Persist tenant-scoped human request/response, agent request/response, tool-call, denial, detail-view, search, retention-setting, and retention-expiry evidence as immutable records until retention expiry, including worker id/type, harness, actor adapter, and trace source where applicable. |
-| Audit trace query/read model | Support tenant-admin search over deterministic metadata/summary fields and filters without indexing full payloads. |
-| Trace detail read path | Reauthorize tenant-admin access and return authorized full payload detail with human/agent/tool/denial fields. |
-| Retention setting state | Store tenant retention setting with default 90 days and allowed 30–365 day updates. |
-| Retention expiry process | Remove immutable records only through retention expiry and leave diagnosable retention-expiry evidence that does not reveal expired payloads. |
-| Authorization boundary | Enforce selected `AuthContext`, active membership, tenant-admin role/capability, tenant isolation, disabled/inactive denial, hidden target non-enumeration, and no agent/chat evidence-tool authority for every read/mutation. |
+| Immutable audit/work trace store | Persist tenant-scoped human surface actions, API calls, chat-plan lifecycle, agent tool calls, workflow/consumer/internal/timer events, denials, policy/approval refs, support-access events, export events, runtime-validation evidence links, and trace-gap findings as immutable records until retention expiry. |
+| Trace normalization consumers | Normalize source workstream events from My Account, User Admin, Agent Admin, Governance/Policy, Audit/Trace, and future business workstreams with worker id/type, actor adapter/source, governed tool/capability, correlation/causation ids, redaction class, and safe summaries. |
+| Audit/work trace projections/views | Support tenant/support-scoped dashboard, search, detail, timeline/correlation, denial investigation, support-access review, summary evidence, export state, and runtime-validation evidence views without indexing full payloads. |
+| Correlation/timeline builder | Preserve parent/child and causation links across `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, workflow, consumer, API, projection, internal, and runtime-validation events; emit trace-gap findings when links are missing. |
+| Support-access and export workflow state | Track support-access grant/use/expiry/denial and redacted export request/approval/result/idempotency states with reviewable trace refs. |
+| Agent work-trace producer | Record AgentDefinition, prompt, skill, reference, model, tool-boundary, data access, tool invocation, authorization, confirmation, approval, and output summaries for `audit-trace-agent` and other managed agents. |
+| Runtime-validation evidence linker | Attach runtime-validation run status/evidence refs to Audit/Trace timelines and source-alignment evidence without storing secrets. |
+| Authorization/redaction boundary | Enforce selected `AuthContext`, active membership, tenant/support scope, role/capability grants, support-access expiry, sensitive-read/export approvals, no hidden enumeration, and secret-never-store rules for every read/action. |
+| Retention expiry process | Remove records only through retention expiry and leave diagnosable retention-expiry evidence that does not reveal expired payloads. |
 
 ## Validation evidence required before build completion
 
-- Component/API tests for immutable record creation and tenant-scoped search/detail reads.
-- Component/API tests for tool-call to parent request/response linkage.
-- Component/API tests for retention setting default, valid update, invalid bounds, same-value no-op, and audit trace emission.
-- Component/API tests for tenant isolation, disabled/inactive user denial, non-admin denial, hidden/expired trace non-enumeration, and secret omission.
+- Component/API tests for immutable trace creation from surface action, chat plan, agent tool call, workflow/consumer/API/internal, denial, support-access, export, runtime-validation, and trace-gap producers.
+- Component/API tests for tenant/support-scoped dashboard/search/detail/timeline/correlation projections and no full-payload keyword indexing.
+- Component/API tests for denial investigation, support-access review, redacted export request/approval/denial/idempotency, and sensitive-detail redaction.
+- Agent work-trace tests for prompt/skill/reference/model/tool-boundary refs, allowed/denied `agent_tool_call`, confirmed `human_chat_tool_plan`, requestedBy/confirmedBy, and partial-failure result refs.
+- Runtime-validation evidence-link tests for safe refs, source-alignment impact, and frontend secret-boundary preservation.
 
-## Explicit tenant-admin activity-log scope component exclusions
+## Explicit component exclusions
 
-Do not include export bundle generation, investigation notes, suspicious-activity review state, autonomous audit summaries, `human_chat_tool_plan`, or agent-tool trace search/detail/retention authority in this tenant-admin activity-log scope build slice unless later current intent adds them.
+Do not implement autonomous trace remediation, support-access self-approval, raw sensitive export by default, trace edit/delete, full-payload keyword search, or prompt-based authority expansion unless later current intent adds those capabilities and policies.

@@ -255,7 +255,7 @@
 
 ### TASK-ADR-02-005: Refresh Audit/Trace workstream app-description
 
-- status: pending
+- status: done
 - source: specs/app-description-refresh/workstreams/audit-trace-migration-plan.md
 - task brief: specs/app-description-refresh/tasks/02-workstreams/05-refresh-audit-trace.md
 - depends on:
@@ -283,6 +283,8 @@
   - Audit/Trace graph links worker/adapter/governed-tool/capability/realization/tests/runtime-validation/traces coherently
   - task changes and queue update are committed
 - notes:
+  - commit message: `app-desc-refresh: refresh audit trace workstream`
+  - graph coverage proof: Audit/Trace files now link tenant admin, SaaS support, Audit Trace functional agent, and system workers through `surface_action`, confirmed `human_chat_tool_plan`, bounded `agent_tool_call`, `api_call`, projection/consumer/internal/timer/runtime-validation adapters to audit/work trace search/read/detail/correlation/denial/support-access/summary/export/runtime-validation governed tools, capability `audit-and-trace-investigation`, dashboard/search/detail/timeline/denial/support-access/summary/export/system-message surfaces, realization API/frontend/Akka/source-alignment maps, runtime-validation expectations, and trace read/denied-read/investigation-summary/support-access/export/cross-workstream-correlation/trace-gap evidence. Lifecycle/source-alignment is `stale-description-changed` because this docs-only refresh changed current intent without runtime/API/UI validation.
   - vertical contract: Audit/Trace functional-agent workstream; attention category investigation, denial, trace gap, support-access review; role-specific dashboard / surface Audit/Trace search/detail/timeline/correlation/investigation surfaces; surface graph node/action edge trace search/read/correlation/summary/export-if-allowed actions and result/redacted/denied surfaces; governed-tool id/type/exposure audit/work trace search/read/correlation/denial investigation tools; actor adapter/source `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, projection/consumer/internal/API where described; confirmation/approval behavior read-only chat confirmation when needed and export/support-access approval where allowed; idempotency/transaction/result behavior read-only idempotency, redacted result surfaces, denied result surfaces; capability or foundation scope audit-and-trace investigation; AuthContext / roles / tenant scope tenant admin/SaaS support/support-access scope and denials; API / frontend / realtime path Audit/Trace route/API/projection mappings; audit/work trace expectation trace reads, denied trace access, investigation summaries, cross-workstream correlations; validation path `git diff --check`
 
 ### TASK-ADR-03-001: Cross-workstream consistency and readiness pass

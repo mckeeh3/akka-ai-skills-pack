@@ -1,138 +1,104 @@
 # Surfaces: Audit/Trace
 
-The Audit/Trace tenant-admin activity-log scope owns browser surfaces for searching audit traces, viewing authorized trace detail/full payloads, and configuring tenant retention. These surfaces are human execution harnesses for `workers/tenant-admin-human.md`; `audit-trace-agent` may explain visible UI state but does not receive these surface actions as agent tools.
+Audit/Trace owns role-specific dashboard, search, detail, timeline/correlation, denial investigation, support-access review, investigation summary, export request/result, and system-message surfaces. These surfaces are human execution harnesses for `tenant-admin-human` and `saas-support-human`; `audit-trace-agent` may assist through confirmed read-only chat plans and bounded model-safe agent-tool calls described in `../agents/functional-agent.md`.
 
-## Current skills-pack binding rules
+## Current graph binding rules
 
-Every Audit/Trace surface action is a `surface_action` adapter from the tenant-admin human worker to one governed tool in capability `audit-and-trace-investigation`, normally exposed through a protected browser `api_call` handled by the Audit/Trace system worker. There is no `human_chat_tool_plan` or Audit/Trace governed-tool `agent_tool_call` adapter in this tenant-admin activity-log scope. Detail/full-payload surfaces must show the sensitive tenant-admin warning and remain backend-authorized even when reached from a visible row, deep link, or related-trace link.
+Every consequential surface action is a `surface_action` adapter to one governed tool in capability `audit-and-trace-investigation`, normally exposed through a protected browser `api_call` handled by the Audit/Trace system worker. Matching `human_chat_tool_plan`, `agent_tool_call`, `consumer_reaction`, `projection_update`, `internal_call`, and `timer_invocation` adapters are modeled separately in `../tools/governed-tools.md` and must not bypass backend authorization, support-access scope, redaction, or trace emission.
 
 ## Surface bindings
 
 | Surface id | Type | Surface contract | Purpose |
 |---|---|---|---|
-| `surface-audit-trace-activity-log` | `list-search` | `audit.trace.activityLog.v1` | Searchable tenant-admin activity log answering "who did what?" |
-| `surface-audit-trace-detail` | `detail` | `audit.trace.detail.v1` | Authorized trace detail with full request/response/tool payloads and sensitive-access warning. |
-| `surface-audit-trace-retention-settings` | `settings-form` | `audit.trace.retentionSettings.v1` | Tenant-admin configuration for audit retention from 30 to 365 days. |
-| `surface-audit-trace-system-message` | `system-message` | `audit.trace.systemMessage.v1` | Safe validation, forbidden, not-found/redacted, or idempotent-result feedback. |
+| `surface-audit-trace-dashboard` | `role-dashboard` | `audit.trace.dashboard.v2` | Attention router for investigations, denials, trace gaps, support-access reviews, runtime-validation evidence, and exports. |
+| `surface-audit-trace-search` | `list-search` | `audit.trace.search.v2` | Search tenant/support-scoped audit and work traces. |
+| `surface-audit-trace-detail` | `detail` | `audit.trace.detail.v2` | Authorized trace/work-trace detail with redaction and sensitive-detail states. |
+| `surface-audit-trace-timeline` | `timeline-correlation` | `audit.trace.timeline.v2` | Correlation timeline across workstreams, workers, adapters, tools, policies, decisions, and runtime-validation evidence. |
+| `surface-audit-trace-denial-investigation` | `investigation` | `audit.trace.denialInvestigation.v2` | Explain authorized denial evidence and safe remediation paths. |
+| `surface-audit-trace-support-access-review` | `review` | `audit.trace.supportAccessReview.v2` | Review support-access grant/use/expiry/denial evidence. |
+| `surface-audit-trace-investigation-summary` | `result-summary` | `audit.trace.investigationSummary.v2` | Evidence-cited summary of selected authorized traces and unknowns. |
+| `surface-audit-trace-export-request` | `approval-result` | `audit.trace.exportRequest.v2` | Redacted export request, approval-required, denied, preparing, ready, expired, or failed result. |
+| `surface-audit-trace-system-message` | `system-message` | `audit.trace.systemMessage.v2` | Safe validation, forbidden, redacted, approval-required, no-op, trace-gap, or failure feedback. |
 
-## `surface-audit-trace-activity-log` contract details
+## Dashboard contract
 
-- Surface role: list/search surface for tenant-scoped audit records.
-- Owner: Audit/Trace workstream; exactly-one functional-agent binding is `audit-trace-agent`, but tenant-admin activity-log scope search/detail actions are browser `surface_action` adapters for `tenant-admin-human` only.
-- Actor/worker: `tenant-admin-human` with selected backend-owned `AuthContext`, active membership, and tenant-admin role/capability.
-- User goal: find the human worker, agent worker, or tool call that performed an action.
-- Primary action: run or refine a backend-authorized search. Success returns rows for the selected tenant only.
+- Surface role: role-specific dashboard and attention router.
+- Actors/workers: tenant admins for tenant scope; SaaS support for support-access/platform scope.
+- Payload fields: `attentionItems`, `activeInvestigations`, `denialQueue`, `traceGapQueue`, `supportAccessReviewQueue`, `runtimeValidationEvidence`, `exportRequests`, `availableActions`, `authContextSummary`, `redaction`, and `correlationId`.
+- Attention categories: `audit-trace.investigation`, `audit-trace.denial`, `audit-trace.trace-gap`, `audit-trace.support-access-review`, `audit-trace.runtime-validation-evidence`.
 
-### Activity log payload schema
-
-Top-level browser-safe fields for `audit.trace.activityLog.v1`:
-
-- `surfaceContract`, `surfaceId`, `generatedAt`, `selectedTenant`, `authContextSummary`, `query`, `filters`, `rows`, `pageInfo`, `availableActions`, `emptyState`, `validationErrors`, `redaction`, and `correlationId`.
-- `filters`: date/time range, worker type, actor/user/agent, action type, customer/account, and status (`success`, `failure`, `denied`).
-- `rows[]`: trace display handle, time, worker type, actor/agent display label, action type, customer/account label or `system/no-customer`, status, deterministic app-generated summary, correlation/session id, and available action ids.
-- `redaction`: safe explanation of omitted data categories; rows never include full payloads, secrets, raw tokens, provider credentials, or hidden cross-tenant identifiers.
-
-Keyword search applies only to deterministic metadata/summary fields and never to full payloads.
-
-### Activity log action map
-
-| User-facing interaction | Action id | Governed capability/tool | Result surface or outcome |
+| Interaction | Action id | Governed tool | Result surface/outcome |
 |---|---|---|---|
-| Run, refresh, filter, sort, or page activity log | `action-audit-trace-search` | `audit.trace.search` / `search-audit-traces` | `surface-audit-trace-activity-log`, `validation-error`, or `forbidden` |
-| Open trace detail from an authorized row | `action-audit-trace-detail` | `audit.trace.detail.read` / `read-trace-detail` | `surface-audit-trace-detail` or `not_found_or_redacted` |
-| Open retention settings | `action-audit-trace-retention-settings-open` | `audit.trace.retention.read` / `read-audit-retention-setting` | `surface-audit-trace-retention-settings` |
+| Open trace search | `action-audit-trace-search-open` | `search-audit-traces` | `surface-audit-trace-search` |
+| Open denial queue item | `action-audit-trace-denial-open` | `investigate-denied-trace-access` | `surface-audit-trace-denial-investigation` |
+| Open trace-gap item | `action-audit-trace-correlation-open` | `lookup-trace-correlation` | `surface-audit-trace-timeline` or trace-gap system message |
+| Open support-access review | `action-audit-trace-support-access-review-open` | `review-support-access-traces` | `surface-audit-trace-support-access-review` |
+| Open runtime-validation evidence | `action-audit-trace-runtime-validation-open` | `lookup-trace-correlation` | `surface-audit-trace-timeline` or detail |
 
-### Activity log states, traces, UI, and tests
+States: loading, ready, empty actionable queues, forbidden, partial-data/redacted, stale/reconnect, trace-gap, and failure.
 
-- States: loading, empty authorized result set, ready, submitting, validation-error, forbidden, partial-data/redacted, stale/reconnect, and failure.
-- Every search, validation failure, denial, empty result, partial/redacted result, and detail-open attempt emits trace evidence with tenant, actor, selected filters, status, and correlation id.
-- Rows and controls are keyboard-operable, have visible focus, use accessible table/list semantics, and do not rely on color alone for status.
-- Surface-description sufficiency review: sufficient for tenant-admin activity-log scope implementation without inventing payload fields, actions, auth/tenant behavior, trace links, tests, or component semantics.
+## Search contract
 
-## `surface-audit-trace-detail` contract details
+- Surface role: list/search for audit/work trace records.
+- User goal: find relevant trace evidence without full-payload keyword search.
+- Payload fields: `query`, `filters`, `rows`, `pageInfo`, `availableActions`, `emptyState`, `validationErrors`, `redaction`, `authContextSummary`, and `correlationId`.
+- Filters: date/time range, tenant/customer within scope, actor, worker/workstream, event category, action type, governed tool/capability, policy/agent/prompt/skill/reference/model refs where visible, actor adapter/source, status, and safe correlation/work-trace id.
+- Rows: safe display handle, time, actor label, worker/workstream, action, adapter/source, status, deterministic summary, redaction class, customer/account label or `system/no-customer`, correlation/work-trace id, and action ids.
 
-- Surface role: detail view for one authorized tenant-scoped audit trace.
-- Actor/worker: `tenant-admin-human` with selected backend-owned `AuthContext`, active membership, and tenant-admin role/capability.
-- User goal: inspect full payload evidence for a specific human request/response, agent request/response, tool call, denial, failure, or retention-setting change.
-- Primary action: open or refresh detail; follow linked parent/child trace references when authorized.
-- Sensitive warning: the detail view must show **"Sensitive full payload — tenant admin access only."** before or beside full payload sections.
-
-### Detail payload schema
-
-Top-level browser-safe fields for `audit.trace.detail.v1`:
-
-- `surfaceContract`, `surfaceId`, `generatedAt`, `selectedTenant`, `authContextSummary`, `traceDisplayHandle`, `time`, `worker`, `action`, `status`, `customerAccount`, `correlationId`, `sessionConversationId`, `summary`, `sensitivePayloadWarning`, `requestPayload`, `responsePayload`, `toolCall`, `denial`, `relatedTraces`, `retentionStatus`, `availableActions`, `redaction`, and `recovery`.
-- `worker.human`: email, role, and org when worker type is human.
-- `worker.agent`: agent name, role/workstream, model used, prompt/skill/version used, session/conversation id, and requested-by human/user where applicable.
-- `toolCall`: tool name, purpose, input payload, output payload, authorization result, duration, status/error, and linked parent request/response.
-- `denial`: denial reason and policy reference when status is denied.
-- `relatedTraces[]`: parent request/response link for tool calls and child tool-call links for parent requests/responses.
-
-Internal-only metadata includes secrets, bearer/session tokens, provider credentials, hidden cross-tenant identifiers, raw storage ids, and backend implementation names unless a future diagnostic role explicitly authorizes them.
-
-### Detail action map
-
-| User-facing interaction | Action id | Governed capability/tool | Result surface or outcome |
+| Interaction | Action id | Governed tool | Result surface/outcome |
 |---|---|---|---|
-| Open or refresh trace detail | `action-audit-trace-detail` | `audit.trace.detail.read` / `read-trace-detail` | `surface-audit-trace-detail`, `not_found_or_redacted`, or `forbidden` |
-| Open linked tool-call detail or parent request/response | `action-audit-trace-tool-call-detail` | `audit.trace.tool_call.detail.read` / `read-trace-tool-call-detail` | `surface-audit-trace-detail` or `not_found_or_redacted` |
-| Return to activity log with prior filters | `action-audit-trace-search` | `audit.trace.search` / `search-audit-traces` | `surface-audit-trace-activity-log` |
+| Run/refresh/filter/sort/page audit traces | `action-audit-trace-search` | `search-audit-traces` | `surface-audit-trace-search`, validation-error, forbidden |
+| Search work traces | `action-audit-work-trace-search` | `search-work-traces` | `surface-audit-trace-search` |
+| Open selected trace detail | `action-audit-trace-detail` | `read-audit-trace-detail` | `surface-audit-trace-detail` or `not_found_or_redacted` |
+| Open selected work trace | `action-audit-work-trace-detail` | `read-work-trace-detail` | `surface-audit-trace-detail` |
+| Open correlation timeline | `action-audit-trace-correlation-open` | `lookup-trace-correlation` | `surface-audit-trace-timeline` |
+| Request summary from selected traces | `action-audit-trace-summary-request` | `summarize-investigation-evidence` | `surface-audit-trace-investigation-summary` |
+| Request redacted export | `action-audit-trace-export-request` | `request-redacted-trace-export` | `surface-audit-trace-export-request` |
 
-### Detail states, traces, UI, and tests
+Search states: loading, empty authorized result set, ready, submitting, validation-error, forbidden, partial-data/redacted, stale/reconnect, trace-gap, and failure.
 
-- States: loading, ready, forbidden, `not_found_or_redacted`, retention-expired, partial-data/redacted, stale/reconnect, and failure.
-- Every detail read, linked trace open, denial, not-found/redacted result, and retention-expired result emits trace evidence.
-- Full payload sections are visually subordinate to the sensitive warning and are not copied into list rows or keyword search.
-- Surface-description sufficiency review: sufficient for tenant-admin activity-log scope implementation without inventing payload fields, actions, auth/tenant behavior, trace links, tests, or component semantics.
+## Detail contract
 
-## `surface-audit-trace-retention-settings` contract details
+- Surface role: detail view for one authorized trace or work trace.
+- Payload fields: `traceDisplayHandle`, `workTraceId`, `time`, `tenant`, `customerAccount`, `actor`, `worker`, `workstream`, `eventCategory`, `action`, `actorAdapterSource`, `governedToolId`, `capabilityId`, `authorizationDecision`, `authorizationBasisSummary`, `policyRefs`, `approvalRefs`, `promptSkillReferenceModelRefs`, `inputSummary`, `outputSummary`, `safePayload`, `sensitivePayloadState`, `denial`, `supportAccess`, `runtimeValidationEvidence`, `relatedTraces`, `redaction`, `availableActions`, and `correlationId`.
+- Default view is safe summary and redaction status. Sensitive payload sections require explicit `trace.sensitive.read` and still omit secret-never-store material.
 
-- Surface role: settings form for tenant audit retention.
-- Actor/worker: `tenant-admin-human` with selected backend-owned `AuthContext`, active membership, and tenant-admin role/capability.
-- User goal: review and update the tenant audit-retention value.
-- Primary action: submit a retention value from 30 to 365 days.
-
-### Retention payload schema
-
-Top-level browser-safe fields for `audit.trace.retentionSettings.v1`:
-
-- `surfaceContract`, `surfaceId`, `generatedAt`, `selectedTenant`, `authContextSummary`, `currentRetentionDays`, `defaultRetentionDays`, `allowedMinDays`, `allowedMaxDays`, `pendingValue`, `validationErrors`, `lastChangedBy`, `lastChangedAt`, `availableActions`, and `correlationId`.
-
-Default retention is 90 days. Allowed values are 30 through 365 days.
-
-### Retention action map
-
-| User-facing interaction | Action id | Governed capability/tool | Result surface or outcome |
+| Interaction | Action id | Governed tool | Result surface/outcome |
 |---|---|---|---|
-| Open retention settings | `action-audit-trace-retention-settings-open` | `audit.trace.retention.read` / `read-audit-retention-setting` | `surface-audit-trace-retention-settings` |
-| Save retention setting | `action-audit-trace-retention-settings-save` | `audit.trace.retention.update` / `update-audit-retention-setting` | `surface-audit-trace-retention-settings` or `surface-audit-trace-system-message` |
+| Open or refresh audit trace detail | `action-audit-trace-detail` | `read-audit-trace-detail` | `surface-audit-trace-detail`, forbidden, `not_found_or_redacted` |
+| Open or refresh work trace detail | `action-audit-work-trace-detail` | `read-work-trace-detail` | `surface-audit-trace-detail` |
+| Follow related trace/work-trace link | `action-audit-trace-correlation-open` | `lookup-trace-correlation` | `surface-audit-trace-timeline` |
+| Open denial explanation | `action-audit-trace-denial-open` | `investigate-denied-trace-access` | `surface-audit-trace-denial-investigation` |
+| Summarize this trace/correlation | `action-audit-trace-summary-request` | `summarize-investigation-evidence` | `surface-audit-trace-investigation-summary` |
 
-### Retention states, traces, UI, and tests
+Detail states: loading, ready, forbidden, `not_found_or_redacted`, retention-expired, partial-data/redacted, sensitive-grant-required, stale/reconnect, and failure.
 
-- States: loading, ready, submitting, validation-error, forbidden, no-op/idempotent, saved, stale/conflict, and failure.
-- Saving a valid changed value emits an immutable audit trace recording old value, new value, actor email/role/org, tenant, timestamp, status, and correlation id.
-- Submitting the same value is an idempotent no-op with a diagnosable outcome trace.
-- Values below 30 or above 365 are rejected with validation feedback and no configuration change.
-- Surface-description sufficiency review: sufficient for tenant-admin activity-log scope implementation without inventing payload fields, actions, auth/tenant behavior, trace links, tests, or component semantics.
+## Timeline/correlation contract
 
-## Common action and trace rules
+Timeline surfaces show ordered causation links across source workstreams and adapters. Payload includes `correlationId`, `workTraceId`, `timelineEvents`, `causationLinks`, `sourceWorkstreams`, `actorAdapters`, `traceGaps`, `runtimeValidationEvidence`, `redaction`, and `availableActions`.
 
-Every action map row has:
+| Interaction | Action id | Governed tool | Result surface/outcome |
+|---|---|---|---|
+| Build/refresh correlation timeline | `action-audit-trace-correlation-open` | `lookup-trace-correlation` | `surface-audit-trace-timeline` |
+| Open event detail from timeline | `action-audit-trace-detail` | `read-audit-trace-detail` or `read-work-trace-detail` | `surface-audit-trace-detail` |
+| Open trace gap diagnostics | `action-audit-trace-gap-open` | `lookup-trace-correlation` | `surface-audit-trace-system-message` or timeline with gaps |
 
-- browser action id as the human-facing `surface_action` adapter;
-- governed tool id as the semantic operation;
-- capability id `audit-and-trace-investigation` / named capability alias shown in the table;
-- protected `api_call` implementation path that rechecks selected tenant `AuthContext`, active membership, and tenant-admin authorization;
-- trace source `surface_action` for the human surface interaction and `api_call` / `internal_call` for backend execution evidence.
+## Denial/support-access/summary/export contracts
 
-Rows, filters, summaries, route params, related-trace links, and agent text are never authorization controls. Hidden or expired targets return `not_found_or_redacted`/forbidden system messages without enumeration.
+- Denial investigation shows authorized denial reason, policy reference, actor adapter, governed tool/capability, selected AuthContext, redaction state, safe remediation, and related trace refs.
+- Support-access review shows grant id/scope/expiry, requester/approver/support actor, use/denial/export/read events, tenant-visible review status, and redaction state.
+- Investigation summary shows selected evidence refs, correlation chain, denials, trace gaps, support-access/export refs, redaction disclaimer, confidence/unknowns, and recommended next human action. It is a result surface, not the source of truth.
+- Export request shows requested scope, redaction level, approval state, prepared artifact safe handle if allowed, expiry, denied reason, and audit trace refs. Raw/sensitive export returns approval-required or denied unless explicit policy grants it.
 
-## Explicit tenant-admin activity-log scope exclusions
+## Common action, trace, and UI rules
 
-The following previously discussed or candidate surfaces are out of scope for the tenant-admin activity-log scope and must not be generated as working features from this workstream description:
+Every action map row has a human `surface_action` adapter, governed tool id, capability id `audit-and-trace-investigation`, protected `api_call` realization path, and trace source. Matching chat/agent/system adapters are separately authorized.
 
-- export request or compliance bundle surfaces;
-- investigation note surfaces;
-- suspicious activity acknowledgement/review surfaces;
-- AI-generated summary progress/review surfaces;
-- full-payload keyword search surfaces.
+Rows, filters, summaries, route params, related links, and agent text are never authorization controls. Hidden or expired targets return `not_found_or_redacted`, forbidden, approval-required, or redacted result surfaces without enumeration.
+
+## Accessibility, responsive, and sufficiency review
+
+- Dashboard cards, rows, filters, timeline events, detail links, support-access review controls, summary/export actions, and confirmations are keyboard-operable with visible focus.
+- Status and redaction are not communicated by color alone.
+- Browser assets/API payloads do not expose secrets, provider credentials, bearer/session tokens, hidden cross-tenant identifiers, or frontend-secret material.
+- Surface-description sufficiency review: sufficient for current Audit/Trace implementation planning without inventing payload fields, actions, states, auth/tenant/support behavior, trace links, tests, or component semantics.
