@@ -1,227 +1,600 @@
 # Implementation Follow-up Queue
 
-This file is populated by workstream alignment tasks and consolidated by `TASK-ADIA-03-001`.
+This file was consolidated by `TASK-ADIA-03-001` into an executable follow-up queue. It does not implement the follow-up work; it preserves the bounded remediation and runtime-validation tasks that later fresh contexts can execute one at a time.
 
-Do not execute entries from this file until they have been converted into runnable pending tasks with required reads, vertical workstream contracts, required checks, and runtime-validation expectations.
+Readiness claim: queue-authoring only. No runtime-validation scenario has passed and no workstream is `runtime-ready` from this consolidation.
 
-## Follow-up tasks
+## Queue rules
 
-### ADIA-FU-UA-001: Execute User Admin invitation runtime-validation scenario
+- Execute one task per fresh harness context.
+- Select the first `pending` task whose dependencies are satisfied.
+- Preserve task IDs; supersede obsolete tasks rather than deleting them.
+- Mark exactly one task `in-progress` before implementation or runtime-validation edits.
+- Mark `done` only after the task's required checks and runtime evidence requirements pass, or `blocked` with an exact blocker classification.
+- Do not count fixture-only, mock-only, provider-less success, frontend-only rendering, or description-only evidence as runtime-ready.
+- For feature-bearing remediation tasks, update the affected workstream lifecycle/source-alignment evidence before marking the task `done`.
 
-- source task: `TASK-ADIA-02-002`
-- source workstream: User Admin
-- type: runtime-validation execution
-- status: proposed-for-consolidation
-- evidence basis: `app-description/domains/core-starter/workstreams/user-admin/realization/source-alignment.md`, `specs/runtime-validation/scenarios/user-admin/RV-USER-ADMIN-001-invite-user.md`
-- gap: `RV-USER-ADMIN-001` is authored but not run. User Admin invitation create/idempotency/provider-state/non-admin denial has source/test/frontend evidence only.
-- expected runnable scope: start the local app, authenticate as configured organization-admin/member personas or approved local equivalents, execute invitation create, duplicate invite, and denied member attempt through protected API/UI, and capture result surface plus audit/work trace ids.
-- blocker classification if setup is missing: `auth-setup-blocker` for missing WorkOS/AuthKit/local test users; `provider-config-blocker` for live email delivery when Resend credentials are required.
+## Consolidated order
 
-### ADIA-FU-UA-002: Verify User Admin invitee acceptance and selected-context refresh path
+1. Execute the authored first runtime-validation scenario for each foundation workstream.
+2. Validate auth/setup and provider/fail-closed paths that block runtime-readiness claims.
+3. Reconcile canonical governed-tool/surface/action identifiers before broadening runtime evidence.
+4. Implement or verify deeper compile/runtime gaps one bounded vertical slice at a time.
+5. Record run evidence under `specs/runtime-validation/runs/` and keep source-alignment files honest about readiness levels.
 
-- source task: `TASK-ADIA-02-002`
-- source workstream: User Admin
-- type: auth/runtime-validation gap
-- status: proposed-for-consolidation
-- evidence basis: `InvitationAcceptanceEndpoint.java`, foundation identity/invitation services, `InvitationAndUserAdminServiceTest.java`, User Admin source-alignment invitation slice
-- gap: Source/tests map signed-token invitation acceptance and `/api/me` selected-context refresh, but no current runtime record proves WorkOS/AuthKit invitee identity, token validation, account/membership activation, replay behavior, and safe expired/revoked/mismatched recovery.
-- expected runnable scope: run valid acceptance, replay by same account, mismatch/expired/revoked denial, and selected-context refresh through the protected local path; verify no raw tokens, JWT/session values, or provider internals appear in browser payloads/traces.
-- blocker classification if setup is missing: `auth-setup-blocker`.
+## Tasks
 
-### ADIA-FU-UA-003: Verify User Admin provider fail-closed and configured-provider paths
+### TASK-ADIA-FU-001: Execute My Account login/account-context runtime-validation scenario
 
-- source task: `TASK-ADIA-02-002`
-- source workstream: User Admin
-- type: provider/runtime-validation gap
-- status: proposed-for-consolidation
-- evidence basis: `ResendEmailService.java`, `RealResendProviderSmokeTest.java`, access-review runtime classes/tests, User Admin source-alignment provider-blocked slices
-- gap: Resend invitation delivery and model-backed access-review/User Admin guidance have source/test evidence and fail-closed expectations, but no current configured local provider runtime record. Missing provider/model/outbox configuration must not be counted as normal success.
-- expected runnable scope: with provider secrets available, execute Resend invite delivery and access-review model-backed happy path; without provider secrets, execute runtime fail-closed surfaces/messages/traces for invite delivery, chat-plan proposal/model use where applicable, and access-review tasks.
-- blocker classification if setup is missing: `provider-config-blocker`.
+- status: pending
+- source: `TASK-ADIA-02-001`; `specs/runtime-validation/scenarios/my-account/RV-MY-ACCOUNT-001-login-and-account-context.md`
+- depends on: []
+- required reads:
+  - `specs/app-description-implementation-alignment/source-evidence-inventory.md`
+  - `specs/app-description-implementation-alignment/runtime-validation-corpus-plan.md`
+  - `app-description/domains/core-starter/workstreams/my-account/realization/source-alignment.md`
+  - `specs/runtime-validation/scenarios/my-account/RV-MY-ACCOUNT-001-login-and-account-context.md`
+- skills:
+  - `akka-runtime-feature-verification`
+- expected outputs:
+  - a run record under `specs/runtime-validation/runs/`
+  - updated My Account source-alignment/lifecycle notes if evidence changes
+- required checks:
+  - `git diff --check`
+  - execute or precisely block `RV-MY-ACCOUNT-001` through the local Akka/API/UI path
+- done criteria:
+  - login, `/api/me`, account context, open-disabled/denial behavior, browser-safe payloads, and trace evidence are recorded or explicitly blocked
+- block criteria:
+  - `auth-setup-blocker`, `seed-data-blocker`, or `runtime-validation-gap` if the scenario cannot run
+- notes:
+  - vertical contract: My Account functional agent workstream; attention category account/profile context or open-disabled blocker; role-specific dashboard / surface My Account dashboard/profile/account-context surfaces; surface graph node/action edge login/open account context/read profile/denied-open result surface; governed-tool id/type/exposure account context and profile read tools via `surface_action` and `api_call`; actor adapter/source `surface_action`, `api_call`, and bounded `human_chat_tool_plan` where surfaced; confirmation/approval behavior none for reads and explicit confirmation only if profile/chat actions are executed; idempotency/transaction/result behavior read/no-op profile result surfaces; capability `account-context-and-profile`; AuthContext / roles / tenant scope signed-in member tenant/Organization scope; Akka substrate endpoint/service/view/frontend; API / frontend / realtime path `/api/me` and My Account workstream surfaces; audit/work trace requirements account-context read, denial, and correlation traces; local validation path `RV-MY-ACCOUNT-001` with run record under `specs/runtime-validation/runs/`.
 
-### ADIA-FU-UA-004: Author or execute User Admin role/status/support/identity/access-review/chat-plan runtime-validation coverage
+### TASK-ADIA-FU-002: Execute User Admin invitation runtime-validation scenario
 
-- source task: `TASK-ADIA-02-002`
-- source workstream: User Admin
-- type: runtime-validation corpus gap
-- status: proposed-for-consolidation
-- evidence basis: User Admin `tests/coverage.md`, `traces/work-traces.md`, `realization/source-alignment.md`, backend/frontend tests inventoried by TASK-ADIA-02-002
-- gap: Existing runtime-validation corpus covers only the invitation scenario. Role/status/support-access, identity exception, last-admin guard, access-review advisory result, `human_chat_tool_plan` exact confirmation/partial-failure, admin-audit trace, and secret-boundary paths still lack durable scenario/run coverage.
-- expected runnable scope: create or execute bounded scenarios for role change success/denial, membership status/last-admin/self-action denial, support-access grant/revoke/expiry, identity exception recovery, access-review provider/fail-closed advisory flow, exact chat-plan proposal/confirmation/denial/partial-failure, and audit/trace reauthorization.
-- blocker classification if setup is missing: `auth-setup-blocker`, `provider-config-blocker`, or `runtime-validation-gap` as applicable.
+- status: pending
+- source: `ADIA-FU-UA-001`; `TASK-ADIA-02-002`; `specs/runtime-validation/scenarios/user-admin/RV-USER-ADMIN-001-invite-user.md`
+- depends on:
+  - `TASK-ADIA-FU-001`
+- required reads:
+  - `specs/app-description-implementation-alignment/source-evidence-inventory.md`
+  - `app-description/domains/core-starter/workstreams/user-admin/realization/source-alignment.md`
+  - `specs/runtime-validation/scenarios/user-admin/RV-USER-ADMIN-001-invite-user.md`
+- skills:
+  - `akka-runtime-feature-verification`
+- expected outputs:
+  - run record for `RV-USER-ADMIN-001`
+  - User Admin source-alignment update or blocker notes
+- required checks:
+  - `git diff --check`
+  - execute or precisely block `RV-USER-ADMIN-001` through the protected local path
+- done criteria:
+  - invitation create, duplicate invite/idempotency, denied member attempt, result surface, and audit/work trace ids are recorded
+- block criteria:
+  - `auth-setup-blocker` for missing WorkOS/AuthKit/local users; `provider-config-blocker` for required live email delivery
+- notes:
+  - vertical contract: User Admin functional agent workstream; attention category invitation/onboarding; role-specific dashboard / surface User Admin dashboard/invite/result/admin-audit surfaces; surface graph node/action edge invitation create, duplicate invite, denied member invite, and result/system-message surfaces; governed-tool id/type/exposure invitation tools via `surface_action` and API; actor adapter/source `surface_action`, `api_call`, and confirmed `human_chat_tool_plan` only if in scenario; confirmation/approval behavior invite confirmation where surfaced; idempotency/transaction/result behavior duplicate invite idempotency and invitation result surfaces; capability `user-and-access-administration`; AuthContext / roles / tenant scope organization-admin versus member tenant scope; Akka substrate endpoint/service/entity/view/frontend; API / frontend / realtime path User Admin workstream and admin endpoints; audit/work trace requirements invitation, denial, requestedBy/confirmedBy traces; local validation path `RV-USER-ADMIN-001` with run record.
 
-### ADIA-FU-AA-001: Execute Agent Admin provider fail-closed test-console runtime-validation scenario
+### TASK-ADIA-FU-003: Verify User Admin invitee acceptance and selected-context refresh path
 
-- source task: `TASK-ADIA-02-003`
-- source workstream: Agent Admin
-- type: runtime-validation execution
-- status: proposed-for-consolidation
-- evidence basis: `app-description/domains/core-starter/workstreams/agent-admin/realization/source-alignment.md`, `specs/runtime-validation/scenarios/agent-admin/RV-AGENT-ADMIN-001-provider-fail-closed-test-console.md`, `AgentRuntimeServiceTest.java`, `WorkstreamService.java`
-- gap: `RV-AGENT-ADMIN-001` is authored but not run. Source/tests cover provider-missing fail-closed and no-side-effect test-console behavior, but no local API/UI/browser run proves the Agent Admin test-console fail-closed surface, loader/tool-boundary denial trace links, idempotent retry, or browser provider-secret boundary.
-- expected runnable scope: start the local app with model provider credentials absent or recorded as withheld, authenticate as the SaaS-admin persona, open Agent Admin catalog/detail/test-console, submit a harmless test prompt, verify provider/config blocker and loader/tool-boundary denial copy, capture sanitized network payloads and trace ids, and confirm no provider keys/raw credentials/hidden prompt text appear in browser-visible payloads.
-- blocker classification if setup is missing: `auth-setup-blocker` for missing SaaS-admin local mapping; `provider-config-blocker` only if the app cannot be placed in an intentionally missing-provider state; `runtime-validation-gap` until a run record exists.
+- status: pending
+- source: `ADIA-FU-UA-002`; `TASK-ADIA-02-002`
+- depends on:
+  - `TASK-ADIA-FU-002`
+- required reads:
+  - `app-description/domains/core-starter/workstreams/user-admin/realization/source-alignment.md`
+  - `specs/app-description-implementation-alignment/source-evidence-inventory.md`
+  - `specs/runtime-validation/scenarios/user-admin/RV-USER-ADMIN-001-invite-user.md`
+- skills:
+  - `akka-runtime-feature-verification`
+- expected outputs:
+  - runtime-validation run record or explicit auth/setup blocker for acceptance and selected-context refresh
+- required checks:
+  - `git diff --check`
+  - protected acceptance-path runtime smoke or blocker record
+- done criteria:
+  - valid acceptance, replay, mismatched/expired/revoked denial, `/api/me` selected-context refresh, and browser secret-boundary evidence are recorded
+- block criteria:
+  - `auth-setup-blocker` if invitee identity or token setup is unavailable
+- notes:
+  - vertical contract: User Admin functional agent workstream; attention category invitation acceptance/account activation; role-specific dashboard / surface invitation acceptance result and selected-context account surfaces; surface graph node/action edge accept invite, replay, mismatch/expired/revoked denial, selected-context refresh; governed-tool id/type/exposure invitation acceptance and context refresh via `api_call` plus surface result; actor adapter/source `api_call` and frontend route; confirmation/approval behavior token validation with no approval; idempotency/transaction/result behavior replay idempotency and activation transaction result surfaces; capability `user-and-access-administration`; AuthContext / roles / tenant scope invitee account and tenant membership scope; Akka substrate endpoint/service/entity/view/frontend; API / frontend / realtime path `InvitationAcceptanceEndpoint`, `/api/me`, and acceptance surface; audit/work trace requirements invitation acceptance, replay, denial, and selected-context traces; local validation path runtime smoke plus run record.
 
-### ADIA-FU-AA-002: Reconcile Agent Admin canonical governed-tool ids and current surface names
+### TASK-ADIA-FU-004: Execute Agent Admin provider fail-closed test-console runtime-validation scenario
 
-- source task: `TASK-ADIA-02-003`
-- source workstream: Agent Admin
-- type: source/API/frontend contract alignment gap
-- status: proposed-for-consolidation
-- evidence basis: Agent Admin `tools/governed-tools.md`, `surfaces/surfaces.md`, `realization/source-alignment.md`, `WorkstreamService.java`, `AgentAdminDocAdministrationService.java`, `workstream-agent-admin-vertical.contract.test.mjs`
-- gap: App-description canonical ids (`agent-definition.catalog.read`, `prompt-document.proposal.create`, `agent-test-console.run`, `agent-runtime-trace.read`, etc.) currently coexist with implementation aliases (`list-agent-doc-agents`, `draft-agent-doc-edit`, `activate-agent-doc-version`, `surface-agent-test-console`, etc.). Alignment is partial until aliases are explicitly mapped or implementation/contracts adopt canonical ids and `surface-agent-admin-*` names.
-- expected runnable scope: choose a compatibility posture, update API/frontend/app-description mapping consistently, prove each canonical Agent Admin governed-tool id maps to one backend capability/action and one frontend result surface, and preserve legacy aliases only as compatibility wrappers with tests.
-- blocker classification if setup is missing: `source-alignment-gap` or `test-gap`; do not mark runtime-ready from alias mapping alone.
+- status: pending
+- source: `ADIA-FU-AA-001`; `TASK-ADIA-02-003`; `specs/runtime-validation/scenarios/agent-admin/RV-AGENT-ADMIN-001-provider-fail-closed-test-console.md`
+- depends on:
+  - `TASK-ADIA-FU-003`
+- required reads:
+  - `app-description/domains/core-starter/workstreams/agent-admin/realization/source-alignment.md`
+  - `specs/app-description-implementation-alignment/source-evidence-inventory.md`
+  - `specs/runtime-validation/scenarios/agent-admin/RV-AGENT-ADMIN-001-provider-fail-closed-test-console.md`
+- skills:
+  - `akka-runtime-feature-verification`
+- expected outputs:
+  - run record for `RV-AGENT-ADMIN-001`
+  - Agent Admin source-alignment update or blocker notes
+- required checks:
+  - `git diff --check`
+  - execute or precisely block `RV-AGENT-ADMIN-001`
+- done criteria:
+  - SaaS-admin test-console provider-missing fail-closed surface, loader/tool-boundary denial, retry behavior, sanitized network payloads, and trace ids are recorded
+- block criteria:
+  - `auth-setup-blocker`; `provider-config-blocker` only if the app cannot be placed in intentionally missing-provider state
+- notes:
+  - vertical contract: Agent Admin functional agent workstream; attention category provider-config and loader/tool-boundary denial; role-specific dashboard / surface Agent Admin catalog/detail/test-console/runtime-trace surfaces; surface graph node/action edge open test console, submit harmless prompt, provider fail-closed result, loader denial trace; governed-tool id/type/exposure agent test-console and runtime-loader tools via `surface_action` and internal `agent_tool_call`; actor adapter/source `surface_action`, `api_call`, `agent_tool_call`; confirmation/approval behavior no activation approval and no behavior change; idempotency/transaction/result behavior retry/no-side-effect provider-fail result surface; capability managed-agent governance; AuthContext / roles / tenant scope SaaS-admin tenant/platform scope with provider secret boundary; Akka substrate endpoint/service/agent/view/frontend; API / frontend / realtime path Agent Admin workstream API and surfaces; audit/work trace requirements provider fail-closed, loader denial, PromptAssemblyTrace/SkillLoadTrace/ReferenceLoadTrace/AgentWorkTrace correlation; local validation path `RV-AGENT-ADMIN-001` with run record.
 
-### ADIA-FU-AA-003: Implement or verify trace-backed Agent Admin dashboard attention queues
+### TASK-ADIA-FU-005: Execute Governance/Policy decision-card runtime-validation scenario
 
-- source task: `TASK-ADIA-02-003`
-- source workstream: Agent Admin
-- type: implementation/test/runtime-validation gap
-- status: proposed-for-consolidation
-- evidence basis: Agent Admin `workstream.md`, `behavior.md`, `surfaces/surfaces.md`, `realization/source-alignment.md`, frontend and workstream tests
-- gap: Current dashboard source/fixtures exist, but refreshed attention categories for behavior-change proposals, approval-required proposals, provider/config blockers, and denied loader/tool-boundary events are not proven as trace-backed counts. Existing frontend contract still records an empty attention array.
-- expected runnable scope: define the backend attention read model and filters, return counts/cards that open proposal/review/test-console/runtime-trace surfaces, test zero and non-zero states, prove SaaS-admin authorization/redaction, and record trace ids without auto-activating behavior.
-- blocker classification if setup is missing: `implementation-gap` or `test-gap`.
+- status: pending
+- source: `ADIA-FU-GP-001`; `TASK-ADIA-02-004`; `specs/runtime-validation/scenarios/governance-policy/RV-GOVPOL-001-policy-decision-card.md`
+- depends on:
+  - `TASK-ADIA-FU-004`
+- required reads:
+  - `app-description/domains/core-starter/workstreams/governance-policy/realization/source-alignment.md`
+  - `specs/app-description-implementation-alignment/source-evidence-inventory.md`
+  - `specs/runtime-validation/scenarios/governance-policy/RV-GOVPOL-001-policy-decision-card.md`
+- skills:
+  - `akka-runtime-feature-verification`
+- expected outputs:
+  - run record for `RV-GOVPOL-001`
+  - Governance/Policy source-alignment update or blocker notes
+- required checks:
+  - `git diff --check`
+  - execute or precisely block `RV-GOVPOL-001`
+- done criteria:
+  - protected decision-card path, repeat decision/idempotency, denied unprivileged decision, and audit/work/policy trace ids are recorded
+- block criteria:
+  - `auth-setup-blocker`; `provider-config-blocker` only for optional model-backed impact analysis
+- notes:
+  - vertical contract: Governance/Policy functional agent workstream; attention category policy approval/decision card; role-specific dashboard / surface Governance/Policy proposal/detail/simulation/decision surfaces; surface graph node/action edge create/select proposal, inspect simulation evidence, approve/reject, repeat decision, member denial result; governed-tool id/type/exposure policy decision tools via `surface_action` and API; actor adapter/source `surface_action`, `api_call`, optional confirmed `human_chat_tool_plan`; confirmation/approval behavior human approval decision-card; idempotency/transaction/result behavior repeat decision and policy decision transaction/result surfaces; capability `governance-policy-lifecycle`; AuthContext / roles / tenant scope policy admin/operator versus member tenant scope; Akka substrate endpoint/service/entity/view/frontend; API / frontend / realtime path Governance/Policy workstream API and surfaces; audit/work trace requirements policy decision, denial, simulation, and correlation traces; local validation path `RV-GOVPOL-001` with run record.
 
-### ADIA-FU-AA-004: Verify Agent Admin proposal/chat-plan/idempotency/partial-failure runtime path
+### TASK-ADIA-FU-006: Execute Audit/Trace search-denial-redaction runtime-validation scenario
 
-- source task: `TASK-ADIA-02-003`
-- source workstream: Agent Admin
-- type: runtime-validation and test gap
-- status: proposed-for-consolidation
-- evidence basis: `AgentAdminDocAdministrationServiceTest.java`, `AgentAdminBrowserWorkstreamSmokeTest.java`, `WorkstreamServiceTest.java`, Agent Admin `tests/coverage.md`, `tools/governed-tools.md`, `traces/work-traces.md`
-- gap: Source/tests cover proposal lifecycle and chat-plan catalog entries, but no current runtime-validation run proves exact `human_chat_tool_plan` confirmation, idempotent no-op retries, stale/high-risk denial recovery, and partial-failure result surfaces through the local UI/API path.
-- expected runnable scope: execute or author scenarios for prompt/skill/reference/profile proposal save, review, direct activation denial for authority expansion, low-risk activation, repeated activation no-op/stale recovery, confirmed chat-plan proposal-only execution, and partial-failure reporting with trace links.
-- blocker classification if setup is missing: `auth-setup-blocker`, `provider-config-blocker`, or `runtime-validation-gap` as applicable.
+- status: pending
+- source: `ADIA-FU-AT-001`; `TASK-ADIA-02-005`; `specs/runtime-validation/scenarios/audit-trace/RV-AUDIT-001-trace-search-denial-redaction.md`
+- depends on:
+  - `TASK-ADIA-FU-005`
+- required reads:
+  - `app-description/domains/core-starter/workstreams/audit-trace/realization/source-alignment.md`
+  - `specs/app-description-implementation-alignment/source-evidence-inventory.md`
+  - `specs/runtime-validation/scenarios/audit-trace/RV-AUDIT-001-trace-search-denial-redaction.md`
+- skills:
+  - `akka-runtime-feature-verification`
+- expected outputs:
+  - run record for `RV-AUDIT-001`
+  - Audit/Trace source-alignment update or blocker notes
+- required checks:
+  - `git diff --check`
+  - execute or precisely block `RV-AUDIT-001`
+- done criteria:
+  - in-scope trace search/detail/timeline, out-of-scope/member denied reads, redaction/support-scope behavior, sanitized payloads, and trace-read/denied-read ids are recorded
+- block criteria:
+  - `auth-setup-blocker`, `seed-data-blocker`, or `runtime-validation-gap`
+- notes:
+  - vertical contract: Audit/Trace functional agent workstream; attention category investigation/denial/redaction/support-access; role-specific dashboard / surface Audit/Trace search/detail/timeline/correlation surfaces; surface graph node/action edge trace search, read detail, read timeline, denied out-of-scope/member read, redacted result surface; governed-tool id/type/exposure audit trace read tools via `surface_action`, API, and read-only `human_chat_tool_plan` where confirmed; actor adapter/source `surface_action`, `api_call`, projection/internal trace source; confirmation/approval behavior read-only confirmation only for chat plans and no export approval in this scenario; idempotency/transaction/result behavior repeat read idempotency and redacted/denied result surfaces; capability `audit-and-trace-investigation`; AuthContext / roles / tenant scope tenant admin/SaaS support/support-access versus member scope; Akka substrate endpoint/service/view/projection/frontend; API / frontend / realtime path Audit/Trace workstream API and surfaces; audit/work trace requirements trace-read and denied-trace-access traces with correlation; local validation path `RV-AUDIT-001` with run record.
 
-### ADIA-FU-AA-005: Verify Agent Admin runtime trace visibility across prompt, skill, reference, provider, and work traces
+### TASK-ADIA-FU-007: Verify My Account provider-backed digest and fail-closed runtime paths
 
-- source task: `TASK-ADIA-02-003`
-- source workstream: Agent Admin
-- type: trace/runtime-validation gap
-- status: proposed-for-consolidation
-- evidence basis: `AgentRuntimeService.java`, `AgentRuntimeLoaderTools.java`, `AgentRuntimeTraceEntity/View/Sink.java`, `AgentAdminDocAdministrationService.runtimeDocReadTraces`, Agent Admin `traces/work-traces.md`, foundation agent tests
-- gap: Source/tests prove `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, boundary denial, provider fail-closed, and `AgentWorkTrace` emission in isolated/service paths, but no Agent Admin real UI/API trace drill-in verifies browser-safe metadata, redaction, filters, denied-load categories, and correlation with test-console/provider failures.
-- expected runnable scope: run allowed and denied prompt assembly, `readSkill`, `readReferenceDoc`, generated-tool/tool-boundary, provider-missing, and workstream-agent invocations; open Agent Admin runtime trace surfaces; verify rows show metadata/checksums/decision categories and omit full loaded skill/reference bodies and secrets.
-- blocker classification if setup is missing: `runtime-validation-gap`, `provider-config-blocker`, or `test-gap`.
+- status: pending
+- source: `TASK-ADIA-02-001`; My Account provider/runtime-validation gap in source evidence inventory
+- depends on:
+  - `TASK-ADIA-FU-006`
+- required reads:
+  - `app-description/domains/core-starter/workstreams/my-account/realization/source-alignment.md`
+  - `specs/app-description-implementation-alignment/source-evidence-inventory.md`
+  - `specs/app-description-implementation-alignment/runtime-validation-corpus-plan.md`
+- skills:
+  - `akka-runtime-feature-verification`
+- expected outputs:
+  - runtime-validation run record or exact provider/config blocker for digest success/fail-closed behavior
+  - source-alignment update for readiness level only if evidence supports it
+- required checks:
+  - `mvn test`
+  - `git diff --check`
+  - provider-missing fail-closed or configured-provider runtime smoke
+- done criteria:
+  - personal attention digest start/read/provider-missing fail-closed and, when credentials are available, configured-provider advisory success are proven without browser secret exposure
+- block criteria:
+  - `provider-config-blocker`, `auth-setup-blocker`, or `runtime-validation-gap`
+- notes:
+  - vertical contract: My Account functional agent workstream; attention category personal attention digest/provider-config blocker; role-specific dashboard / surface My Account dashboard/digest/task/result surfaces; surface graph node/action edge start digest, read digest status/result, provider fail-closed result; governed-tool id/type/exposure digest/evidence tools via `surface_action`, internal `agent_tool_call`, and API; actor adapter/source `surface_action`, `api_call`, `agent_tool_call`; confirmation/approval behavior human-visible advisory only and no delegated side effect without confirmation; idempotency/transaction/result behavior digest task idempotency and result/blocked surfaces; capability `account-context-and-profile`; AuthContext / roles / tenant scope signed-in member tenant scope; Akka substrate endpoint/service/entity/autonomous agent/view/frontend; API / frontend / realtime path My Account workstream API and task surfaces; audit/work trace requirements digest task, provider fail-closed, evidence-read, and denial traces; local validation path `mvn test`, provider smoke or fail-closed runtime smoke, and run record.
 
-### ADIA-FU-GP-001: Execute Governance/Policy decision-card runtime-validation scenario
+### TASK-ADIA-FU-008: Verify User Admin provider fail-closed and configured-provider paths
 
-- source task: `TASK-ADIA-02-004`
-- source workstream: Governance/Policy
-- type: runtime-validation execution
-- status: proposed-for-consolidation
-- evidence basis: `app-description/domains/core-starter/workstreams/governance-policy/realization/source-alignment.md`, `specs/runtime-validation/scenarios/governance-policy/RV-GOVPOL-001-policy-decision-card.md`, `GovernancePolicyServiceTest.java`, `workstream-governance-policy-vertical.contract.test.mjs`
-- gap: `RV-GOVPOL-001` is authored but not run. Source/tests cover proposal draft/simulation/decision/activation gates and frontend decision-card rendering, but no local Akka/API/UI/browser run proves the protected decision-card path, idempotent repeat decision, denied unprivileged decision, or trace ids.
-- expected runnable scope: start the local app, authenticate as the configured policy admin/operator and unprivileged member personas, create or select a safe proposal, run or inspect simulation evidence, open the decision card, approve/reject, repeat the decision, attempt the same action as a member, and capture result surface, network status, sanitized payloads, and audit/work/policy trace ids.
-- blocker classification if setup is missing: `auth-setup-blocker`; `runtime-validation-gap` until a run record exists; `provider-config-blocker` only for optional model-backed impact analysis.
+- status: pending
+- source: `ADIA-FU-UA-003`; `TASK-ADIA-02-002`
+- depends on:
+  - `TASK-ADIA-FU-007`
+- required reads:
+  - `app-description/domains/core-starter/workstreams/user-admin/realization/source-alignment.md`
+  - `specs/app-description-implementation-alignment/source-evidence-inventory.md`
+- skills:
+  - `akka-runtime-feature-verification`
+- expected outputs:
+  - provider runtime smoke/run record or precise `provider-config-blocker`
+- required checks:
+  - `mvn test`
+  - `git diff --check`
+  - provider-missing fail-closed or configured-provider runtime smoke
+- done criteria:
+  - Resend invitation delivery and access-review/model-backed guidance either pass with configured providers or fail closed with actionable surfaces/traces and no fake success
+- block criteria:
+  - `provider-config-blocker` or `auth-setup-blocker`
+- notes:
+  - vertical contract: User Admin functional agent workstream; attention category invitation delivery/provider-config/access-review; role-specific dashboard / surface invite result/access-review/task/admin-audit surfaces; surface graph node/action edge send invite, provider fail-closed, access-review start/read/result; governed-tool id/type/exposure invitation delivery and access-review evidence tools via `surface_action`, API, internal `agent_tool_call`; actor adapter/source `surface_action`, `api_call`, `agent_tool_call`; confirmation/approval behavior risky admin/access-review advisory confirmation where surfaced; idempotency/transaction/result behavior invitation outbox idempotency and access-review task result/blocked surfaces; capability `user-and-access-administration`; AuthContext / roles / tenant scope organization-admin tenant scope; Akka substrate endpoint/service/entity/autonomous agent/view/frontend; API / frontend / realtime path User Admin admin/workstream API and task surfaces; audit/work trace requirements provider fail-closed, invite delivery, access-review, denial traces; local validation path `mvn test`, provider smoke or fail-closed runtime smoke.
 
-### ADIA-FU-GP-002: Reconcile Governance/Policy canonical governed-tool/action ids and current aliases
+### TASK-ADIA-FU-009: Reconcile Agent Admin canonical governed-tool ids and surface names
 
-- source task: `TASK-ADIA-02-004`
-- source workstream: Governance/Policy
-- type: source/API/frontend contract alignment gap
-- status: proposed-for-consolidation
-- evidence basis: Governance/Policy `tools/governed-tools.md`, `surfaces/surfaces.md`, `realization/source-alignment.md`, `GovernancePolicyService.java`, `WorkstreamService.java`, `workstream-governance-policy-vertical.contract.test.mjs`
-- gap: App-description canonical ids (`governance.policy.search`, `read`, `draft`, `simulate`, `submit_for_approval`, `approve`, `activate`, `rollback`, `review_exception`, `read_history`) currently coexist with implementation aliases such as `action-governance-policy-list`, `action-governance-policy-draft-proposal`, `governance.policy.propose`, `list-policy-proposals`, `draft-policy-proposal`, `simulate-policy-change`, and `approve-activate-or-rollback-policy`.
-- expected runnable scope: choose a compatibility posture, update source-alignment/API/frontend contracts or implementation aliases consistently, prove each canonical governed-tool id maps to exactly one backend capability/action path and result surface, and preserve legacy aliases only as documented compatibility wrappers with tests.
-- blocker classification if setup is missing: `source-alignment-gap` or `test-gap`; do not mark runtime-ready from alias mapping alone.
+- status: pending
+- source: `ADIA-FU-AA-002`; `TASK-ADIA-02-003`
+- depends on:
+  - `TASK-ADIA-FU-008`
+- required reads:
+  - `app-description/domains/core-starter/workstreams/agent-admin/tools/governed-tools.md`
+  - `app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md`
+  - `app-description/domains/core-starter/workstreams/agent-admin/realization/source-alignment.md`
+  - `specs/app-description-implementation-alignment/source-evidence-inventory.md`
+- skills:
+  - `akka-backlog-item-to-task-brief`
+  - `akka-runtime-feature-verification`
+- expected outputs:
+  - implementation/app-description/frontend/API mapping update or a narrower task brief if the reconciliation is too broad
+- required checks:
+  - `mvn test`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - `git diff --check`
+- done criteria:
+  - each canonical Agent Admin governed-tool id maps to one backend capability/action and one frontend result surface, with legacy aliases documented only as compatibility wrappers
+- block criteria:
+  - `source-alignment-gap` if compatibility posture cannot be chosen from current intent; `test-gap` if contracts cannot prove mapping
+- notes:
+  - vertical contract: Agent Admin functional agent workstream; attention category behavior governance/canonical-id reconciliation; role-specific dashboard / surface catalog/detail/proposal/test-console/runtime-trace surfaces; surface graph node/action edge canonical tool actions to result surfaces; governed-tool id/type/exposure `agent-definition.catalog.read`, `prompt-document.proposal.create`, `agent-test-console.run`, `agent-runtime-trace.read`, and aliases via `surface_action`, `human_chat_tool_plan`, and API; actor adapter/source `surface_action`, `human_chat_tool_plan`, `api_call`, internal loader; confirmation/approval behavior authority-expansion approval and chat confirmation preserved; idempotency/transaction/result behavior proposal/version/test-console result and partial-failure surfaces; capability managed-agent governance; AuthContext / roles / tenant scope SaaS-admin scope; Akka substrate endpoint/service/entity/view/frontend; API / frontend / realtime path Agent Admin workstream/API/frontend contracts; audit/work trace requirements PromptAssemblyTrace/SkillLoadTrace/ReferenceLoadTrace/AgentWorkTrace correlation preserved; local validation path mvn/npm tests plus `git diff --check`.
 
-### ADIA-FU-GP-003: Implement or verify Governance/Policy exception lifecycle
+### TASK-ADIA-FU-010: Implement or verify trace-backed Agent Admin dashboard attention queues
 
-- source task: `TASK-ADIA-02-004`
-- source workstream: Governance/Policy
-- type: implementation/test/runtime-validation gap
-- status: proposed-for-consolidation
-- evidence basis: Governance/Policy `behavior.md`, `tools/governed-tools.md`, `surfaces/surfaces.md`, `policies/policy-bindings.md`, `traces/work-traces.md`, `realization/source-alignment.md`
-- gap: Current intent requires `governance.policy.review_exception` grant/deny/revoke/expire, expiry behavior, scoped runtime effect, and exception traces, but reviewed source has no dedicated exception service/API/UI lifecycle path or tests.
-- expected runnable scope: add or verify exception request/review state, grant/deny/revoke/expire actions, owner/reason/evidence/expiry validation, authorization and hidden-target denial, idempotency, expired-exception non-authorization, result/system-message surfaces, and policy/audit/work trace refs through backend tests and a runtime-validation scenario.
-- blocker classification if setup is missing: `implementation-gap`, `test-gap`, or `runtime-validation-gap`.
+- status: pending
+- source: `ADIA-FU-AA-003`; `TASK-ADIA-02-003`
+- depends on:
+  - `TASK-ADIA-FU-009`
+- required reads:
+  - `app-description/domains/core-starter/workstreams/agent-admin/workstream.md`
+  - `app-description/domains/core-starter/workstreams/agent-admin/behavior.md`
+  - `app-description/domains/core-starter/workstreams/agent-admin/surfaces/surfaces.md`
+  - `app-description/domains/core-starter/workstreams/agent-admin/realization/source-alignment.md`
+- skills:
+  - `akka-backlog-item-to-task-brief`
+  - `akka-runtime-feature-verification`
+- expected outputs:
+  - backend/frontend/tests or a narrower task brief for trace-backed dashboard attention
+- required checks:
+  - `mvn test`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - `git diff --check`
+- done criteria:
+  - dashboard attention counts/cards are trace-backed for behavior proposals, approval-required proposals, provider/config blockers, and denied loader/tool-boundary events
+- block criteria:
+  - `implementation-gap` or `test-gap`
+- notes:
+  - vertical contract: Agent Admin functional agent workstream; attention category behavior-change proposal/approval-required/provider-config/loader-denial; role-specific dashboard / surface Agent Admin dashboard attention cards opening proposal/review/test-console/runtime-trace surfaces; surface graph node/action edge attention card to filtered surface and result surface; governed-tool id/type/exposure dashboard reads and runtime trace reads via `surface_action` and API; actor adapter/source `surface_action`, `api_call`, projection/internal trace source; confirmation/approval behavior no auto-activation and approval-required cards route to decision/review; idempotency/transaction/result behavior read-only counts and filtered result surfaces; capability managed-agent governance; AuthContext / roles / tenant scope SaaS-admin authorization/redaction; Akka substrate view/service/endpoint/frontend; API / frontend / realtime path Agent Admin dashboard API/surfaces; audit/work trace requirements trace ids backing counts without secret exposure; local validation path mvn/npm tests plus `git diff --check`.
 
-### ADIA-FU-GP-004: Verify runtime effective-policy decisions and policy-decision trace drill-in
+### TASK-ADIA-FU-011: Verify Agent Admin proposal, chat-plan, idempotency, and partial-failure runtime path
 
-- source task: `TASK-ADIA-02-004`
-- source workstream: Governance/Policy
-- type: trace/runtime-validation gap
-- status: proposed-for-consolidation
-- evidence basis: Governance/Policy `traces/work-traces.md`, `tests/coverage.md`, `GovernancePolicyService.java`, shared audit/workstream trace foundations, downstream workstream action tests
-- gap: Source evidence has trace refs and protected read/denial traces, but no local run proves active policy version, matching clause/value, winning scope, exception status, approval-gate status, downstream action context, and browser-safe trace drill-in for actual runtime policy decisions.
-- expected runnable scope: execute policy-affected allowed, denied, approval-required, and exception-authorized actions through protected API/UI paths; verify policy-decision traces persist with selected `AuthContext`, actor adapter/source, policy version/scope, redacted browser summaries, and Audit/Trace drill-in without raw secrets, prompt/model/tool payloads, or hidden target enumeration.
-- blocker classification if setup is missing: `runtime-validation-gap`, `implementation-gap`, `auth-setup-blocker`, or `test-gap`.
+- status: pending
+- source: `ADIA-FU-AA-004`; `TASK-ADIA-02-003`
+- depends on:
+  - `TASK-ADIA-FU-010`
+- required reads:
+  - `app-description/domains/core-starter/workstreams/agent-admin/tests/coverage.md`
+  - `app-description/domains/core-starter/workstreams/agent-admin/tools/governed-tools.md`
+  - `app-description/domains/core-starter/workstreams/agent-admin/traces/work-traces.md`
+  - `app-description/domains/core-starter/workstreams/agent-admin/realization/source-alignment.md`
+- skills:
+  - `akka-runtime-feature-verification`
+- expected outputs:
+  - runtime-validation scenario/run record or focused tests for proposal/chat-plan/idempotency behavior
+- required checks:
+  - `mvn test`
+  - `npm --prefix frontend test -- --run`
+  - `git diff --check`
+  - runtime smoke or authored scenario for the proposal/chat-plan path
+- done criteria:
+  - proposal save/review/activation denial/safe activation, repeated activation no-op/stale recovery, confirmed chat-plan proposal-only execution, and partial-failure trace/result surfaces are proven
+- block criteria:
+  - `auth-setup-blocker`, `provider-config-blocker`, `runtime-validation-gap`, or `test-gap`
+- notes:
+  - vertical contract: Agent Admin functional agent workstream; attention category proposal review/chat-plan/partial-failure; role-specific dashboard / surface proposal editor/review/detail/chat-plan/result surfaces; surface graph node/action edge save proposal, review, deny authority expansion, activate low-risk, repeat/stale retry, confirmed chat-plan result; governed-tool id/type/exposure prompt/skill/reference/profile proposal tools via `surface_action` and `human_chat_tool_plan`; actor adapter/source `surface_action`, `human_chat_tool_plan`, `api_call`, internal agent tooling; confirmation/approval behavior exact human confirmation and authority-expansion approval; idempotency/transaction/result behavior proposal/version idempotency, stale recovery, and partial-failure result surfaces; capability managed-agent governance; AuthContext / roles / tenant scope SaaS-admin scope; Akka substrate endpoint/service/entity/view/frontend; API / frontend / realtime path Agent Admin workstream API and chat-plan surfaces; audit/work trace requirements proposal, activation, denial, partial-failure, and work trace correlation; local validation path mvn/npm tests plus runtime smoke or scenario record.
 
-### ADIA-FU-GP-005: Verify activation/rollback transaction boundaries, partial failures, and separation of duty
+### TASK-ADIA-FU-012: Verify Agent Admin runtime trace visibility across loaders, provider, and work traces
 
-- source task: `TASK-ADIA-02-004`
-- source workstream: Governance/Policy
-- type: implementation/test/runtime-validation gap
-- status: proposed-for-consolidation
-- evidence basis: `GovernancePolicyService.activateProposal`, `GovernancePolicyService.rollbackProposal`, `GovernancePolicyServiceTest.java`, Governance/Policy `policies/policy-bindings.md`, `surfaces/surfaces.md`, `traces/work-traces.md`
-- gap: Source/tests prove approval, simulation, rollback metadata, idempotency, and rollback gates in service tests, but not separation-of-duty, real API/UI repeat/conflict behavior, publication partial-failure surfaces, or append-only activation/rollback trace records through runtime.
-- expected runnable scope: test self-approval denial where separation-of-duty is required, approved activation with and without simulation/rollback metadata, repeated activation/rollback no-op or conflict behavior, partial-publication and not-committed result surfaces, append-only history, trace links, and frontend rendering through protected workstream actions.
-- blocker classification if setup is missing: `implementation-gap`, `test-gap`, `auth-setup-blocker`, or `runtime-validation-gap`.
+- status: pending
+- source: `ADIA-FU-AA-005`; `TASK-ADIA-02-003`
+- depends on:
+  - `TASK-ADIA-FU-011`
+- required reads:
+  - `app-description/domains/core-starter/workstreams/agent-admin/traces/work-traces.md`
+  - `app-description/domains/core-starter/workstreams/agent-admin/realization/source-alignment.md`
+  - `specs/app-description-implementation-alignment/source-evidence-inventory.md`
+- skills:
+  - `akka-runtime-feature-verification`
+- expected outputs:
+  - runtime trace visibility run record and/or trace tests
+- required checks:
+  - `mvn test`
+  - `npm --prefix frontend test -- --run`
+  - `git diff --check`
+  - runtime trace smoke or precise blocker record
+- done criteria:
+  - allowed/denied prompt assembly, skill/reference reads, tool-boundary denial, provider-missing, and workstream-agent invocations are visible through browser-safe trace surfaces
+- block criteria:
+  - `runtime-validation-gap`, `provider-config-blocker`, or `test-gap`
+- notes:
+  - vertical contract: Agent Admin functional agent workstream; attention category runtime trace/provider/loader denial; role-specific dashboard / surface runtime trace list/detail/test-console surfaces; surface graph node/action edge invoke loader/provider path, open trace rows/details, denied-load category result; governed-tool id/type/exposure runtime trace and loader tools via `agent_tool_call`, `surface_action`, and API; actor adapter/source `agent_tool_call`, `surface_action`, `api_call`, internal loader; confirmation/approval behavior no authority expansion and no secret body display; idempotency/transaction/result behavior read-only trace views and provider fail-closed result surfaces; capability managed-agent governance; AuthContext / roles / tenant scope SaaS-admin authorization/redaction; Akka substrate agent/service/entity/view/endpoint/frontend; API / frontend / realtime path Agent Admin runtime trace API/surfaces; audit/work trace requirements PromptAssemblyTrace, SkillLoadTrace, ReferenceLoadTrace, ToolPermissionBoundary denial, provider fail-closed, AgentWorkTrace; local validation path mvn/npm tests plus runtime trace smoke.
 
-### ADIA-FU-GP-006: Verify Governance/Policy model-backed impact-analysis provider paths and fail-closed behavior
+### TASK-ADIA-FU-013: Reconcile Governance/Policy canonical governed-tool/action ids and aliases
 
-- source task: `TASK-ADIA-02-004`
-- source workstream: Governance/Policy
-- type: provider/runtime-validation gap
-- status: proposed-for-consolidation
-- evidence basis: `GovernancePolicyImpactService.java`, `GovernancePolicyImpactAutonomousAgent.java`, `ComponentClientGovernancePolicyImpactAutonomousAgentRuntime.java`, `FailClosedGovernancePolicyImpactAutonomousAgentRuntime.java`, `GovernancePolicyEvidenceTools.java`, `GovernancePolicyImpactServiceTest.java`
-- gap: Source/tests prove provider/runtime fail-closed and component-client projection behavior, but no current configured-provider or missing-provider local runtime record proves impact-analysis task creation, model-backed advisory result, denial/fail-closed copy, tool-boundary evidence reads, trace ids, and browser secret boundary.
-- expected runnable scope: with provider credentials absent, run impact-analysis start/read and verify blocked provider/runtime surfaces and traces without fake success; with provider credentials available, run the model-backed advisory path and verify human-review-required output, evidence refs, no direct approval/activation/rollback, and no provider secrets/raw prompts/tool payloads in browser payloads.
-- blocker classification if setup is missing: `provider-config-blocker`, `auth-setup-blocker`, or `runtime-validation-gap`.
+- status: pending
+- source: `ADIA-FU-GP-002`; `TASK-ADIA-02-004`
+- depends on:
+  - `TASK-ADIA-FU-012`
+- required reads:
+  - `app-description/domains/core-starter/workstreams/governance-policy/tools/governed-tools.md`
+  - `app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md`
+  - `app-description/domains/core-starter/workstreams/governance-policy/realization/source-alignment.md`
+- skills:
+  - `akka-backlog-item-to-task-brief`
+  - `akka-runtime-feature-verification`
+- expected outputs:
+  - mapping update or narrower task brief for canonical Governance/Policy ids
+- required checks:
+  - `mvn test`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - `git diff --check`
+- done criteria:
+  - each canonical Governance/Policy governed-tool/action id maps to exactly one backend capability/action path and result surface, with legacy aliases documented and tested only as compatibility wrappers
+- block criteria:
+  - `source-alignment-gap` or `test-gap`
+- notes:
+  - vertical contract: Governance/Policy functional agent workstream; attention category canonical-id/policy lifecycle reconciliation; role-specific dashboard / surface catalog/detail/draft/simulation/decision/rollback surfaces; surface graph node/action edge policy search/read/draft/simulate/submit/approve/activate/rollback/review-exception/read-history to result surfaces; governed-tool id/type/exposure `governance.policy.*` via `surface_action`, `human_chat_tool_plan`, and API; actor adapter/source `surface_action`, `human_chat_tool_plan`, `api_call`, internal service; confirmation/approval behavior decision-card approval and chat confirmation preserved; idempotency/transaction/result behavior policy proposal/version transactions and result/partial-failure surfaces; capability `governance-policy-lifecycle`; AuthContext / roles / tenant scope policy admin/operator tenant scope; Akka substrate endpoint/service/entity/view/frontend; API / frontend / realtime path Governance/Policy workstream API/frontend contracts; audit/work trace requirements policy action, denial, and correlation traces; local validation path mvn/npm tests plus `git diff --check`.
 
-### ADIA-FU-AT-001: Execute Audit/Trace search denial redaction runtime-validation scenario
+### TASK-ADIA-FU-014: Implement or verify Governance/Policy exception lifecycle
 
-- source task: `TASK-ADIA-02-005`
-- source workstream: Audit/Trace
-- type: runtime-validation execution
-- status: proposed-for-consolidation
-- evidence basis: `app-description/domains/core-starter/workstreams/audit-trace/realization/source-alignment.md`, `specs/runtime-validation/scenarios/audit-trace/RV-AUDIT-001-trace-search-denial-redaction.md`, `AuditTraceService.java`, `workstream-audit-trace-vertical.contract.test.mjs`
-- gap: `RV-AUDIT-001` is authored but not run. Audit/Trace search/detail/timeline/denial/redaction/support-scope behavior has source/test/frontend evidence only.
-- expected runnable scope: start the local app, authenticate as the configured support-operator or tenant-admin persona plus an unprivileged member where available, search in-scope trace evidence, open detail/timeline, attempt out-of-scope/member reads, repeat an in-scope read, and capture sanitized result surfaces, network statuses, and trace-read/denied-read ids.
-- blocker classification if setup is missing: `auth-setup-blocker` for missing WorkOS/AuthKit/support-access mapping; `seed-data-blocker` if no auditable trace exists; `runtime-validation-gap` until a run record exists.
+- status: pending
+- source: `ADIA-FU-GP-003`; `TASK-ADIA-02-004`
+- depends on:
+  - `TASK-ADIA-FU-013`
+- required reads:
+  - `app-description/domains/core-starter/workstreams/governance-policy/behavior.md`
+  - `app-description/domains/core-starter/workstreams/governance-policy/tools/governed-tools.md`
+  - `app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md`
+  - `app-description/domains/core-starter/workstreams/governance-policy/policies/policy-bindings.md`
+  - `app-description/domains/core-starter/workstreams/governance-policy/traces/work-traces.md`
+- skills:
+  - `akka-backlog-item-to-task-brief`
+  - `akka-runtime-feature-verification`
+- expected outputs:
+  - bounded exception lifecycle implementation/tests or narrower task brief if split is needed
+- required checks:
+  - `mvn test`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - `git diff --check`
+- done criteria:
+  - exception request/review grant/deny/revoke/expire, expiry behavior, scoped runtime effect, hidden-target denial, idempotency, result surfaces, and traces are verified or implemented
+- block criteria:
+  - `implementation-gap`, `test-gap`, or `runtime-validation-gap`
+- notes:
+  - vertical contract: Governance/Policy functional agent workstream; attention category exception review/approval/expiry; role-specific dashboard / surface exception request/review/detail/result surfaces; surface graph node/action edge request exception, review grant/deny, revoke, expire, hidden-target denial; governed-tool id/type/exposure `governance.policy.review_exception` via `surface_action`, API, and optional `human_chat_tool_plan`; actor adapter/source `surface_action`, `api_call`, internal policy service; confirmation/approval behavior human exception approval and self/hidden-target denial; idempotency/transaction/result behavior exception lifecycle transaction, expiry, replay, and result/partial-failure surfaces; capability `governance-policy-lifecycle`; AuthContext / roles / tenant scope policy admin/operator/requester tenant scope; Akka substrate endpoint/service/entity/view/frontend; API / frontend / realtime path Governance/Policy exception API/surfaces; audit/work trace requirements exception request/review/revoke/expire/denial traces; local validation path mvn/npm tests plus runtime-validation scenario when authored.
 
-### ADIA-FU-AT-002: Reconcile Audit/Trace canonical governed-tool ids and v2 surface contracts
+### TASK-ADIA-FU-015: Verify runtime effective-policy decisions and policy-decision trace drill-in
 
-- source task: `TASK-ADIA-02-005`
-- source workstream: Audit/Trace
-- type: source/API/frontend contract alignment gap
-- status: proposed-for-consolidation
-- evidence basis: Audit/Trace `tools/governed-tools.md`, `surfaces/surfaces.md`, `realization/source-alignment.md`, `AuditTraceService.java`, `WorkstreamService.java`, `workstream-audit-trace-vertical.contract.test.mjs`
-- gap: Current intent uses canonical tools and v2 contracts (`search-audit-traces`, `read-audit-trace-detail`, `lookup-trace-correlation`, `investigate-denied-trace-access`, `summarize-investigation-evidence`, `audit.trace.*.v2`) while reviewed source exposes legacy `audit.trace.*` capabilities, v1 surface contracts, failure-evidence/guidance aliases, summary-task aliases, and investigation-note surfaces.
-- expected runnable scope: choose and document a compatibility posture, update source-alignment/API/frontend contracts or implementation aliases consistently, prove each canonical Audit/Trace governed-tool id maps to one backend capability/action path and one frontend result surface, and preserve legacy aliases only as documented compatibility wrappers with tests.
-- blocker classification if setup is missing: `source-alignment-gap` or `test-gap`; do not mark runtime-ready from alias mapping alone.
+- status: pending
+- source: `ADIA-FU-GP-004`; `TASK-ADIA-02-004`
+- depends on:
+  - `TASK-ADIA-FU-014`
+- required reads:
+  - `app-description/domains/core-starter/workstreams/governance-policy/traces/work-traces.md`
+  - `app-description/domains/core-starter/workstreams/governance-policy/tests/coverage.md`
+  - `app-description/domains/core-starter/workstreams/governance-policy/realization/source-alignment.md`
+- skills:
+  - `akka-runtime-feature-verification`
+- expected outputs:
+  - runtime trace drill-in run record and/or focused tests
+- required checks:
+  - `mvn test`
+  - `npm --prefix frontend test -- --run`
+  - `git diff --check`
+  - runtime smoke or precise blocker record
+- done criteria:
+  - allowed, denied, approval-required, and exception-authorized downstream actions show active policy version, matching clause/value, winning scope, exception status, approval status, and browser-safe drill-in
+- block criteria:
+  - `runtime-validation-gap`, `implementation-gap`, `auth-setup-blocker`, or `test-gap`
+- notes:
+  - vertical contract: Governance/Policy functional agent workstream; attention category runtime policy decision/denial/approval-required; role-specific dashboard / surface policy trace drill-in and affected workstream result surfaces; surface graph node/action edge downstream policy-affected action to policy-decision trace detail; governed-tool id/type/exposure policy enforcement/decision trace tools via `surface_action`, API, and internal policy service; actor adapter/source `surface_action`, `api_call`, internal_call; confirmation/approval behavior approval-gate status and exception authorization preserved; idempotency/transaction/result behavior downstream action result/denial/idempotent trace display; capability `governance-policy-lifecycle`; AuthContext / roles / tenant scope selected AuthContext tenant/scope; Akka substrate endpoint/service/view/frontend; API / frontend / realtime path protected workstream APIs and Audit/Trace drill-in; audit/work trace requirements policy-decision traces with redacted browser summaries; local validation path mvn/npm tests plus runtime smoke.
 
-### ADIA-FU-AT-003: Implement or verify Audit/Trace support-access review and redacted export workflow depth
+### TASK-ADIA-FU-016: Verify Governance/Policy activation, rollback, partial failures, and separation of duty
 
-- source task: `TASK-ADIA-02-005`
-- source workstream: Audit/Trace
-- type: implementation/test/runtime-validation gap
-- status: proposed-for-consolidation
-- evidence basis: Audit/Trace `access.md`, `behavior.md`, `surfaces/surfaces.md`, `tools/governed-tools.md`, `policies/policy-bindings.md`, `AuditTraceService.requestRedactedExport`, User Admin support-access source evidence
-- gap: Source evidence maps redacted export request/denial surfaces and support-access-related trace refs, but not a dedicated Audit/Trace support-access review path or durable export approval/preparation/ready/expired workflow with self-approval denial and idempotent replay.
-- expected runnable scope: verify or add support-access grant/use/expiry/revoke review reads, support-operator self-approval denial, redacted export request approval-required/denied/ready/expired states, repeated request idempotency, no raw browser download URL, and tenant/SaaS-owner review surfaces with audit/work trace refs.
-- blocker classification if setup is missing: `implementation-gap`, `test-gap`, `auth-setup-blocker`, or `runtime-validation-gap`.
+- status: pending
+- source: `ADIA-FU-GP-005`; `TASK-ADIA-02-004`
+- depends on:
+  - `TASK-ADIA-FU-015`
+- required reads:
+  - `app-description/domains/core-starter/workstreams/governance-policy/policies/policy-bindings.md`
+  - `app-description/domains/core-starter/workstreams/governance-policy/surfaces/surfaces.md`
+  - `app-description/domains/core-starter/workstreams/governance-policy/traces/work-traces.md`
+  - `app-description/domains/core-starter/workstreams/governance-policy/realization/source-alignment.md`
+- skills:
+  - `akka-runtime-feature-verification`
+- expected outputs:
+  - focused implementation/tests or runtime evidence for activation/rollback boundaries
+- required checks:
+  - `mvn test`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - `git diff --check`
+- done criteria:
+  - self-approval denial, approved activation with/without required metadata, repeated activation/rollback behavior, partial-publication/not-committed result surfaces, append-only history, and trace links are proven
+- block criteria:
+  - `implementation-gap`, `test-gap`, `auth-setup-blocker`, or `runtime-validation-gap`
+- notes:
+  - vertical contract: Governance/Policy functional agent workstream; attention category activation/rollback/separation-of-duty/partial-failure; role-specific dashboard / surface policy decision/activation/rollback/history result surfaces; surface graph node/action edge approve, activate, rollback, repeat/conflict, partial-publication result; governed-tool id/type/exposure policy approve/activate/rollback tools via `surface_action`, API, optional `human_chat_tool_plan`; actor adapter/source `surface_action`, `api_call`, internal policy service; confirmation/approval behavior decision-card approval, self-approval denial, rollback confirmation; idempotency/transaction/result behavior activation/rollback transaction boundary, repeat idempotency/conflict, partial-failure result surfaces; capability `governance-policy-lifecycle`; AuthContext / roles / tenant scope policy admin/operator with separation-of-duty; Akka substrate endpoint/service/entity/view/frontend; API / frontend / realtime path Governance/Policy workstream API/surfaces; audit/work trace requirements activation, rollback, denial, partial-failure, append-only history traces; local validation path mvn/npm tests plus runtime smoke when available.
 
-### ADIA-FU-AT-004: Verify Audit/Trace trace-gap and runtime-validation evidence linking
+### TASK-ADIA-FU-017: Verify Governance/Policy model-backed impact-analysis provider paths and fail-closed behavior
 
-- source task: `TASK-ADIA-02-005`
-- source workstream: Audit/Trace
-- type: trace/runtime-validation gap
-- status: proposed-for-consolidation
-- evidence basis: Audit/Trace `traces/work-traces.md`, `realization/akka-components.md`, `tests/coverage.md`, `AkkaAuditTraceRepository.java`, `WorkstreamEventBackboneView.java`, runtime-validation corpus files
-- gap: Source evidence composes agent runtime trace and workstream log views, but no current implementation/run proves trace-gap detection, runtime-validation evidence link ingestion/display, source-alignment impact recording, or dashboard/timeline attention for missing/malformed/unlinked trace evidence.
-- expected runnable scope: create or verify runtime-validation evidence link records, trace-gap diagnostics for missing correlation/producer evidence, dashboard attention counts, timeline gap display, source-alignment refs, safe redaction, and tenant/support authorization through backend tests plus a runtime-validation scenario.
-- blocker classification if setup is missing: `implementation-gap`, `test-gap`, `runtime-validation-gap`, or `seed-data-blocker`.
+- status: pending
+- source: `ADIA-FU-GP-006`; `TASK-ADIA-02-004`
+- depends on:
+  - `TASK-ADIA-FU-016`
+- required reads:
+  - `app-description/domains/core-starter/workstreams/governance-policy/realization/source-alignment.md`
+  - `specs/app-description-implementation-alignment/source-evidence-inventory.md`
+- skills:
+  - `akka-runtime-feature-verification`
+- expected outputs:
+  - provider configured/fail-closed run record and trace evidence
+- required checks:
+  - `mvn test`
+  - `git diff --check`
+  - provider-missing fail-closed or configured-provider runtime smoke
+- done criteria:
+  - impact-analysis task creation/read, model-backed advisory result when configured, provider-missing fail-closed surfaces/traces, evidence refs, and browser secret-boundary evidence are recorded
+- block criteria:
+  - `provider-config-blocker`, `auth-setup-blocker`, or `runtime-validation-gap`
+- notes:
+  - vertical contract: Governance/Policy functional agent workstream; attention category impact-analysis/provider-config; role-specific dashboard / surface impact-analysis task/result/provider-blocked surfaces; surface graph node/action edge start impact analysis, read status/result, provider fail-closed, advisory result; governed-tool id/type/exposure impact-analysis/evidence tools via `surface_action`, API, and internal `agent_tool_call`; actor adapter/source `surface_action`, `api_call`, `agent_tool_call`; confirmation/approval behavior advisory only and no direct approval/activation/rollback; idempotency/transaction/result behavior task idempotency and blocked/result surfaces; capability `governance-policy-lifecycle`; AuthContext / roles / tenant scope policy admin/operator tenant scope; Akka substrate endpoint/service/entity/autonomous agent/view/frontend; API / frontend / realtime path Governance/Policy task API/surfaces; audit/work trace requirements impact task, evidence reads, provider fail-closed, denial traces; local validation path `mvn test`, provider smoke or fail-closed runtime smoke.
 
-### ADIA-FU-AT-005: Verify Audit/Trace read-only chat plans, bounded agent tools, and summary provider paths
+### TASK-ADIA-FU-018: Reconcile Audit/Trace canonical governed-tool ids and v2 surface contracts
 
-- source task: `TASK-ADIA-02-005`
-- source workstream: Audit/Trace
-- type: provider/chat-plan/runtime-validation gap
-- status: proposed-for-consolidation
-- evidence basis: `AuditTraceSummaryService.java`, `AuditTraceSummaryAutonomousAgent.java`, `AuditTraceEvidenceTools.java`, `FailClosedAuditTraceSummaryAutonomousAgentRuntime.java`, `AuditTraceSummaryServiceTest.java`, `AuditTraceSummaryAutonomousAgentTest.java`, `WorkstreamService.java`
-- gap: Source/tests prove summary-task fail-closed and Akka test-model behavior, but no current local runtime record proves configured-provider summary success, missing-provider fail-closed UI/API path, exact confirmed read-only chat plans for search/detail/correlation/denial/summary, bounded `agent_tool_call` allow/deny, ToolPermissionBoundary denial traces, or browser secret boundary.
-- expected runnable scope: with provider credentials absent, run summary start/read/review and verify blocked provider/runtime surfaces and trace ids without fake success; with provider credentials available, run model-backed summary review; execute confirmed read-only chat plans and bounded agent-tool reads for canonical Audit/Trace tools, including missing-boundary denial and partial-failure/result surfaces.
-- blocker classification if setup is missing: `provider-config-blocker`, `auth-setup-blocker`, `implementation-gap`, `test-gap`, or `runtime-validation-gap`.
+- status: pending
+- source: `ADIA-FU-AT-002`; `TASK-ADIA-02-005`
+- depends on:
+  - `TASK-ADIA-FU-017`
+- required reads:
+  - `app-description/domains/core-starter/workstreams/audit-trace/tools/governed-tools.md`
+  - `app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md`
+  - `app-description/domains/core-starter/workstreams/audit-trace/realization/source-alignment.md`
+- skills:
+  - `akka-backlog-item-to-task-brief`
+  - `akka-runtime-feature-verification`
+- expected outputs:
+  - mapping update or narrower task brief for canonical Audit/Trace ids and v2 surfaces
+- required checks:
+  - `mvn test`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - `git diff --check`
+- done criteria:
+  - each canonical Audit/Trace governed-tool id maps to one backend capability/action path and one frontend result surface, with legacy aliases documented and tested as compatibility wrappers only
+- block criteria:
+  - `source-alignment-gap` or `test-gap`
+- notes:
+  - vertical contract: Audit/Trace functional agent workstream; attention category canonical-id/v2-surface reconciliation; role-specific dashboard / surface search/detail/correlation/denial/summary v2 surfaces; surface graph node/action edge search/read detail/lookup correlation/investigate denied access/summarize to v2 result surfaces; governed-tool id/type/exposure `audit.trace.*` canonical tools via `surface_action`, read-only `human_chat_tool_plan`, API; actor adapter/source `surface_action`, `human_chat_tool_plan`, `api_call`, projection/internal trace source; confirmation/approval behavior read-only chat confirmation and no export approval change; idempotency/transaction/result behavior read-only idempotency and redacted/denied/partial-failure result surfaces; capability `audit-and-trace-investigation`; AuthContext / roles / tenant scope tenant admin/SaaS support/support-access; Akka substrate endpoint/service/view/projection/frontend; API / frontend / realtime path Audit/Trace workstream API/frontend contracts; audit/work trace requirements trace-read, denied-read, summary, and correlation traces; local validation path mvn/npm tests plus `git diff --check`.
+
+### TASK-ADIA-FU-019: Implement or verify Audit/Trace support-access review and redacted export workflow depth
+
+- status: pending
+- source: `ADIA-FU-AT-003`; `TASK-ADIA-02-005`
+- depends on:
+  - `TASK-ADIA-FU-018`
+- required reads:
+  - `app-description/domains/core-starter/workstreams/audit-trace/access.md`
+  - `app-description/domains/core-starter/workstreams/audit-trace/behavior.md`
+  - `app-description/domains/core-starter/workstreams/audit-trace/surfaces/surfaces.md`
+  - `app-description/domains/core-starter/workstreams/audit-trace/tools/governed-tools.md`
+  - `app-description/domains/core-starter/workstreams/audit-trace/policies/policy-bindings.md`
+- skills:
+  - `akka-backlog-item-to-task-brief`
+  - `akka-runtime-feature-verification`
+- expected outputs:
+  - bounded support-access/export implementation/tests or narrower task brief if split is needed
+- required checks:
+  - `mvn test`
+  - `npm --prefix frontend test -- --run`
+  - `npm --prefix frontend run typecheck`
+  - `git diff --check`
+- done criteria:
+  - support-access grant/use/expiry/revoke review, self-approval denial, redacted export approval-required/denied/ready/expired states, idempotent replay, no raw browser download URL, and trace refs are verified or implemented
+- block criteria:
+  - `implementation-gap`, `test-gap`, `auth-setup-blocker`, or `runtime-validation-gap`
+- notes:
+  - vertical contract: Audit/Trace functional agent workstream; attention category support-access review/export approval; role-specific dashboard / surface support-access review/redacted export/result/timeline surfaces; surface graph node/action edge grant/use/expiry/revoke support access, request export, approve/deny/ready/expired export, self-approval denial; governed-tool id/type/exposure support-access and redacted export tools via `surface_action`, API, optional read-only `human_chat_tool_plan`; actor adapter/source `surface_action`, `api_call`, internal audit/export service; confirmation/approval behavior export/support-access approval and self-approval denial; idempotency/transaction/result behavior export request idempotency, approval transaction, ready/expired/denied result surfaces; capability `audit-and-trace-investigation`; AuthContext / roles / tenant scope tenant admin/SaaS support/support-access; Akka substrate endpoint/service/entity/view/frontend; API / frontend / realtime path Audit/Trace export/support APIs and surfaces; audit/work trace requirements support-access and export approval traces without raw URLs; local validation path mvn/npm tests plus runtime-validation scenario when authored.
+
+### TASK-ADIA-FU-020: Verify Audit/Trace trace-gap and runtime-validation evidence linking
+
+- status: pending
+- source: `ADIA-FU-AT-004`; `TASK-ADIA-02-005`
+- depends on:
+  - `TASK-ADIA-FU-019`
+- required reads:
+  - `app-description/domains/core-starter/workstreams/audit-trace/traces/work-traces.md`
+  - `app-description/domains/core-starter/workstreams/audit-trace/realization/akka-components.md`
+  - `app-description/domains/core-starter/workstreams/audit-trace/tests/coverage.md`
+  - `specs/runtime-validation/README.md`
+- skills:
+  - `akka-runtime-feature-verification`
+- expected outputs:
+  - trace-gap/evidence-link implementation/tests or runtime-validation scenario/run record
+- required checks:
+  - `mvn test`
+  - `npm --prefix frontend test -- --run`
+  - `git diff --check`
+- done criteria:
+  - runtime-validation evidence links, trace-gap diagnostics, dashboard attention counts, timeline gap display, source-alignment refs, redaction, and tenant/support authorization are proven
+- block criteria:
+  - `implementation-gap`, `test-gap`, `runtime-validation-gap`, or `seed-data-blocker`
+- notes:
+  - vertical contract: Audit/Trace functional agent workstream; attention category trace-gap/runtime-validation evidence link; role-specific dashboard / surface trace-gap attention/timeline/evidence-link/source-alignment surfaces; surface graph node/action edge ingest/display evidence link, detect missing correlation/producer evidence, open gap detail; governed-tool id/type/exposure trace-gap and evidence-link tools via `surface_action`, API, projection/internal consumer; actor adapter/source `surface_action`, `api_call`, consumer/internal trace source; confirmation/approval behavior read-only diagnostics and no approval unless export/support flow is invoked; idempotency/transaction/result behavior evidence-link idempotency, gap result surfaces, partial malformed evidence handling; capability `audit-and-trace-investigation`; AuthContext / roles / tenant scope tenant admin/SaaS support/support-access; Akka substrate endpoint/service/view/consumer/frontend; API / frontend / realtime path Audit/Trace evidence-link and timeline surfaces; audit/work trace requirements gap diagnostics and source-alignment impact refs with redaction; local validation path mvn/npm tests plus runtime-validation scenario/run record if authored.
+
+### TASK-ADIA-FU-021: Verify Audit/Trace read-only chat plans, bounded agent tools, and summary provider paths
+
+- status: pending
+- source: `ADIA-FU-AT-005`; `TASK-ADIA-02-005`
+- depends on:
+  - `TASK-ADIA-FU-020`
+- required reads:
+  - `app-description/domains/core-starter/workstreams/audit-trace/tools/governed-tools.md`
+  - `app-description/domains/core-starter/workstreams/audit-trace/traces/work-traces.md`
+  - `app-description/domains/core-starter/workstreams/audit-trace/realization/source-alignment.md`
+- skills:
+  - `akka-runtime-feature-verification`
+- expected outputs:
+  - provider configured/fail-closed and read-only chat/agent-tool run record or focused tests
+- required checks:
+  - `mvn test`
+  - `npm --prefix frontend test -- --run`
+  - `git diff --check`
+  - provider-missing fail-closed or configured-provider runtime smoke
+- done criteria:
+  - summary start/read/review provider-missing fail-closed, configured-provider summary when available, confirmed read-only chat plans, bounded agent-tool allow/deny, tool-boundary denial traces, partial-failure surfaces, and browser secret-boundary evidence are recorded
+- block criteria:
+  - `provider-config-blocker`, `auth-setup-blocker`, `implementation-gap`, `test-gap`, or `runtime-validation-gap`
+- notes:
+  - vertical contract: Audit/Trace functional agent workstream; attention category summary provider/read-only chat/tool-boundary denial; role-specific dashboard / surface summary task/chat-plan/search/detail/correlation/denial result surfaces; surface graph node/action edge start summary, read/review result, confirmed read-only search/detail/correlation/denial chat plan, bounded agent-tool allow/deny, provider fail-closed; governed-tool id/type/exposure audit trace read/summary tools via `human_chat_tool_plan`, `agent_tool_call`, `surface_action`, API; actor adapter/source `human_chat_tool_plan`, `agent_tool_call`, `surface_action`, `api_call`; confirmation/approval behavior exact read-only chat confirmation and no mutation/export approval; idempotency/transaction/result behavior summary task idempotency, read-only result, denial, and partial-failure surfaces; capability `audit-and-trace-investigation`; AuthContext / roles / tenant scope tenant admin/SaaS support/support-access; Akka substrate endpoint/service/autonomous agent/entity/view/frontend; API / frontend / realtime path Audit/Trace workstream API/chat/task surfaces; audit/work trace requirements summary, tool-boundary denial, provider fail-closed, trace-read correlation; local validation path mvn/npm tests plus provider smoke or fail-closed runtime smoke.
+
+### TASK-ADIA-FU-022: Author or execute expanded User Admin runtime-validation coverage
+
+- status: pending
+- source: `ADIA-FU-UA-004`; `TASK-ADIA-02-002`
+- depends on:
+  - `TASK-ADIA-FU-021`
+- required reads:
+  - `app-description/domains/core-starter/workstreams/user-admin/tests/coverage.md`
+  - `app-description/domains/core-starter/workstreams/user-admin/traces/work-traces.md`
+  - `app-description/domains/core-starter/workstreams/user-admin/realization/source-alignment.md`
+  - `specs/runtime-validation/README.md`
+- skills:
+  - `akka-runtime-feature-verification`
+  - `akka-backlog-item-to-task-brief`
+- expected outputs:
+  - bounded runtime-validation scenarios/run records or narrower task briefs for role/status/support/identity/access-review/chat-plan coverage
+- required checks:
+  - `git diff --check`
+  - scenario authoring validator if a scenario queue is created, or runtime scenario execution/run record if executing coverage
+- done criteria:
+  - role/status/last-admin/self-action denial, support-access grant/revoke/expiry, identity exception recovery, access-review advisory, exact chat-plan confirmation/denial/partial-failure, and audit/trace reauthorization coverage is either executed or split into runnable scenario tasks
+- block criteria:
+  - `auth-setup-blocker`, `provider-config-blocker`, or `runtime-validation-gap`
+- notes:
+  - vertical contract: User Admin functional agent workstream; attention category role/status/support-access/identity/access-review/chat-plan; role-specific dashboard / surface user list/detail/admin-audit/access-review/chat-plan result surfaces; surface graph node/action edge role change, membership status, support access, identity exception, access-review advisory, confirmed chat-plan, denied/partial-failure result; governed-tool id/type/exposure membership/role/support/access-review/admin-audit tools via `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API; actor adapter/source `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, `api_call`; confirmation/approval behavior risky admin/chat confirmation and last-admin/self-action denial; idempotency/transaction/result behavior membership/support/access-review transaction, idempotency, and partial-failure result surfaces; capability `user-and-access-administration`; AuthContext / roles / tenant scope organization-admin/member/support scopes; Akka substrate endpoint/service/entity/autonomous agent/view/frontend; API / frontend / realtime path User Admin workstream/admin APIs and surfaces; audit/work trace requirements admin action, access-review, support, identity, denial traces; local validation path scenario authoring/execution with run records plus `git diff --check`.

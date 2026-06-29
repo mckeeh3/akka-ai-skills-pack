@@ -266,7 +266,7 @@
 
 ### TASK-ADIA-03-001: Consolidate build/compile/runtime-validation follow-up queue
 
-- status: pending
+- status: done
 - source: specs/app-description-implementation-alignment/backlog/01-implementation-alignment-build-backlog.md#adia-08-consolidate-buildcompileruntime-validation-follow-up-queue
 - task brief: specs/app-description-implementation-alignment/tasks/03-consolidation/01-consolidate-follow-up-queue.md
 - depends on:
@@ -290,6 +290,9 @@
   - follow-up work is ordered, bounded, and executable one task per fresh context
   - task changes and queue update are committed
 - notes:
+  - commit message: `app-desc-align: consolidate follow-up queue`
+  - validation: `git diff --check` passed; `bash .agents/skills/tools/validate-pending-task-workstream-contract.sh specs/app-description-implementation-alignment/implementation-follow-up-queue.md` passed for the consolidated executable follow-up queue.
+  - result: `implementation-follow-up-queue.md` now contains ordered `TASK-ADIA-FU-001` through `TASK-ADIA-FU-022` entries with dependencies, required reads, checks, done/block criteria, and vertical workstream contracts; no follow-up remediation task was implemented.
   - vertical contract: cross-workstream follow-up queue consolidation; non-attention reason planning/queue authoring; role-specific dashboard / surface inherited per generated task; surface graph node/action edge inherited per generated task; governed-tool id/type/exposure inherited per generated task; actor adapter/source inherited per generated task; confirmation/approval behavior and idempotency/transaction/result behavior inherited per generated task; capability or foundation scope all core-starter capabilities; AuthContext / roles / tenant scope inherited per generated task; API / frontend / realtime path inherited per generated task; audit/work trace expectation inherited per generated task; validation path `git diff --check` plus queue validator when applicable
 
 ### TASK-ADIA-99-001: Terminal implementation alignment verification
