@@ -26,8 +26,8 @@ Use the lifecycle phase to decide which skill family owns the next step:
 | Phase | Routing purpose | Typical outputs |
 |---|---|---|
 | `interview` | Convert user/business input, review findings, or runtime-validation observations into current-intent graph changes or blockers. | normalized input, app-description deltas, pending questions, description-ready task scope |
-| `build-compile` | Compile description-ready graph nodes or one selected queued task into maintained artifacts. | specs, task briefs, docs, code, tests, configuration, automated-check evidence, manual-ready path |
-| `runtime-validation` (`manual-test` legacy alias) | Prove or falsify the real runtime/API/UI/agent path through documented scenarios and feed findings back into the request stream. | runtime-validation evidence, scenario pass/fail/block results, reconciliation findings, app-description/spec/task/code/test repairs, blockers |
+| `build-compile` | Compile description-ready graph nodes or one selected queued task into maintained artifacts. | specs, task briefs, docs, code, tests, configuration, automated-check evidence, runtime-validation-ready path |
+| `runtime-validation` (`runtime-validation` legacy alias) | Prove or falsify the real runtime/API/UI/agent path through documented scenarios and feed findings back into the request stream. | runtime-validation evidence, scenario pass/fail/block results, reconciliation findings, app-description/spec/task/code/test repairs, blockers |
 | `cross-phase` | Route broad architecture, foundation, pack-maintenance, or review work without replacing the focused phase skills. | route decision, impact map, readiness summary, doctrine/metadata updates |
 
 The standard routing metadata fields are `phase`, `kind`, `family`, `consumes`, `produces`, and `routes-to`; see [Intent compiler skill contracts](intent-compiler-skill-contracts.md). These fields are descriptive contracts for humans and harnesses, not permission to skip required reads or task-specific checks.

@@ -30,7 +30,7 @@ function validate_task(title, body, status,    text, exempt) {
     if (text !~ /(non-attention|no attention|non-ui|no ui|non-runtime|docs-only|internal-only|foundation-only|cross-cutting|no root app runtime feature|no generated-app runtime feature)/) add_missing("non-attention/non-UI reason")
     if (text !~ /(capability|foundation scope|scope|skills-pack|docs\/templates\/tools)/) add_missing("capability or foundation scope")
     if (text !~ /(audit|trace|work trace|no trace|none|no root app runtime feature|no generated-app runtime feature|skills-pack)/) add_missing("audit/work trace expectation")
-    if (text !~ /(local validation|validation|manual smoke|required checks|mvn|npm|non-runtime|docs-only)/) add_missing("local validation path")
+    if (text !~ /(local validation|validation|runtime-validation smoke|required checks|mvn|npm|non-runtime|docs-only)/) add_missing("local validation path")
   } else {
     if (text !~ /(workstream|functional agent)/) add_missing("workstream / functional agent")
     if (text !~ /(attention|non-attention)/) add_missing("attention category or non-attention reason")
@@ -45,7 +45,7 @@ function validate_task(title, body, status,    text, exempt) {
     if (text !~ /(akka substrate|entity|workflow|view|consumer|timed action|agent|autonomousagent|endpoint|frontend|docs-only)/) add_missing("Akka substrate")
     if (text !~ /(api|frontend|realtime|sse|websocket|route|endpoint|surface path|non-ui)/) add_missing("API / frontend / realtime path")
     if (text !~ /(audit|work trace|trace|correlation)/) add_missing("audit/work trace requirements")
-    if (text !~ /(local validation|validation|manual smoke|required checks|mvn|npm|browser smoke|api smoke)/) add_missing("local validation path")
+    if (text !~ /(local validation|validation|runtime-validation smoke|required checks|mvn|npm|browser smoke|api smoke)/) add_missing("local validation path")
   }
 
   if (missing != "") {

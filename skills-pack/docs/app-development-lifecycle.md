@@ -6,13 +6,13 @@ This document defines the canonical three-phase lifecycle used by the Akka AI sk
 
 1. **Interview phase**: capture and reconcile intent until the app-description can represent the requested change.
 2. **Build/compile phase**: compile the app-description and queued task intent into code, docs, tests, and configuration changes.
-3. **Runtime validation phase**: run the real local/runtime path through documented scenarios, reconcile failures back into current intent, and decide whether the change is runtime-ready or needs another loop. `Manual runtime test` remains a compatible legacy label for human-operated runtime validation.
+3. **Runtime validation phase**: run the real local/runtime path through documented scenarios, reconcile failures back into current intent, and decide whether the change is runtime-ready or needs another loop. Human-operated app testing is one execution mode of runtime validation, not a separate lifecycle phase.
 
 The phases are not a waterfall. A request can move forward, expose a gap, and then loop back with a more precise app-description, task, or implementation fix.
 
 ## App-developer input transaction contract
 
-Every app-developer input must produce a concrete state transition. The input may be a high-level PRD, rough business notes, a feature request, a low-level bug report, a failed surface, a manual/runtime observation, or a direct coding ask. The harness should advance it as far as safely possible and then stop with an explicit terminal state.
+Every app-developer input must produce a concrete state transition. The input may be a high-level PRD, rough business notes, a feature request, a low-level bug report, a failed surface, a runtime-validation observation, or a direct coding ask. The harness should advance it as far as safely possible and then stop with an explicit terminal state.
 
 Allowed terminal states:
 
@@ -63,7 +63,7 @@ Treat app development as a durable stream of requests rather than a finite promp
 - contradictions, missing decisions, or unsafe runtime assumptions are captured as questions or blockers instead of being silently implemented;
 - completed work updates the living current-intent graph and leaves evidence that the next task can use without replaying the full conversation.
 
-When a runtime-validation run, manual/browser test, or review discovers a mismatch, the result is not merely a bug note. It is a lifecycle input that should update the app-description, backlog, task queue, implementation, runtime-validation corpus, or verification notes at the smallest appropriate scope.
+When a runtime-validation run, runtime-validation/browser test, or review discovers a mismatch, the result is not merely a bug note. It is a lifecycle input that should update the app-description, backlog, task queue, implementation, runtime-validation corpus, or verification notes at the smallest appropriate scope.
 
 ## Phase contracts
 

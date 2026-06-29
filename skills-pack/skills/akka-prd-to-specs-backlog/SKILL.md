@@ -64,7 +64,7 @@ Read first when present/relevant:
 - `../docs/app-worker-tool-model.md`
 - `../docs/app-description-to-code-compile-contract.md`
 - `../docs/runtime-validation.md` when planning runtime-validation scenarios, setup prerequisites, execution modes, or remediation loops
-- `../docs/manual-test-reconciliation.md` when planning runtime-validation/manual/browser remediation loops
+- `../docs/runtime-validation-reconciliation.md` when planning runtime-validation/browser remediation loops
 - `../akka-solution-decomposition/SKILL.md`
 - `../core-saas-foundation/SKILL.md`
 - `../docs/intent-compiler.md`

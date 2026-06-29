@@ -19,7 +19,7 @@ worker
 → trace/view/result surface
 ```
 
-When runtime validation is part of the readiness claim, apply `../docs/runtime-validation.md` and `../docs/manual-test-reconciliation.md` so human/browser-agent/API/scripted findings become classified reconciliation outputs before more feature work proceeds.
+When runtime validation is part of the readiness claim, apply `../docs/runtime-validation.md` and `../docs/runtime-validation-reconciliation.md` so human/browser-agent/API/scripted findings become classified reconciliation outputs before more feature work proceeds.
 
 This is a validator/reviewer and drift-repair skill. It may update specs/queue evidence and append remediation tasks, but it should not implement unrelated product code.
 
@@ -34,7 +34,7 @@ Read these first when present:
 - `../docs/app-worker-tool-model.md`
 - `../docs/app-description-to-code-compile-contract.md`
 - `../docs/runtime-validation.md` when runtime-validation scenarios, setup prerequisites, execution modes, or accumulated runs are in scope
-- `../docs/manual-test-reconciliation.md` when runtime-validation/manual/browser runtime smoke evidence or tester findings are in scope
+- `../docs/runtime-validation-reconciliation.md` when runtime-validation/browser runtime smoke evidence or tester findings are in scope
 - `../docs/pending-task-queue.md`
 - `../docs/structured-surface-contracts.md` when surfaces are in scope
 - `../akka-web-ui-testing/SKILL.md` when browser UI is in scope

@@ -170,7 +170,7 @@ A slice is too narrow when it:
 - leaves a declared adapter without authorization, result, trace, or test behavior;
 - implements only frontend visibility without backend capability enforcement;
 - implements only an endpoint/component method without the surface/agent/system adapter that exposes it;
-- omits tests or manual scenario for a feature-bearing behavior.
+- omits tests or runtime-validation scenario for a feature-bearing behavior.
 
 ## Completion evidence levels
 
@@ -178,7 +178,7 @@ Use the readiness vocabulary from [App Development Lifecycle](app-development-li
 
 - `description-ready`: graph intent is complete enough for a bounded task;
 - `compile-ready`: task inputs are coherent enough for implementation without guessing;
-- `manual-ready`: required automated checks pass and the runtime/manual path is known;
+- `manual-ready`: required automated checks pass and the runtime-validation path is known;
 - `runtime-ready`: the real local API/UI/agent path works at the claimed scope, or the task is explicitly non-runtime and has satisfied its stated checks.
 
 Docs-only skills-pack tasks may complete at `manual-ready` with `runtime evidence: not applicable` when their required repository checks pass and their link/search evidence proves discoverability.
@@ -206,6 +206,6 @@ Block or create a pending question when safe compilation would require guessing:
 - Duplicate human and AI implementations for the same business operation.
 - Surface visibility or route access treated as authorization.
 - Runtime completion claimed from fixture/demo/mock behavior for normal app paths.
-- Missing denial, approval, idempotency, tenant-isolation, trace, or manual runtime expectations.
+- Missing denial, approval, idempotency, tenant-isolation, trace, or runtime-validation expectations.
 
 See also [App-description source alignment](app-description-source-alignment.md), [Intent to realization flow](intent-to-realization-flow.md), and [Intent compiler skill contracts](intent-compiler-skill-contracts.md).

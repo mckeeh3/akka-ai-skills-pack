@@ -13,7 +13,7 @@ Treat every structured surface, dashboard object, composer route, and form as a 
 
 - `../docs/app-worker-tool-model.md` — worker/harness/adapter/governed-tool/capability separation
 - `../docs/app-description-to-code-compile-contract.md` — compile gate before UI coding
-- `../docs/manual-test-reconciliation.md` — manual runtime evidence/reconciliation when browser testing is in scope
+- `../docs/runtime-validation.md` and `../docs/runtime-validation-reconciliation.md` — runtime-validation evidence/reconciliation when browser testing is in scope
 - `../docs/workstream-ui-reference-architecture.md` — canonical UI architecture
 - `../docs/web-ui-style-guide.md` — visual/style contract
 - `../docs/web-ui-pattern-selection.md` — route/build pattern summary

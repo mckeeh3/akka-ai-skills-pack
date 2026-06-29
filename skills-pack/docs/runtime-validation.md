@@ -1,8 +1,8 @@
 # Runtime Validation
 
-Runtime validation is the app-facing integration test layer that proves a generated SaaS or SaaS Foundation App works through the intended local running application path. It replaces vague "manual testing" language with explicit validation scenarios that can be executed by a human tester, a browser-capable agent, an API agent, or a scripted end-to-end runner.
+Runtime validation is the app-facing integration test layer that proves a generated SaaS or SaaS Foundation App works through the intended local running application path. It replaces vague ad hoc app-checking language with explicit validation scenarios that can be executed by a human tester, a browser-capable agent, an API agent, or a scripted end-to-end runner.
 
-Runtime validation is still part of the three-phase lifecycle's final phase. The term `manual runtime test` remains a compatible legacy label, but new tasks and specs should prefer `runtime-validation`.
+Runtime validation is the three-phase lifecycle's final phase. Human-operated validation is represented with `executionMode: human-manual`; new tasks and specs should use `runtime-validation` vocabulary.
 
 ## Definition
 
@@ -128,7 +128,7 @@ Likely categories such as implementation gap, app-description gap, provider/conf
 
 Runtime validation requires reproducible prerequisites. Use the highest practical setup level:
 
-1. **Documented setup** — the scenario explains the manual/API steps needed to create tenant, users, roles, domain records, provider state, and route entry.
+1. **Documented setup** — the scenario explains the human-operated or API steps needed to create tenant, users, roles, domain records, provider state, and route entry.
 2. **Assisted setup** — a helper command prepares most prerequisites and prints remaining instructions.
 3. **Fully automated setup** — a runner prepares state, executes the scenario, and captures evidence.
 

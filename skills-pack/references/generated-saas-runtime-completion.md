@@ -25,8 +25,8 @@ Use these labels to prevent contract/rendering work from being mistaken for runt
 - `backend-ready` — backend service/component behavior is tested, but the browser/API path is not proven.
 - `frontend-rendered` — frontend components render, but production action round trips are not proven.
 - `api-smoked` — the protected API/workstream endpoint path was exercised locally with role/context expectations.
-- `browser-smoked` — the local browser/DOM/manual flow was exercised against the intended API/client path.
-- `manual-ready` — enough manual/browser/API evidence exists for human manual testing at the stated scope.
+- `browser-smoked` — the local browser/DOM/runtime flow was exercised against the intended API/client path.
+- `manual-ready` — enough runtime-validation/browser/API evidence exists for human runtime validation at the stated scope.
 - `runtime-ready` — the intended local Akka/API/UI path works at the stated scope, including required auth, tenant scope, side effects, audit/work traces, tests, and provider behavior or explicit fail-closed evidence.
 
 `surface-ready`, `backend-ready`, `frontend-rendered`, unit tests, contract tests, typecheck, and build are not synonyms for `runtime-ready`.
@@ -39,7 +39,7 @@ Feature-bearing done notes, verification docs, and task briefs should record:
 - the canonical path tested: worker -> execution harness -> actor adapter -> governed tool -> capability -> browser surface/action or non-UI trigger -> API/endpoint/client -> Akka component/service/substrate -> view/trace/audit outcome;
 - the actor role, selected `AuthContext`, tenant/customer/organization scope, and at least one denial/forbidden or hidden/not-found case when authorization is in scope;
 - success, validation/error, stale/conflict/idempotency, and provider-unconfigured fail-closed behavior where relevant;
-- commands and/or manual smoke steps with pass/fail result;
+- commands and/or runtime-validation smoke steps with pass/fail result;
 - trace/correlation/audit evidence and browser-safe error/status copy;
 - external provider status: configured and smoked, or missing and fail-closed with actionable setup instructions.
 

@@ -103,7 +103,7 @@ The downstream implementation phase may include:
 - endpoint generation
 - web UI generation
 - test generation
-- local run, endpoint smoke, browser/workstream smoke, runtime-validation scenarios/runs, or manual/human-operated validation notes
+- local run, endpoint smoke, browser/workstream smoke, runtime-validation scenarios/runs, including human-operated validation notes when applicable
 - documentation or snippet generation when the task asks for it
 
 ## Quick checklist

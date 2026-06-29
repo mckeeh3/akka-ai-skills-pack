@@ -41,7 +41,7 @@ Read only what the input requires:
 - `../docs/incremental-intent-processing.md`
 - `../docs/intent-compiler-skill-contracts.md`
 - `../docs/app-development-lifecycle.md` when the input mixes interview, build/compile, or runtime-validation concerns
-- `../docs/runtime-validation.md` when the input describes runtime validation, manual/browser/API testing, setup prerequisites, or app-operation evidence
+- `../docs/runtime-validation.md` when the input describes runtime validation, runtime-validation/browser/API testing, setup prerequisites, or app-operation evidence
 - `../docs/app-worker-tool-model.md` and `../docs/app-description-component-graph.md` when the input implies workers, harnesses, tools, capabilities, agents, surfaces, system triggers, or implementation readiness
 - `../docs/app-description-to-code-compile-contract.md` when planning, generation, code, tests, or validation are requested
 - `../docs/intent-to-realization-flow.md` when planning, generation, code, tests, or validation are requested

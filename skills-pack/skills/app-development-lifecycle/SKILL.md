@@ -28,7 +28,7 @@ When applying the lifecycle to a concrete app change, also read the smallest rel
 - `../docs/app-description-to-code-compile-contract.md`
 - `../docs/app-worker-tool-model.md`
 - `../docs/runtime-validation.md` when runtime-validation scenarios, setup prerequisites, execution modes, or accumulated validation runs are in scope
-- `../docs/manual-test-reconciliation.md`
+- `../docs/runtime-validation-reconciliation.md`
 - target-project `app-description/**`, `specs/**`, or selected pending-task brief when the user asks about a specific change
 
 ## Core answer
@@ -38,7 +38,7 @@ The canonical app development lifecycle has three iterative phases:
 ```text
 1. Interview / intent reconciliation
 2. Build / compile / implement
-3. Runtime validation / reconciliation (`manual runtime test` legacy wording)
+3. Runtime validation / reconciliation (`runtime-validation run` legacy wording)
 ```
 
 It is not a waterfall. Every feature request, bug report, issue, tweak, runtime-validation observation, review finding, or clarification is part of a continuous request stream that updates current intent and may start another pass through the loop. Track this state per workstream so app-description changes can flag implementation as stale until reviewed or recompiled. Every input should advance to `done`, `partially-done-blocked`, `decomposed-to-tasks`, or `blocked-before-work`; do not merely analyze and stop without a concrete state transition.

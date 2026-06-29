@@ -124,7 +124,7 @@ Every app UI style guide should define:
 ## Implementation notes
 - CSS variable prefix:
 - files expected to apply this guide:
-- tests/manual checks:
+- tests/runtime-validation checks:
 ```
 
 ## Default style selection question

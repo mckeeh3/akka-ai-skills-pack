@@ -191,7 +191,7 @@ workflow/timer/consumer/API/MCP/internal adapter -> governed tool -> capability
 governed tool -> result surface/event/attention/audit trace
 capability -> Akka implementation substrate(s)
 test -> worker + actor adapter + governed tool + capability + Akka implementation path
-manual test -> runtime path + reconciliation outcome
+runtime validation -> runtime path + reconciliation outcome
 ```
 
 Feature-bearing build tasks should inherit this chain from current intent. If a task only names a page, route, endpoint, component, or agent tool and does not identify the responsible worker, actor adapter, governed tool, capability, AuthContext, traces, and validation path, repair the description/task or block before implementation.

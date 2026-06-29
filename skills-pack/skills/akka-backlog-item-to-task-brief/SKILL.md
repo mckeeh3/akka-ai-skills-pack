@@ -56,7 +56,7 @@ Read these first if present:
 - `../docs/app-worker-tool-model.md`
 - `../docs/app-description-to-code-compile-contract.md`
 - `../docs/runtime-validation.md` when the brief covers runtime-validation scenarios, setup prerequisites, or validation tasks
-- `../docs/manual-test-reconciliation.md` when the brief covers runtime-validation/manual remediation
+- `../docs/runtime-validation-reconciliation.md` when the brief covers runtime-validation remediation
 - `../akka-prd-to-specs-backlog/SKILL.md`
 - `../akka-slice-spec-to-backlog/SKILL.md`
 - `../docs/intent-compiler.md`
@@ -151,7 +151,7 @@ Before finishing, verify:
 - AI-first authority, policy, decision, trace, UI-surface, evaluation, and outcome context from the backlog item is either preserved in the brief or explicitly out of scope
 - unresolved AI-first blockers are captured as pending questions and block only affected queue entries
 - required tests are named clearly
-- local app-run, endpoint smoke, browser/workstream smoke, or manual-test validation is named for tasks that implement runtime behavior, or the task explicitly says it is non-runtime/internal-only
+- local app-run, endpoint smoke, browser/workstream smoke, or runtime-validation path is named for tasks that implement runtime behavior, or the task explicitly says it is non-runtime/internal-only
 - feature-bearing task briefs name the target readiness level and canonical runtime path: browser/surface/action or confirmed chat tool-plan/non-UI trigger -> API/endpoint/client -> Akka component/service/substrate -> trace/audit/view
 - feature-bearing task briefs require runtime evidence in queue notes before `done`: role/AuthContext/tenant setup, governed-tool id and actor adapter exercised, confirmation/approval and idempotency/transaction evidence when consequential tool use is in scope, denial case, provider configured or fail-closed status, commands/runtime-validation-smoke result, and trace/audit evidence
 - the listed skills match the task's component type

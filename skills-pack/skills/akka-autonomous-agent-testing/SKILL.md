@@ -9,7 +9,7 @@ Use this skill when validating Autonomous Agent components, task lifecycles, tas
 
 ## Lifecycle and compile boundary
 
-Testing work belongs to the build/compile phase unless the selected task is explicitly runtime verification or manual-test reconciliation. Use this skill to prove the component-specific mechanics and the declared worker/harness/actor-adapter/governed-tool/capability path; do not widen a component-testing task into unrelated planning, product repair, or manual-failure triage. For feature-bearing generated SaaS work, passing component tests can support `manual-ready`; `runtime-ready` still requires the real local API/UI/agent path, provider/fail-closed evidence where relevant, and reconciliation of manual findings through `../docs/manual-test-reconciliation.md`.
+Testing work belongs to the build/compile phase unless the selected task is explicitly runtime verification or runtime-validation reconciliation. Use this skill to prove the component-specific mechanics and the declared worker/harness/actor-adapter/governed-tool/capability path; do not widen a component-testing task into unrelated planning, product repair, or runtime-validation failure triage. For feature-bearing generated SaaS work, passing component tests can support `manual-ready`; `runtime-ready` still requires the real local API/UI/agent path, provider/fail-closed evidence where relevant, and reconciliation of runtime-validation findings through `../docs/runtime-validation-reconciliation.md`.
 
 ## Worker/tool/capability alignment
 
@@ -32,7 +32,7 @@ Human surface availability, prompt/skill/reference text, model output, task inst
 Read these lifecycle docs first:
 - `../docs/app-development-lifecycle.md`
 - `../docs/app-description-to-code-compile-contract.md`
-- `../docs/manual-test-reconciliation.md` when tests are part of a manual/runtime readiness claim or remediation loop
+- `../docs/runtime-validation-reconciliation.md` when tests are part of a runtime-validation readiness claim or remediation loop
 
 Read before validating generated-app worker tasks:
 - `../docs/autonomous-agent-worker-runtime-pattern.md`

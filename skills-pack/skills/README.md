@@ -43,7 +43,7 @@ Route every request through the smallest lifecycle phase that can make safe prog
 
 1. **Interview phase** (`interview`): capture, normalize, or reconcile user/business intent until the app-description can represent the requested change. Typical skills: `business-intent-interview`, `business-intent-to-app-input`, `app-description-input-normalization`, `app-description-intake-router`, and focused app-description editors.
 2. **Build/compile phase** (`build-compile`): compile description-ready current intent or a selected queued task into docs, specs, code, tests, configuration, and validation evidence. Typical skills: app-description planning/generation skills, `akka-prd-to-specs-backlog`, `akka-solution-decomposition`, component/endpoint/web UI implementation skills, and queue execution skills.
-3. **Runtime validation phase** (`runtime-validation`; `manual-test` legacy alias): exercise the real local/API/UI/agent path through documented scenarios, classify failures, and reconcile findings into intent, tasks, code, runtime-validation runs, or blockers. Typical skills: `akka-runtime-feature-verification` and `akka-manual-failure-reconciliation`.
+3. **Runtime validation phase** (`runtime-validation`): exercise the real local/API/UI/agent path through documented scenarios, classify failures, and reconcile findings into intent, tasks, code, runtime-validation runs, or blockers. Typical skills: `akka-runtime-feature-verification` and `akka-manual-failure-reconciliation`.
 4. **Cross-phase** (`cross-phase`): broad routing, architecture, foundation, and maintenance skills that intentionally span phases. Typical skills: `ai-first-saas`, `agent-workstream-apps`, `core-saas-foundation`, `capability-first-backend`, `app-descriptions`, and pack-maintenance planning skills.
 
 Skill contracts use these classification fields when a task, skill header, spec, or manifest entry needs routing metadata: `phase`, `kind`, `family`, `consumes`, `produces`, and `routes-to`. The canonical semantics live in `docs/intent-compiler-skill-contracts.md`; the manifest remains backward compatible and may continue to use the existing `category` field until a later manifest migration validates any schema change.
@@ -86,7 +86,8 @@ Canonical doctrine:
 - `docs/app-worker-tool-model.md`
 - `docs/app-description-component-graph.md`
 - `docs/app-description-to-code-compile-contract.md`
-- `docs/manual-test-reconciliation.md`
+- `docs/runtime-validation.md`
+- `docs/runtime-validation-reconciliation.md`
 - `docs/intent-compiler.md`
 - `docs/business-intent-interview-process.md`
 - `docs/business-extension-requirements-guidance.md`
@@ -152,7 +153,7 @@ For SaaS Foundation App, basic app, starter, or chatbot-like generated SaaS prom
 
 Generated Akka app features are complete only when they work at the stated scope through the intended local Akka/API/UI runtime path. For the canonical runtime-completion doctrine, including governed Akka `Agent` invocation, provider fail-closed behavior, fixture/mock boundaries, readiness vocabulary, and required runtime evidence, read `references/generated-saas-runtime-completion.md`.
 
-Use `akka-runtime-feature-verification` before closing a feature group or when a completed slice may only be `surface-ready`, `backend-ready`, or `frontend-rendered`. Use `akka-manual-failure-reconciliation` when manual testing reports broken flows; it classifies each failure as an app-description gap, implementation gap, test gap, provider/config blocker, seed/demo-data gap, UX/state gap, or expectation change before creating remediation tasks.
+Use `akka-runtime-feature-verification` before closing a feature group or when a completed slice may only be `surface-ready`, `backend-ready`, or `frontend-rendered`. Use `akka-manual-failure-reconciliation` when runtime validation reports broken flows; it classifies each failure as an app-description gap, implementation gap, test gap, provider/config blocker, seed/demo-data gap, UX/state gap, or expectation change before creating remediation tasks.
 
 ## Description-first path
 

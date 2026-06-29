@@ -48,7 +48,7 @@ Read these first if present:
 - `../docs/app-development-lifecycle.md`
 - `../docs/app-worker-tool-model.md`
 - `../docs/app-description-to-code-compile-contract.md`
-- `../docs/manual-test-reconciliation.md` when the slice/sprint requires manual runtime validation or failure reconciliation
+- `../docs/runtime-validation.md` and `../docs/runtime-validation-reconciliation.md` when the slice/sprint requires runtime validation or failure reconciliation
 - `../akka-prd-to-specs-backlog/SKILL.md`
 - `../docs/intent-compiler.md`
 - `../docs/current-intent-model.md`
@@ -154,7 +154,7 @@ Before finishing, verify:
 - AI-first delegated-work, authority, policy, decision, trace, UI-surface, deterministic surface intent routing, evaluation, and outcome constraints from the source slice are preserved in backlog sections and pending-task entries when applicable
 - unresolved AI-first authority, approval, policy, risk, trace, UI, evaluation, or outcome decisions block only the affected tasks and are captured as pending questions
 - the tests cover entity/workflow/view/endpoint/frontend behavior as applicable
-- the local app-run, endpoint smoke, browser/workstream smoke, or manual-test path is present for feature-bearing sprint/slice goals
+- the local app-run, endpoint smoke, browser/workstream smoke, or runtime-validation path is present for feature-bearing sprint/slice goals
 - the harness task breakdown is composed of bounded operations
 - any oversized task item is explicitly marked for further decomposition before coding
 - `specs/pending-tasks.md` has matching queue entries for runnable harness tasks

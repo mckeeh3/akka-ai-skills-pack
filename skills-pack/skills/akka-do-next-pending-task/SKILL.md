@@ -59,7 +59,7 @@ Read these first if present:
 - `../docs/app-worker-tool-model.md`
 - `../docs/app-description-to-code-compile-contract.md`
 - `../docs/runtime-validation.md` when the selected task creates, runs, or reconciles runtime-validation scenarios or setup prerequisites
-- `../docs/manual-test-reconciliation.md` when the selected task is runtime-validation/manual-test remediation or runtime verification repair
+- `../docs/runtime-validation-reconciliation.md` when the selected task is runtime-validation remediation or runtime verification repair
 - `../docs/ai-first-saas-application-architecture.md` when the selected task or its listed skills include AI-first SaaS concerns
 - `../docs/workstream-expertise-model.md` when the selected task includes LLM-backed functional-agent expertise, reference governance, `readReferenceDoc`, model binding, manifests, loader authorization, tool boundaries, load traces, or expertise surfaces
 - `../docs/pending-question-queue.md`

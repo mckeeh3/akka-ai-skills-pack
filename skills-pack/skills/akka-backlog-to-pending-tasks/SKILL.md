@@ -56,7 +56,7 @@ Read these first if present:
 - `../docs/app-worker-tool-model.md`
 - `../docs/app-description-to-code-compile-contract.md`
 - `../docs/runtime-validation.md` when queue entries include runtime-validation scenarios, setup prerequisites, or validation tasks
-- `../docs/manual-test-reconciliation.md` when queue entries include runtime-validation/manual remediation work
+- `../docs/runtime-validation-reconciliation.md` when queue entries include runtime-validation remediation work
 - `../core-saas-foundation/SKILL.md` for the mandatory secure SaaS baseline and first-slice implementation order
 - `../docs/intent-compiler.md`
 - `../docs/current-intent-model.md`

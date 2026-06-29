@@ -1,13 +1,13 @@
 ---
 name: akka-manual-failure-reconciliation
-description: Convert runtime-validation or manual tester failures in a generated SaaS or SaaS Foundation App into app-description gaps, implementation gaps, test gaps, provider/config blockers, and focused remediation tasks without adding unrelated features.
+description: Convert runtime-validation or runtime-validation tester failures in a generated SaaS or SaaS Foundation App into app-description gaps, implementation gaps, test gaps, provider/config blockers, and focused remediation tasks without adding unrelated features.
 ---
 
 # Akka Runtime Validation Failure Reconciliation
 
 Use this skill when a human tester, browser-capable agent, API agent, scripted runner, or reviewer reports that runtime validation found features or flows not working, especially in core SaaS workstreams such as User Admin, My Account, Agent Admin, Audit/Trace, or Governance/Policy.
 
-Use `../docs/runtime-validation.md` for runtime-validation scenarios/setup/execution modes and `../docs/manual-test-reconciliation.md` as the reconciliation doctrine for runtime-validation sessions, worker-centric scenario evidence, finding categories, and reconciliation outputs. Reconcile failures against the compiled path:
+Use `../docs/runtime-validation.md` for runtime-validation scenarios/setup/execution modes and `../docs/runtime-validation-reconciliation.md` as the reconciliation doctrine for runtime-validation sessions, worker-centric scenario evidence, finding categories, and reconciliation outputs. Reconcile failures against the compiled path:
 
 ```text
 worker
@@ -32,7 +32,7 @@ Read these first when present:
 - `../docs/app-worker-tool-model.md`
 - `../docs/app-description-to-code-compile-contract.md`
 - `../docs/runtime-validation.md`
-- `../docs/manual-test-reconciliation.md`
+- `../docs/runtime-validation-reconciliation.md`
 - `../docs/pending-task-queue.md`
 - `../akka-runtime-feature-verification/SKILL.md`
 - `../akka-change-request-to-spec-update/SKILL.md`
@@ -58,7 +58,7 @@ Classification values:
 - `provider/config blocker` — behavior requires WorkOS, Resend, model provider, secrets, external service, or local seed data not available; must fail closed and be documented.
 - `seed/demo-data gap` — local runtime-validation path lacks safe bootstrap data or fixture setup, but production behavior is otherwise specified.
 - `UX/state gap` — behavior works technically but state, copy, accessibility, stale/error handling, or recovery is incomplete.
-- `not a bug / expectation change` — manual expectation conflicts with accepted current intent; route to app-description change if desired.
+- `not a bug / expectation change` — reported expectation conflicts with accepted current intent; route to app-description change if desired.
 
 ## Reconciliation rules
 
@@ -73,7 +73,7 @@ Classification values:
 
 Each remediation task must include:
 
-- the runtime-validation/manual failure IDs it fixes;
+- the runtime-validation failure IDs it fixes;
 - canonical runtime path: worker, execution harness, actor adapter, governed tool, backend capability, API/endpoint/client, Akka component/service/substrate, trace/audit path, and result surface where applicable;
 - role/AuthContext/tenant setup and denial scenario;
 - success and failure state expectations;
@@ -126,9 +126,9 @@ Use `akka-runtime-feature-verification` after remediation to close the failure g
 
 Avoid:
 
-- assuming every manual failure means the app-description needs more detail;
-- assuming every manual failure is a user error without checking the accepted intent;
+- assuming every runtime-validation failure means the app-description needs more detail;
+- assuming every runtime-validation failure is a user error without checking the accepted intent;
 - marking a feature group complete while blocking runtime-validation failures remain in its primary path;
 - creating one broad “fix user admin” task instead of failure-linked remediation tasks;
 - patching a screen, route, agent tool, or component without reconciling the worker/adapter/governed-tool/capability path;
-- treating seed/demo/manual setup gaps as permission to bypass auth, tenant scope, audit, or provider boundaries.
+- treating seed/demo/runtime-validation setup gaps as permission to bypass auth, tenant scope, audit, or provider boundaries.

@@ -44,7 +44,7 @@ Alignment state: aligned | stale-description-changed | stale-code-changed | part
 
 | Entry id | App-description files | Implementation files | Test / validation files | Last aligned evidence | Notes |
 | --- | --- | --- | --- | --- | --- |
-| <stable-id> | `<paths>` | `<src/frontend/resources paths>` | `<test/spec/manual paths>` | <commit/check/date/digest> | <scope, gaps, no-code-impact note> |
+| <stable-id> | `<paths>` | `<src/frontend/resources paths>` | `<test/spec/runtime-validation paths>` | <commit/check/date/digest> | <scope, gaps, no-code-impact note> |
 
 ## Unmapped current-intent files
 
@@ -83,7 +83,7 @@ When tooling is desired, use this shape or a strict subset:
       "lastAlignedEvidence": {
         "commit": "unknown",
         "checks": ["mvn test", "npm --prefix frontend test -- --run"],
-        "manualRuntimeScenario": "open invite form, submit authorized invite, verify result surface and audit trace"
+        "runtimeValidationScenario": "open invite form, submit authorized invite, verify result surface and audit trace"
       },
       "notes": "Human surface action and confirmed chat plan share governed tool id useradmin.invitation.create."
     }
@@ -102,7 +102,7 @@ A file-level timestamp, Git commit, or digest comparison is a signal, not the fi
 - if mappings are missing for a feature-bearing node, use `unknown` or `not-started` rather than `aligned`;
 - generated static build output may be excluded or mapped as derived output when the source file is already mapped.
 
-Do not treat mtimes alone as proof that behavior is runtime-ready. The runtime-ready claim still requires the compile contract, automated checks, and the real manual/API/UI/agent runtime path where applicable.
+Do not treat mtimes alone as proof that behavior is runtime-ready. The runtime-ready claim still requires the compile contract, automated checks, and the real API/UI/agent runtime-validation path where applicable.
 
 ## Required update points
 
@@ -111,7 +111,7 @@ Update source alignment when:
 - bootstrapping a new feature-bearing workstream, even if entries start as `not-started` or `unknown`;
 - adding or changing surfaces, governed tools, capabilities, agents, policies, traces, tests, or realization files;
 - implementing code, frontend, endpoints, agents, Akka components, tests, or validation paths for a graph slice;
-- reconciling manual runtime failures or stale implementation discoveries;
+- reconciling runtime-validation failures or stale implementation discoveries;
 - recording a no-code-impact alignment review.
 
 ## Relationship to lifecycle
