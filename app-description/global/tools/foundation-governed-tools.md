@@ -73,77 +73,73 @@ Canonical namespaced operations live in `../../domains/core-starter/capabilities
 
 ## Agent Admin current tool ids
 
-- `list-agent-doc-agents`
-- `read-agent-doc-agent`
-- `update-agent-model-config-ref`
-- `read-agent-behavior-profile-history`
-- `restore-agent-behavior-profile-version`
-- `assign-agent-skills`
-- `assign-agent-generated-tools`
-- `list-agent-skill-library`
-- `read-agent-prompt-doc`
-- `read-agent-skill-doc`
-- `read-agent-skill-reference-doc`
-- `inspect-agent-runtime-profile`
-- `draft-agent-doc-edit`
-- `revise-agent-doc-edit`
-- `save-agent-doc-edit` (creates a non-active draft/proposal; activation is separate unless a later bounded implementation explicitly aliases low-risk review-and-activate)
-- `submit-agent-doc-proposal-for-review`
-- `approve-agent-doc-proposal`
-- `reject-agent-doc-proposal`
-- `activate-agent-doc-version`
-- `cancel-agent-doc-edit`
-- `read-agent-doc-version-history`
-- `read-agent-doc-version-diff`
-- `restore-agent-doc-version` (creates a restore proposal; activation is separate)
-- `create-agent-skill`
-- `delete-agent-skill`
-- `create-agent-skill-reference-doc`
-- `delete-agent-skill-reference-doc`
-- `read-agent-doc-runtime-traces`
+Canonical Agent Admin ids are namespaced by governed artifact. The legacy `agent-doc-administration` capability artifact name and `*-agent-doc-*` tool ids remain source-alignment aliases only; they do not create separate authority from the canonical managed-agent governance tools.
+
+Current canonical ids:
+
+- `agent-definition.catalog.read`
+- `agent-definition.detail.read`
+- `agent-behavior-profile.history.read`
+- `agent-behavior-profile.proposal.create`
+- `agent-behavior-profile.version.activate`
+- `prompt-document.read`
+- `prompt-document.proposal.create`
+- `prompt-version.activate`
+- `skill-document.catalog.read`
+- `skill-document.proposal.create`
+- `skill-version.activate`
+- `reference-document.catalog.read`
+- `reference-document.proposal.create`
+- `reference-version.activate`
+- `agent-skill-manifest.assign`
+- `agent-reference-manifest.assign`
+- `model-policy.select`
+- `tool-permission-boundary.assign`
+- `agent-test-console.run`
+- `agent-runtime-trace.read`
 - `readSkill`
 - `readReferenceDoc`
 
-`readSkill` and `readReferenceDoc` are runtime loader tools, not open filesystem access. They require manifest membership, tool boundary allowance, active document status, selected `AuthContext`, redaction checks, `SkillLoadTrace`/reference-load trace evidence, and fail-closed denial.
+Legacy aliases retained for existing realization evidence include `list-agent-doc-agents`, `read-agent-doc-agent`, `inspect-agent-runtime-profile`, `draft-agent-doc-edit`, `revise-agent-doc-edit`, `save-agent-doc-edit`, `submit-agent-doc-proposal-for-review`, `approve-agent-doc-proposal`, `reject-agent-doc-proposal`, `activate-agent-doc-version`, `cancel-agent-doc-edit`, `read-agent-doc-version-history`, `read-agent-doc-version-diff`, `restore-agent-doc-version`, `assign-agent-skills`, `assign-agent-generated-tools`, `list-agent-skill-library`, `create-agent-skill`, `delete-agent-skill`, `create-agent-skill-reference-doc`, `delete-agent-skill-reference-doc`, and `read-agent-doc-runtime-traces`. Current intent maps those aliases to the canonical ids in `../../domains/core-starter/workstreams/agent-admin/tools/governed-tools.md`.
 
-## Audit/Trace current tenant-admin activity-log tool ids
+`readSkill` and `readReferenceDoc` are runtime loader tools, not open filesystem access. They require manifest membership, tool boundary allowance, active document status, selected `AuthContext`, redaction checks, `SkillLoadTrace`/`ReferenceLoadTrace` evidence, and fail-closed denial.
 
-Current in-scope tenant-admin activity-log tools:
+## Audit/Trace current investigation tool ids
 
-- `read-audit-trace-dashboard`
+Current Audit/Trace ids are governed investigation tools for tenant-admin and scoped SaaS-support audit/work trace search, detail, correlation, denial investigation, support-access review, redacted export request handling, runtime-validation evidence links, and trace-gap diagnostics:
+
 - `search-audit-traces`
-- `read-trace-detail`
-- `read-trace-tool-call-detail`
-- `read-audit-retention-setting`
-- `update-audit-retention-setting`
-- `read-trace-timeline`
-- `read-trace-failure-evidence`
-- `read-investigation-guide`
+- `search-work-traces`
+- `read-audit-trace-detail`
+- `read-work-trace-detail`
+- `lookup-trace-correlation`
+- `investigate-denied-trace-access`
+- `summarize-investigation-evidence`
+- `request-redacted-trace-export`
+- `review-support-access-traces`
+- trace ingestion/projection/retention/gap internals
+- runtime-validation evidence link internals
 
-The current Audit/Trace tenant-admin activity-log capability grants only `surface_action` and protected `api_call` reads/mutation where declared by `../../domains/core-starter/capabilities/audit-and-trace-investigation.md`. It grants no `agent_tool_call` or `human_chat_tool_plan` authority for trace search, full-payload detail, payload read, retention mutation, export, investigation notes, or summaries.
+Audit/Trace browser actions use `surface_action` plus protected `api_call`. Read-only investigation may also use confirmed `human_chat_tool_plan` and bounded `agent_tool_call` adapters where `../../domains/core-starter/workstreams/audit-trace/tools/governed-tools.md` grants the exact tool and redacted/model-safe result. Export and support-access-sensitive operations remain surface/API/internal paths with approval gates where policy requires them; the agent cannot approve support access or exports. Raw sensitive export, trace editing/deletion, full-payload keyword search, support-access self-approval, and prompt-based authority expansion are not current authority.
 
-Deferred/non-current Audit/Trace ids retained only as future-scope placeholders until a later accepted current-intent change defines capability, AuthContext, approvals, redaction, tests, and runtime-validation contracts:
-
-- `request-redacted-export`
-- `draft-investigation-note`
-- `start-audit-summary-task`
-- `read-audit-summary-task`
-- `review-audit-summary-task`
-- `accept-audit-summary-task`
-- `reject-audit-summary-task`
-
-Per-workstream refresh must not bind these deferred ids as current authority.
+Legacy tenant-admin activity-log ids such as `read-audit-trace-dashboard`, `read-trace-detail`, `read-trace-tool-call-detail`, `read-audit-retention-setting`, `update-audit-retention-setting`, `read-trace-timeline`, `read-trace-failure-evidence`, and `read-investigation-guide` are compatibility labels only when a source-alignment entry maps them to the canonical investigation ids above. Retention and trace-visibility policy changes are governed through Governance/Policy and Audit/Trace policy gates rather than an unscoped chat/router mutation.
 
 ## Governance/Policy current tool ids
 
-- `governance.policy.list`
-- `governance.policy.read_effective`
-- `governance.policy.set_default`
-- `governance.policy.set_override`
-- `governance.policy.reset_override`
+- `governance.policy.search`
+- `governance.policy.read`
+- `governance.policy.draft`
+- `governance.policy.simulate`
+- `governance.policy.submit_for_approval`
+- `governance.policy.approve`
+- `governance.policy.activate`
+- `governance.policy.rollback`
+- `governance.policy.review_exception`
 - `governance.policy.read_history`
 
-Governance/Policy side-effecting tools are exposed through `surface_action`, protected `api_call`, and confirmed `human_chat_tool_plan` only where local binding declares confirmation and backend authorization. They are not autonomous `agent_tool_call`s.
+Legacy simple-settings ids `governance.policy.list`, `governance.policy.read_effective`, `governance.policy.set_default`, `governance.policy.set_override`, and `governance.policy.reset_override` are aliases only when mapped into the lifecycle model as search/read/draft/simulate/approval/activation operations. They are not separate direct-commit tools.
+
+Governance/Policy read and draft/simulation-assist tools may be exposed to the functional agent through bounded `agent_tool_call` where the tool boundary grants them. Side-effecting lifecycle tools execute through backend-authorized `surface_action`, protected `api_call`, confirmed `human_chat_tool_plan`, `workflow_step`, or `internal_call` only as declared by the workstream; `governance-policy-agent` has no autonomous approval, activation, rollback, or exception-commit authority.
 
 ## Shared exposure and result semantics
 

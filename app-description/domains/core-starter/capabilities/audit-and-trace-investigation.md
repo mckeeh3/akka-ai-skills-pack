@@ -2,83 +2,93 @@
 
 ## Purpose
 
-Let tenant admins answer **"who did what?"** by searching and inspecting immutable, tenant-scoped audit trace records for human workers, agent workers, and tool calls.
+Let authorized tenant administrators and explicitly scoped SaaS support operators answer **"who did what, why was it allowed or denied, and how does this correlate across workstreams?"** by searching, inspecting, correlating, summarizing, and reviewing immutable audit/work trace evidence under backend authorization and redaction policy.
 
-This tenant-admin activity-log scope capability is an activity-log and trace-detail capability. It is not an export, investigation-notes, acknowledgement, or AI-generated summary capability.
+Audit/Trace is read/investigation first. It covers audit events, agent work traces, governed-tool invocations, authorization denials, support-access review, provider/config fail-closed evidence, runtime-validation evidence links, trace-gap diagnostics, and redacted export request handling where policy allows. It is not a trace editing/deletion surface, support-access self-approval path, raw sensitive export grant, full-payload keyword search engine, autonomous remediation engine, or prompt-based authority expansion path.
 
 ## Actors and scope
 
-- `tenant-admin`: may search and view audit trace records for their selected tenant/Organization and configure that tenant's audit-retention setting through the `tenant-admin-human` worker and browser surface adapters.
-- `audit-trace-agent`: may provide navigation and safe explanation only; it has no trace-search, trace-detail, payload-read, retention-mutation, export, note, summary, or chat-plan authority in this tenant-admin activity-log scope.
-- Deterministic Audit/Trace system worker: records traces, runs authorized backend searches/detail reads/retention updates, enforces retention expiry, and emits evidence through API/internal/consumer/timer adapters.
-- Human workers: produce user-facing request/response audit traces and are identified by email, role, and org.
-- Agent workers: produce user-facing request/response audit traces and tool-call traces. Agent identity includes agent name, role/workstream, model, prompt/skill/version, session/conversation id, and requested-by human/user when applicable.
+- `tenant-admin` / Organization admin: may search and inspect tenant-scoped audit/work traces, denials, agent/tool/policy evidence, support-access events involving the tenant, runtime-validation evidence for the tenant, and redacted export request state when policy grants it.
+- `saas-support` / SaaS owner support operator: may investigate only under active support-access or platform support scope recorded in `AuthContext`; support views are redacted by default and all support-access use is reviewable.
+- `audit-trace-agent`: may assist authorized users with read-only search, detail, correlation, denial investigation, support-access review explanation, runtime-validation evidence interpretation, and evidence-cited summaries through confirmed `human_chat_tool_plan` or bounded `agent_tool_call` adapters. It cannot widen scope, approve support access, approve exports, mutate traces, or reveal hidden targets.
+- `audit-trace-system-worker`: records immutable trace facts, builds projections/correlations, enforces retention/redaction/support-access policy, handles runtime-validation evidence links, detects trace gaps, and executes authorized API/internal/export bookkeeping.
 
-All capability calls require selected backend-owned `AuthContext`, active membership, tenant scope, and tenant-admin authorization. Each trace is tenant-scoped. A trace may optionally link to a customer/account; system-level/no-customer traces are allowed.
+All calls require backend-owned selected `AuthContext`, active membership or service provenance, tenant/support scope, role/capability grants, redaction policy evaluation, and audit/work trace emission. Route visibility, row visibility, support status, prompt text, chat context, or model output never grants trace authority.
 
 ## Governed tools and exposure
 
-- `search-audit-traces` (`surface_action`, `api_call` read): searches deterministic metadata/summary fields and applies tenant-admin filters.
-- `read-trace-detail` (`surface_action`, `api_call` read): opens one authorized trace detail, including full request/response/tool payloads and sensitive-payload warning.
-- `read-trace-tool-call-detail` (`surface_action`, `api_call` read): opens tool-call evidence linked to a parent request/response trace.
-- `read-audit-retention-setting` (`surface_action`, `api_call` read): reads the selected tenant's retention setting and default/range metadata.
-- `update-audit-retention-setting` (`surface_action`, `api_call` mutation): updates tenant audit retention between 30 and 365 days and emits its own audit trace.
+Canonical capability id: `audit-and-trace-investigation`.
 
-No tenant-admin activity-log scope agent-tool or human chat-plan authority is granted for this capability. Agents may produce audited activity, but they may not use this tenant-admin activity-log scope capability to search or reveal traces. Browser visibility never grants backend authorization.
+- `search-audit-traces` (`surface_action`, `api_call`, confirmed `human_chat_tool_plan`, bounded `agent_tool_call`, `internal_call` read): search tenant/support-scoped audit trace metadata and safe summaries; no full-payload keyword search.
+- `search-work-traces` (`surface_action`, `api_call`, confirmed `human_chat_tool_plan`, bounded `agent_tool_call`, `internal_call` read): search work traces with agent/prompt/skill/reference/model/tool/policy refs where visible.
+- `read-audit-trace-detail` (`surface_action`, `api_call`, confirmed `human_chat_tool_plan`, bounded redacted `agent_tool_call`, `internal_call` read): open authorized trace detail with progressive disclosure, redaction state, sensitive-detail grant handling, and secret-never-store exclusion.
+- `read-work-trace-detail` (`surface_action`, `api_call`, confirmed `human_chat_tool_plan`, bounded redacted `agent_tool_call`, `internal_call` read): open authorized work-trace detail.
+- `lookup-trace-correlation` (`surface_action`, `api_call`, confirmed `human_chat_tool_plan`, bounded `agent_tool_call`, `projection_update`, `internal_call` read): build correlation/timeline views and represent trace gaps explicitly.
+- `investigate-denied-trace-access` (`surface_action`, `api_call`, confirmed `human_chat_tool_plan`, bounded `agent_tool_call`, `internal_call` read): explain authorized denial evidence without hidden target enumeration.
+- `summarize-investigation-evidence` (`surface_action`, `api_call`, confirmed `human_chat_tool_plan`, bounded `agent_tool_call`, `internal_call` read/result): summarize selected authorized evidence with refs, redaction disclaimer, unresolved unknowns, and partial-failure reporting.
+- `request-redacted-trace-export` (`surface_action`, `api_call`, `internal_call` request/workflow): request or prepare a redacted export where policy permits; sensitive/raw export is approval-gated or denied unless an explicit policy and capability grant exist.
+- `review-support-access-traces` (`surface_action`, `api_call`, `internal_call` read): inspect support-access grant/use/expiry/denial evidence inside authorized scope.
+- Trace ingestion/projection/retention/gap internals (`internal_call`, `consumer_reaction`, `projection_update`, `timer_invocation`): append immutable trace facts, update projections, expire by retention, and emit trace-gap findings.
+- Runtime-validation evidence link internals (`internal_call`): link validation run status/evidence refs into Audit/Trace without exposing secrets.
 
-## Authorization and denials
+Human `surface_action` and protected `api_call` access does not grant model access. `human_chat_tool_plan` access requires explicit confirmation of the proposed read-only plan. `agent_tool_call` access requires exact `ToolPermissionBoundary` grants and model-safe result payloads. Export/support-access-sensitive paths require separate approval where policy says so.
 
-Unauthorized callers, disabled users, inactive memberships, non-tenant-admin roles, missing selected context, cross-tenant access, hidden trace references, and agent/chat attempts to access tenant-admin evidence tools are denied server-side or refused by the assistant. Denied actions return safe feedback without protected-data leakage or hidden target enumeration and emit denial trace evidence.
+## Authorization, redaction, and denials
 
-Denied trace records shown to tenant admins include the denial reason and policy reference when the tenant admin is authorized to view that trace.
+Unauthorized callers, disabled users, inactive memberships, missing selected context, non-authorized roles, expired support access, missing capability grants, cross-tenant/customer filters, hidden/expired trace references, unsupported export attempts, unconfirmed chat plans, missing agent tool-boundary grants, and unsupported internal callers are denied server-side.
 
-## Search and detail behavior
+Denied requests return safe feedback and emit durable audit/work trace evidence without protected-data leakage, hidden counts, hidden ids, or internal policy implementation details. Authorized denial investigation may show safe denial reason, policy reference, actor-adapter source, selected `AuthContext`/support scope summary, redaction class, correlation id, and remediation path when visible.
 
-Search supports these required filters:
+Search rows and keyword indexes use deterministic metadata and safe summary fields only. Full request/response/tool payload text, raw prompt/model output, provider credentials, bearer/session tokens, invite secret tokens, backend secrets, frontend-secret material, and hidden cross-tenant identifiers are never indexed or exposed to unauthorized readers.
 
-- date/time range;
-- worker type;
-- actor/user/agent;
-- action type;
-- customer/account;
-- status: success, failure, or denied.
+## Search, detail, correlation, and summary behavior
 
-Keyword search applies only to deterministic app-generated metadata and summary fields. Full payloads are not indexed for keyword search in the tenant-admin activity-log scope.
+Search/filter supports date/time range, tenant and optional customer/account within authorized scope, actor/worker/workstream, event category/action, governed tool/capability, policy/agent/prompt/skill/reference/model refs where visible, actor adapter/source, status, and safe correlation/work-trace handle.
 
-Trace detail exposes full payloads to tenant admins only and displays the warning: **"Sensitive full payload — tenant admin access only."**
+Trace/work-trace detail opens authorized evidence with safe summary by default, role-gated evidence where allowed, sensitive payload warning/grant handling, support-access context, and related trace links. Hidden, expired, unsupported, or cross-scope references return `not_found_or_redacted` or forbidden/approval-required results without confirming protected existence.
 
-## Retention behavior
+Correlation/timeline views preserve causation across `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, workflow, consumer, API, projection, internal, support-access, export, policy/decision, and runtime-validation events. Missing, delayed, malformed, or uncorrelated source events produce explicit trace-gap evidence rather than fabricated timelines.
 
-Default retention is 90 days. Tenant admins may configure retention from 30 to 365 days for their tenant. Audit trace records are immutable and are removed only by retention expiry. Retention configuration changes are traced like any other interaction, including old value, new value, tenant, admin actor, timestamp, status, and correlation id.
+Investigation summaries are result surfaces, not the source of truth. They must cite authorized evidence refs, scope/redaction disclaimer, relevant denials, trace gaps, support/export refs, and unresolved unknowns without inventing missing evidence or inferring hidden facts.
+
+## Retention, export, and support-access behavior
+
+Default audit/work trace retention is 90 days unless a governed tenant policy records another supported value. Trace records are immutable until retention expiry; retention expiry is diagnosable without exposing expired payloads. Trace visibility and retention policy changes remain subordinate to hard platform controls and Governance/Policy/Audit/Trace gates.
+
+Redacted export requests are idempotent by actor/scope/redaction/export request key and return approval-required, queued/preparing, redacted-result, denied, expired, or failed state. Sensitive/raw payload export is not a default tenant-admin capability and requires explicit approval policy plus capability grant.
+
+Support-access grant, use, expiry, revocation, denied-use, and scope changes are first-class trace events. Support operators cannot approve their own support access or export requests.
 
 ## Outcomes
 
-In scope for the tenant-admin activity-log scope:
+In scope:
 
-- searchable activity log;
-- trace detail with full payloads for tenant admins;
-- human request/response traces;
-- agent request/response traces;
-- tool-call traces linked to parent requests/responses;
-- denial reason and policy evidence;
-- configurable tenant retention from 30 to 365 days;
-- immutable records until retention expiry.
+- role-scoped Audit/Trace dashboard, search, detail, timeline/correlation, denial investigation, support-access review, investigation summary, export request/result, and system-message surfaces;
+- tenant/support scoped audit and work trace search/detail/correlation with redaction and no hidden enumeration;
+- confirmed read-only chat plans and bounded model-safe agent-tool reads where explicitly granted;
+- durable trace evidence for reads, denials, support-access, export, summaries, trace gaps, runtime-validation evidence links, and retention expiry;
+- explicit source-alignment/runtime-validation evidence links without treating validation artifacts as runtime proof unless recorded.
 
-Out of scope for the tenant-admin activity-log scope:
+Out of scope:
 
-- export or compliance bundles;
-- investigation notes;
-- suspicious-activity acknowledgement workflows;
-- agent-generated audit summaries;
+- autonomous remediation;
+- support-access self-approval;
+- raw sensitive export by default;
+- trace edit/delete;
 - full-payload keyword search;
-- customer-admin, auditor, support-operator, or SaaS-owner trace access beyond the tenant-admin activity-log scope.
+- prompt-based authority expansion;
+- cross-tenant discovery.
 
 ## Linked graph nodes
 
 - Workstream: `../workstreams/audit-trace/workstream.md`
 - Access: `../workstreams/audit-trace/access.md`
 - Behavior: `../workstreams/audit-trace/behavior.md`
-- Surfaces: `../workstreams/audit-trace/surfaces/surfaces.md`
+- Workers: `../workstreams/audit-trace/workers/`
+- Agent binding: `../workstreams/audit-trace/agents/functional-agent.md`
 - Tools: `../workstreams/audit-trace/tools/governed-tools.md`
+- Surfaces: `../workstreams/audit-trace/surfaces/surfaces.md`
+- Policies: `../workstreams/audit-trace/policies/policy-bindings.md`
 - Traces: `../workstreams/audit-trace/traces/work-traces.md`
 - Tests: `../workstreams/audit-trace/tests/coverage.md`
+- Realization/source alignment: `../workstreams/audit-trace/realization/source-alignment.md`

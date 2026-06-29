@@ -320,7 +320,7 @@
 
 ### TASK-ADR-03-002: Reconcile shared app-description drift after readiness pass
 
-- status: pending
+- status: done
 - source: specs/app-description-refresh/consistency-readiness-review.md
 - task brief: specs/app-description-refresh/consistency-readiness-review.md#impact-and-queued-follow-up
 - depends on:
@@ -353,6 +353,9 @@
   - Agent Admin canonical/legacy governed-tool alias posture is consistently represented in shared artifacts
   - terminal verification dependency is restored only after material shared-current-intent drift is fixed, consciously deferred, or blocked with explicit questions
 - notes:
+  - commit message: `app-desc-refresh: reconcile shared drift`
+  - graph proof: Shared Audit/Trace artifacts now describe the refreshed tenant/support-scoped investigation graph, canonical tools (`search-audit-traces`, `search-work-traces`, detail/correlation/denial/summary/export/support-access/runtime-validation ids), confirmed read-only `human_chat_tool_plan`, bounded `agent_tool_call`, redacted export/support-access gates, trace-gap/runtime-validation evidence, and `stale-description-changed` runtime posture. Shared Governance/Policy artifacts now describe the refreshed policy lifecycle tools (`search`, `read`, `draft`, `simulate`, `submit_for_approval`, `approve`, `activate`, `rollback`, `review_exception`, `read_history`), decision-card approval, idempotency/partial-failure, non-overridable controls, and old simple-setting ids as aliases only. Shared Agent Admin artifacts now record managed-agent governance as the current canonical capability posture with legacy `agent-doc-administration` and `*-agent-doc-*` ids retained only as source-alignment aliases.
+  - terminal verification dependency restored: material shared-current-intent drift was reconciled in capability, global tool, surface catalog, and ready-to-build status artifacts without runtime/API/UI code changes or a no-code-impact alignment claim. Next runnable task is `TASK-ADR-99-001`.
   - vertical contract: description-only shared drift reconciliation for Governance/Policy, Audit/Trace, and Agent Admin alias mappings; no runtime/API/UI code changes; preserve `stale-description-changed` lifecycle posture unless a no-code-impact alignment review is explicitly recorded; validation path `git diff --check` plus graph proof.
 
 ### TASK-ADR-99-001: Terminal app-description refresh verification
