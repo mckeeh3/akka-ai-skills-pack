@@ -26,7 +26,7 @@ Readiness claim: queue-authoring only. No runtime-validation scenario has passed
 
 ### TASK-ADIA-FU-001: Execute My Account login/account-context runtime-validation scenario
 
-- status: pending
+- status: blocked
 - source: `TASK-ADIA-02-001`; `specs/runtime-validation/scenarios/my-account/RV-MY-ACCOUNT-001-login-and-account-context.md`
 - depends on: []
 - required reads:

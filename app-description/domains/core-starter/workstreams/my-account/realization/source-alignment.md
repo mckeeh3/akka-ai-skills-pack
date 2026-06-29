@@ -66,6 +66,15 @@ find specs/runtime-validation/scenarios/my-account -type f | sort
 
 Observed output: 19 mapped source/test/frontend paths exist; `specs/runtime-validation/scenarios/my-account/RV-MY-ACCOUNT-001-login-and-account-context.md` exists. This proof supports mapping only; it is not runtime-ready evidence.
 
+## TASK-ADIA-FU-001 runtime-validation run attempt
+
+Review date: 2026-06-29.
+Run record: `specs/runtime-validation/runs/2026-06-29-RV-MY-ACCOUNT-001-blocked-auth-seed.md`.
+Scenario: `specs/runtime-validation/scenarios/my-account/RV-MY-ACCOUNT-001-login-and-account-context.md`.
+Result: `blocked` with `auth-setup-blocker` and `seed-data-blocker`.
+
+The local runtime-validation path was not counted as executed. The preferred start contract `./tools/runtime-validation/start-local.sh --empty` and seed contract `./tools/runtime-validation/seed.sh base-organization` were absent, and the local `.env` had a placeholder `WORKOS_JWT_AUDIENCE`, so a real WorkOS/AuthKit member login, protected `/api/me` call, seeded member account context, disabled/open-denied fixture, browser-safe payload capture, and trace capture could not be completed safely. My Account remains `partially-aligned`; no `manual-ready` or `runtime-ready` claim is made from this blocked run.
+
 ## Historical alignment status summary before TASK-ADR-02-001
 
 | Entry id | Slice | Status | Runtime readiness claim |
