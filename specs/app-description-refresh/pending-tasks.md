@@ -51,7 +51,7 @@
 
 ### TASK-ADR-01-001: Audit shared foundation contracts
 
-- status: pending
+- status: done
 - source: specs/app-description-refresh/backlog/01-app-description-refresh-build-backlog.md#adr-01-audit-shared-foundation-contracts
 - task brief: specs/app-description-refresh/tasks/01-shared/01-audit-shared-foundation.md
 - depends on:
@@ -78,6 +78,8 @@
   - shared refresh gaps are explicit enough for the shared refresh task
   - task changes and queue update are committed
 - notes:
+  - commit message: `app-desc-refresh: audit shared foundation contracts`
+  - audit complete: `specs/app-description-refresh/shared-foundation-audit.md` now records concrete high/medium/low findings for shared worker, adapter, governed-tool, capability, AuthContext, trace, source-alignment, and runtime-validation refresh gaps, plus coverage proof and follow-up questions for TASK-ADR-01-002.
   - vertical contract: docs-only shared foundation audit; identifies worker/adapter/tool/capability/AuthContext/trace/runtime-validation gaps without runtime implementation; validation path `git diff --check` plus coverage proof
 
 ### TASK-ADR-01-002: Refresh shared foundation app-description artifacts

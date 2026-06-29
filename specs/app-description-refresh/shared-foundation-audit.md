@@ -1,49 +1,90 @@
-# Shared Foundation Audit Checklist
+# Shared Foundation Audit Findings
 
-This file is the starting checklist for `TASK-ADR-01-001`. The task should replace checklist placeholders with concrete findings.
+This file records the concrete audit output for `TASK-ADR-01-001`. It audits shared app-description artifacts only and intentionally does not implement runtime/API/UI changes.
 
-## Shared artifacts to audit
+## Coverage proof
+
+Command used to enumerate shared files considered:
+
+```bash
+find app-description/global app-description/domains/core-starter/capabilities app-description/domains/core-starter/data-state -type f | sort
+```
+
+Additional shared files considered:
 
 - `app-description/app.md`
-- `app-description/global/actors/**`
-- `app-description/global/roles/**`
-- `app-description/global/workers/**` if present or needed
-- `app-description/global/policies/**`
-- `app-description/global/surfaces/**`
-- `app-description/global/agents/**`
-- `app-description/global/tools/**`
-- `app-description/global/traces/**`
 - `app-description/domains/core-starter/domain.md`
-- `app-description/domains/core-starter/capabilities/**`
-- `app-description/domains/core-starter/data-state/**`
 
-## Current skills-pack contract areas
+Files covered by the audit:
 
-- current-intent graph shape
-- worker artifact contracts
-- execution harness and actor-adapter separation
-- governed tool vs capability separation
-- global definition vs workstream binding separation
-- AuthContext, role/capability, tenant/organization language
-- source-alignment and lifecycle state
-- runtime-validation scenario references
-- audit/work trace obligations
-- UI shell and structured surface conventions
+- `app-description/app.md`
+- `app-description/domains/core-starter/domain.md`
+- `app-description/domains/core-starter/capabilities/README.md`
+- `app-description/domains/core-starter/capabilities/account-context-and-profile.md`
+- `app-description/domains/core-starter/capabilities/agent-doc-administration.md`
+- `app-description/domains/core-starter/capabilities/audit-and-trace-investigation.md`
+- `app-description/domains/core-starter/capabilities/governance-policy-lifecycle.md`
+- `app-description/domains/core-starter/capabilities/user-and-access-administration.md`
+- `app-description/domains/core-starter/data-state/README.md`
+- `app-description/domains/core-starter/data-state/auth-context-and-membership-state.md`
+- `app-description/domains/core-starter/data-state/managed-agent-behavior-state.md`
+- `app-description/domains/core-starter/data-state/notification-and-attention-state.md`
+- `app-description/domains/core-starter/data-state/workstream-audit-governance-state.md`
+- `app-description/global/README.md`
+- `app-description/global/actors/README.md`
+- `app-description/global/actors/foundation-actors.md`
+- `app-description/global/agents/README.md`
+- `app-description/global/agents/foundation-functional-agents.md`
+- `app-description/global/policies/README.md`
+- `app-description/global/policies/foundation-security-and-governance.md`
+- `app-description/global/roles/README.md`
+- `app-description/global/roles/foundation-roles.md`
+- `app-description/global/surfaces/README.md`
+- `app-description/global/surfaces/foundation-surface-patterns.md`
+- `app-description/global/surfaces/ui-style-and-runtime-contracts.md`
+- `app-description/global/surfaces/workstream-shell.md`
+- `app-description/global/tools/README.md`
+- `app-description/global/tools/foundation-governed-tools.md`
+- `app-description/global/traces/README.md`
+- `app-description/global/traces/foundation-trace-patterns.md`
 
-## Finding categories
+## Concrete findings
 
-Use these categories in the audit task:
+Severity key: **high** means `TASK-ADR-01-002` should address before per-workstream refresh tasks rely on the shared contract; **medium** means refresh should address or explicitly defer with a shared convention; **low** means current intent is mostly usable but should be tightened for consistency.
 
-- `keep`: current artifact already matches the current contract
-- `revise`: accepted intent exists but structure/vocabulary/links need refresh
-- `split`: artifact mixes global definition with workstream binding
-- `add`: required graph node is missing
-- `defer`: valid but outside this mini-project; queue follow-up if needed
-- `question`: unsafe to revise without a decision
+| Area | Severity | Current files | Finding | Required refresh | Affected workstreams | Follow-up task/question |
+| --- | --- | --- | --- | --- | --- | --- |
+| App-level graph contract | medium | `app-description/app.md`; `app-description/domains/core-starter/domain.md` | `revise`: the app/domain purpose and non-goals are current, but the shared graph chain is only implicit and foundation references point to reusable doctrine rather than listing this app's current worker/adapter/tool/capability/source-alignment/runtime-validation obligations. | Add a concise shared current-intent graph summary that names the canonical chain `worker -> execution harness -> actor adapter -> governed tool -> capability -> realization -> tests -> runtime-validation -> traces`, identifies the five built-in workstreams, and states shared lifecycle/source-alignment defaults for this refresh. | All five foundation workstreams. | `TASK-ADR-01-002` should update shared app/domain wording only; per-workstream task details stay local. |
+| Global worker nodes | high | `app-description/global/README.md`; absent `app-description/global/workers/**` | `add`: the current skills-pack contract expects reusable worker artifacts, but shared worker nodes are missing. Actor and agent files currently carry some worker meaning without worker contracts. | Add `global/workers/` artifacts for reusable human member/admin workers, functional-agent workers, deterministic system/internal workers, provider-boundary/integration workers, and audit/projection workers as shared definitions or bindings. Each worker should identify type, reasoning/execution engine, authority, harnesses, adapters, tools, evidence, traces, tests, supervision/handoff, and failure behavior. | All five foundation workstreams. | Must be completed before workstream refresh tasks bind local workers. |
+| Actor vs worker separation | high | `app-description/global/actors/foundation-actors.md`; `app-description/global/agents/foundation-functional-agents.md` | `split`: `functional-agent`, `internal-worker`, and `provider-boundary` are listed as actors even though current doctrine treats workers, execution harnesses, actor adapters, and provider boundaries as separate graph implications. | Keep actor identities minimal, move worker responsibilities to `global/workers/**`, and record actor adapters (`surface_action`, `human_chat_tool_plan`, `agent_tool_call`, `api_call`, `workflow_step`, `timer_invocation`, `consumer_reaction`, `internal_call`, and onboarding/provider adapters) as shared exposure conventions. | All five; especially User Admin onboarding/outbox, Agent Admin runtime loading, Audit/Trace search/detail, Governance/Policy policy reads/writes. | `TASK-ADR-01-002` should avoid granting authority through actor labels; authority must come from roles/capabilities/AuthContext/tool boundaries. |
+| Roles and AuthContext semantics | medium | `app-description/global/roles/foundation-roles.md`; `app-description/domains/core-starter/data-state/auth-context-and-membership-state.md` | `revise`: role definitions preserve Organization/Tenant language and selected `AuthContext`, but there is no shared role-to-capability/AuthContext matrix that downstream workstream tasks can reuse. Legacy compatibility labels remain mixed with current capability-based authority. | Add a shared AuthContext convention covering SaaS Owner, Organization/Tenant, Customer, support-access, and no-selected-context recovery states. Link roles to backend capability grants and denial behavior without treating role labels, rail visibility, or frontend state as authorization. | My Account, User Admin, Agent Admin, Governance/Policy, Audit/Trace. | Per-workstream tasks should bind exact role/capability grants locally after this shared convention exists. |
+| Global policies | high | `app-description/global/policies/foundation-security-and-governance.md`; `app-description/domains/core-starter/data-state/workstream-audit-governance-state.md`; `app-description/domains/core-starter/capabilities/audit-and-trace-investigation.md` | `question`: policy text says audit/work trace retention defaults to one year, while Audit/Trace tenant-admin activity-log scope and data state say default retention is 90 days and configurable 30-365 days. This creates an inconsistent shared retention contract. | Resolve the retention language by separating global redaction/export governance from the Audit/Trace tenant-admin activity-log retention rule, or explicitly state which scope owns each default. Do not let per-workstream refresh tasks infer incompatible retention defaults. | Audit/Trace primarily; User Admin, Agent Admin, Governance/Policy, and My Account trace/digest/export references secondarily. | `TASK-ADR-01-002` should make the scope decision explicit. |
+| Global shell and surface envelope | low | `app-description/global/surfaces/workstream-shell.md`; `app-description/global/surfaces/foundation-surface-patterns.md`; `app-description/global/surfaces/ui-style-and-runtime-contracts.md` | `keep` / `revise`: the shell contract is strong and current for structured surfaces, selected context, fail-closed provider/model behavior, markdown streaming, realtime, deep links, and tests. It still needs a shared link from surface actions to governed-tool ids/capabilities and runtime-validation scenario conventions that per-workstream surface files can copy. | Preserve the shell contract. Add a short shared adapter/action mapping convention so each surface action records adapter, governed tool id, capability id, result/system-message surface, trace source, idempotency, and runtime-validation path. | All five workstreams. | `TASK-ADR-01-002` can update shared surface conventions without changing UI code. |
+| Global governed tool definitions | high | `app-description/global/tools/foundation-governed-tools.md`; capability files under `app-description/domains/core-starter/capabilities/**` | `revise`: the global tools artifact is an id inventory. It does not define per-tool schemas, adapters, AuthContext, idempotency, confirmation/approval, transaction, result surface, trace, test, or runtime-validation obligations as required by the governed-tool node contract. | Convert the inventory into richer governed-tool definitions or add a shared tool contract section. Each tool or tool family needs stable id, display name, type, owning capability id, allowed worker types, exact actor adapters, AuthContext/tenant/customer scope, side effects, denial behavior, traces, tests, and runtime-validation expectations. | All five workstreams. | Workstream tasks should not invent missing tool semantics; `TASK-ADR-01-002` must define the shared shape first. |
+| Governed-tool id consistency | high | `app-description/global/tools/foundation-governed-tools.md`; `app-description/domains/core-starter/capabilities/user-and-access-administration.md`; `app-description/domains/core-starter/capabilities/governance-policy-lifecycle.md`; `app-description/domains/core-starter/capabilities/account-context-and-profile.md` | `revise`: current files mix broad legacy ids (`manage-organizations`, `create-or-resend-invitation`, `change-membership-role-or-status`) with current namespaced capability/tool ids (`user_admin.*`, `tenant.customer.*`, `governance.policy.*`, `my_account.*`). | Create a shared id convention: either retain broad ids as governed tool families with child operation ids, or mark broad ids as legacy aliases and make namespaced ids canonical. The refresh must map aliases to capability ids and workstream bindings to prevent duplicate operations. | My Account, User Admin, Governance/Policy; also Agent Admin for loader/tool ids and Audit/Trace for search/detail ids. | `TASK-ADR-01-002` should record alias/canonical mapping before local workstream files are edited. |
+| Audit/Trace global tool scope | high | `app-description/global/tools/foundation-governed-tools.md`; `app-description/domains/core-starter/capabilities/audit-and-trace-investigation.md`; `app-description/domains/core-starter/data-state/workstream-audit-governance-state.md` | `revise` / `defer`: global tools list includes export, investigation note, and audit summary task ids, while the current Audit/Trace tenant-admin activity-log capability explicitly excludes export, investigation notes, and AI-generated summaries. Data state also says trace-gap/investigation-note/export lifecycle is out of tenant-admin activity-log scope. | Mark out-of-scope Audit/Trace tool ids as deferred/non-current for this capability or move them to a future-scope section. Ensure current tenant-admin activity-log bindings expose only search/detail/tool-call-detail/retention tools plus safe navigation. | Audit/Trace; My Account digest/export references if linked to personal evidence. | `TASK-ADR-01-002` should not allow per-workstream Audit/Trace refresh to reintroduce deferred export/summary/notebook authority accidentally. |
+| Functional-agent definitions | high | `app-description/global/agents/foundation-functional-agents.md`; absent `app-description/global/workers/**`; `app-description/domains/core-starter/data-state/managed-agent-behavior-state.md` | `revise`: global agents state useful responsibilities and fail-closed requirements, but they are not connected to worker artifacts, execution harnesses, actor adapters, governed tool boundaries, managed-agent behavior-profile ids, prompt/skill/reference manifests, or runtime traces. | Keep the five functional-agent definitions but add/shared-link them to worker nodes, managed-agent behavior state, loader tools (`readSkill`, `readReferenceDoc`), `ToolPermissionBoundary`, model policy/fail-closed prerequisites, trace patterns, and per-workstream bindings. | My Account, User Admin, Agent Admin, Governance/Policy, Audit/Trace. | Agent Admin workstream later owns detailed behavior-editing bindings; shared refresh owns common managed-agent runtime conventions. |
+| Capability contracts | medium | `app-description/domains/core-starter/capabilities/account-context-and-profile.md`; `agent-doc-administration.md`; `audit-and-trace-investigation.md`; `governance-policy-lifecycle.md`; `user-and-access-administration.md` | `revise`: capabilities contain substantial accepted intent and should be preserved. They do not consistently use a shared section shape for governed tools, actor adapters, AuthContext, side effects, idempotency, approval, result surfaces, trace obligations, implementation realization, test links, and runtime-validation scenario links. | Standardize capability files around the current graph contract and add explicit links from each capability to global governed tools, data-state nodes, workstream bindings, realization/source-alignment files, tests, and runtime-validation scenarios or gaps. | All five workstreams. | Per-workstream tasks should refine local bindings; shared task should normalize capability headings and shared link expectations. |
+| Data/state nodes | medium | `app-description/domains/core-starter/data-state/auth-context-and-membership-state.md`; `managed-agent-behavior-state.md`; `notification-and-attention-state.md`; `workstream-audit-governance-state.md` | `keep` / `revise`: data-state files are mostly current for AuthContext, managed-agent, attention, and audit/governance state. They need explicit capability/tool ownership links and should avoid references that conflict with current capability scope. | Preserve state invariants. Add ownership/link tables that map state to capabilities, governed tools, traces, projections/views, retention, tests, and runtime-validation expectations. Fix the notification/audit references to deferred export/summary/investigation-note scope after the Audit/Trace scope decision. | My Account, User Admin, Agent Admin, Governance/Policy, Audit/Trace. | `TASK-ADR-01-002` should update only shared state responsibilities; local workstream state surfaces stay for later tasks. |
+| Trace patterns | medium | `app-description/global/traces/foundation-trace-patterns.md`; capability and data-state files | `revise`: trace categories are present and useful, but the global trace file does not specify source per actor adapter, correlation/idempotency fields, redaction, denied-event obligations, or runtime-validation evidence expectations. | Add a shared trace contract mapping `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/internal/workflow/timer/consumer/onboarding/provider paths to trace sources and required facts, including `requestedBy`, `confirmedBy`, selected `AuthContext`, tenant/customer scope, policy decision, denial category, and result surface/evidence refs. | All five workstreams. | Per-workstream tasks should bind local trace names to this shared source vocabulary. |
+| Source-alignment and lifecycle state | high | Shared app/domain/global/capability/data-state files; workstream `lifecycle.md` and `realization/source-alignment.md` files are outside this audit scope | `add`: shared files do not state how this refresh affects workstream lifecycle alignment. The mini-project README requires feature-bearing workstreams to default to `stale-description-changed` unless a no-code-impact review is recorded. | Add shared lifecycle/source-alignment convention in the shared refresh task: description changes made during this refresh must be reflected in each affected workstream lifecycle/source-alignment file by the relevant per-workstream task, with `stale-description-changed` as the default. | All five workstreams. | `TASK-ADR-01-002` should define the convention; `TASK-ADR-02-*` tasks should apply it per workstream. |
+| Runtime-validation references | high | Capability files, global shell/surface/tool/trace files, data-state files | `add`: shared artifacts mention runtime readiness and tests, but there are no explicit runtime-validation scenario ids or scenario-gap conventions for the shared graph contract. | Define shared runtime-validation reference format: each workstream later identifies role/AuthContext setup, surface/API path, adapter, governed tool, capability, expected trace/result, denial case, provider/outbox/model fail-closed case when relevant, and reconciliation destination for failures. | All five workstreams. | `TASK-ADR-01-002` should add the shared convention; terminal verification should confirm every refreshed workstream has scenario refs or explicit gaps. |
+| Placeholder/readme artifacts | medium | `app-description/global/actors/README.md`; `global/agents/README.md`; `global/policies/README.md`; `global/roles/README.md`; `global/tools/README.md`; `global/traces/README.md`; `capabilities/README.md`; `data-state/README.md` | `revise`: several README files still say population tasks will add concrete nodes even though concrete shared nodes now exist. This makes the graph look less populated than it is. | Update README files to describe existing shared nodes and point to the refreshed worker/tool/capability/source-alignment conventions. | All five workstreams. | Low-risk docs-only cleanup in `TASK-ADR-01-002`. |
 
-## Expected audit output
+## Shared decisions and follow-up notes for `TASK-ADR-01-002`
 
-`TASK-ADR-01-001` should add a concrete table with:
+- Treat this audit as description-only. It identifies current-intent graph gaps and must not be used as proof of runtime readiness.
+- Preserve accepted foundation intent in existing capability and data-state files; the refresh should normalize graph shape and links rather than replacing product semantics.
+- Add missing shared worker artifacts before per-workstream worker bindings are rewritten.
+- Define one shared adapter vocabulary across browser surface actions, confirmed human chat plans, AI agent tool calls, API/internal/workflow/timer/consumer/provider paths, and onboarding flows.
+- Resolve governed-tool id aliasing before local workstream files bind action ids, otherwise later tasks may create duplicate or divergent operations.
+- Resolve Audit/Trace deferred export/investigation/summary ids versus tenant-admin activity-log scope before the Audit/Trace workstream refresh.
+- Resolve the global trace-retention wording conflict before claiming cross-workstream trace policy consistency.
+- Keep `app-description/global/surfaces/workstream-shell.md` as the shared UI shell authority; only add graph-link conventions around actions, traces, and runtime validation.
+- Define the source-alignment convention once, then let per-workstream tasks mark implementation alignment and runtime-validation gaps in their own lifecycle/realization files.
 
-| Area | Current files | Finding | Required refresh | Affected workstreams | Follow-up task/question |
-| --- | --- | --- | --- | --- | --- |
+## Pending questions
+
+1. Should broad legacy governed-tool ids such as `manage-organizations` remain canonical family ids, or should namespaced ids such as `saas_owner.organization.create` and `tenant.customer.create` become canonical with legacy ids treated as aliases?
+2. Should the global redaction/export policy retain a one-year default only for non-Audit/Trace export/governance scopes, while the Audit/Trace tenant-admin activity-log scope keeps the 90-day default and 30-365 day range?
+3. Should deferred Audit/Trace export/investigation-note/summary task ids stay in the global tool inventory under an explicit deferred section, or be removed until a future accepted intent change reintroduces them?
