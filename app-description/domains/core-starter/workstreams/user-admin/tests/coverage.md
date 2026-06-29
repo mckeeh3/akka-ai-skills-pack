@@ -20,6 +20,7 @@
 - Given an Organization Admin creates a Customer, when they bootstrap the first Customer Admin, then the invite targets that created Customer, assigns only Customer Admin-safe roles such as `CUSTOMER_ADMIN`, queues through the invitation/outbox path, and returns Customer Admin detail/invitation status without granting sibling-customer, Organization Admin, or SaaS Owner authority.
 - Given an Organization Admin manages Customer Admins for an existing Customer, when they list, invite, resend/revoke invitations, change roles, suspend/reactivate, or remove membership, then backend authorization validates the target Customer/Tenant, enforces last-customer-admin protection, denies Organization Admin/SaaS Owner role assignment through this flow, and emits audit/work traces.
 - Given an access-review task, when started/read/cancelled/accepted/rejected, then task progress/result/review surfaces render and no worker output directly mutates access.
+- Given authorized User Admin audit evidence is opened from dashboard, user detail, invitation, role/support/access-review, denial, or chat-plan result surfaces, then `surface-user-admin-admin-audit` renders only scoped browser-safe excerpts, requestedBy/confirmedBy summaries when visible, denial/no-op/partial-failure evidence, branch return actions, and Audit/Trace handoff refs; hidden or cross-scope evidence returns safe no-enumeration system-message.
 
 ## Security and negative
 
@@ -49,7 +50,8 @@
 ## Idempotency and observability
 
 - Repeated side-effecting actions do not duplicate effects.
-- Denials, approval-required outcomes, no-ops, provider/model/outbox blocked states, prompt assembly, skill/reference loads, tool calls, data access, decision cards, and trace emissions are verifiable through local Akka/API/UI tests or readiness evidence.
+- Denials, approval-required outcomes, no-ops, provider/model/outbox blocked states, prompt assembly, skill/reference loads, tool calls, data access, decision cards, admin-audit evidence surfaces, and trace emissions are verifiable through local Akka/API/UI tests or readiness evidence.
+- Runtime-validation expectations remain pending for invitation lifecycle, user list/detail, role change denial/success, last-admin protection, audit trace evidence, chat-plan exact confirmation/partial-failure behavior, and provider/model/outbox fail-closed paths before implementation alignment can be claimed.
 - Worker-specific evidence covers SaaS Owner Admin human, Organization Admin human, Customer Admin human, User Admin functional-agent, access-review agent, invitation/onboarding system, and admin-audit/projection system worker paths, including allowed and denied adapter-specific behavior.
 
 

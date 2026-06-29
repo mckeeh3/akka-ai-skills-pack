@@ -43,6 +43,7 @@ Surface-description sufficiency review: this conformance policy is sufficient fo
 | `surface-user-admin-support-access-revoke-confirmation` | `destructive-lifecycle-confirmation` | `user_admin.support_access_revoke_confirmation.v1` | Single-purpose support-access revoke confirmation with audit/work trace and detail result. | New required surface |
 | `surface-user-admin-access-review-task` | `workflow-status` / `outcome-panel` | `user_admin.access_review_task.v1` | Durable access-review task progress, result, blockers, and human accept/reject review. | Revised user graph |
 | `surface-user-admin-identity-exception-review` | `decision-card` / `workflow-status` | `user_admin.identity_exception_review.v1` | Identity-link/relink exception review and approved recovery routing without exposing provider internals. | New required surface |
+| `surface-user-admin-admin-audit` | `audit-timeline` / `show-inspection` | `user_admin.admin_audit.v1` | Browser-safe User Admin audit evidence surface for scoped admin actions, invitations, denials, requestedBy/confirmedBy traces, and Audit/Trace handoff. | New required surface |
 | `surface-user-admin-organization-directory` | `list-search` | `user_admin.organization_directory.v1` | SaaS Owner Organization directory for backend-authorized Organization discovery and row/card selection. | Revised surface graph |
 | `surface-user-admin-organization-detail` | `show-inspection` | `user_admin.organization_detail.v1` | Lifecycle-aware Organization inspection surface that exposes safe Organization lifecycle and Organization Admin management task entry points. | Revised surface graph |
 | `surface-user-admin-organization-admins` | `list-search` | `user_admin.organization_admins.v1` | SaaS Owner scoped directory of Organization Admin users/invitations for one selected Organization/Tenant. | New required surface |
@@ -91,7 +92,8 @@ surface-user-admin-dashboard (trunk)
 │   ├── surface-user-admin-support-access-grant
 │   ├── surface-user-admin-support-access-revoke-confirmation
 │   ├── surface-user-admin-access-review-task
-│   └── surface-user-admin-identity-exception-review
+│   ├── surface-user-admin-identity-exception-review
+│   └── surface-user-admin-admin-audit
 └── surface-user-admin-organization-directory (Organization Directory branch root; SaaS Owner/App Admin only)
     ├── surface-user-admin-organization-detail
     ├── surface-user-admin-organization-admins
@@ -175,7 +177,7 @@ Dashboard payload/content must not include hidden workstream/source names, hidde
 | Invite SaaS Owner Admin | `saas_owner.admin.invite` / `manage-saas-owner-admins` | Open `surface-user-admin-saas-owner-admin-invitation-create`; submission returns admin invitation/detail, validation, provider/outbox blocked state, no-op, or safe system message. |
 | Show organizations / Open Organization Directory | `saas_owner.organization.list` / `manage-organizations` | Render `surface-user-admin-organization-directory` for SaaS Owner/App Admin selected contexts with backend-authorized Organization list/search and boundary notice; omitted for Tenant Admin/Customer Admin or unsupported scopes. |
 | Show customers / Open Customer Directory | `tenant.customer.list` / `manage-customers` | Render `surface-user-admin-customer-directory` for Organization/Tenant Admin selected contexts with backend-authorized Customer list/search and boundary notice; omitted for SaaS Owner-only, Customer Admin, or unsupported scopes. |
-| Open admin audit evidence | `admin.audit.read` / Audit Trace capability | Render authorized Audit/Trace surface or safe redacted system message. |
+| Open admin audit evidence | `admin.audit.read` / Audit Trace capability | Render `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 | Ask User Admin agent | `user_admin.ask_agent` | Invoke governed agent runtime or provider/model blocked system message. |
 
 ## SaaS Owner Admin user-management surface graph
@@ -224,7 +226,7 @@ Actions and result surfaces:
 | `action-open-saas-owner-admin-invitation-create` | `saas_owner.admin.invite` / `manage-saas-owner-admins` | Open `surface-user-admin-saas-owner-admin-invitation-create`; unavailable when last-owner or policy state blocks safe invite setup. |
 | `action-open-saas-owner-admin-detail` | `saas_owner.admin.list` / `manage-saas-owner-admins` | Open `surface-user-admin-user-detail` with `branchRootSurfaceId: surface-user-admin-saas-owner-admins`, `scopeType: saas_owner`, and app-owner-only task entry points; hidden/stale targets return `surface-user-admin-system-message`. |
 | `action-open-saas-owner-admin-invitation-detail` | `saas_owner.admin.list` / `manage-saas-owner-admins` | Open `surface-user-admin-invitation-detail` with SaaS Owner branch context and app-owner invitation lifecycle actions; hidden/stale targets return `surface-user-admin-system-message`. |
-| `action-open-saas-owner-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-open-saas-owner-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 | `action-user-admin-return-dashboard` | `user_admin.view_overview` / `search-user-directory` | Return to `surface-user-admin-dashboard` with focus on the SaaS Owner Admin population card. |
 
 States and outcomes:
@@ -283,7 +285,7 @@ Actions and result surfaces:
 | `action-open-saas-owner-admin-invitation-create` | `saas_owner.admin.invite` / `manage-saas-owner-admins` | Open this create form with backend-authored role options, policy context, delivery readiness, branch metadata, and trace refs. |
 | `action-submit-saas-owner-admin-invitation` | `saas_owner.admin.invite` / `manage-saas-owner-admins` | Validate email/display name/reason/target role, enforce idempotency and duplicate/open-invite policy, create or reuse an app-owner invitation, enqueue delivery only when outbox/provider readiness is available, audit the attempt, then open `surface-user-admin-invitation-detail` or a dedicated app-owner invitation detail with branch context. Validation, duplicate, provider/outbox blocked, stale, approval-required, no-op, or denial results return this form with inline state or `surface-user-admin-system-message`; fake delivery success is forbidden. |
 | `action-user-admin-show-saas-owner-admins` | `saas_owner.admin.list` / `manage-saas-owner-admins` | Return to `surface-user-admin-saas-owner-admins` with safe filter/context preservation. |
-| `action-open-saas-owner-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-open-saas-owner-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 | `action-user-admin-return-dashboard` | `user_admin.view_overview` / `search-user-directory` | Return to `surface-user-admin-dashboard` focused on the SaaS Owner Admin population card when authorized. |
 
 States and outcomes:
@@ -365,7 +367,7 @@ Actions and result surfaces:
 | `action-organization-read` | `saas_owner.organization.read` / `manage-organizations` | Open `surface-user-admin-organization-detail` for a visible Organization; hidden, stale, disabled-actor, cross-scope, or missing-capability targets return `surface-user-admin-system-message` without enumerating hidden Organizations. |
 | `action-open-organization-create` | `saas_owner.organization.create` / `manage-organizations` | Open `surface-user-admin-organization-create` with boundary notice, validation rules, idempotency guidance, trace refs, and branch return metadata. |
 | `action-user-admin-show-organization-admins` | `saas_owner.organization_admin.list` / `manage-organization-admins` | Open `surface-user-admin-organization-admins` for the selected visible Organization when backend exposes it; hidden/stale targets return a safe system message. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 | `action-user-admin-return-dashboard` | `user_admin.view_overview` / `search-user-directory` | Return to `surface-user-admin-dashboard` with focus on the originating Organization branch card or attention queue. |
 
 States and outcomes:
@@ -419,7 +421,7 @@ Actions and result surfaces:
 | `action-open-organization-reactivate-confirmation` | `saas_owner.organization.reactivate` / `manage-organizations` | Open `surface-user-admin-organization-reactivate-confirmation` when lifecycle state allows reactivation; archived Organizations are terminal and return a safe unsupported terminal-lifecycle message. |
 | `action-user-admin-show-organization-admins` | `saas_owner.organization_admin.list` / `manage-organization-admins` | Open `surface-user-admin-organization-admins` for the selected visible Organization or return safe hidden/not-found/forbidden recovery. |
 | `action-open-organization-admin-invitation-create` | `saas_owner.organization_admin.invite` / `manage-organization-admins` | Open `surface-user-admin-organization-admin-invitation-create` with Organization boundary, target-role options, outbox/provider readiness, and branch return metadata. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 
 States and outcomes:
 
@@ -474,7 +476,7 @@ Actions and result surfaces:
 | `action-open-organization-create` | `saas_owner.organization.create` / `manage-organizations` | Open or reload this create form with selected SaaS Owner scope, backend-authored validation policy, boundary notice, idempotency guidance, trace refs, and branch metadata. |
 | `action-submit-organization-create` | `saas_owner.organization.create` / `manage-organizations` | Validate Organization name and reason, enforce selected AuthContext, duplicate/open-name policy, idempotency/correlation, and disabled/stale actor checks, create or reuse the Organization/Tenant boundary when authorized, audit the attempt, then open `surface-user-admin-organization-detail` for the visible result. Validation-error, duplicate/no-op, idempotent replay, conflict/stale, provider/runtime blocked, approval-required, forbidden, or hidden results return this form with inline state or `surface-user-admin-system-message`; fake success is forbidden. |
 | `action-user-admin-show-organizations` | `saas_owner.organization.list` / `manage-organizations` | Return to `surface-user-admin-organization-directory` with backend-shaped safe filters, focus restoration, trace refs, and no hidden Organization counts. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 | `action-user-admin-return-dashboard` | `user_admin.view_overview` / `search-user-directory` | Return to `surface-user-admin-dashboard` focused on the Organization branch or originating attention queue when authorized. |
 
 States and outcomes:
@@ -531,7 +533,7 @@ Actions and result surfaces:
 | `action-submit-organization-rename` | `saas_owner.organization.rename` / `manage-organizations` | Validate Organization visibility/lifecycle, proposed display name, reason requirement, selected `AuthContext`, stale/freshness state, duplicate-name policy, idempotency/correlation, and disabled actor checks; audit the attempt; update the visible Organization display name when authorized; then open `surface-user-admin-organization-detail` with `lastResult`. Validation-error, duplicate-visible, hidden-duplicate, no-op, idempotent replay, conflict/stale, approval-required, forbidden, hidden, or runtime-blocked results return this form with inline state or `surface-user-admin-system-message`; fake rename success is forbidden. |
 | `action-organization-read` | `saas_owner.organization.read` / `manage-organizations` | Return to `surface-user-admin-organization-detail` for the selected visible Organization with backend-owned context, focus restoration, trace refs, and no hidden Organization/customer enumeration. |
 | `action-user-admin-show-organizations` | `saas_owner.organization.list` / `manage-organizations` | Return to `surface-user-admin-organization-directory` with backend-shaped safe filters, focus restoration, trace refs, and no hidden Organization counts. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or a safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 | `action-user-admin-return-dashboard` | `user_admin.view_overview` / `search-user-directory` | Return to `surface-user-admin-dashboard` focused on the Organization branch or originating attention queue when authorized. |
 
 States and outcomes:
@@ -590,7 +592,7 @@ Actions and result surfaces:
 | `action-organization-archive` | `saas_owner.organization.archive` / `manage-organizations` | Validate Organization visibility/lifecycle, terminal confirmation phrase, reason, selected `AuthContext`, stale/freshness state, idempotency/correlation, approval/readiness gates, and disabled actor checks; audit the attempt; archive the visible Organization/Tenant lifecycle boundary when authorized; then open `surface-user-admin-organization-detail` with terminal `lastResult`. Validation-error, already-archived/no-op, idempotent replay, conflict/stale, approval-required, forbidden, hidden, policy-blocked, or runtime-blocked results return this confirmation with inline state or `surface-user-admin-system-message`; fake archive success is forbidden. |
 | `action-organization-read` | `saas_owner.organization.read` / `manage-organizations` | Cancel or return to `surface-user-admin-organization-detail` for the selected visible Organization with backend-owned context, focus restoration, trace refs, and no hidden Organization/customer enumeration. |
 | `action-user-admin-show-organizations` | `saas_owner.organization.list` / `manage-organizations` | Return to `surface-user-admin-organization-directory` with backend-shaped safe filters, focus restoration, trace refs, and no hidden Organization counts. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or a safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 | `action-user-admin-return-dashboard` | `user_admin.view_overview` / `search-user-directory` | Return to `surface-user-admin-dashboard` focused on the Organization branch or originating attention queue when authorized. |
 
 States and outcomes:
@@ -647,7 +649,7 @@ Actions and result surfaces:
 | `action-organization-reactivate` | `saas_owner.organization.reactivate` / `manage-organizations` | Validate Organization visibility/lifecycle, confirmation phrase if required, reason when required, selected `AuthContext`, stale/freshness state, idempotency/correlation, approval gate, and disabled actor checks; audit the attempt; reactivate the visible suspended Organization/Tenant lifecycle boundary when authorized; then open `surface-user-admin-organization-detail` with `lastResult`. Validation-error, already-active/no-op, archived-terminal, idempotent replay, conflict/stale, approval-required, forbidden, hidden, policy-blocked, or runtime-blocked results return this confirmation with inline state or `surface-user-admin-system-message`; fake reactivation success is forbidden. |
 | `action-organization-read` | `saas_owner.organization.read` / `manage-organizations` | Cancel or return to `surface-user-admin-organization-detail` for the selected visible Organization with backend-owned context, focus restoration, trace refs, and no hidden Organization/customer enumeration. |
 | `action-user-admin-show-organizations` | `saas_owner.organization.list` / `manage-organizations` | Return to `surface-user-admin-organization-directory` with backend-shaped safe filters, focus restoration, trace refs, and no hidden Organization counts. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or a safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 | `action-user-admin-return-dashboard` | `user_admin.view_overview` / `search-user-directory` | Return to `surface-user-admin-dashboard` focused on the Organization branch or originating attention queue when authorized. |
 
 States and outcomes:
@@ -707,7 +709,7 @@ Actions and result surfaces:
 | `action-open-organization-admin-invitation-detail` | `saas_owner.organization_admin.list` / `manage-organization-admins` | Open `surface-user-admin-organization-admin-detail` or `surface-user-admin-invitation-detail` with Organization Admin branch context for a visible invitation; hidden, stale, duplicate-hidden, or missing-capability targets return `surface-user-admin-system-message`. |
 | `action-organization-read` | `saas_owner.organization.read` / `manage-organizations` | Return to `surface-user-admin-organization-detail` for the selected Organization with backend-owned context and focus on admin readiness. |
 | `action-user-admin-show-organizations` | `saas_owner.organization.list` / `manage-organizations` | Return to `surface-user-admin-organization-directory` with safe filter/context preservation. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or a safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 
 States and outcomes:
 
@@ -765,7 +767,7 @@ Actions and result surfaces:
 | `action-user-admin-show-organization-admins` | `saas_owner.organization_admin.list` / `manage-organization-admins` | Return to `surface-user-admin-organization-admins` for the selected visible Organization with safe filters, focus restoration, trace refs, and no hidden admin/invitation enumeration. |
 | `action-organization-read` | `saas_owner.organization.read` / `manage-organizations` | Return to `surface-user-admin-organization-detail` for the selected Organization with backend-owned context and focus on admin readiness. |
 | `action-user-admin-show-organizations` | `saas_owner.organization.list` / `manage-organizations` | Return to `surface-user-admin-organization-directory` with backend-shaped safe filter/context preservation. |
-| `action-open-organization-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or a safe redacted system message. |
+| `action-open-organization-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 
 States and outcomes:
 
@@ -821,7 +823,7 @@ Actions and result surfaces:
 | `action-user-admin-show-organization-admins` | `saas_owner.organization_admin.list` / `manage-organization-admins` | Return to `surface-user-admin-organization-admins` for the selected visible Organization with backend-shaped safe filters, focus restoration, trace refs, and no hidden admin/invitation enumeration. |
 | `action-organization-read` | `saas_owner.organization.read` / `manage-organizations` | Return to `surface-user-admin-organization-detail` for the selected Organization with backend-owned context and focus on admin readiness. |
 | `action-user-admin-show-organizations` | `saas_owner.organization.list` / `manage-organizations` | Return to `surface-user-admin-organization-directory` with backend-shaped safe filter/context preservation. |
-| `action-open-organization-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or a safe redacted system message. |
+| `action-open-organization-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 
 States and outcomes:
 
@@ -883,7 +885,7 @@ Every Organization branch descendant (`surface-user-admin-organization-detail`, 
 | Invite/bootstrap Organization Admin | `saas_owner.organization_admin.invite` / `manage-organization-admins` | Open `surface-user-admin-organization-admin-invitation-create`; submission validates the Organization exists, target role is `TENANT_ADMIN`, invitation delivery is ready, and returns admin detail/invitation detail or system-message. |
 | Open Organization Admin detail | `saas_owner.organization_admin.list` / `manage-organization-admins` | Open `surface-user-admin-organization-admin-detail` for a visible admin membership or invitation. |
 | Manage Organization Admin role/status/invite lifecycle | `saas_owner.organization_admin.manage` / `manage-organization-admins` | Route to role preview, membership lifecycle confirmation, invitation resend/revoke confirmation, or refreshed Organization Admin detail. Enforce last Organization Admin protection and prevent `SAAS_OWNER_ADMIN` assignment through Organization flows. |
-| Open Organization audit evidence | `admin.audit.read` | Render authorized Audit/Trace evidence or safe redacted denial. |
+| Open Organization audit evidence | `admin.audit.read` | Render `surface-user-admin-admin-audit` with scoped evidence or a safe redacted denial; trace detail reauthorizes through Audit/Trace. |
 
 ### States and tests
 
@@ -951,7 +953,7 @@ Actions and result surfaces:
 | `action-open-customer-create` | `tenant.customer.create` / `manage-customers` | Open `surface-user-admin-customer-create` with selected Organization/Tenant boundary notice, validation rules, idempotency guidance, trace refs, and branch return metadata. |
 | `action-user-admin-show-customer-admins` | `tenant.customer_admin.list` / `manage-customer-admins` | Open `surface-user-admin-customer-admins` for the selected visible Customer when backend exposes it; hidden/stale targets return a safe no-enumeration system message. |
 | `action-open-customer-admin-invitation-create` | `tenant.customer_admin.invite` / `manage-customer-admins` | Open `surface-user-admin-customer-admin-invitation-create` for the selected visible Customer with `CUSTOMER_ADMIN` role options, delivery readiness, idempotency guidance, and branch return metadata. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 | `action-user-admin-return-dashboard` | `user_admin.view_overview` / `search-user-directory` | Return to `surface-user-admin-dashboard` with focus on the originating Customer branch card or attention queue. |
 
 States and outcomes:
@@ -1008,7 +1010,7 @@ Actions and result surfaces:
 | `action-open-customer-reactivate` | `tenant.customer.reactivate` / `manage-customers` | Open `surface-user-admin-customer-reactivate-confirmation` when lifecycle state allows reactivation; unavailable/hidden/stale/sibling-customer targets return a safe system message. |
 | `action-user-admin-show-customer-admins` | `tenant.customer_admin.list` / `manage-customer-admins` | Open `surface-user-admin-customer-admins` for the selected visible Customer or return safe hidden/not-found/forbidden recovery. |
 | `action-open-customer-admin-invitation-create` | `tenant.customer_admin.invite` / `manage-customer-admins` | Open `surface-user-admin-customer-admin-invitation-create` with Customer boundary, `CUSTOMER_ADMIN` target-role options, outbox/provider readiness, and branch return metadata. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 
 States and outcomes:
 
@@ -1064,7 +1066,7 @@ Actions and result surfaces:
 | `action-open-customer-create` | `tenant.customer.create` / `manage-customers` | Open or reload this create form with the selected Organization/Tenant boundary, backend-authored validation policy, Customer boundary notice, idempotency guidance, trace refs, and branch metadata. |
 | `action-submit-customer-create` | `tenant.customer.create` / `manage-customers` | Validate Customer name and reason, enforce selected Organization/Tenant `AuthContext`, duplicate/open-name policy, idempotency/correlation, and disabled/stale actor checks, create or reuse the Customer boundary when authorized, audit the attempt, then open `surface-user-admin-customer-detail` for the visible result. Validation-error, duplicate/no-op, idempotent replay, conflict/stale, provider/runtime blocked, approval-required, forbidden, or hidden results return this form with inline state or `surface-user-admin-system-message`; fake success is forbidden. |
 | `action-user-admin-show-customers` | `tenant.customer.list` / `manage-customers` | Return to `surface-user-admin-customer-directory` with backend-shaped safe filters, focus restoration, trace refs, and no hidden Customer or sibling-customer counts. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or a safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 | `action-user-admin-return-dashboard` | `user_admin.view_overview` / `search-user-directory` | Return to `surface-user-admin-dashboard` focused on the Customer branch or originating attention queue when authorized. |
 
 States and outcomes:
@@ -1121,7 +1123,7 @@ Actions and result surfaces:
 | `action-submit-customer-rename` | `tenant.customer.rename` / `manage-customers` | Validate Customer visibility/lifecycle, proposed display name, reason requirement, selected `AuthContext`, active tenant membership, stale/freshness state, duplicate-name policy, idempotency/correlation, and disabled actor checks; audit the attempt; update the visible Customer display name when authorized; then open `surface-user-admin-customer-detail` with `lastResult`. Validation-error, duplicate-visible, hidden-duplicate, no-op, idempotent replay, conflict/stale, approval-required, forbidden, hidden, or runtime-blocked results return this form with inline state or `surface-user-admin-system-message`; fake rename success is forbidden. |
 | `action-customer-read` | `tenant.customer.read` / `manage-customers` | Return to `surface-user-admin-customer-detail` for the selected visible Customer with backend-owned context, focus restoration, trace refs, and no hidden Customer/admin/sibling-customer enumeration. |
 | `action-user-admin-show-customers` | `tenant.customer.list` / `manage-customers` | Return to `surface-user-admin-customer-directory` with backend-shaped safe filters, focus restoration, trace refs, and no hidden Customer or sibling-customer counts. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or a safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 | `action-user-admin-return-dashboard` | `user_admin.view_overview` / `search-user-directory` | Return to `surface-user-admin-dashboard` focused on the Customer branch or originating attention queue when authorized. |
 
 States and outcomes:
@@ -1180,7 +1182,7 @@ Actions and result surfaces:
 | `action-customer-archive` | `tenant.customer.archive` / `manage-customers` | Validate Customer visibility/lifecycle, terminal confirmation phrase, reason, selected `AuthContext`, active tenant membership, stale/freshness state, idempotency/correlation, approval/readiness gates, and disabled actor checks; audit the attempt; archive the visible Customer lifecycle boundary when authorized; then open `surface-user-admin-customer-detail` with terminal `lastResult`. Validation-error, already-archived/no-op, idempotent replay, conflict/stale, approval-required, forbidden, hidden, policy-blocked, or runtime-blocked results return this confirmation with inline state or `surface-user-admin-system-message`; fake archive success is forbidden. |
 | `action-customer-read` | `tenant.customer.read` / `manage-customers` | Cancel or return to `surface-user-admin-customer-detail` for the selected visible Customer with backend-owned context, focus restoration, trace refs, and no hidden Customer/admin/sibling-customer enumeration. |
 | `action-user-admin-show-customers` | `tenant.customer.list` / `manage-customers` | Return to `surface-user-admin-customer-directory` with backend-shaped safe filters, focus restoration, trace refs, and no hidden Customer or sibling-customer counts. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or a safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 | `action-user-admin-return-dashboard` | `user_admin.view_overview` / `search-user-directory` | Return to `surface-user-admin-dashboard` focused on the Customer branch or originating attention queue when authorized. |
 
 States and outcomes:
@@ -1237,7 +1239,7 @@ Actions and result surfaces:
 | `action-customer-reactivate` | `tenant.customer.reactivate` / `manage-customers` | Validate Customer visibility/lifecycle, confirmation phrase if required, reason when required, selected `AuthContext`, active tenant membership, stale/freshness state, idempotency/correlation, approval gate, and disabled actor checks; audit the attempt; reactivate the visible suspended Customer lifecycle boundary when authorized; then open `surface-user-admin-customer-detail` with `lastResult`. Validation-error, already-active/no-op, archived-terminal, idempotent replay, conflict/stale, approval-required, forbidden, hidden, policy-blocked, or runtime-blocked results return this confirmation with inline state or `surface-user-admin-system-message`; fake reactivation success is forbidden. |
 | `action-customer-read` | `tenant.customer.read` / `manage-customers` | Cancel or return to `surface-user-admin-customer-detail` for the selected visible Customer with backend-owned context, focus restoration, trace refs, and no hidden Customer/admin/sibling-customer enumeration. |
 | `action-user-admin-show-customers` | `tenant.customer.list` / `manage-customers` | Return to `surface-user-admin-customer-directory` with backend-shaped safe filters, focus restoration, trace refs, and no hidden Customer or sibling-customer counts. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or a safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 | `action-user-admin-return-dashboard` | `user_admin.view_overview` / `search-user-directory` | Return to `surface-user-admin-dashboard` focused on the Customer branch or originating attention queue when authorized. |
 
 States and outcomes:
@@ -1297,7 +1299,7 @@ Actions and result surfaces:
 | `action-open-customer-admin-invitation-detail` | `tenant.customer_admin.list` / `manage-customer-admins` | Open `surface-user-admin-customer-admin-detail` or `surface-user-admin-invitation-detail` with Customer Admin branch context for a visible invitation; hidden, stale, duplicate-hidden, sibling-customer, or missing-capability targets return `surface-user-admin-system-message`. |
 | `action-customer-read` | `tenant.customer.read` / `manage-customers` | Return to `surface-user-admin-customer-detail` for the selected Customer with backend-owned context and focus on Customer Admin readiness. |
 | `action-user-admin-show-customers` | `tenant.customer.list` / `manage-customers` | Return to `surface-user-admin-customer-directory` with safe filter/context preservation. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or a safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 
 States and outcomes:
 
@@ -1355,7 +1357,7 @@ Actions and result surfaces:
 | `action-user-admin-show-customer-admins` | `tenant.customer_admin.list` / `manage-customer-admins` | Return to `surface-user-admin-customer-admins` for the selected visible Customer with safe filters, focus restoration, trace refs, and no hidden admin/invitation enumeration. |
 | `action-customer-read` | `tenant.customer.read` / `manage-customers` | Return to `surface-user-admin-customer-detail` for the selected Customer with backend-owned context and focus on Customer Admin readiness. |
 | `action-user-admin-show-customers` | `tenant.customer.list` / `manage-customers` | Return to `surface-user-admin-customer-directory` with backend-shaped safe filter/context preservation. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or a safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 
 States and outcomes:
 
@@ -1411,7 +1413,7 @@ Actions and result surfaces:
 | `action-user-admin-show-customer-admins` | `tenant.customer_admin.list` / `manage-customer-admins` | Return to `surface-user-admin-customer-admins` for the selected visible Customer with backend-shaped safe filters, focus restoration, trace refs, and no hidden admin/invitation enumeration. |
 | `action-customer-read` | `tenant.customer.read` / `manage-customers` | Return to `surface-user-admin-customer-detail` for the selected Customer with backend-owned context and focus on Customer Admin readiness. |
 | `action-user-admin-show-customers` | `tenant.customer.list` / `manage-customers` | Return to `surface-user-admin-customer-directory` with backend-shaped safe filter/context preservation. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or a safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 
 States and outcomes:
 
@@ -1491,6 +1493,7 @@ The non-Organization User Admin graph follows the canonical durable collection-o
 | Support access destructive lifecycle | `surface-user-admin-support-access-revoke-confirmation` | `user_admin.support_access_revoke_confirmation.v1` | Owns revoke consequence copy, reason, idempotency, audit/work trace, and result routing to user detail or system message. |
 | Access review workflow | `surface-user-admin-access-review-task` | `user_admin.access_review_task.v1` | Shows durable access-review task progress, provider/model blockers, evidence, recommendations, human accept/reject review, and follow-up task routing. Worker output cannot directly mutate access. |
 | Identity exception review | `surface-user-admin-identity-exception-review` | `user_admin.identity_exception_review.v1` | Shows scoped identity-link/relink exception evidence, risk, provider-boundary redaction, recovery options, approval state, and routing to deterministic recovery/status surfaces. |
+| Admin audit evidence | `surface-user-admin-admin-audit` | `user_admin.admin_audit.v1` | Shows scoped browser-safe User Admin audit excerpts, denial/no-op evidence, requestedBy/confirmedBy links, result/partial-failure summaries, and Audit/Trace drilldown handoff without exposing raw trace internals. |
 
 Invitation acceptance/onboarding is not an admin workstream surface and is not owned by `user-admin-agent`. It is a standard invitee/system flow reached from the delivered invitation link: safe acceptance bootstrap, WorkOS/AuthKit authentication or signup, backend token/email/scope/role/status validation, account/membership link or creation, accepted invitation status update, `/api/me` selected-context refresh guidance, and safe expired/revoked/mismatched/hidden recovery. Admin surfaces observe that lifecycle through `surface-user-admin-invitation-detail`, directory rows, dashboard attention, and Audit/Trace links; they never expose raw invitation tokens or use acceptance links as admin mutation controls.
 
@@ -1510,11 +1513,11 @@ The User Admin dashboard is the trunk. Every visible dashboard object must decla
 | Support-access active/expiring/policy attention | Opens user detail for the support-access subject, then routes to `surface-user-admin-support-access-grant` for grant/extend or `surface-user-admin-support-access-revoke-confirmation` for revoke. |
 | Access-review result needing human review | Opens `surface-user-admin-access-review-task`; any follow-up mutation routes to membership, role, or support-access task surfaces. |
 | Identity link/relink exception | Opens `surface-user-admin-identity-exception-review`; approved recovery routes to workflow/status or user detail without provider internals. |
-| Recent denial/no-op/audit evidence | Opens authorized Audit/Trace surfaces or `surface-user-admin-system-message` when evidence is redacted or forbidden. |
+| Recent denial/no-op/audit evidence | Opens `surface-user-admin-admin-audit` for browser-safe scoped evidence; deeper trace detail reauthorizes through Audit/Trace or returns `surface-user-admin-system-message` when evidence is redacted or forbidden. |
 
 ### Branch-return actions
 
-Every User branch descendant (`surface-user-admin-user-detail`, `surface-user-admin-invitation-create`, `surface-user-admin-invitation-detail`, `surface-user-admin-invitation-resend-confirmation`, `surface-user-admin-invitation-revoke-confirmation`, `surface-user-admin-membership-status-confirmation`, `surface-user-admin-role-change-preview`, `surface-user-admin-support-access-grant`, `surface-user-admin-support-access-revoke-confirmation`, `surface-user-admin-access-review-task`, and `surface-user-admin-identity-exception-review`) includes the following return action unless the selected context is no longer authorized, in which case the same action returns `surface-user-admin-system-message`:
+Every User branch descendant (`surface-user-admin-user-detail`, `surface-user-admin-invitation-create`, `surface-user-admin-invitation-detail`, `surface-user-admin-invitation-resend-confirmation`, `surface-user-admin-invitation-revoke-confirmation`, `surface-user-admin-membership-status-confirmation`, `surface-user-admin-role-change-preview`, `surface-user-admin-support-access-grant`, `surface-user-admin-support-access-revoke-confirmation`, `surface-user-admin-access-review-task`, `surface-user-admin-identity-exception-review`, and `surface-user-admin-admin-audit`) includes the following return action unless the selected context is no longer authorized, in which case the same action returns `surface-user-admin-system-message`:
 
 | Action id | Label | Governed backend capability/tool | Result behavior |
 |---|---|---|---|
@@ -1581,7 +1584,7 @@ Actions and result surfaces:
 | `action-open-user-admin-support-access-task` | `user_admin.support_access.grant_revoke_extend` / `grant-or-revoke-support-access` | Open user detail or the support grant/revoke surface selected by backend eligibility. |
 | `action-open-user-admin-access-review-task` | `user_admin.access_review.read` / `run-access-review` | Open `surface-user-admin-access-review-task` for a visible review task or a safe system message when hidden/stale. |
 | `action-open-user-admin-identity-exception-review` | `user_admin.identity_relink.review` | Open `surface-user-admin-identity-exception-review` for a visible exception or a safe system message when hidden/stale. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 | `action-user-admin-return-dashboard` | `user_admin.view_overview` / `search-user-directory` | Return to `surface-user-admin-dashboard` with focus on the originating population card or attention queue. |
 
 States and outcomes:
@@ -1640,7 +1643,7 @@ Actions and result surfaces:
 | `action-open-user-admin-support-access-revoke-confirmation` | `user_admin.support_access.grant_revoke_extend` / `grant-or-revoke-support-access` | Open revoke confirmation; no inline support-access mutation occurs on user detail. |
 | `action-open-user-admin-access-review-task` | `user_admin.access_review.read` / `run-access-review` | Open durable access-review task progress/result or provider/model blocked recovery; review output remains advisory until human-routed task surfaces act. |
 | `action-open-user-admin-identity-exception-review` | `user_admin.identity_relink.review` | Open identity exception review/recovery surface without provider internals. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 
 States and outcomes:
 
@@ -1698,7 +1701,7 @@ Actions and result surfaces:
 | `action-submit-user-admin-invitation` | `user_admin.invite_user` / `create-or-resend-invitation` | Reauthorize selected context and target scope, validate draft, enforce idempotency and duplicate/open-invite policy, create or reuse a visible invitation, enqueue delivery only when provider/outbox readiness allows it, audit the attempt, and route to `surface-user-admin-invitation-detail`. Validation, duplicate-hidden, provider/outbox blocked, stale/conflict, approval-required, no-op, or denial results return this form with inline state or `surface-user-admin-system-message`; fake delivery success is forbidden. |
 | `action-open-user-admin-invitation-detail` | `user_admin.acceptance_status.read` / `create-or-resend-invitation` | Open the visible created or duplicate invitation detail; hidden/stale targets return `surface-user-admin-system-message`. |
 | `action-user-admin-show-users` | `user_admin.list_members` / `search-user-directory` | Return to `surface-user-admin-users` with safe filter/context preservation and focus on the invite action or created invitation row when visible. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 | `action-user-admin-return-dashboard` | `user_admin.view_overview` / `search-user-directory` | Return to `surface-user-admin-dashboard` with focus on the originating invite/population card when authorized. |
 
 States and outcomes:
@@ -1751,7 +1754,7 @@ Actions and result surfaces:
 | `action-open-user-admin-invitation-revoke-confirmation` | `user_admin.revoke_invitation` / `create-or-resend-invitation` | Open `surface-user-admin-invitation-revoke-confirmation` for an eligible visible invitation; accepted, already revoked, hidden, stale, last-admin-risk, or out-of-scope targets return safe no-op/denial/system-message recovery. |
 | `action-open-user-admin-user-detail` | `user_admin.read_user_account` / `search-user-directory` | Open the accepted account or linked membership only when authorized; otherwise return `surface-user-admin-system-message` without exposing hidden account existence. |
 | `action-user-admin-show-users` | `user_admin.list_members` / `search-user-directory` | Return to `surface-user-admin-users` with backend-shaped invitation filters and focus hint when this detail belongs to the User Directory branch. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 
 States and outcomes:
 
@@ -1803,7 +1806,7 @@ Actions and result surfaces:
 | `action-confirm-user-admin-invitation-resend` | `user_admin.resend_invitation` / `create-or-resend-invitation` | Reauthorize selected context and invitation visibility, validate reason/eligibility/current version, enforce idempotency, enqueue a resend only when outbox/provider readiness allows it, audit the attempt, and return refreshed `surface-user-admin-invitation-detail`. Validation, stale/conflict, already-terminal, no-op replay, provider/outbox blocked, hidden, or denial results return this confirmation with inline state or `surface-user-admin-system-message`; fake delivery success is forbidden. |
 | `action-open-user-admin-invitation-detail` | `user_admin.acceptance_status.read` / `create-or-resend-invitation` | Cancel or return to the visible invitation detail with safe focus/context preservation; hidden/stale targets return `surface-user-admin-system-message`. |
 | `action-user-admin-show-users` | `user_admin.list_members` / `search-user-directory` | Return to `surface-user-admin-users` with backend-shaped invitation filters and focus hint when authorized. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 
 States and outcomes:
 
@@ -1855,7 +1858,7 @@ Actions and result surfaces:
 | `action-confirm-user-admin-invitation-revoke` | `user_admin.revoke_invitation` / `create-or-resend-invitation` | Reauthorize selected context and invitation visibility, validate reason/confirmation/current version, enforce idempotency, revoke the invitation only when eligible, audit the attempt, and return refreshed `surface-user-admin-invitation-detail`. Validation, stale/conflict, already-terminal, no-op replay, hidden, last-admin-risk, accepted-target, or denial results return this confirmation with inline state or `surface-user-admin-system-message`; fake success and direct membership mutation are forbidden. |
 | `action-open-user-admin-invitation-detail` | `user_admin.acceptance_status.read` / `create-or-resend-invitation` | Cancel or return to the visible invitation detail with safe focus/context preservation; hidden/stale targets return `surface-user-admin-system-message`. |
 | `action-user-admin-show-users` | `user_admin.list_members` / `search-user-directory` | Return to `surface-user-admin-users` with backend-shaped invitation filters and focus hint when authorized. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 
 States and outcomes:
 
@@ -1908,7 +1911,7 @@ Actions and result surfaces:
 | `action-open-user-admin-user-detail` | `user_admin.read_user_account` / `search-user-directory` | Cancel or return to the visible user detail with safe focus/context preservation; hidden/stale targets return `surface-user-admin-system-message`. |
 | `action-user-admin-show-users` | `user_admin.list_members` / `search-user-directory` | Return to `surface-user-admin-users` with backend-shaped lifecycle filters and focus hint when authorized. |
 | `action-open-user-admin-role-change-preview` | `user_admin.preview_role_change` / `change-membership-role-or-status` | Route to role/capability preview when the intended work is a role change rather than lifecycle change. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 
 States and outcomes:
 
@@ -1964,7 +1967,7 @@ Actions and result surfaces:
 | `action-open-user-admin-user-detail` | `user_admin.read_user_account` / `search-user-directory` | Cancel or return to the visible user detail with safe focus/context preservation; hidden/stale targets return `surface-user-admin-system-message`. |
 | `action-user-admin-show-users` | `user_admin.list_members` / `search-user-directory` | Return to `surface-user-admin-users` with backend-shaped role-risk filters and focus hint when authorized. |
 | `action-open-user-admin-membership-status-confirmation` | `user_admin.update_member_status` / `change-membership-role-or-status` | Route to lifecycle confirmation when the intended work is membership/account status rather than role/capability change. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 
 States and outcomes:
 
@@ -2019,7 +2022,7 @@ Actions and result surfaces:
 | `action-open-user-admin-support-access-revoke-confirmation` | `user_admin.support_access.grant_revoke_extend` / `grant-or-revoke-support-access` | Route to revoke confirmation for an eligible active grant; hidden/stale/ineligible targets return a safe system message or disabled state. |
 | `action-open-user-admin-user-detail` | `user_admin.read_user_account` / `search-user-directory` | Cancel or return to the visible user detail with safe focus/context preservation; hidden/stale targets return `surface-user-admin-system-message`. |
 | `action-user-admin-show-users` | `user_admin.list_members` / `search-user-directory` | Return to `surface-user-admin-users` with backend-shaped support-access filters and focus hint when authorized. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 
 States and outcomes:
 
@@ -2074,7 +2077,7 @@ Actions and result surfaces:
 | `action-open-user-admin-support-access-grant` | `user_admin.support_access.grant_revoke_extend` / `grant-or-revoke-support-access` | Route back to grant/extend form when the intended work is extension rather than revocation; hidden/stale/ineligible targets return a safe system message or disabled state. |
 | `action-open-user-admin-user-detail` | `user_admin.read_user_account` / `search-user-directory` | Cancel or return to the visible user detail with safe focus/context preservation; hidden/stale targets return `surface-user-admin-system-message`. |
 | `action-user-admin-show-users` | `user_admin.list_members` / `search-user-directory` | Return to `surface-user-admin-users` with backend-shaped support-access filters and focus hint when authorized. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 
 States and outcomes:
 
@@ -2134,7 +2137,7 @@ Actions and result surfaces:
 | `action-open-access-review-suggested-role-preview` | `user_admin.preview_role_change` / `change-membership-role-or-status` | Open `surface-user-admin-role-change-preview` with backend-shaped proposal context when the accepted recommendation suggests role work; hidden/stale subjects return `surface-user-admin-system-message`. |
 | `action-open-access-review-suggested-membership-status` | `user_admin.update_member_status` / `change-membership-role-or-status` | Open `surface-user-admin-membership-status-confirmation` with backend-shaped context when the accepted recommendation suggests lifecycle work. |
 | `action-open-access-review-suggested-support-access` | `user_admin.support_access.grant_revoke_extend` / `grant-or-revoke-support-access` | Open support-access grant/revoke surfaces when the accepted recommendation suggests support-access work. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 | `action-open-user-admin-user-detail` | `user_admin.read_user_account` / `search-user-directory` | Return to the reviewed subject detail when still visible; otherwise safe system message. |
 | `action-user-admin-show-users` | `user_admin.list_members` / `search-user-directory` | Return to User Directory with backend-shaped access-review filter/focus preservation. |
 
@@ -2196,7 +2199,7 @@ Actions and result surfaces:
 | `action-cancel-user-admin-identity-recovery` | `user_admin.identity_relink.review` / `review-identity-exception` | Cancel only a cancellable pending recovery workflow; terminal or already-cancelled workflows return no-op state with trace evidence. |
 | `action-open-user-admin-user-detail` | `user_admin.read_user_account` / `search-user-directory` | Return to the visible subject detail when still authorized; otherwise safe system message. |
 | `action-user-admin-show-users` | `user_admin.list_members` / `search-user-directory` | Return to User Directory with backend-shaped identity-exception filter/focus preservation. |
-| `action-open-user-admin-audit` | `admin.audit.read` | Open authorized Audit/Trace evidence or safe redacted system message. |
+| `action-open-user-admin-audit` | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or a safe redacted system message; trace detail reauthorizes through Audit/Trace. |
 
 States and outcomes:
 
@@ -2228,6 +2231,7 @@ Surface-description sufficiency review: `surface-user-admin-identity-exception-r
 - Role preview: current and proposed roles/capabilities, capability delta, affected workstreams, policy/approval state, last-admin impact, escalation risk, alternatives, preview version, idempotency hint, trace refs, and redaction.
 - Support-access grant/revoke: target support-access subject, current support state, requested expiry/purpose, approver policy, consequence copy, validation messages, idempotency hint, trace refs, and redaction.
 - Access review and identity exception: task/exception id, selected scope, lifecycle/status, blockers, provider/model readiness, evidence refs, recommendation/risk/confidence summaries, human review state, no-direct-mutation flag, trace refs, and redaction.
+- Admin audit evidence: scoped audit excerpt ids or opaque refs, action/result categories, worker/adapter/tool/capability summaries, requestedBy/confirmedBy when visible, denial/no-op/partial-failure summaries, redaction state, Audit/Trace handoff refs, trace refs, and correlation id.
 
 ### Actions and result surfaces
 
@@ -2249,13 +2253,45 @@ Surface-description sufficiency review: `surface-user-admin-identity-exception-r
 | Revoke support access | `user_admin.support_access.grant_revoke_extend` / `grant-or-revoke-support-access` | Open `surface-user-admin-support-access-revoke-confirmation`; submission refreshes user detail or returns no-op/denial. |
 | Start/open access review | `user_admin.access_review.start/read/cancel/accept_result/reject_result` / `run-access-review` | Render `surface-user-admin-access-review-task`; accept/reject records review only and routes any real access mutation through membership/role/support task surfaces. |
 | Review identity exception | `user_admin.identity_relink.review` | Render `surface-user-admin-identity-exception-review`; recovery actions route to approved workflow/status or safe denial. |
-| Open admin audit evidence | `admin.audit.read` | Render authorized Audit/Trace surface or redacted denial. |
+| Open admin audit evidence | `admin.audit.read` | Render `surface-user-admin-admin-audit` with browser-safe excerpts and Audit/Trace handoff refs, or redacted/no-enumeration system-message denial. |
 
 ### States and tests
 
 Each user-admin graph node defines loading, empty, ready, submitting, success, validation-error, forbidden, hidden-not-found, no-op, conflict/stale, partial-data, provider-fail-closed, model-fail-closed, outbox-fail-closed, approval-required, and failure states as applicable. Acceptance tests must cover dashboard-to-directory traversal, directory-to-detail traversal, each dedicated invitation/membership/role/support/access-review/identity surface, role-specific variants, idempotent replay/no-op transitions, last-admin/self-action denials, cross-tenant/customer denials, audit/work trace emission, frontend secret boundary, keyboard operation, focus movement, responsive table-to-card behavior, and typed `system_message` results.
 
 Surface-description sufficiency review: this user-admin graph is sufficient for developers/generators to implement and review without inventing payload fields, actions, states, auth/tenant behavior, trace links, tests, or visual/component semantics. Durable collection-object readiness requires the split graph used here: discovery/list surfaces, inspection/detail surfaces, create/edit task surfaces, and lifecycle/decision confirmation surfaces remain separate. Organization Admin is included through the Organization Directory branch contract above, and Customer/Customer Admin administration is included through the Customer Directory branch contract above.
+
+## Admin audit evidence surface
+
+### `surface-user-admin-admin-audit` audit-timeline / show-inspection contract
+
+- Surface id: `surface-user-admin-admin-audit`.
+- Surface type: `audit-timeline` / `show-inspection`.
+- Surface contract: `user_admin.admin_audit.v1`.
+- Owning workstream: User Admin.
+- Owning functional agent: `user-admin-agent`.
+- Placement: User branch descendant and reusable evidence result opened from dashboard recent activity, user detail, invitation detail, role/support/access-review/identity surfaces, branch audit actions, and authorized deep links.
+- Required context: authenticated active account, selected app-owner/tenant/customer `AuthContext`, active membership or approved support/auditor scope, and backend `admin.audit.read` for the requested evidence. Audit surface visibility does not grant trace-detail authority; opening raw or expanded trace detail reauthorizes through Audit/Trace.
+
+Frontend-safe payload:
+
+- Envelope fields: `surfaceContract`, `selectedAuthContext`, `scopeLabel`, `scopeType`, `authorityBasis`, `branchRootSurfaceId`, `branchReturnActionId`, `sourceSurfaceId?`, `sourceActionId?`, `traceRefs[]`, `correlationId`, `redaction`, `filters`, `pageInfo`, `systemStates`, and `lastResult`.
+- `auditItems[]`: browser-safe excerpts with `{ evidenceRef, occurredAt, actorLabel, requestedBy?, confirmedBy?, workerId, actorAdapter, governedToolId, capabilityId, actionId?, resultSurfaceId?, outcome, denialOrNoOpReason?, partialFailureSummary?, redactionState, openTraceActionId? }`. Raw event ids, raw correlation/idempotency values, hidden target ids, invitation tokens, provider/model payloads, and unredacted evidence are forbidden in default payloads.
+- `authorizedActions[]`: refresh evidence, apply backend-authored filters, return to branch root/detail, open authorized Audit/Trace detail, and open related User Admin result surface when visible. Unavailable actions are omitted; no disabled state may disclose hidden evidence.
+
+Actions and result behavior:
+
+| Action id | Governed backend capability/tool | Result behavior |
+|---|---|---|
+| `action-open-user-admin-audit` and branch-specific audit actions | `admin.audit.read` | Open this surface with scoped evidence excerpts or return `surface-user-admin-system-message` with no hidden-target enumeration. |
+| `action-open-audit-trace-detail` | Audit/Trace read capability | Reauthorize in Audit/Trace and render the authorized trace surface, or return redacted denial. |
+| `action-user-admin-show-users` / branch return actions | source branch read capability | Return to the safe branch root or originating detail with backend-shaped filters and focus hints. |
+
+Trace, tests, and sufficiency:
+
+- Every audit surface open, filter, branch return, trace-detail handoff, denial, no-op, and redaction decision emits or links a User Admin work trace with selected `AuthContext`, worker id, actor adapter, governed tool `admin.audit.read`, capability, requestedBy/confirmedBy when visible, result surface, and correlation id.
+- Tests must verify admin action, invitation, denial, last-admin approval, chat-plan confirmation, partial-failure, and requestedBy/confirmedBy evidence; tenant/customer no-enumeration; auditor/support redaction; and frontend secret boundaries.
+- Surface-description sufficiency review: this audit evidence surface is sufficiently unambiguous for implementation planning; runtime completion still requires protected API/UI/Audit-Trace validation.
 
 ## Production runtime surface requirements
 
@@ -2297,7 +2333,7 @@ Actions and result behavior:
 | Denied or hidden navigation/action result | original source capability/tool | Return this system message with safe `not_found_or_redacted` or forbidden recovery, no hidden target enumeration, trace/correlation refs, and only safe branch/dashboard return actions. |
 | Validation/conflict/stale/no-op result | original source capability/tool | Return this system message or the originating task surface with safe field/action guidance, idempotent replay/no-op explanation, no mutation unless already authorized and persisted, and no hidden duplicate or stale target disclosure. |
 | Provider/outbox/model/tool blocked result | original source capability/tool plus provider/tool readiness gate | Return fail-closed recovery with `noFakeSuccess`, retry/admin recovery guidance, trace/correlation refs, and no provider/model/tool secret exposure. |
-| Authorized audit recovery | `admin.audit.read` | Open authorized Audit/Trace evidence or return another safe redacted system message if the actor lacks audit authority. |
+| Authorized audit recovery | `admin.audit.read` | Open `surface-user-admin-admin-audit` with scoped evidence or return another safe redacted system message if the actor lacks audit authority; trace detail reauthorizes through Audit/Trace. |
 
 States and outcomes:
 

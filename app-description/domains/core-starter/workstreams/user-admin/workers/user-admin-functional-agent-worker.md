@@ -55,6 +55,7 @@ Does not own/do:
 |---|---|---|---|---|
 | `search-user-directory` | `user_admin.*`, `admin.audit.read` | `agent_tool_call` read only | observe/recommend | No mutation. |
 | `run-access-review` | `user_admin.access_review.*` | `agent_tool_call`, `human_chat_tool_plan` proposal | recommend/propose | Advisory result only; human disposition required. |
+| `admin.audit.read` | `admin.audit.read` | read-only bounded `agent_tool_call`, `api_call`/surface handoff | observe/explain | Browser-safe summaries only; Audit/Trace detail reauthorizes and redacts. |
 | `manage-organizations`, `manage-organization-admins`, `manage-customers`, `manage-customer-admins`, `create-or-resend-invitation`, `change-membership-role-or-status`, `grant-or-revoke-support-access` | `user-and-access-administration` families | `human_chat_tool_plan` proposal/preparation only unless separately allowed | draft/propose | Human confirmation and backend capability path required; no autonomous agent execution. |
 | `readSkill`, `readReferenceDoc` | governed document loading | `agent_tool_call` | observe | Active assignment, version/status, token/redaction, and boundary checks. |
 

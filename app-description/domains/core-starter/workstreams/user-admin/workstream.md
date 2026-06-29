@@ -88,6 +88,7 @@ Primary graph branches:
 - `surface-user-admin-support-access-grant` and `surface-user-admin-support-access-revoke-confirmation` for support-access grant/extend/revoke flows with purpose, expiry, approval, idempotency, and audit.
 - `surface-user-admin-access-review-task` for access-review progress/result/human decision; worker output cannot directly mutate access.
 - `surface-user-admin-identity-exception-review` for identity-link/relink exception review and approved recovery routing.
+- `surface-user-admin-admin-audit` for scoped browser-safe admin-audit excerpts, requestedBy/confirmedBy evidence, denial/no-op/partial-failure summaries, and Audit/Trace handoff links.
 - reusable `decision-card`, `audit-timeline`, `workflow-status`, `markdown-response`, and `system-message` patterns for risky actions, evidence, blocked provider/model/outbox states, no-ops, stale/conflict, and safe denials.
 
 ## Readiness posture

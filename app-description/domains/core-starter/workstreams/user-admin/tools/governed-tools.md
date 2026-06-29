@@ -19,11 +19,23 @@ Allowed governed tools:
 - `change-membership-role-or-status` (`browser-tool`; approval/decision-card when risky): membership/account lifecycle confirmations and role preview/change commits through dedicated task surfaces.
 - `grant-or-revoke-support-access` (`browser-tool`; expiry/purpose/approval required): support-access grant/extend forms and revoke confirmations.
 - `run-access-review` (`agent-tool`, `internal-tool`): start/read/cancel/review durable access-review recommendations; recommendations route follow-up access changes through deterministic User Admin task surfaces.
+- `admin.audit.read` (`browser-tool`, `internal-tool`; read-only `agent-tool` only when boundary-granted): scoped admin-audit evidence summaries, trace-link handoff metadata, denial/no-op evidence, and redacted investigation context for User Admin surfaces.
 - `readSkill` / `readReferenceDoc` (`agent-tool` only when assigned and boundary-granted): load active User Admin expertise documents after manifest, scope, status, token, and redaction checks.
 
 ## Boundaries
 
-Tools are exposed as browser, agent, or internal tools only as stated by the linked capability. Side-effecting or high-impact tools require idempotency, correlation, authorization, confirmation or approval policy, and audit/work traces. Denied tool calls are traced and return safe feedback.
+Tools are exposed as browser, agent, API, workflow, timer, consumer, or internal tools only as stated by the linked capability. Side-effecting or high-impact tools require idempotency, correlation, authorization, confirmation or approval policy, and audit/work traces. Denied tool calls are traced and return safe feedback.
+
+Adapter/source matrix:
+
+| Governed tool id | Tool type / exposure | Allowed actor adapter sources | Result and transaction boundary |
+|---|---|---|---|
+| `create-or-resend-invitation` | invitation lifecycle browser/API/system tool | `surface_action`, confirmed `human_chat_tool_plan`, `api_call`, outbox `consumer_reaction`, expiry/reminder `timer_invocation` where enabled | Create/resend/revoke are idempotent per invitation target and return invitation detail, partial-failure/outbox-blocked result, or system-message; invitee acceptance is separate. |
+| `accept-invitation` | onboarding/system tool | invitee `api_call`, `internal_call` | Signed-token + WorkOS/AuthKit identity acceptance is idempotent and returns onboarding result/selected-context refresh guidance; no agent exposure. |
+| `change-membership-role-or-status` | membership/role browser/API tool | `surface_action`, approved/confirmed `human_chat_tool_plan` only when cataloged, protected `api_call` | Role commit uses one backend transaction boundary after preview/version revalidation; membership status changes use dedicated confirmation/idempotency and return user detail, decision, partial-failure result, or system-message. |
+| `grant-or-revoke-support-access` | support-access browser/API tool | `surface_action`, protected `api_call`; chat only as proposal unless later cataloged | Tenant Admin approval, purpose, expiry, idempotency, read-time expiry, and audit are mandatory; result surfaces distinguish success, approval-required, no-op, denial, and partial failure. |
+| `run-access-review` | advisory agent/internal workflow tool | `surface_action`, `agent_tool_call`, `workflow_step`, `internal_call` | Access-review tasks produce progress/result/review surfaces; accept/reject records review only and never directly mutates access. |
+| `admin.audit.read` | admin-audit read/evidence tool | `surface_action`, protected `api_call`, `internal_call`, read-only bounded `agent_tool_call` | Returns browser-safe audit summaries or Audit/Trace handoff refs; trace detail reauthorizes and denials return no-enumeration system-message. |
 
 The agent may prepare payloads and explain tool outcomes, but cannot autonomously invite SaaS Owner Admins, invite Organization Admins, invite Customer Admins, create Customers, send invitations, accept invitations for users, change roles, disable/reactivate users, alter support access, resolve reviews, or expand authority. Tool output must be browser-safe and app-owner/tenant/customer scoped.
 

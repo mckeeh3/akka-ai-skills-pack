@@ -151,7 +151,7 @@
 
 ### TASK-ADR-02-002: Refresh User Admin workstream app-description
 
-- status: pending
+- status: done
 - source: specs/app-description-refresh/workstreams/user-admin-migration-plan.md
 - task brief: specs/app-description-refresh/tasks/02-workstreams/02-refresh-user-admin.md
 - depends on:
@@ -178,6 +178,8 @@
   - User Admin graph links worker/adapter/governed-tool/capability/realization/tests/runtime-validation/traces coherently
   - task changes and queue update are committed
 - notes:
+  - commit message: `app-desc-refresh: refresh user admin workstream`
+  - graph coverage proof: User Admin workstream files now link SaaS Owner/Admin, Organization Admin, Customer Admin, User Admin functional-agent, access-review, invitation-onboarding, and admin-audit/projection workers through `surface_action`, `human_chat_tool_plan`, read-only `agent_tool_call`, protected API, workflow/internal, consumer, and timer adapters to shared invitation, membership/status, role/capability, support-access, access-review, and `admin.audit.read` governed tools; capability `user-and-access-administration`; refreshed User Admin dashboard/user/invite/access-review/admin-audit surfaces and action/result/system-message semantics; frontend/API/source-alignment realization maps; runtime-validation expectations; and requestedBy/confirmedBy audit/work trace obligations. Lifecycle/source-alignment is `stale-description-changed` because this docs-only refresh changed current intent without source/runtime validation.
   - vertical contract: User Admin functional-agent workstream; attention category invitation/access-review/risky-admin-action; role-specific dashboard / surface User Admin dashboard, user list, user account, invite, access-review, admin-audit surfaces; surface graph node/action edge invite/create, membership/role/access/support actions and result/partial-failure/system-message surfaces; governed-tool id/type/exposure invitation/membership/role/access/admin-audit governed tools; actor adapter/source `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, workflow/timer/consumer/API/internal where described; confirmation/approval behavior explicit confirmation for chat plans and risky/last-admin approvals; idempotency/transaction/result behavior invite idempotency, role transaction boundary, partial-failure result surfaces; capability or foundation scope user-and-access-administration; AuthContext / roles / tenant scope admin tenant/Organization scope, last-admin and denials; API / frontend / realtime path User Admin route/API/projection mappings; audit/work trace expectation admin action, invitation, denial, requestedBy/confirmedBy traces; validation path `git diff --check`
 
 ### TASK-ADR-02-003: Refresh Agent Admin workstream app-description

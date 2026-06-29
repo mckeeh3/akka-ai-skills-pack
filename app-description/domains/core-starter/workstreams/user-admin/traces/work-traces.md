@@ -17,6 +17,7 @@ Required trace types include `admin-audit-event`, `workstream-log-trace`, `agent
 Trace records include:
 
 - trace id and correlation/request/idempotency id;
+- `requestedBy` for every admin intent source and `confirmedBy` for explicit confirmations, approvals, and confirmed chat-plan execution;
 - worker id, worker type, execution harness, actor adapter, governed tool id, and capability id;
 - actor account id and selected `AuthContext`;
 - tenant/customer scope and safe resource id/type where allowed;
@@ -34,6 +35,10 @@ Trace records include:
 - Invitation acceptance traces record token validation outcome without token value/hash exposure, WorkOS/AuthKit account correlation category, invited email match/mismatch category, target scope type, requested role, account/profile link or creation result, membership creation/activation/no-op result, accepted timestamp, `/api/me` selected-context refresh outcome, denial/recovery reason, idempotency/correlation id, and redaction state. Raw invitation tokens, token hashes, JWT/session values, WorkOS raw payloads, provider ids unless policy-safe, hidden tenant/customer ids, and full email bodies are excluded.
 - Identity exception traces record request/review/approval/denial/recovery lifecycle, provider-boundary redaction state, policy decision, reviewer reason, recovery result, stale/replay/no-op outcome, selected `AuthContext`, and safe evidence refs. Raw WorkOS/JWT/provider payloads are excluded.
 - Model-backed access-review traces record AgentDefinition/profile, ModelConfigRef, model policy decision, prompt assembly, skill/reference load attempts, ToolPermissionBoundary allow/deny decisions, scoped evidence reads, recommendation/result summary, blocker/fail-closed reason, human accept/reject decision, and no-direct-mutation guarantee. Raw prompts, model secrets, provider internals, hidden evidence, and denied tool/loader contents are excluded from browser-safe summaries.
+
+## Admin audit evidence surface traces
+
+`surface-user-admin-admin-audit` opens, filters, branch returns, and Audit/Trace handoffs record `admin.audit.read` as the governed tool, the source surface/action, requestedBy/confirmedBy values when visible, worker id, adapter source, capability decision, result or partial-failure category, redaction state, and correlation id. Browser-safe summaries may show actor labels, action categories, outcome, denial/no-op reason, and trace refs; raw event ids, raw idempotency/correlation values, hidden targets, invitation tokens, provider/model payloads, and unredacted evidence remain Audit/Trace-only and reauthorized.
 
 ## Redaction and investigation
 
