@@ -297,7 +297,7 @@
 
 ### TASK-ADIA-99-001: Terminal implementation alignment verification
 
-- status: pending
+- status: done
 - source: mini-project verification loop
 - task brief: specs/app-description-implementation-alignment/tasks/99-verification/01-terminal-verification.md
 - depends on:
@@ -324,4 +324,8 @@
   - mini-project done state is verified, or follow-up bounded tasks are appended before declaring incomplete
   - task changes and queue update are committed
 - notes:
+  - commit message: `app-desc-align: terminal verification`
+  - validation: `git diff --check` passed; proof commands verified five source-alignment files, authored runtime-validation corpus files, no durable run records beyond `specs/runtime-validation/runs/README.md`, all five workstreams at `partially-aligned`, and pending follow-up queue `TASK-ADIA-FU-001` through `TASK-ADIA-FU-022`.
+  - result: mini-project closed for implementation-alignment verification and handoff to the consolidated follow-up queue; no runtime-ready, manual-ready, api-smoked, browser-smoked, or provider-success claim was made.
+  - next runnable task: `TASK-ADIA-FU-001: Execute My Account login/account-context runtime-validation scenario` in `specs/app-description-implementation-alignment/implementation-follow-up-queue.md`.
   - vertical contract: terminal verification across all five foundation workstreams; non-attention reason verification; role-specific dashboard / surface all foundation surfaces verified for evidence posture; surface graph node/action edge verified; governed-tool id/type/exposure verified; actor adapter/source verified; confirmation/approval behavior and idempotency/transaction/result behavior verified; capability or foundation scope all core-starter capabilities; AuthContext / roles / tenant scope verified; API / frontend / realtime path verified; audit/work trace expectation verifies source-alignment, runtime-validation, trace, and queue evidence; validation path `git diff --check` plus proof commands
