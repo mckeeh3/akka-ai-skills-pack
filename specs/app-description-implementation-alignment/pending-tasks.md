@@ -206,7 +206,7 @@
 
 ### TASK-ADIA-02-004: Align Governance/Policy implementation evidence
 
-- status: pending
+- status: done
 - source: specs/app-description-implementation-alignment/workstreams/governance-policy-alignment-plan.md
 - task brief: specs/app-description-implementation-alignment/tasks/02-workstreams/04-align-governance-policy.md
 - depends on:
@@ -229,6 +229,9 @@
   - Governance/Policy alignment posture is recorded without overclaiming runtime readiness
   - task changes and queue update are committed
 - notes:
+  - commit message: `app-desc-align: align governance policy evidence`
+  - validation: `git diff --check` passed; mapped evidence proof verified 18 Governance/Policy source files, 6 Governance/Policy backend test files, Governance/Policy workstream/API/frontend action markers, and authored-not-run `specs/runtime-validation/scenarios/governance-policy/RV-GOVPOL-001-policy-decision-card.md`.
+  - result: lifecycle/source-alignment updated to `partially-aligned` at source-evidence level; implementation follow-up queue now records exact runtime-validation, canonical-id, exception-lifecycle, runtime policy-decision trace, activation/rollback separation-of-duty/partial-failure, and provider-backed impact-analysis follow-ups without runtime-ready, manual-ready, configured-provider, or executed runtime-validation claims.
   - vertical contract: Governance/Policy functional-agent workstream; attention category policy approval/exception/simulation/rollback; role-specific dashboard / surface Governance/Policy dashboard/catalog/detail/draft/simulation/decision; surface graph node/action edge policy draft/simulate/approve/activate/rollback/exception results; governed-tool id/type/exposure policy lifecycle tools; actor adapter/source `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/workflow/internal; confirmation/approval behavior human approval/decision cards; idempotency/transaction/result behavior policy version activation/rollback transaction and partial-failure surfaces; capability or foundation scope governance-policy-lifecycle; AuthContext / roles / tenant scope admin/policy operator tenant scope; API / frontend / realtime path Governance/Policy route/API mappings; audit/work trace expectation policy change/decision/simulation/exception/denial/rollback traces; validation path `git diff --check` plus mapped evidence proof
 
 ### TASK-ADIA-02-005: Align Audit/Trace implementation evidence

@@ -104,3 +104,69 @@ Do not execute entries from this file until they have been converted into runnab
 - gap: Source/tests prove `PromptAssemblyTrace`, `SkillLoadTrace`, `ReferenceLoadTrace`, boundary denial, provider fail-closed, and `AgentWorkTrace` emission in isolated/service paths, but no Agent Admin real UI/API trace drill-in verifies browser-safe metadata, redaction, filters, denied-load categories, and correlation with test-console/provider failures.
 - expected runnable scope: run allowed and denied prompt assembly, `readSkill`, `readReferenceDoc`, generated-tool/tool-boundary, provider-missing, and workstream-agent invocations; open Agent Admin runtime trace surfaces; verify rows show metadata/checksums/decision categories and omit full loaded skill/reference bodies and secrets.
 - blocker classification if setup is missing: `runtime-validation-gap`, `provider-config-blocker`, or `test-gap`.
+
+### ADIA-FU-GP-001: Execute Governance/Policy decision-card runtime-validation scenario
+
+- source task: `TASK-ADIA-02-004`
+- source workstream: Governance/Policy
+- type: runtime-validation execution
+- status: proposed-for-consolidation
+- evidence basis: `app-description/domains/core-starter/workstreams/governance-policy/realization/source-alignment.md`, `specs/runtime-validation/scenarios/governance-policy/RV-GOVPOL-001-policy-decision-card.md`, `GovernancePolicyServiceTest.java`, `workstream-governance-policy-vertical.contract.test.mjs`
+- gap: `RV-GOVPOL-001` is authored but not run. Source/tests cover proposal draft/simulation/decision/activation gates and frontend decision-card rendering, but no local Akka/API/UI/browser run proves the protected decision-card path, idempotent repeat decision, denied unprivileged decision, or trace ids.
+- expected runnable scope: start the local app, authenticate as the configured policy admin/operator and unprivileged member personas, create or select a safe proposal, run or inspect simulation evidence, open the decision card, approve/reject, repeat the decision, attempt the same action as a member, and capture result surface, network status, sanitized payloads, and audit/work/policy trace ids.
+- blocker classification if setup is missing: `auth-setup-blocker`; `runtime-validation-gap` until a run record exists; `provider-config-blocker` only for optional model-backed impact analysis.
+
+### ADIA-FU-GP-002: Reconcile Governance/Policy canonical governed-tool/action ids and current aliases
+
+- source task: `TASK-ADIA-02-004`
+- source workstream: Governance/Policy
+- type: source/API/frontend contract alignment gap
+- status: proposed-for-consolidation
+- evidence basis: Governance/Policy `tools/governed-tools.md`, `surfaces/surfaces.md`, `realization/source-alignment.md`, `GovernancePolicyService.java`, `WorkstreamService.java`, `workstream-governance-policy-vertical.contract.test.mjs`
+- gap: App-description canonical ids (`governance.policy.search`, `read`, `draft`, `simulate`, `submit_for_approval`, `approve`, `activate`, `rollback`, `review_exception`, `read_history`) currently coexist with implementation aliases such as `action-governance-policy-list`, `action-governance-policy-draft-proposal`, `governance.policy.propose`, `list-policy-proposals`, `draft-policy-proposal`, `simulate-policy-change`, and `approve-activate-or-rollback-policy`.
+- expected runnable scope: choose a compatibility posture, update source-alignment/API/frontend contracts or implementation aliases consistently, prove each canonical governed-tool id maps to exactly one backend capability/action path and result surface, and preserve legacy aliases only as documented compatibility wrappers with tests.
+- blocker classification if setup is missing: `source-alignment-gap` or `test-gap`; do not mark runtime-ready from alias mapping alone.
+
+### ADIA-FU-GP-003: Implement or verify Governance/Policy exception lifecycle
+
+- source task: `TASK-ADIA-02-004`
+- source workstream: Governance/Policy
+- type: implementation/test/runtime-validation gap
+- status: proposed-for-consolidation
+- evidence basis: Governance/Policy `behavior.md`, `tools/governed-tools.md`, `surfaces/surfaces.md`, `policies/policy-bindings.md`, `traces/work-traces.md`, `realization/source-alignment.md`
+- gap: Current intent requires `governance.policy.review_exception` grant/deny/revoke/expire, expiry behavior, scoped runtime effect, and exception traces, but reviewed source has no dedicated exception service/API/UI lifecycle path or tests.
+- expected runnable scope: add or verify exception request/review state, grant/deny/revoke/expire actions, owner/reason/evidence/expiry validation, authorization and hidden-target denial, idempotency, expired-exception non-authorization, result/system-message surfaces, and policy/audit/work trace refs through backend tests and a runtime-validation scenario.
+- blocker classification if setup is missing: `implementation-gap`, `test-gap`, or `runtime-validation-gap`.
+
+### ADIA-FU-GP-004: Verify runtime effective-policy decisions and policy-decision trace drill-in
+
+- source task: `TASK-ADIA-02-004`
+- source workstream: Governance/Policy
+- type: trace/runtime-validation gap
+- status: proposed-for-consolidation
+- evidence basis: Governance/Policy `traces/work-traces.md`, `tests/coverage.md`, `GovernancePolicyService.java`, shared audit/workstream trace foundations, downstream workstream action tests
+- gap: Source evidence has trace refs and protected read/denial traces, but no local run proves active policy version, matching clause/value, winning scope, exception status, approval-gate status, downstream action context, and browser-safe trace drill-in for actual runtime policy decisions.
+- expected runnable scope: execute policy-affected allowed, denied, approval-required, and exception-authorized actions through protected API/UI paths; verify policy-decision traces persist with selected `AuthContext`, actor adapter/source, policy version/scope, redacted browser summaries, and Audit/Trace drill-in without raw secrets, prompt/model/tool payloads, or hidden target enumeration.
+- blocker classification if setup is missing: `runtime-validation-gap`, `implementation-gap`, `auth-setup-blocker`, or `test-gap`.
+
+### ADIA-FU-GP-005: Verify activation/rollback transaction boundaries, partial failures, and separation of duty
+
+- source task: `TASK-ADIA-02-004`
+- source workstream: Governance/Policy
+- type: implementation/test/runtime-validation gap
+- status: proposed-for-consolidation
+- evidence basis: `GovernancePolicyService.activateProposal`, `GovernancePolicyService.rollbackProposal`, `GovernancePolicyServiceTest.java`, Governance/Policy `policies/policy-bindings.md`, `surfaces/surfaces.md`, `traces/work-traces.md`
+- gap: Source/tests prove approval, simulation, rollback metadata, idempotency, and rollback gates in service tests, but not separation-of-duty, real API/UI repeat/conflict behavior, publication partial-failure surfaces, or append-only activation/rollback trace records through runtime.
+- expected runnable scope: test self-approval denial where separation-of-duty is required, approved activation with and without simulation/rollback metadata, repeated activation/rollback no-op or conflict behavior, partial-publication and not-committed result surfaces, append-only history, trace links, and frontend rendering through protected workstream actions.
+- blocker classification if setup is missing: `implementation-gap`, `test-gap`, `auth-setup-blocker`, or `runtime-validation-gap`.
+
+### ADIA-FU-GP-006: Verify Governance/Policy model-backed impact-analysis provider paths and fail-closed behavior
+
+- source task: `TASK-ADIA-02-004`
+- source workstream: Governance/Policy
+- type: provider/runtime-validation gap
+- status: proposed-for-consolidation
+- evidence basis: `GovernancePolicyImpactService.java`, `GovernancePolicyImpactAutonomousAgent.java`, `ComponentClientGovernancePolicyImpactAutonomousAgentRuntime.java`, `FailClosedGovernancePolicyImpactAutonomousAgentRuntime.java`, `GovernancePolicyEvidenceTools.java`, `GovernancePolicyImpactServiceTest.java`
+- gap: Source/tests prove provider/runtime fail-closed and component-client projection behavior, but no current configured-provider or missing-provider local runtime record proves impact-analysis task creation, model-backed advisory result, denial/fail-closed copy, tool-boundary evidence reads, trace ids, and browser secret boundary.
+- expected runnable scope: with provider credentials absent, run impact-analysis start/read and verify blocked provider/runtime surfaces and traces without fake success; with provider credentials available, run the model-backed advisory path and verify human-review-required output, evidence refs, no direct approval/activation/rollback, and no provider secrets/raw prompts/tool payloads in browser payloads.
+- blocker classification if setup is missing: `provider-config-blocker`, `auth-setup-blocker`, or `runtime-validation-gap`.

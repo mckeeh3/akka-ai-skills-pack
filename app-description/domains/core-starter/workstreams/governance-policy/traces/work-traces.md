@@ -61,4 +61,4 @@ Denials must record safe denial category, adapter/source, selected context summa
 
 ## Runtime-validation expectations
 
-Future runtime-validation must prove traces for policy draft, simulation, approval/denial, activation, rollback, exception grant/deny/revoke/expire, runtime enforcement, denials, partial failures, and confirmed chat plans through the real Akka/API/UI path before the lifecycle alignment state can move beyond `stale-description-changed`.
+Future runtime-validation must prove traces for policy draft, simulation, approval/denial, activation, rollback, exception grant/deny/revoke/expire, runtime enforcement, denials, partial failures, and confirmed chat plans through the real Akka/API/UI path before the lifecycle alignment state can move beyond source-evidence `partially-aligned`.
