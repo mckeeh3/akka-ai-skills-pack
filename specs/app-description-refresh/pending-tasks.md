@@ -289,7 +289,7 @@
 
 ### TASK-ADR-03-001: Cross-workstream consistency and readiness pass
 
-- status: pending
+- status: done
 - source: specs/app-description-refresh/backlog/01-app-description-refresh-build-backlog.md#adr-08-cross-workstream-consistency-and-readiness-pass
 - task brief: specs/app-description-refresh/tasks/03-consistency/01-cross-workstream-consistency-readiness.md
 - depends on:
@@ -313,7 +313,47 @@
   - material gaps are fixed, queued, or blocked
   - task changes and queue update are committed
 - notes:
+  - commit message: `app-desc-refresh: verify cross-workstream readiness`
+  - readiness/graph proof: `specs/app-description-refresh/consistency-readiness-review.md` assessed all five refreshed foundation workstreams plus shared/global/core-starter artifacts for worker -> execution harness -> actor adapter -> governed tool -> capability -> realization/source-alignment -> tests/runtime-validation -> traces. My Account and User Admin local graphs were coherent for description/build planning; Agent Admin local graph was coherent with documented legacy alias posture; Governance/Policy and Audit/Trace local graphs were coherent but shared capability/global-tool/surface-catalog/current-status artifacts still carried pre-refresh semantics. All five lifecycle/source-alignment states remain `stale-description-changed`; no runtime-ready claim was made.
+  - material gaps queued: appended `TASK-ADR-03-002` to reconcile shared capability/global-tool/surface-catalog drift before terminal verification. Next runnable task is `TASK-ADR-03-002`, not `TASK-ADR-99-001`.
   - vertical contract: all five foundation workstreams; description/readiness review only; non-attention reason cross-workstream verification; role-specific dashboard / surface all refreshed dashboard/surface bindings; surface graph node/action edge reviewed but not implemented; governed-tool id/type/exposure all refreshed governed tools reviewed; actor adapter/source `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, workflow/timer/consumer/API/MCP/internal consistency reviewed; confirmation/approval behavior and idempotency/transaction/result behavior consistency reviewed; capability or foundation scope all core-starter capabilities; AuthContext / roles / tenant scope reviewed; API / frontend / realtime path realization mappings reviewed; audit/work trace expectation trace/source-alignment/runtime-validation consistency reviewed; validation path `git diff --check` plus graph proof
+
+### TASK-ADR-03-002: Reconcile shared app-description drift after readiness pass
+
+- status: pending
+- source: specs/app-description-refresh/consistency-readiness-review.md
+- task brief: specs/app-description-refresh/consistency-readiness-review.md#impact-and-queued-follow-up
+- depends on:
+  - TASK-ADR-03-001
+- required reads:
+  - specs/app-description-refresh/consistency-readiness-review.md
+  - specs/app-description-refresh/pending-tasks.md
+  - app-description/app.md
+  - app-description/global/tools/foundation-governed-tools.md
+  - app-description/domains/core-starter/capabilities/agent-doc-administration.md
+  - app-description/domains/core-starter/capabilities/audit-and-trace-investigation.md
+  - app-description/domains/core-starter/capabilities/governance-policy-lifecycle.md
+  - app-description/domains/core-starter/workstreams/surface-catalog.md
+  - app-description/domains/core-starter/workstreams/ready-to-build-status.md
+  - app-description/domains/core-starter/workstreams/agent-admin/**
+  - app-description/domains/core-starter/workstreams/audit-trace/**
+  - app-description/domains/core-starter/workstreams/governance-policy/**
+- skills:
+  - app-description-change-impact
+  - app-description-readiness-assessment
+  - app-descriptions
+- expected outputs:
+  - reconciled shared capability/global-tool/surface-catalog/current-status artifacts, or explicit bounded deferrals if a contradiction cannot be safely reconciled
+  - queue notes returning terminal verification to runnable status when material shared drift is fixed or consciously deferred
+- required checks:
+  - `git diff --check`
+- done criteria:
+  - Audit/Trace shared capability/global tool/catalog/status semantics no longer contradict the refreshed Audit/Trace workstream
+  - Governance/Policy shared capability/global tool/catalog/status semantics no longer contradict the refreshed Governance/Policy workstream
+  - Agent Admin canonical/legacy governed-tool alias posture is consistently represented in shared artifacts
+  - terminal verification dependency is restored only after material shared-current-intent drift is fixed, consciously deferred, or blocked with explicit questions
+- notes:
+  - vertical contract: description-only shared drift reconciliation for Governance/Policy, Audit/Trace, and Agent Admin alias mappings; no runtime/API/UI code changes; preserve `stale-description-changed` lifecycle posture unless a no-code-impact alignment review is explicitly recorded; validation path `git diff --check` plus graph proof.
 
 ### TASK-ADR-99-001: Terminal app-description refresh verification
 
@@ -321,7 +361,7 @@
 - source: mini-project verification loop
 - task brief: specs/app-description-refresh/tasks/99-verification/01-terminal-verification.md
 - depends on:
-  - TASK-ADR-03-001
+  - TASK-ADR-03-002
 - required reads:
   - specs/app-description-refresh/README.md
   - specs/app-description-refresh/conversation-capture.md
