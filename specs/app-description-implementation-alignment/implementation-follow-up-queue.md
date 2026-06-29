@@ -170,3 +170,58 @@ Do not execute entries from this file until they have been converted into runnab
 - gap: Source/tests prove provider/runtime fail-closed and component-client projection behavior, but no current configured-provider or missing-provider local runtime record proves impact-analysis task creation, model-backed advisory result, denial/fail-closed copy, tool-boundary evidence reads, trace ids, and browser secret boundary.
 - expected runnable scope: with provider credentials absent, run impact-analysis start/read and verify blocked provider/runtime surfaces and traces without fake success; with provider credentials available, run the model-backed advisory path and verify human-review-required output, evidence refs, no direct approval/activation/rollback, and no provider secrets/raw prompts/tool payloads in browser payloads.
 - blocker classification if setup is missing: `provider-config-blocker`, `auth-setup-blocker`, or `runtime-validation-gap`.
+
+### ADIA-FU-AT-001: Execute Audit/Trace search denial redaction runtime-validation scenario
+
+- source task: `TASK-ADIA-02-005`
+- source workstream: Audit/Trace
+- type: runtime-validation execution
+- status: proposed-for-consolidation
+- evidence basis: `app-description/domains/core-starter/workstreams/audit-trace/realization/source-alignment.md`, `specs/runtime-validation/scenarios/audit-trace/RV-AUDIT-001-trace-search-denial-redaction.md`, `AuditTraceService.java`, `workstream-audit-trace-vertical.contract.test.mjs`
+- gap: `RV-AUDIT-001` is authored but not run. Audit/Trace search/detail/timeline/denial/redaction/support-scope behavior has source/test/frontend evidence only.
+- expected runnable scope: start the local app, authenticate as the configured support-operator or tenant-admin persona plus an unprivileged member where available, search in-scope trace evidence, open detail/timeline, attempt out-of-scope/member reads, repeat an in-scope read, and capture sanitized result surfaces, network statuses, and trace-read/denied-read ids.
+- blocker classification if setup is missing: `auth-setup-blocker` for missing WorkOS/AuthKit/support-access mapping; `seed-data-blocker` if no auditable trace exists; `runtime-validation-gap` until a run record exists.
+
+### ADIA-FU-AT-002: Reconcile Audit/Trace canonical governed-tool ids and v2 surface contracts
+
+- source task: `TASK-ADIA-02-005`
+- source workstream: Audit/Trace
+- type: source/API/frontend contract alignment gap
+- status: proposed-for-consolidation
+- evidence basis: Audit/Trace `tools/governed-tools.md`, `surfaces/surfaces.md`, `realization/source-alignment.md`, `AuditTraceService.java`, `WorkstreamService.java`, `workstream-audit-trace-vertical.contract.test.mjs`
+- gap: Current intent uses canonical tools and v2 contracts (`search-audit-traces`, `read-audit-trace-detail`, `lookup-trace-correlation`, `investigate-denied-trace-access`, `summarize-investigation-evidence`, `audit.trace.*.v2`) while reviewed source exposes legacy `audit.trace.*` capabilities, v1 surface contracts, failure-evidence/guidance aliases, summary-task aliases, and investigation-note surfaces.
+- expected runnable scope: choose and document a compatibility posture, update source-alignment/API/frontend contracts or implementation aliases consistently, prove each canonical Audit/Trace governed-tool id maps to one backend capability/action path and one frontend result surface, and preserve legacy aliases only as documented compatibility wrappers with tests.
+- blocker classification if setup is missing: `source-alignment-gap` or `test-gap`; do not mark runtime-ready from alias mapping alone.
+
+### ADIA-FU-AT-003: Implement or verify Audit/Trace support-access review and redacted export workflow depth
+
+- source task: `TASK-ADIA-02-005`
+- source workstream: Audit/Trace
+- type: implementation/test/runtime-validation gap
+- status: proposed-for-consolidation
+- evidence basis: Audit/Trace `access.md`, `behavior.md`, `surfaces/surfaces.md`, `tools/governed-tools.md`, `policies/policy-bindings.md`, `AuditTraceService.requestRedactedExport`, User Admin support-access source evidence
+- gap: Source evidence maps redacted export request/denial surfaces and support-access-related trace refs, but not a dedicated Audit/Trace support-access review path or durable export approval/preparation/ready/expired workflow with self-approval denial and idempotent replay.
+- expected runnable scope: verify or add support-access grant/use/expiry/revoke review reads, support-operator self-approval denial, redacted export request approval-required/denied/ready/expired states, repeated request idempotency, no raw browser download URL, and tenant/SaaS-owner review surfaces with audit/work trace refs.
+- blocker classification if setup is missing: `implementation-gap`, `test-gap`, `auth-setup-blocker`, or `runtime-validation-gap`.
+
+### ADIA-FU-AT-004: Verify Audit/Trace trace-gap and runtime-validation evidence linking
+
+- source task: `TASK-ADIA-02-005`
+- source workstream: Audit/Trace
+- type: trace/runtime-validation gap
+- status: proposed-for-consolidation
+- evidence basis: Audit/Trace `traces/work-traces.md`, `realization/akka-components.md`, `tests/coverage.md`, `AkkaAuditTraceRepository.java`, `WorkstreamEventBackboneView.java`, runtime-validation corpus files
+- gap: Source evidence composes agent runtime trace and workstream log views, but no current implementation/run proves trace-gap detection, runtime-validation evidence link ingestion/display, source-alignment impact recording, or dashboard/timeline attention for missing/malformed/unlinked trace evidence.
+- expected runnable scope: create or verify runtime-validation evidence link records, trace-gap diagnostics for missing correlation/producer evidence, dashboard attention counts, timeline gap display, source-alignment refs, safe redaction, and tenant/support authorization through backend tests plus a runtime-validation scenario.
+- blocker classification if setup is missing: `implementation-gap`, `test-gap`, `runtime-validation-gap`, or `seed-data-blocker`.
+
+### ADIA-FU-AT-005: Verify Audit/Trace read-only chat plans, bounded agent tools, and summary provider paths
+
+- source task: `TASK-ADIA-02-005`
+- source workstream: Audit/Trace
+- type: provider/chat-plan/runtime-validation gap
+- status: proposed-for-consolidation
+- evidence basis: `AuditTraceSummaryService.java`, `AuditTraceSummaryAutonomousAgent.java`, `AuditTraceEvidenceTools.java`, `FailClosedAuditTraceSummaryAutonomousAgentRuntime.java`, `AuditTraceSummaryServiceTest.java`, `AuditTraceSummaryAutonomousAgentTest.java`, `WorkstreamService.java`
+- gap: Source/tests prove summary-task fail-closed and Akka test-model behavior, but no current local runtime record proves configured-provider summary success, missing-provider fail-closed UI/API path, exact confirmed read-only chat plans for search/detail/correlation/denial/summary, bounded `agent_tool_call` allow/deny, ToolPermissionBoundary denial traces, or browser secret boundary.
+- expected runnable scope: with provider credentials absent, run summary start/read/review and verify blocked provider/runtime surfaces and trace ids without fake success; with provider credentials available, run model-backed summary review; execute confirmed read-only chat plans and bounded agent-tool reads for canonical Audit/Trace tools, including missing-boundary denial and partial-failure/result surfaces.
+- blocker classification if setup is missing: `provider-config-blocker`, `auth-setup-blocker`, `implementation-gap`, `test-gap`, or `runtime-validation-gap`.

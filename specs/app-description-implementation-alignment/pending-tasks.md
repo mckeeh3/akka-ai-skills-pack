@@ -236,7 +236,7 @@
 
 ### TASK-ADIA-02-005: Align Audit/Trace implementation evidence
 
-- status: pending
+- status: done
 - source: specs/app-description-implementation-alignment/workstreams/audit-trace-alignment-plan.md
 - task brief: specs/app-description-implementation-alignment/tasks/02-workstreams/05-align-audit-trace.md
 - depends on:
@@ -259,6 +259,9 @@
   - Audit/Trace alignment posture is recorded without overclaiming runtime readiness
   - task changes and queue update are committed
 - notes:
+  - commit message: `app-desc-align: align audit trace evidence`
+  - validation: `git diff --check` passed; mapped evidence proof verified Audit/Trace coreapp source/tests, foundation audit source/tests, agent runtime trace source/tests, frontend Audit/Trace contract/surface markers, and authored-not-run `specs/runtime-validation/scenarios/audit-trace/RV-AUDIT-001-trace-search-denial-redaction.md`.
+  - result: lifecycle/source-alignment updated to `partially-aligned` at source-evidence level; implementation follow-up queue now records exact runtime-validation, canonical-id/v2-surface, support-access/export, trace-gap/runtime-validation evidence-link, and chat/agent/provider follow-ups without runtime-ready, manual-ready, browser-smoked, api-smoked, or provider-success claims.
   - vertical contract: Audit/Trace functional-agent workstream; attention category investigation/denial/trace-gap/support-access; role-specific dashboard / surface Audit/Trace search/detail/timeline/correlation/investigation; surface graph node/action edge trace search/read/correlation/summary/export-if-allowed results; governed-tool id/type/exposure audit/work trace investigation tools; actor adapter/source `surface_action`, `human_chat_tool_plan`, `agent_tool_call`, API/projection/consumer/internal; confirmation/approval behavior read-only chat confirmation and export/support-access approval where allowed; idempotency/transaction/result behavior read-only idempotency, redacted and denied result surfaces; capability or foundation scope audit-and-trace-investigation; AuthContext / roles / tenant scope tenant admin/SaaS support/support-access; API / frontend / realtime path Audit/Trace route/API/projection mappings; audit/work trace expectation trace reads, denied trace access, investigation summaries and correlations; validation path `git diff --check` plus mapped evidence proof
 
 ### TASK-ADIA-03-001: Consolidate build/compile/runtime-validation follow-up queue
