@@ -1569,7 +1569,7 @@ export const agentAdminSurfaceActions = {
     browserToolId: 'action-agent-prompt-governance-open-risk-review',
     inputSchemaRef: 'schema.agent-admin.prompt-governance.open-risk-review.v1',
     idempotency: { required: false },
-    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt-risk-review', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt_risk_review', openPlacement: 'inline' },
     audit: { eventType: 'AgentPromptGovernanceRiskReviewOpened', traceRequired: true }
   },
   promptGovernanceOpenTrace: {
@@ -2045,69 +2045,69 @@ export const agentAdminSurfaceActions = {
     audit: { eventType: 'AgentDefinitionDetailDisplayed', traceRequired: true }
   },
   startPromptRiskReview: {
-    actionId: 'action-agentadmin-start-prompt-risk-review',
+    actionId: 'action-agentadmin-start-prompt_risk_review',
     label: 'Start prompt-risk review',
     intent: 'workflow',
     capabilityId: agentPromptRiskStartCapability,
     governedToolId: agentPromptRiskStartCapability,
-    browserToolId: 'action-agentadmin-start-prompt-risk-review',
-    inputSchemaRef: 'schema.agent-admin.prompt-risk-review.start.v1',
+    browserToolId: 'action-agentadmin-start-prompt_risk_review',
+    inputSchemaRef: 'schema.agent-admin.prompt_risk_review.start.v1',
     requiresConfirmation: true,
     requiresApproval: true,
     idempotency: { required: true, keySource: 'client-generated' },
-    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt-risk-review', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt_risk_review', openPlacement: 'inline' },
     audit: { eventType: 'AgentAdminPromptRiskReviewStarted', traceRequired: true }
   },
   readPromptRiskReview: {
-    actionId: 'action-agentadmin-read-prompt-risk-review',
+    actionId: 'action-agentadmin-read-prompt_risk_review',
     label: 'Read prompt-risk review',
     intent: 'read',
     capabilityId: agentPromptRiskReadCapability,
     governedToolId: agentPromptRiskReadCapability,
-    browserToolId: 'action-agentadmin-read-prompt-risk-review',
-    inputSchemaRef: 'schema.agent-admin.prompt-risk-review.read.v1',
+    browserToolId: 'action-agentadmin-read-prompt_risk_review',
+    inputSchemaRef: 'schema.agent-admin.prompt_risk_review.read.v1',
     idempotency: { required: false },
-    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt-risk-review', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt_risk_review', openPlacement: 'inline' },
     audit: { eventType: 'AgentAdminPromptRiskReviewRead', traceRequired: true }
   },
   cancelPromptRiskReview: {
-    actionId: 'action-agentadmin-cancel-prompt-risk-review',
+    actionId: 'action-agentadmin-cancel-prompt_risk_review',
     label: 'Cancel prompt-risk review',
     intent: 'command',
     capabilityId: agentPromptRiskCancelCapability,
     governedToolId: agentPromptRiskCancelCapability,
-    browserToolId: 'action-agentadmin-cancel-prompt-risk-review',
-    inputSchemaRef: 'schema.agent-admin.prompt-risk-review.cancel.v1',
+    browserToolId: 'action-agentadmin-cancel-prompt_risk_review',
+    inputSchemaRef: 'schema.agent-admin.prompt_risk_review.cancel.v1',
     requiresConfirmation: true,
     idempotency: { required: true, keySource: 'surface-item' },
-    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt-risk-review', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt_risk_review', openPlacement: 'inline' },
     audit: { eventType: 'AgentAdminPromptRiskReviewCancelled', traceRequired: true }
   },
   acceptPromptRiskReviewResult: {
-    actionId: 'action-agentadmin-accept-prompt-risk-review-result',
+    actionId: 'action-agentadmin-accept-prompt_risk_review-result',
     label: 'Accept advisory prompt-risk result',
     intent: 'approval',
     capabilityId: agentPromptRiskAcceptCapability,
     governedToolId: agentPromptRiskAcceptCapability,
-    browserToolId: 'action-agentadmin-accept-prompt-risk-review-result',
+    browserToolId: 'action-agentadmin-accept-prompt_risk_review-result',
     requiresConfirmation: true,
     requiresApproval: true,
     idempotency: { required: true, keySource: 'surface-item' },
-    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt-risk-review', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt_risk_review', openPlacement: 'inline' },
     audit: { eventType: 'AgentAdminPromptRiskReviewAccepted', traceRequired: true }
   },
   rejectPromptRiskReviewResult: {
-    actionId: 'action-agentadmin-reject-prompt-risk-review-result',
+    actionId: 'action-agentadmin-reject-prompt_risk_review-result',
     label: 'Reject advisory prompt-risk result',
     intent: 'approval',
     capabilityId: agentPromptRiskRejectCapability,
     governedToolId: agentPromptRiskRejectCapability,
-    browserToolId: 'action-agentadmin-reject-prompt-risk-review-result',
-    inputSchemaRef: 'schema.agent-admin.prompt-risk-review.reject.v1',
+    browserToolId: 'action-agentadmin-reject-prompt_risk_review-result',
+    inputSchemaRef: 'schema.agent-admin.prompt_risk_review.reject.v1',
     requiresConfirmation: true,
     requiresApproval: true,
     idempotency: { required: true, keySource: 'surface-item' },
-    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt-risk-review', openPlacement: 'inline' },
+    resultSurface: { updateSurfaceId: 'surface-agent-admin-prompt_risk_review', openPlacement: 'inline' },
     audit: { eventType: 'AgentAdminPromptRiskReviewRejected', traceRequired: true }
   },
   openAgentTrace: {
@@ -2724,14 +2724,14 @@ export const auditTraceSummaryProgressSurface = envelope(
   {
     surfaceContract: 'audit.trace.summaryProgress.v1',
     summaryTaskId: 'audit-summary-tenant-1-window-2026-05-25',
-    autonomousAgentTaskId: 'akka-task-audit-summary-tenant-1-window-2026-05-25',
+    autonomousAgentTaskId: 'akka_task_audit-summary-tenant-1-window-2026-05-25',
     status: 'blocked_provider_or_runtime',
     progressSummary: 'Provider/runtime readiness failed closed; no deterministic, fixture, fake, or model-less audit summary success is rendered.',
     blockerReason: 'Configure governed model provider, AuditTraceSummaryAutonomousAgent binding, ToolPermissionBoundary grants, readSkill/readReferenceDoc, and auditTraceSummaryEvidence.read.',
     selectedContext: { tenantId: 'tenant-1', customerId: null, capabilityId: 'audit.trace.summary_task.start' },
     window: { windowStart: '2026-05-20T00:00:00Z', windowEnd: '2026-05-25T00:00:00Z' },
     evidenceCategories: ['admin_audit', 'authorization_denial', 'provider_readiness', 'agent_work', 'workstream_event'],
-    sourceRefs: ['projection:audit-summary-tenant-1-window-2026-05-25', 'autonomous_task:akka-task-audit-summary-tenant-1-window-2026-05-25'],
+    sourceRefs: ['projection:audit-summary-tenant-1-window-2026-05-25', 'autonomous_task:akka_task_audit-summary-tenant-1-window-2026-05-25'],
     traceRefs: ['trace-audit-summary-start', 'trace-audit-summary-provider-blocked'],
     redactionSummary: 'Raw JWTs, provider credentials, hidden prompts, raw tool payloads, invitation tokens, and cross-tenant evidence are omitted.',
     noDirectMutation: true,
@@ -2748,7 +2748,7 @@ export const auditTraceSummaryReviewSurface = envelope(
   {
     surfaceContract: 'audit.trace.summaryReview.v1',
     summaryTaskId: 'audit-summary-tenant-1-window-2026-05-25',
-    autonomousAgentTaskId: 'akka-task-audit-summary-tenant-1-window-2026-05-25',
+    autonomousAgentTaskId: 'akka_task_audit-summary-tenant-1-window-2026-05-25',
     status: 'completed_review_required',
     noDirectMutation: true,
     humanDecisionRequired: true,
@@ -3289,7 +3289,7 @@ export const agentAdminDashboardSurface = envelope(
       { queueId: 'provider-readiness', label: 'Provider/model readiness', count: 0, severity: 'info', statusText: 'Open readiness detail', sourceCapabilityId: 'agent_admin.list_definitions', targetSurfaceId: 'surface-agent-admin-catalog', actionId: 'action-display-agent-catalog', traceRefs: ['trace-agent-admin-catalog'], redaction: 'provider secrets redacted' },
       { queueId: 'behavior-approval', label: 'Behavior proposals awaiting human decision', count: 2, severity: 'blocked', statusText: 'Approval required', sourceCapabilityId: 'agent_admin.submit_behavior_change_for_review', targetSurfaceId: 'surface-agent-behavior-proposal', actionId: 'action-submit-behavior-change', traceRefs: ['trace-agent-admin-behavior-review'], redaction: 'raw prompt/skill bodies omitted' },
       { queueId: 'tool-boundary-risk', label: 'Risky tool-boundary expansion attempts', count: 1, severity: 'urgent', statusText: 'Simulation denied side effect', sourceCapabilityId: 'agent_admin.simulate_tool_boundary', targetSurfaceId: 'surface-agent-tool-boundary-diff', actionId: 'action-simulate-tool-boundary', traceRefs: ['trace-agent-admin-tool-denied-email-send'], redaction: 'tool output omitted' },
-      { queueId: 'prompt-risk-review', label: 'Prompt-risk autonomous review results', count: 1, severity: 'warning', statusText: 'Worker readiness deferred; open blocked review state', sourceCapabilityId: 'agent_admin.prompt_risk_review.read', targetSurfaceId: 'surface-agent-admin-prompt-risk-review', actionId: 'action-agentadmin-read-prompt-risk-review', traceRefs: ['trace-prompt-risk-provider-blocked-001'], redaction: 'browser-safe blocker summaries only' },
+      { queueId: 'prompt_risk_review', label: 'Prompt-risk autonomous review results', count: 1, severity: 'warning', statusText: 'Worker readiness deferred; open blocked review state', sourceCapabilityId: 'agent_admin.prompt_risk_review.read', targetSurfaceId: 'surface-agent-admin-prompt_risk_review', actionId: 'action-agentadmin-read-prompt_risk_review', traceRefs: ['trace-prompt_risk_provider-blocked-001'], redaction: 'browser-safe blocker summaries only' },
       { queueId: 'manifest-drift', label: 'Manifest drift and loader denials', count: 0, severity: 'info', statusText: 'Open manifest review history', sourceCapabilityId: 'agent_admin.get_manifest', targetSurfaceId: 'surface-agent-skill-manifest-diff', actionId: 'action-approve-skill-manifest', traceRefs: ['trace-agent-admin-manifest-manifest-agent-admin'], redaction: 'compact manifest summaries only' },
       { queueId: 'seed-import-readiness', label: 'Seed import readiness', count: 0, severity: 'info', statusText: 'Open seed provenance', sourceCapabilityId: 'agent_admin.list_seed_material', targetSurfaceId: 'surface-agent-seed-material', actionId: 'action-list-agent-seed-material', traceRefs: ['trace-agent-admin-seed-material'], redaction: 'raw seed content omitted' },
       { queueId: 'authority-expansion-risk', label: 'Authority expansion attempts', count: 1, severity: 'urgent', statusText: 'Review denied expansion evidence', sourceCapabilityId: 'agent_admin.simulate_tool_boundary', targetSurfaceId: 'surface-agent-tool-boundary-diff', actionId: 'action-simulate-tool-boundary', traceRefs: ['trace-agent-admin-tool-denied-email-send'], redaction: 'side-effect details summarized' }
@@ -3388,7 +3388,7 @@ export const agentAdminDetailSurface = envelope(
     taskEntryPoints: [
       { actionId: 'action-agent-detail-refresh', targetSurfaceId: 'surface-agent-admin-detail', governedCapability: agentDefinitionReadCapability, disabledReason: null },
       { actionId: 'action-agent-detail-run-test', targetSurfaceId: 'surface-agent-test-console', governedCapability: agentRuntimeTestCapability, disabledReason: null },
-      { actionId: 'action-agent-detail-open-prompt-risk-review', targetSurfaceId: 'surface-agent-admin-prompt-risk-review', governedCapability: 'agent_admin.prompt_risk_review.read', disabledReason: 'Model-backed review fails closed when provider/runtime is unavailable.' },
+      { actionId: 'action-agent-detail-open-prompt_risk_review', targetSurfaceId: 'surface-agent-admin-prompt_risk_review', governedCapability: 'agent_admin.prompt_risk_review.read', disabledReason: 'Model-backed review fails closed when provider/runtime is unavailable.' },
       { actionId: 'action-agent-detail-open-activation', targetSurfaceId: 'surface-agent-activation-confirmation', governedCapability: agentDefinitionsManageCapability, disabledReason: 'Separate approval/provider prerequisites required.' },
       { actionId: 'action-agent-detail-open-deactivation', targetSurfaceId: 'surface-agent-deactivation-confirmation', governedCapability: agentDeactivateCapability, disabledReason: null },
       { actionId: 'action-agent-detail-open-rollback', targetSurfaceId: 'surface-agent-rollback-confirmation', governedCapability: agentRollbackCapability, disabledReason: 'Requires backend-visible activated proposal metadata.' },
@@ -3776,15 +3776,15 @@ export const agentRollbackConfirmationSurface = envelope(
 );
 
 export const agentAdminPromptRiskReviewSurface = envelope(
-  'surface-agent-admin-prompt-risk-review',
+  'surface-agent-admin-prompt_risk_review',
   'workflow-status',
   'Agent Admin prompt-risk review',
   'agent-admin-agent',
   {
     surfaceContract: 'agent_admin.prompt_risk_review_task.v1',
-    workflowId: 'workflow-agent-admin-prompt-risk-review-001',
-    taskId: 'prompt-risk-review-001',
-    autonomousAgentTaskId: 'akka-task-prompt-risk-review-001',
+    workflowId: 'workflow-agent-admin-prompt_risk_review-001',
+    taskId: 'prompt_risk_review-001',
+    autonomousAgentTaskId: 'akka_task_prompt_risk_review-001',
     status: 'blocked_provider_or_runtime',
     summary: 'Prompt-risk AutonomousAgent worker remains deferred for this slice; backend provider/runtime readiness is blocked, so no model-backed advisory success is claimed.',
     initiatingCapabilityId: agentPromptRiskStartCapability,
@@ -3793,25 +3793,25 @@ export const agentAdminPromptRiskReviewSurface = envelope(
     progress: { percent: 0, summary: 'blocked_provider_or_runtime' },
     scope: { scopeType: 'TENANT', tenantId: authContext.tenantId, customerId: undefined },
     targetAgentDefinitionId: 'agent-admin-agent',
-    proposalId: 'proposal-agent-admin-prompt-risk-001',
+    proposalId: 'proposal-agent-admin-prompt_risk_001',
     proposalStatus: 'in_review',
     artifactDeltas: [
-      { artifactKind: 'PROMPT_DOCUMENT', artifactId: 'agent-admin-system', changeSummary: 'Tighten governance prompt wording', redactedDiffRef: 'diff:proposal-agent-admin-prompt-risk-001:prompt' },
-      { artifactKind: 'TOOL_PERMISSION_BOUNDARY', artifactId: 'tool-boundary-agent-admin', changeSummary: 'Requested side-effecting grant remains blocked', redactedDiffRef: 'diff:proposal-agent-admin-prompt-risk-001:tool-boundary' }
+      { artifactKind: 'PROMPT_DOCUMENT', artifactId: 'agent-admin-system', changeSummary: 'Tighten governance prompt wording', redactedDiffRef: 'diff:proposal-agent-admin-prompt_risk_001:prompt' },
+      { artifactKind: 'TOOL_PERMISSION_BOUNDARY', artifactId: 'tool-boundary-agent-admin', changeSummary: 'Requested side-effecting grant remains blocked', redactedDiffRef: 'diff:proposal-agent-admin-prompt_risk_001:tool-boundary' }
     ],
     riskSummary: 'High risk because the proposal touches prompt authority and ToolPermissionBoundary grants; No direct activation or mutation is allowed by this review.',
     overallRisk: 'HIGH',
     findings: [
-      { findingId: 'finding-prompt-hierarchy', riskLevel: 'HIGH', artifactKind: 'PROMPT_DOCUMENT', artifactId: 'agent-admin-system', category: 'prompt instruction hierarchy conflict', browserSafeDescription: 'Prompt wording could be read as authority expansion without explicit refusal behavior.', evidenceRefs: ['agentAdminEvidence.read', 'readSkill:agent-admin-prompt-risk-review'], requiresHumanReview: true },
-      { findingId: 'finding-tool-boundary', riskLevel: 'CRITICAL', artifactKind: 'TOOL_PERMISSION_BOUNDARY', artifactId: 'tool-boundary-agent-admin', category: 'side-effecting tool exposure', browserSafeDescription: 'Side-effecting tool exposure requires separate approval, idempotency, and activation checks.', evidenceRefs: ['readReferenceDoc:agent-admin-prompt-risk-review'], requiresHumanReview: true }
+      { findingId: 'finding-prompt-hierarchy', riskLevel: 'HIGH', artifactKind: 'PROMPT_DOCUMENT', artifactId: 'agent-admin-system', category: 'prompt instruction hierarchy conflict', browserSafeDescription: 'Prompt wording could be read as authority expansion without explicit refusal behavior.', evidenceRefs: ['agentAdminEvidence.read', 'readSkill:agent-admin-prompt_risk_review'], requiresHumanReview: true },
+      { findingId: 'finding-tool-boundary', riskLevel: 'CRITICAL', artifactKind: 'TOOL_PERMISSION_BOUNDARY', artifactId: 'tool-boundary-agent-admin', category: 'side-effecting tool exposure', browserSafeDescription: 'Side-effecting tool exposure requires separate approval, idempotency, and activation checks.', evidenceRefs: ['readReferenceDoc:agent-admin-prompt_risk_review'], requiresHumanReview: true }
     ],
     recommendations: [
       { recommendationId: 'rec-reject-tool-boundary', label: 'Reject tool-boundary expansion', risk: 'critical', confidence: 'high', summary: 'Do not activate side-effecting grants from prompt-risk acceptance; use a separate governed proposal path.' }
     ],
     requiredHumanReviewReasons: ['prompt authority change', 'ToolPermissionBoundary expansion', 'provider/runtime readiness deferred'],
-    evidenceRefs: ['agentAdminEvidence.read', 'readSkill:agent-admin-prompt-risk-review', 'readReferenceDoc:agent-admin-prompt-risk-review', 'proposal:proposal-agent-admin-prompt-risk-001'],
+    evidenceRefs: ['agentAdminEvidence.read', 'readSkill:agent-admin-prompt_risk_review', 'readReferenceDoc:agent-admin-prompt_risk_review', 'proposal:proposal-agent-admin-prompt_risk_001'],
     providerFailures: ['blocked_provider_or_runtime'],
-    traceIds: ['trace-prompt-risk-provider-blocked-001', 'trace-prompt-risk-assembly-blocked-001'],
+    traceIds: ['trace-prompt_risk_provider-blocked-001', 'trace-prompt_risk_assembly-blocked-001'],
     resultReviewState: 'blocked_provider_or_runtime',
     noDirectMutation: true,
     activationBlockedUntilHumanDecision: true,
@@ -5144,8 +5144,8 @@ export const displayAgentRollbackConfirmationActionResult: CapabilityActionResul
 export const displayAgentPromptRiskReviewActionResult: CapabilityActionResult = {
   status: 'blocked_provider_or_runtime',
   message: 'Displayed Agent Admin prompt-risk worker readiness surface as blocked/deferred; no model-backed advisory success is claimed.',
-  correlationId: 'corr-display-agent-prompt-risk-review',
-  traceIds: ['trace-prompt-risk-provider-blocked-001', 'trace-prompt-risk-assembly-blocked-001'],
+  correlationId: 'corr-display-agent-prompt_risk_review',
+  traceIds: ['trace-prompt_risk_provider-blocked-001', 'trace-prompt_risk_assembly-blocked-001'],
   resultSurface: agentAdminPromptRiskReviewSurface
 };
 
