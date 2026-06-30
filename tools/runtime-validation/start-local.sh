@@ -8,7 +8,7 @@ Usage: tools/runtime-validation/start-local.sh [--empty] [--foreground]
 Starts the Akka-hosted local runtime-validation app on http://localhost:9000.
 The script loads .env when present, enables the local-only runtime-validation
 seed endpoint, writes the seed token to .runtime-validation/local.env, and
-runs `mvn compile exec:java` unless --foreground is omitted, in which case the
+builds the frontend assets, then runs `mvn clean compile exec:java -Dakka.runtime.http-interface=0.0.0.0` unless --foreground is omitted, in which case the
 backend starts in the background and logs to .runtime-validation/logs/backend.log.
 It waits for the HTTP endpoint to become reachable before returning. Stop a
 script-started background backend with `tools/runtime-validation/stop-local.sh`.
@@ -100,12 +100,10 @@ if (( ${#missing[@]} > 0 )); then
   exit 78
 fi
 
-if [[ ! -f src/main/resources/static-resources/index.html ]]; then
-  echo "Static frontend bundle is missing; building frontend assets."
-  npm --prefix frontend run build
-fi
+echo "Building frontend assets."
+npm --prefix frontend run build
 
-COMMAND=(mvn compile exec:java)
+COMMAND=(mvn clean compile exec:java -Dakka.runtime.http-interface=0.0.0.0)
 if [[ "$FOREGROUND" == true ]]; then
   echo "Starting Akka runtime in foreground: ${COMMAND[*]}"
   echo "Frontend/API URL: http://localhost:9000"
