@@ -29,6 +29,7 @@ Readiness claim: queue-authoring only. No runtime-validation scenario has passed
 - status: blocked (`auth-setup-blocker`; `runtime-validation-gap`; `seed-data-blocker`)
 - prior blocker classification: `runtime-validation-gap`, `auth-setup-blocker`, `seed-data-blocker`
 - prior blocker evidence: `specs/runtime-validation/runs/2026-06-29-RV-MY-ACCOUNT-001-blocked-auth-seed.md` recorded missing start/seed contracts and missing seeded member/disabled fixtures. Remediation added `tools/runtime-validation/start-local.sh`, `tools/runtime-validation/seed.sh`, and the local-only Akka seed endpoint; rerun this scenario through the local Akka/API/UI path before marking done.
+- latest blocker evidence: `specs/runtime-validation/runs/2026-06-30-RV-MY-ACCOUNT-001-blocked-auth-config.md` retried the fixed start/seed tooling; `tools/runtime-validation/start-local.sh --empty` exited 78 before Akka startup because effective `WORKOS_JWT_AUDIENCE` remains placeholder, and `tools/runtime-validation/seed.sh base-organization --wait-seconds 4` could not connect to `http://localhost:9000`.
 - source: `TASK-ADIA-02-001`; `specs/runtime-validation/scenarios/my-account/RV-MY-ACCOUNT-001-login-and-account-context.md`
 - depends on: []
 - required reads:

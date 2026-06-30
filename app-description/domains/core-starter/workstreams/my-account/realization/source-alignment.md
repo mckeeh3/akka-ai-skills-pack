@@ -68,13 +68,13 @@ Observed output: 19 mapped source/test/frontend paths exist; `specs/runtime-vali
 
 ## TASK-ADIA-FU-001 runtime-validation run attempts
 
-Review date: 2026-06-29.
-Latest run record: `specs/runtime-validation/runs/2026-06-29-RV-MY-ACCOUNT-001-blocked-auth-config.md`.
-Prior run record: `specs/runtime-validation/runs/2026-06-29-RV-MY-ACCOUNT-001-blocked-auth-seed.md`.
+Review date: 2026-06-30.
+Latest run record: `specs/runtime-validation/runs/2026-06-30-RV-MY-ACCOUNT-001-blocked-auth-config.md`.
+Prior run records: `specs/runtime-validation/runs/2026-06-29-RV-MY-ACCOUNT-001-blocked-auth-config.md`; `specs/runtime-validation/runs/2026-06-29-RV-MY-ACCOUNT-001-blocked-auth-seed.md`.
 Scenario: `specs/runtime-validation/scenarios/my-account/RV-MY-ACCOUNT-001-login-and-account-context.md`.
 Latest result: `blocked` with primary `auth-setup-blocker` plus `runtime-validation-gap` and consequential `seed-data-blocker`.
 
-The local runtime-validation path is still not counted as executed. The latest attempt confirmed the preferred start and seed contracts now exist, and `tools/runtime-validation/start-local.sh --empty` generated local seed state, but startup exited before Akka runtime execution because `WORKOS_JWT_AUDIENCE` remained a placeholder in the effective runtime environment. Since the app did not start on `http://localhost:9000`, `tools/runtime-validation/seed.sh base-organization` could not connect, no base member or disabled/inactive fixtures were prepared, and no browser login, `/api/me`, workstream surface, denial/open-disabled payload, or trace evidence was captured.
+The local runtime-validation path is still not counted as executed. The latest retry used the checked-in start/seed contracts after tooling fixes, and `.runtime-validation/local.env` existed for local seed state, but `tools/runtime-validation/start-local.sh --empty` exited before frontend build or Akka runtime execution because `WORKOS_JWT_AUDIENCE` remained a placeholder in the effective runtime environment. Since the app did not start on `http://localhost:9000`, `tools/runtime-validation/seed.sh base-organization --wait-seconds 4` could not connect, no base member or disabled/inactive fixtures were prepared, and no browser login, `/api/me`, workstream surface, denial/open-disabled payload, or trace evidence was captured.
 
 My Account remains `partially-aligned`; no `manual-ready` or `runtime-ready` claim is made from the blocked runs or setup-tool availability alone. Rerun `RV-MY-ACCOUNT-001` only after valid local WorkOS/AuthKit values and test-user/token mapping are available, then capture sanitized `/api/me`, account-context, denial/open-disabled, browser-safe payload, and trace evidence through the local Akka/API/UI path.
 
