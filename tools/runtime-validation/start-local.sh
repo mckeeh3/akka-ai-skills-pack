@@ -88,7 +88,7 @@ if [[ "$EMPTY" == true && -f "$PID_FILE" ]]; then
 fi
 
 missing=()
-for key in WORKOS_JWT_ISSUER WORKOS_JWT_AUDIENCE VITE_WORKOS_CLIENT_ID VITE_WORKOS_REDIRECT_URI; do
+for key in WORKOS_JWT_ISSUER VITE_WORKOS_CLIENT_ID VITE_WORKOS_REDIRECT_URI; do
   value="${!key:-}"
   if [[ -z "$value" || "$value" =~ your_|configured-workos|client_your|replace_with|xxxxxxxx ]]; then
     missing+=("$key")

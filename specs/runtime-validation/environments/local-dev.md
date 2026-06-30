@@ -17,7 +17,7 @@ Use the checked-in local runtime-validation start script:
 ./tools/runtime-validation/start-local.sh --empty
 ```
 
-The script loads `.env` when present, validates that WorkOS/AuthKit public/JWT values are not placeholders, enables the local-only runtime-validation seed endpoint, writes a private seed token to `.runtime-validation/local.env`, builds the frontend with `npm --prefix frontend run build`, starts the Akka dev runtime with `mvn clean compile exec:java -Dakka.runtime.http-interface=0.0.0.0` on `http://localhost:9000`, and waits for the HTTP endpoint to become reachable before returning. Use `--foreground` when a human wants to keep the server in the current terminal.
+The script loads `.env` when present, validates that the WorkOS/AuthKit public client/redirect values and JWT issuer are not placeholders, enables the local-only runtime-validation seed endpoint, writes a private seed token to `.runtime-validation/local.env`, builds the frontend with `npm --prefix frontend run build`, starts the Akka dev runtime with `mvn clean compile exec:java -Dakka.runtime.http-interface=0.0.0.0` on `http://localhost:9000`, and waits for the HTTP endpoint to become reachable before returning. Use `--foreground` when a human wants to keep the server in the current terminal.
 
 Stop a background runtime started by the script with:
 
