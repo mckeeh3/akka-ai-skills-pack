@@ -6,9 +6,9 @@ usage() {
 Usage: tools/runtime-validation/start-local.sh [--empty] [--foreground]
 
 Starts the Akka-hosted local runtime-validation app on http://localhost:9000.
-The script loads .env when present, enables the local-only runtime-validation
-seed endpoint, writes the seed token to .runtime-validation/local.env, and
-builds the frontend assets, then runs `mvn clean compile exec:java -Dakka.runtime.http-interface=0.0.0.0` unless --foreground is omitted, in which case the
+The script loads .env when present, enables local-dev runtime-validation auth,
+enables the local-only runtime-validation seed endpoint, writes the seed token to
+.runtime-validation/local.env, and builds the frontend assets, then runs `mvn clean compile exec:java -Dakka.runtime.http-interface=0.0.0.0` unless --foreground is omitted, in which case the
 backend starts in the background and logs to .runtime-validation/logs/backend.log.
 It waits for the HTTP endpoint to become reachable before returning. Stop a
 script-started background backend with `tools/runtime-validation/stop-local.sh`.
@@ -79,6 +79,9 @@ fi
 load_env_defaults "$LOCAL_ENV"
 
 export APP_ENV="${APP_ENV:-local}"
+export APP_AUTH_MODE="${APP_AUTH_MODE:-local-dev}"
+export VITE_APP_AUTH_MODE="${VITE_APP_AUTH_MODE:-$APP_AUTH_MODE}"
+export LOCAL_DEV_AUTH_AUTO_SEED="${LOCAL_DEV_AUTH_AUTO_SEED:-true}"
 export APP_PUBLIC_BASE_URL="${APP_PUBLIC_BASE_URL:-http://localhost:9000/}"
 export RUNTIME_VALIDATION_SEED_ENABLED="true"
 export RUNTIME_VALIDATION_SEED_TOKEN="${RUNTIME_VALIDATION_SEED_TOKEN:?missing generated seed token}"
@@ -87,17 +90,19 @@ if [[ "$EMPTY" == true && -f "$PID_FILE" ]]; then
   ./tools/runtime-validation/stop-local.sh --force
 fi
 
-missing=()
-for key in WORKOS_JWT_ISSUER VITE_WORKOS_CLIENT_ID VITE_WORKOS_REDIRECT_URI; do
-  value="${!key:-}"
-  if [[ -z "$value" || "$value" =~ your_|configured-workos|client_your|replace_with|xxxxxxxx ]]; then
-    missing+=("$key")
+if [[ "$APP_AUTH_MODE" != "local-dev" ]]; then
+  missing=()
+  for key in WORKOS_JWT_ISSUER VITE_WORKOS_CLIENT_ID VITE_WORKOS_REDIRECT_URI; do
+    value="${!key:-}"
+    if [[ -z "$value" || "$value" =~ your_|configured-workos|client_your|replace_with|xxxxxxxx ]]; then
+      missing+=("$key")
+    fi
+  done
+  if (( ${#missing[@]} > 0 )); then
+    printf 'Runtime-validation auth config is missing or placeholder: %s\n' "${missing[*]}" >&2
+    printf 'Set real local WorkOS/AuthKit values in the process environment or .env, or use APP_AUTH_MODE=local-dev for local runtime-validation identity.\n' >&2
+    exit 78
   fi
-done
-if (( ${#missing[@]} > 0 )); then
-  printf 'Runtime-validation auth config is missing or placeholder: %s\n' "${missing[*]}" >&2
-  printf 'Set real local WorkOS/AuthKit values in the process environment or .env before running RV-MY-ACCOUNT-001.\n' >&2
-  exit 78
 fi
 
 echo "Building frontend assets."

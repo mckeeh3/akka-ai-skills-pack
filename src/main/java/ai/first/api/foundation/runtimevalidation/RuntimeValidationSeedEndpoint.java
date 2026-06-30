@@ -5,6 +5,7 @@ import ai.first.application.foundation.identity.BootstrapAdminSeeder;
 import ai.first.domain.foundation.audit.AdminAuditEvent;
 import ai.first.domain.foundation.identity.Account;
 import ai.first.domain.foundation.identity.AccountStatus;
+import ai.first.domain.foundation.identity.Customer;
 import ai.first.domain.foundation.identity.FoundationRole;
 import ai.first.domain.foundation.identity.Membership;
 import ai.first.domain.foundation.identity.MembershipStatus;
@@ -30,6 +31,8 @@ import static akka.javasdk.http.HttpException.forbidden;
 public class RuntimeValidationSeedEndpoint extends AbstractHttpEndpoint {
   private static final String BASE_TENANT_ID = BootstrapAdminSeeder.DEFAULT_TENANT_ID;
   private static final String BASE_TENANT_NAME = BootstrapAdminSeeder.DEFAULT_TENANT_NAME;
+  private static final String BASE_CUSTOMER_ID = "customer-starter";
+  private static final String BASE_CUSTOMER_NAME = "Starter Customer";
   private final AkkaIdentityRepository identityRepository;
 
   public RuntimeValidationSeedEndpoint(ComponentClient componentClient) {
@@ -46,12 +49,17 @@ public class RuntimeValidationSeedEndpoint extends AbstractHttpEndpoint {
   public Map<String, Object> seedBaseOrganization() {
     requireEnabledAndAuthorized();
     identityRepository.saveTenant(new Tenant(BASE_TENANT_ID, BASE_TENANT_NAME, true));
-    seedAccount("member@example.com", AccountStatus.ACTIVE, MembershipStatus.ACTIVE, FoundationRole.TENANT_EMPLOYEE, false);
-    seedAccount("org.admin@example.com", AccountStatus.ACTIVE, MembershipStatus.ACTIVE, FoundationRole.TENANT_ADMIN, false);
-    seedAccount("saas.admin@example.com", AccountStatus.ACTIVE, MembershipStatus.ACTIVE, FoundationRole.SAAS_OWNER_ADMIN, false);
-    seedAccount("support.operator@example.com", AccountStatus.ACTIVE, MembershipStatus.ACTIVE, FoundationRole.TENANT_ADMIN, true);
-    seedAccount("disabled.member@example.com", AccountStatus.DISABLED, MembershipStatus.ACTIVE, FoundationRole.TENANT_EMPLOYEE, false);
-    seedAccount("inactive.member@example.com", AccountStatus.ACTIVE, MembershipStatus.SUSPENDED, FoundationRole.TENANT_EMPLOYEE, false);
+    identityRepository.saveCustomer(new Customer(BASE_TENANT_ID, BASE_CUSTOMER_ID, BASE_CUSTOMER_NAME, true));
+    seedAccount("member@example.com", AccountStatus.ACTIVE, MembershipStatus.ACTIVE, ScopeType.TENANT, BASE_TENANT_ID, null, FoundationRole.TENANT_EMPLOYEE, false);
+    seedAccount("org.admin@example.com", AccountStatus.ACTIVE, MembershipStatus.ACTIVE, ScopeType.TENANT, BASE_TENANT_ID, null, FoundationRole.TENANT_ADMIN, false);
+    seedAccount("saas.admin@example.com", AccountStatus.ACTIVE, MembershipStatus.ACTIVE, ScopeType.SAAS_OWNER, null, null, FoundationRole.SAAS_OWNER_ADMIN, false);
+    seedAccount("support.operator@example.com", AccountStatus.ACTIVE, MembershipStatus.ACTIVE, ScopeType.TENANT, BASE_TENANT_ID, null, FoundationRole.TENANT_ADMIN, true);
+    seedAccount("org1.admin1@example.test", AccountStatus.ACTIVE, MembershipStatus.ACTIVE, ScopeType.TENANT, BASE_TENANT_ID, null, FoundationRole.TENANT_ADMIN, false);
+    seedAccount("org1.user3@example.test", AccountStatus.ACTIVE, MembershipStatus.ACTIVE, ScopeType.TENANT, BASE_TENANT_ID, null, FoundationRole.TENANT_EMPLOYEE, false);
+    seedAccount("cust1.admin@example.test", AccountStatus.ACTIVE, MembershipStatus.ACTIVE, ScopeType.CUSTOMER, BASE_TENANT_ID, BASE_CUSTOMER_ID, FoundationRole.CUSTOMER_ADMIN, false);
+    seedAccount("cust1.user2@example.test", AccountStatus.ACTIVE, MembershipStatus.ACTIVE, ScopeType.CUSTOMER, BASE_TENANT_ID, BASE_CUSTOMER_ID, FoundationRole.CUSTOMER_USER, false);
+    seedAccount("disabled.member@example.com", AccountStatus.DISABLED, MembershipStatus.ACTIVE, ScopeType.TENANT, BASE_TENANT_ID, null, FoundationRole.TENANT_EMPLOYEE, false);
+    seedAccount("inactive.member@example.com", AccountStatus.ACTIVE, MembershipStatus.SUSPENDED, ScopeType.TENANT, BASE_TENANT_ID, null, FoundationRole.TENANT_EMPLOYEE, false);
     identityRepository.appendAudit(new AdminAuditEvent(
         "audit-runtime-validation-seed-" + UUID.randomUUID(),
         Instant.now(),
@@ -71,10 +79,10 @@ public class RuntimeValidationSeedEndpoint extends AbstractHttpEndpoint {
     return response("seeded", "base-organization", "runtime-validation-base-organization-seed");
   }
 
-  private void seedAccount(String email, AccountStatus accountStatus, MembershipStatus membershipStatus, FoundationRole role, boolean supportAccess) {
+  private void seedAccount(String email, AccountStatus accountStatus, MembershipStatus membershipStatus, ScopeType scopeType, String tenantId, String customerId, FoundationRole role, boolean supportAccess) {
     var normalizedEmail = email.toLowerCase(java.util.Locale.ROOT);
     var existing = identityRepository.findAccountByEmail(normalizedEmail).orElse(null);
-    var workosSubject = existing == null ? null : existing.workosUserId();
+    var workosSubject = existing == null || (existing.workosUserId() != null && existing.workosUserId().startsWith("local-dev:")) ? null : existing.workosUserId();
     identityRepository.saveAccount(new Account(normalizedEmail, workosSubject, normalizedEmail, normalizedEmail, accountStatus, workosSubject == null ? "UNLINKED" : "LINKED"));
     if (identityRepository.profile(normalizedEmail) == null) {
       identityRepository.saveProfile(new UserProfile(normalizedEmail, normalizedEmail, displayName(normalizedEmail), null, null, null));
@@ -82,14 +90,7 @@ public class RuntimeValidationSeedEndpoint extends AbstractHttpEndpoint {
     if (identityRepository.settings(normalizedEmail) == null) {
       identityRepository.saveSettings(new UserSettings(normalizedEmail, UserSettings.ThemeId.AURORA_LIGHT));
     }
-    identityRepository.saveMembership(membership(normalizedEmail, role, membershipStatus, supportAccess));
-  }
-
-  private Membership membership(String email, FoundationRole role, MembershipStatus status, boolean supportAccess) {
-    if (role == FoundationRole.SAAS_OWNER_ADMIN) {
-      return new Membership("membership-" + email, email, ScopeType.SAAS_OWNER, null, null, List.of(role), status, supportAccess, null);
-    }
-    return new Membership("membership-" + email, email, ScopeType.TENANT, BASE_TENANT_ID, null, List.of(role), status, supportAccess, null);
+    identityRepository.saveMembership(new Membership("membership-" + normalizedEmail, normalizedEmail, scopeType, tenantId, customerId, List.of(role), membershipStatus, supportAccess, null));
   }
 
   private Map<String, Object> response(String result, String setupId, String traceId) {
@@ -101,6 +102,7 @@ public class RuntimeValidationSeedEndpoint extends AbstractHttpEndpoint {
             "accountId", membership.accountId(),
             "scopeType", membership.scopeType().name(),
             "tenantId", membership.tenantId() == null ? "" : membership.tenantId(),
+            "customerId", membership.customerId() == null ? "" : membership.customerId(),
             "status", membership.status().name(),
             "supportAccess", membership.supportAccess(),
             "roles", membership.roles().stream().map(Enum::name).toList()))
@@ -112,7 +114,7 @@ public class RuntimeValidationSeedEndpoint extends AbstractHttpEndpoint {
         "personas", memberships,
         "disabledFixture", "disabled.member@example.com",
         "inactiveFixture", "inactive.member@example.com",
-        "authMapping", "Accounts are seeded by normalized email and link to WorkOS subject on first valid AuthKit login; no raw JWT or provider secret is returned.",
+        "authMapping", "Accounts are seeded by normalized email. In WorkOS mode they link to the WorkOS subject on first valid AuthKit login; in APP_AUTH_MODE=local-dev use /api/dev/auth/sign-in with a seeded email to obtain a local bearer token. No raw provider secret is returned.",
         "traceRefs", List.of(traceId),
         "correlationId", correlationId(),
         "redaction", "Browser-safe setup metadata only; no WorkOS API key, JWT, Resend key, model key, or invitation token is exposed.");

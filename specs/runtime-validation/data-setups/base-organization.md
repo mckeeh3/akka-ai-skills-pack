@@ -20,11 +20,15 @@ The app must first be started with `./tools/runtime-validation/start-local.sh --
 # State to create or reuse
 
 - One base tenant/organization with stable identifiers recorded in the run.
-- WorkOS/AuthKit test-user mappings for:
+- WorkOS/AuthKit or local-dev passwordless test-user mappings for:
   - `member@example.com` as `member`;
   - `org.admin@example.com` as `organization-admin`;
   - `saas.admin@example.com` as `saas-admin`;
-  - `support.operator@example.com` as `support-operator`.
+  - `support.operator@example.com` as `support-operator`;
+  - `org1.admin1@example.test` as organization admin;
+  - `org1.user3@example.test` as organization user;
+  - `cust1.admin@example.test` as customer admin;
+  - `cust1.user2@example.test` as customer user.
 - Active membership for member and organization admin in the base organization.
 - SaaS/platform authority for the SaaS admin only.
 - Disabled and inactive member fixtures for denial checks:
@@ -35,6 +39,7 @@ The app must first be started with `./tools/runtime-validation/start-local.sh --
 # Setup boundaries
 
 - The setup may use local-dev seed authority, but the run must record that authority and its trace ids.
+- In `APP_AUTH_MODE=local-dev`, manual testers use the local-only sign-in panel or `POST /api/dev/auth/sign-in` with a seeded email; roles and scopes still come from these seeded backend memberships.
 - The setup must not invite the user in `RV-USER-ADMIN-001`; that invitation happens during validation.
 - The setup must not approve the policy decision in `RV-GOVPOL-001`; that decision happens during validation.
 - The setup must not mark any scenario as passed.

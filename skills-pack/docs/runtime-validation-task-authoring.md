@@ -110,9 +110,60 @@ Each seed plan should state:
 - setup evidence emitted;
 - failure classifications and unblock conditions.
 
+## Local-dev passwordless identity pattern
+
+When WorkOS/AuthKit test users are unavailable or unreliable, generated SaaS apps should provide an explicit local-only runtime-validation identity mode instead of weakening protected APIs.
+
+Use a mode such as:
+
+```text
+APP_AUTH_MODE=workos      # default/production
+APP_AUTH_MODE=local-dev   # local runtime validation only
+```
+
+In `local-dev` mode, the app may expose a local-only passwordless endpoint such as `POST /api/dev/auth/sign-in` that accepts a seeded test email and returns a bearer token usable by the normal protected APIs. This mode replaces identity proof only. `/api/me`, local account lookup, membership selection, roles, capabilities, tenant/customer scope, denial behavior, audit/work traces, and browser-safe redaction must remain the same authorization boundary used by WorkOS mode.
+
+Typical seeded local-dev identities:
+
+```text
+saas.admin@example.test       -> SaaS/platform admin
+org1.admin1@example.test      -> tenant/org admin
+org1.user3@example.test       -> tenant/org user
+cust1.admin@example.test      -> customer admin
+cust1.user2@example.test      -> customer user
+disabled.user@example.test    -> disabled account denial
+inactive.user@example.test    -> no active membership/recovery denial
+```
+
+Seed plans should create or reuse local accounts, tenants, customers, memberships, roles, and settings first, then sign in by email through the local-dev auth endpoint. Unknown emails should be denied by default, or explicitly treated as no-membership recovery personas by the seed policy; they must not self-register privileged access.
+
+Manual browser validation should include a local-only user switcher or sign-in panel when `APP_AUTH_MODE=local-dev` is enabled. Switching users must clear cached auth/bootstrap state, obtain a new local token, call `/api/me`, and reload role/capability-derived UI from the backend. This supports owner/admin/member/viewer/disabled/cross-tenant denial checks without WorkOS.
+
+Safety requirements:
+
+- local-dev auth is disabled unless explicitly configured;
+- local-dev endpoints are unavailable in deployed/staging/production environments;
+- no anonymous fallback is allowed when WorkOS config is missing in `workos` mode;
+- roles and scope come from seeded backend state, never from arbitrary browser input;
+- seed/setup traces clearly mark `local-dev-runtime-validation` authority;
+- browser assets and run evidence never include reusable bearer tokens, provider secrets, or backend secrets.
+
+Example scenario fields:
+
+```yaml
+authMode: local-dev
+personas:
+  - id: saas-owner
+    email: saas.admin@example.test
+  - id: org-admin
+    email: org1.admin1@example.test
+  - id: customer-user
+    email: cust1.user2@example.test
+```
+
 ## WorkOS test-user pattern
 
-For WorkOS/AuthKit applications, runtime validation may rely on known WorkOS test users. This keeps identity real while allowing seed tooling to create local authorization and membership state.
+For WorkOS/AuthKit applications, runtime validation may rely on known WorkOS test users when they are available. This keeps identity real while allowing seed tooling to create local authorization and membership state.
 
 Typical test identities:
 

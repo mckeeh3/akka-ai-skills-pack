@@ -125,6 +125,9 @@ public final class AuthContextResolver {
   }
 
   private Account linkAccount(Account account, WorkosIdentity identity) {
+    if (identity.subject() != null && identity.subject().startsWith("local-dev:")) {
+      return account;
+    }
     if (account.workosUserId() != null && !account.workosUserId().equals(identity.subject())) {
       throw new AuthorizationException(403, "workos-subject-already-linked");
     }

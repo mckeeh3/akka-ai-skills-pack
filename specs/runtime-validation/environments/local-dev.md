@@ -17,7 +17,9 @@ Use the checked-in local runtime-validation start script:
 ./tools/runtime-validation/start-local.sh --empty
 ```
 
-The script loads `.env` when present, validates that the WorkOS/AuthKit public client/redirect values and JWT issuer are not placeholders, enables the local-only runtime-validation seed endpoint, writes a private seed token to `.runtime-validation/local.env`, builds the frontend with `npm --prefix frontend run build`, starts the Akka dev runtime with `mvn clean compile exec:java -Dakka.runtime.http-interface=0.0.0.0` on `http://localhost:9000`, and waits for the HTTP endpoint to become reachable before returning. Use `--foreground` when a human wants to keep the server in the current terminal.
+The script loads `.env` when present, defaults `APP_AUTH_MODE=local-dev` and `VITE_APP_AUTH_MODE=local-dev`, enables the local-only runtime-validation seed endpoint, writes a private seed token to `.runtime-validation/local.env`, builds the frontend with `npm --prefix frontend run build`, starts the Akka dev runtime with `mvn clean compile exec:java -Dakka.runtime.http-interface=0.0.0.0` on `http://localhost:9000`, and waits for the HTTP endpoint to become reachable before returning. Use `--foreground` when a human wants to keep the server in the current terminal.
+
+In local-dev auth mode, manual testers sign in through the local-only browser panel with a seeded test email such as `saas.admin@example.test`, `org1.admin1@example.test`, `org1.user3@example.test`, `cust1.admin@example.test`, or `cust1.user2@example.test`. The panel obtains a local bearer token from `/api/dev/auth/sign-in`, then the browser still calls `/api/me` and the normal protected workstream APIs. WorkOS/AuthKit configuration is only required when `APP_AUTH_MODE` is set to a WorkOS-backed mode.
 
 Stop a background runtime started by the script with:
 
@@ -37,7 +39,7 @@ If the start command fails, the run record must capture the exit status, `.runti
 
 # Provider and secret state
 
-- WorkOS/AuthKit configuration is required for browser-auth scenarios unless the run records an `auth/setup gap`.
+- `APP_AUTH_MODE=local-dev` is the default for local runtime-validation runs and uses seeded local passwordless emails for browser auth. WorkOS/AuthKit configuration is required only for WorkOS-backed browser-auth scenarios; if such a scenario lacks config, the run records an `auth/setup gap`.
 - Resend and model provider configuration may be intentionally absent for fail-closed scenarios.
 - Browser-visible assets and API payloads must not expose WorkOS, Resend, OpenAI, or model provider secrets.
 - Provider-missing behavior must fail closed with actionable operator-visible messages and trace evidence.
@@ -48,5 +50,5 @@ If the start command fails, the run record must capture the exit status, `.runti
 - Start command, exit status, and local URLs.
 - Persistence reset/empty-start proof.
 - Provider configuration state as configured, missing, or intentionally withheld.
-- Auth/test-user mapping state.
+- Auth/test-user mapping state, including selected local-dev email or WorkOS test user subject mapping.
 - Logs or trace ids for bootstrap/setup failures.

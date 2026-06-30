@@ -3171,3 +3171,18 @@ button.user-admin-work-card:focus-visible {
     margin-left: 0;
   }
 }
+
+.local-dev-auth-switcher {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--color-surface));
+  color: var(--color-text);
+  font-size: 0.875rem;
+}
+
+.local-dev-auth-switcher select {
+  max-width: min(44rem, 65vw);
+}

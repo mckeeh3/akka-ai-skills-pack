@@ -7,9 +7,9 @@ Usage: tools/runtime-validation/seed.sh base-organization [--base-url http://loc
 
 Seeds the local Akka runtime with the base organization/personas required by
 runtime-validation scenarios. The Akka app must have been started with
-`tools/runtime-validation/start-local.sh`, which generates .runtime-validation/local.env
-and enables the local-only seed endpoint. The script waits for the local HTTP
-endpoint before posting the seed request so callers do not have to guess startup time.
+`tools/runtime-validation/start-local.sh`, which generates .runtime-validation/local.env,
+enables APP_AUTH_MODE=local-dev by default, and enables the local-only seed endpoint.
+The script waits for the local HTTP endpoint before posting the seed request so callers do not have to guess startup time. After seeding, use tools/runtime-validation/local-dev-token.sh --email <seeded-email> for scripted protected API calls.
 USAGE
 }
 

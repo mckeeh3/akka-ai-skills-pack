@@ -42,6 +42,10 @@ const workosRedirectUri = typeof configuredWorkosRedirectUri === 'string' && con
   ? configuredWorkosRedirectUri
   : window.location.origin;
 const hasConfiguredWorkosClient = typeof workosClientId === 'string' && workosClientId.startsWith('client_') && !workosClientId.includes('your_workos');
+const appAuthMode = import.meta.env.VITE_APP_AUTH_MODE;
+const isLocalDevAuthMode = appAuthMode === 'local-dev';
+const localDevAuthTokenStorageKey = 'local-dev-auth-token';
+const localDevAuthEmailStorageKey = 'local-dev-auth-email';
 
 type ThemePreference = 'aurora-light' | 'cobalt-light' | 'obsidian-dark' | 'midnight-dark' | 'dark-night';
 type BootstrapState =
@@ -917,6 +921,101 @@ function persistThemeId(themeId: ThemePreference) {
 }
 
 
+type LocalDevSignInResult = {
+  accessToken: string;
+  email: string;
+  tokenType: string;
+  expiresInSeconds: number;
+  authMode: string;
+  correlationId: string;
+};
+
+type LocalDevUser = {
+  email: string;
+  displayName: string;
+  status: string;
+  memberships: Array<{ scopeType: string; tenantId: string; customerId: string; status: string; roles: string[] }>;
+};
+
+function LocalDevAuthenticatedRoot() {
+  const [token, setToken] = React.useState<string | undefined>(() => window.localStorage.getItem(localDevAuthTokenStorageKey) ?? undefined);
+  const [email, setEmail] = React.useState(() => window.localStorage.getItem(localDevAuthEmailStorageKey) ?? 'saas.admin@example.test');
+  const [users, setUsers] = React.useState<LocalDevUser[]>([]);
+  const [error, setError] = React.useState<string>();
+  const inviteToken = invitationTokenFromLocation();
+
+  React.useEffect(() => {
+    let active = true;
+    fetch('/api/dev/auth/users', { headers: { Accept: 'application/json' } })
+      .then(async (response) => {
+        if (!response.ok) throw new Error(await response.text() || `HTTP ${response.status}`);
+        return response.json() as Promise<{ users: LocalDevUser[] }>;
+      })
+      .then((body) => {
+        if (!active) return;
+        setUsers(body.users);
+        if (!window.localStorage.getItem(localDevAuthEmailStorageKey) && body.users[0]?.email) setEmail(body.users[0].email);
+      })
+      .catch((caught) => {
+        if (active) setError(caught instanceof Error ? caught.message : String(caught));
+      });
+    return () => { active = false; };
+  }, []);
+
+  const signIn = React.useCallback(async (nextEmail = email) => {
+    setError(undefined);
+    const response = await fetch('/api/dev/auth/sign-in', {
+      method: 'POST',
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: nextEmail })
+    });
+    if (!response.ok) {
+      setError(await response.text() || `HTTP ${response.status}`);
+      return;
+    }
+    const result = await response.json() as LocalDevSignInResult;
+    window.localStorage.setItem(localDevAuthTokenStorageKey, result.accessToken);
+    window.localStorage.setItem(localDevAuthEmailStorageKey, result.email);
+    setEmail(result.email);
+    setToken(result.accessToken);
+  }, [email]);
+
+  const signOut = React.useCallback(() => {
+    window.localStorage.removeItem(localDevAuthTokenStorageKey);
+    window.localStorage.removeItem(localDevAuthEmailStorageKey);
+    setToken(undefined);
+  }, []);
+
+  if (!token) {
+    return (
+      <main className="auth-gate">
+        <h1>Local dev sign in</h1>
+        <p>APP_AUTH_MODE=local-dev is enabled. Choose a seeded test email to exercise the real protected APIs with local authorization.</p>
+        <label htmlFor="local-dev-email">Test email</label>
+        <input id="local-dev-email" value={email} onChange={(event) => setEmail(event.target.value)} list="local-dev-users" />
+        <datalist id="local-dev-users">{users.map((user) => <option key={user.email} value={user.email}>{user.displayName}</option>)}</datalist>
+        <button type="button" onClick={() => void signIn()}>Sign in locally</button>
+        {error && <p className="auth-gate__hint" role="alert">{error}</p>}
+      </main>
+    );
+  }
+
+  const tokenProvider = () => Promise.resolve(token);
+  if (inviteToken) return <InvitationAcceptancePage token={inviteToken} tokenProvider={tokenProvider} onSignOut={signOut} />;
+  return (
+    <>
+      <div className="local-dev-auth-switcher" role="region" aria-label="Local dev authenticated user switcher">
+        <strong>Local dev user</strong>
+        <select value={email} onChange={(event) => void signIn(event.target.value)}>
+          {users.map((user) => <option key={user.email} value={user.email}>{user.email} · {user.memberships.map((membership) => membership.roles.join('+')).join(', ') || user.status}</option>)}
+        </select>
+        <button type="button" onClick={signOut}>Clear local session</button>
+      </div>
+      <WorkstreamApp key={email} tokenProvider={tokenProvider} onSignOut={signOut} />
+    </>
+  );
+}
+
 function AuthenticatedRoot() {
   const { isLoading, user, signIn, signOut, getAccessToken } = useAuth();
   const inviteToken = invitationTokenFromLocation();
@@ -1099,6 +1198,7 @@ function Root() {
   if (window.location.pathname.startsWith('/surface-review')) {
     return <React.Suspense fallback={<main className="content"><p>Loading review…</p></main>}><SurfaceReviewApp /></React.Suspense>;
   }
+  if (isLocalDevAuthMode) return <LocalDevAuthenticatedRoot />;
   if (!hasConfiguredWorkosClient) {
     return (
       <div className="auth-gate">
