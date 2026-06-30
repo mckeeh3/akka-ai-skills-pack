@@ -17,9 +17,17 @@ Use the checked-in local runtime-validation start script:
 ./tools/runtime-validation/start-local.sh --empty
 ```
 
-The script loads `.env` when present, validates that WorkOS/AuthKit public/JWT values are not placeholders, enables the local-only runtime-validation seed endpoint, writes a private seed token to `.runtime-validation/local.env`, and starts the Akka dev runtime with `mvn compile exec:java` on `http://localhost:9000`. Use `--foreground` when a human wants to keep the server in the current terminal.
+The script loads `.env` when present, validates that WorkOS/AuthKit public/JWT values are not placeholders, enables the local-only runtime-validation seed endpoint, writes a private seed token to `.runtime-validation/local.env`, starts the Akka dev runtime with `mvn compile exec:java` on `http://localhost:9000`, and waits for the HTTP endpoint to become reachable before returning. Use `--foreground` when a human wants to keep the server in the current terminal.
 
-If this command fails, the run record must capture the exit status, `.runtime-validation/logs/backend.log` path when present, the missing/placeholder auth keys reported by the script, and any differences from this contract.
+Stop a background runtime started by the script with:
+
+```bash
+./tools/runtime-validation/stop-local.sh
+```
+
+Use `./tools/runtime-validation/stop-local.sh --force` only when graceful shutdown does not finish.
+
+If the start command fails, the run record must capture the exit status, `.runtime-validation/logs/backend.log` path when present, the missing/placeholder auth keys reported by the script, and any differences from this contract.
 
 # Expected local endpoints
 

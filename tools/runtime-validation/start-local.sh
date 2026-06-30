@@ -10,6 +10,8 @@ The script loads .env when present, enables the local-only runtime-validation
 seed endpoint, writes the seed token to .runtime-validation/local.env, and
 runs `mvn compile exec:java` unless --foreground is omitted, in which case the
 backend starts in the background and logs to .runtime-validation/logs/backend.log.
+It waits for the HTTP endpoint to become reachable before returning. Stop a
+script-started background backend with `tools/runtime-validation/stop-local.sh`.
 
 Options:
   --empty       stop any prior script-started backend and start a fresh dev run
@@ -82,19 +84,7 @@ export RUNTIME_VALIDATION_SEED_ENABLED="true"
 export RUNTIME_VALIDATION_SEED_TOKEN="${RUNTIME_VALIDATION_SEED_TOKEN:?missing generated seed token}"
 
 if [[ "$EMPTY" == true && -f "$PID_FILE" ]]; then
-  old_pid="$(cat "$PID_FILE" || true)"
-  if [[ -n "$old_pid" ]] && kill -0 "$old_pid" 2>/dev/null; then
-    echo "Stopping prior runtime-validation backend pid $old_pid"
-    kill "$old_pid" || true
-    for _ in {1..30}; do
-      if ! kill -0 "$old_pid" 2>/dev/null; then break; fi
-      sleep 1
-    done
-    if kill -0 "$old_pid" 2>/dev/null; then
-      kill -9 "$old_pid" || true
-    fi
-  fi
-  rm -f "$PID_FILE"
+  ./tools/runtime-validation/stop-local.sh --force
 fi
 
 missing=()
@@ -125,11 +115,23 @@ fi
 if [[ -f "$PID_FILE" ]]; then
   current_pid="$(cat "$PID_FILE" || true)"
   if [[ -n "$current_pid" ]] && kill -0 "$current_pid" 2>/dev/null; then
-    echo "Runtime-validation backend already running with pid $current_pid"
-    echo "Frontend/API URL: http://localhost:9000"
-    echo "Seed env: $LOCAL_ENV"
-    exit 0
+    echo "Runtime-validation backend already running with pid $current_pid; waiting for readiness"
+    for _ in {1..90}; do
+      if curl -fsS "http://localhost:9000/" >/dev/null 2>&1; then
+        echo "Frontend/API URL: http://localhost:9000"
+        echo "Seed env: $LOCAL_ENV"
+        exit 0
+      fi
+      if ! kill -0 "$current_pid" 2>/dev/null; then
+        echo "Existing runtime-validation backend exited before becoming ready. Remove $PID_FILE or restart with --empty." >&2
+        exit 1
+      fi
+      sleep 2
+    done
+    echo "Existing runtime-validation backend did not become ready at http://localhost:9000 within 180 seconds. Use tools/runtime-validation/stop-local.sh --force or restart with --empty." >&2
+    exit 1
   fi
+  rm -f "$PID_FILE"
 fi
 
 log_file="$LOG_DIR/backend.log"

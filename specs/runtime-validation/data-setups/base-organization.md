@@ -15,7 +15,7 @@ Prepare the shared organization, tenant scope, and test identities needed by the
 ./tools/runtime-validation/seed.sh base-organization
 ```
 
-The app must first be started with `./tools/runtime-validation/start-local.sh --empty`, which enables the local-only seed endpoint and writes `.runtime-validation/local.env`. The seed script calls the Akka runtime at `/internal/runtime-validation/seed/base-organization` with the generated seed token. If this command fails, the run record must document the HTTP status/body and classify the blocker as auth/setup, seed tooling, or runtime-validation setup according to the failure.
+The app must first be started with `./tools/runtime-validation/start-local.sh --empty`, which enables the local-only seed endpoint and writes `.runtime-validation/local.env`. The start script waits for the local HTTP endpoint before returning, and the seed script also waits by default before posting so startup timing does not produce an immediate false `Could not connect to server` failure. The seed script calls the Akka runtime at `/internal/runtime-validation/seed/base-organization` with the generated seed token. If this command fails, the run record must document the HTTP status/body or readiness timeout and classify the blocker as auth/setup, seed tooling, or runtime-validation setup according to the failure.
 
 # State to create or reuse
 
