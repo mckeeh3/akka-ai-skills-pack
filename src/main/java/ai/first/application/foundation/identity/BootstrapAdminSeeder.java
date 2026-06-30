@@ -79,7 +79,7 @@ public final class BootstrapAdminSeeder {
       throw new IllegalArgumentException("ADMIN_USERS entries must be email:ROLE:scope");
     }
     var email = parts[0].trim().toLowerCase(Locale.ROOT);
-    var role = FoundationRole.valueOf(parts[1].trim().toUpperCase(Locale.ROOT));
+    var role = parseRole(parts[1]);
     var scope = parts[2].trim();
     if (email.isBlank() || !email.contains("@")) {
       throw new IllegalArgumentException("Invalid email in ADMIN_USERS entry");
@@ -88,6 +88,20 @@ public final class BootstrapAdminSeeder {
       throw new IllegalArgumentException("ADMIN_USERS roles must be admin roles");
     }
     return new ParsedAdminEntry(email, role, scope);
+  }
+
+  private static FoundationRole parseRole(String configuredRole) {
+    var normalizedRole = configuredRole.trim().toUpperCase(Locale.ROOT);
+    if ("APP_ADMIN".equals(normalizedRole)) {
+      return FoundationRole.SAAS_OWNER_ADMIN;
+    }
+    try {
+      return FoundationRole.valueOf(normalizedRole);
+    } catch (IllegalArgumentException error) {
+      throw new IllegalArgumentException(
+          "Unknown ADMIN_USERS role '" + configuredRole.trim() + "'. Use SAAS_OWNER_ADMIN for first-admin bootstrap; legacy APP_ADMIN is accepted as an alias for SAAS_OWNER_ADMIN with OWNER scope.",
+          error);
+    }
   }
 
   private static Membership fixtureScopedMembership(String email, FoundationRole role, String scope) {

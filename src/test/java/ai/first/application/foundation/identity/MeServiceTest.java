@@ -119,6 +119,18 @@ class MeServiceTest {
   }
 
   @Test
+  void configuredBootstrapAcceptsLegacyAppAdminAsSaasOwnerAlias() {
+    BootstrapAdminSeeder.seedConfiguredAdmins(repository, "owner@example.com:APP_ADMIN:OWNER");
+
+    var owner = meService.me(identity("workos-owner", "owner@example.com"), null, "corr-owner-bootstrap-alias");
+
+    assertEquals("owner@example.com", owner.account().accountId());
+    assertTrue(owner.selectedAuthContext().roleIds().contains("saas-owner-admin"));
+    assertEquals(null, owner.selectedAuthContext().tenantId());
+    assertTrue(owner.visibleCapabilityIds().contains("saas_owner.admin.manage"));
+  }
+
+  @Test
   void configuredSaasOwnerBootstrapDoesNotOverwriteExistingProfileOrSettings() {
     BootstrapAdminSeeder.seedConfiguredAdmins(repository, "owner@example.com:SAAS_OWNER_ADMIN:OWNER");
     repository.saveProfile(new UserProfile("owner@example.com", "owner@example.com", "Renamed Owner", null, null, null));
