@@ -69,14 +69,14 @@ Observed output: 19 mapped source/test/frontend paths exist; `specs/runtime-vali
 ## TASK-ADIA-FU-001 runtime-validation run attempts
 
 Review date: 2026-06-30.
-Latest run record: `specs/runtime-validation/runs/2026-06-30-RV-MY-ACCOUNT-001-blocked-auth-config.md`.
-Prior run records: `specs/runtime-validation/runs/2026-06-29-RV-MY-ACCOUNT-001-blocked-auth-config.md`; `specs/runtime-validation/runs/2026-06-29-RV-MY-ACCOUNT-001-blocked-auth-seed.md`.
+Latest run record: `specs/runtime-validation/runs/2026-06-30-RV-MY-ACCOUNT-001-blocked-auth-login.md`.
+Prior run records: `specs/runtime-validation/runs/2026-06-30-RV-MY-ACCOUNT-001-blocked-auth-config.md`; `specs/runtime-validation/runs/2026-06-29-RV-MY-ACCOUNT-001-blocked-auth-config.md`; `specs/runtime-validation/runs/2026-06-29-RV-MY-ACCOUNT-001-blocked-auth-seed.md`.
 Scenario: `specs/runtime-validation/scenarios/my-account/RV-MY-ACCOUNT-001-login-and-account-context.md`.
-Latest result: `blocked` with primary `auth-setup-blocker` plus `runtime-validation-gap` and consequential `seed-data-blocker`.
+Latest result: `blocked` with primary `auth-setup-blocker` plus remaining `runtime-validation-gap` for authenticated API/UI/trace evidence.
 
-The local runtime-validation path is still not counted as executed. The latest retry used the checked-in start/seed contracts after tooling fixes, and `.runtime-validation/local.env` existed for local seed state, but `tools/runtime-validation/start-local.sh --empty` exited before frontend build or Akka runtime execution because the runtime-validation script incorrectly treated placeholder `WORKOS_JWT_AUDIENCE` as fatal. That preflight has been corrected because the local app can run without `WORKOS_JWT_AUDIENCE`. The scenario still needs a rerun to determine the actual startup/auth/API result and capture base member or disabled/inactive fixtures, browser login, `/api/me`, workstream surface, denial/open-disabled payload, and trace evidence.
+The latest retry started the local runtime with `tools/runtime-validation/start-local.sh --empty`, served the frontend on `http://localhost:9000`, seeded `base-organization` through the local-only Akka seed endpoint, and recorded member, disabled-member, and inactive-member fixtures plus setup trace evidence. Pre-auth probes confirmed the protected boundary (`/api/me` without a bearer token returned `400`; an invalid bearer returned `403`). The scenario still did not reach authenticated WorkOS/AuthKit login, selected `/api/me` account-context retrieval, My Account surface reads, disabled/inactive denial/open-disabled payload capture, browser-safe authenticated payload review, or account-context/denial trace capture because this execution had no interactive WorkOS/AuthKit test-user session, test-user credentials, or valid bearer-token handoff.
 
-My Account remains `partially-aligned`; no `manual-ready` or `runtime-ready` claim is made from the blocked runs or setup-tool availability alone. Rerun `RV-MY-ACCOUNT-001` only after valid local WorkOS/AuthKit values and test-user/token mapping are available, then capture sanitized `/api/me`, account-context, denial/open-disabled, browser-safe payload, and trace evidence through the local Akka/API/UI path.
+My Account remains `partially-aligned`; no `manual-ready` or `runtime-ready` claim is made from the blocked authenticated run or setup-tool availability alone. Rerun `RV-MY-ACCOUNT-001` in a browser-capable/human session with valid local WorkOS/AuthKit test-user login or valid test-token handoff for `member@example.com` and disabled/inactive fixtures, then capture sanitized `/api/me`, account-context, denial/open-disabled, browser-safe payload, and trace evidence through the local Akka/API/UI path.
 
 ## Historical alignment status summary before TASK-ADR-02-001
 

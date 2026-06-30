@@ -26,10 +26,10 @@ Readiness claim: queue-authoring only. No runtime-validation scenario has passed
 
 ### TASK-ADIA-FU-001: Execute My Account login/account-context runtime-validation scenario
 
-- status: pending
+- status: blocked (`auth-setup-blocker`)
 - prior blocker classification: `runtime-validation-gap`, `auth-setup-blocker`, `seed-data-blocker`
-- prior blocker evidence: `specs/runtime-validation/runs/2026-06-29-RV-MY-ACCOUNT-001-blocked-auth-seed.md` recorded missing start/seed contracts and missing seeded member/disabled fixtures. Remediation added `tools/runtime-validation/start-local.sh`, `tools/runtime-validation/seed.sh`, and the local-only Akka seed endpoint; rerun this scenario through the local Akka/API/UI path before marking done.
-- latest blocker evidence: `specs/runtime-validation/runs/2026-06-30-RV-MY-ACCOUNT-001-blocked-auth-config.md` retried the fixed start/seed tooling; `tools/runtime-validation/start-local.sh --empty` exited 78 before Akka startup because the runtime-validation script incorrectly treated placeholder `WORKOS_JWT_AUDIENCE` as fatal. That preflight has been corrected because the local app can run without `WORKOS_JWT_AUDIENCE`; rerun the scenario to capture the actual startup/auth/API result.
+- prior blocker evidence: `specs/runtime-validation/runs/2026-06-29-RV-MY-ACCOUNT-001-blocked-auth-seed.md` recorded missing start/seed contracts and missing seeded member/disabled fixtures. Remediation added `tools/runtime-validation/start-local.sh`, `tools/runtime-validation/seed.sh`, and the local-only Akka seed endpoint.
+- latest blocker evidence: `specs/runtime-validation/runs/2026-06-30-RV-MY-ACCOUNT-001-blocked-auth-login.md` retried the corrected start/seed tooling; `tools/runtime-validation/start-local.sh --empty` started Akka/frontend, `tools/runtime-validation/seed.sh base-organization` seeded member/disabled/inactive fixtures, and pre-auth probes confirmed `/api/me` rejects missing/invalid bearer tokens. The scenario remained blocked because no interactive WorkOS/AuthKit test-user session, test-user credentials, or valid bearer-token handoff was available to execute authenticated `/api/me`, account-context, denial/open-disabled, browser-safe payload, or trace capture.
 - source: `TASK-ADIA-02-001`; `specs/runtime-validation/scenarios/my-account/RV-MY-ACCOUNT-001-login-and-account-context.md`
 - depends on: []
 - required reads:
